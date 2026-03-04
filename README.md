@@ -13,12 +13,13 @@ Wolfram MCP integration.
 
 ## Installation
 
+**From the marketplace** (recommended):
 ```bash
-claude plugin install computational-research
+/plugin marketplace add p135246/computational-research
+/plugin install computational-research@computational-research
 ```
 
-Or load locally for development:
-
+**Direct load** (local development or offline):
 ```bash
 claude --plugin-dir /path/to/WolframComputationalResearch
 ```

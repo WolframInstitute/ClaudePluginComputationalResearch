@@ -1,0 +1,30 @@
+{
+  "name": "computational-research",
+  "owner": {
+    "name": "Pavel Hajek",
+    "email": "phajek@wolframinstitute.org"
+  },
+  "metadata": {
+    "description": "Wolfram computational research plugin for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "computational-research",
+      "source": {
+        "source": "github",
+        "repo": "p135246/computational-research"
+      },
+      "description": "Scaffold Wolfram computational research projects and create Mathematica notebooks. Includes environment checks, paper management, and LaTeX note-taking.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Pavel Hajek",
+        "email": "phajek@wolframinstitute.org"
+      },
+      "homepage": "https://github.com/p135246/computational-research",
+      "repository": "https://github.com/p135246/computational-research",
+      "license": "MIT",
+      "keywords": ["wolfram", "mathematica", "research", "notebook", "latex"],
+      "category": "research"
+    }
+  ]
+}
