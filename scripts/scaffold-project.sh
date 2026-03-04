@@ -79,7 +79,6 @@ ABSTRACT="We investigate $TOPIC_DESCRIPTION from a discrete and combinatorial pe
 sed \
   -e "s|{{TITLE}}|$WORKING_TITLE|g" \
   -e "s|{{ABSTRACT}}|$ABSTRACT|g" \
-  -e "s|{{CORE_SECTION_TITLE}}|${PROJECT_NAME}|g" \
   -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
   -e "s|{{EMAIL}}|$AUTHOR_EMAIL|g" \
   "$ASSETS_DIR/article_template.tex" > "$PROJECT_NAME/Article/article1.tex"
@@ -89,11 +88,10 @@ echo "Created: $PROJECT_NAME/Article/article1.tex"
 
 sed \
   -e "s|{{TITLE}}|Working Notes: $PROJECT_NAME|g" \
-  -e "s|{{ABSTRACT}}|Article-form working notes for the $PROJECT_NAME project ($TOPIC_DESCRIPTION). Written by Claude when asked; serves as source material for article1.tex.|g" \
-  -e "s|{{CORE_SECTION_TITLE}}|Observations|g" \
+  -e "s|{{FIRST_TOPIC}}|$PROJECT_NAME|g" \
   -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
   -e "s|{{EMAIL}}|$AUTHOR_EMAIL|g" \
-  "$ASSETS_DIR/article_template.tex" > "$PROJECT_NAME/Article/notes1.tex"
+  "$ASSETS_DIR/notes_template.tex" > "$PROJECT_NAME/Article/notes1.tex"
 echo "Created: $PROJECT_NAME/Article/notes1.tex"
 
 # ── 7. references.bib ────────────────────────────────────────────────────

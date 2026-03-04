@@ -153,31 +153,22 @@ as if explaining the project to a colleague who will pick it up cold.
 ### 2. article1.tex purpose
 
 The LaTeX article scaffold (`Article/article1.tex`) is the **user's writing space** — a
-skeleton they will write into over time to produce a standalone paper. Because
-of this:
-
-- Keep the scaffold minimal: section headings, a placeholder abstract, and maybe
-  a few seed sentences or TODO comments in each section — but don't fill it with
-  extensive content.
-- The recurring intellectual theme is: take a concept from mathematics or physics,
-  reinterpret it on graphs/hypergraphs/discrete structures in the spirit of the
-  Wolfram model, and see what survives, what breaks, and what new phenomena emerge.
-
-Scaffold sections: Introduction / Background / [Topic] on graphs (or hypergraphs) /
-Computational results / Discussion and outlook.
+minimal skeleton with just an Introduction section and a Bibliography. The user adds
+new sections as the article develops. Don't fill it with content — keep it clean.
 
 ### 3. notes1.tex purpose and rules
 
-`notes1.tex` is written in proper article form and serves as **working notes and
-source material** from which `article1.tex` gets written. It is a proper paper-form
-intermediate document. Claude writes to it when explicitly asked; the user reads it
-and draws from it when composing the final article.
+`notes1.tex` is a **collection of topic sections** that serves as working notes and
+source material for `article1.tex`. Each section covers one topic — a definition,
+a result, an observation, a conjecture, etc. Notes accumulate as a flat list of
+topic sections. Claude writes to it when explicitly asked; the user draws from it
+when composing the final article.
 
 **Usage rules for notes1.tex:**
 - **Only write when the user explicitly asks.** Triggers: "note this", "write this
   down", "record that", "add to notes". Do not auto-append during normal work.
-- Write in proper article form — concise, mathematically precise, with citations.
-- Organize into sections as notes grow; group related results together.
+- Each new topic gets its own `\section{}`. Keep sections concise and self-contained.
+- Write mathematically precise text with citations where applicable.
 - Include tentative conjectures, open questions, partial results.
 
 **Versioning rule (important):**
