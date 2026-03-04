@@ -13,13 +13,17 @@ Wolfram MCP integration.
 
 ## Installation
 
-**From the marketplace** (recommended):
+**Claude Desktop (Cowork tab)**:
+1. Download [`computational-research.zip`](computational-research.zip)
+2. Open Claude Desktop → Cowork tab → Customize → upload the zip file
+
+**Claude Code CLI — from the marketplace**:
 ```bash
 claude plugin marketplace add p135246/plugins
 claude plugin install computational-research@p135246
 ```
 
-**Direct load** (local development or offline):
+**Claude Code CLI — direct load** (local development or offline):
 ```bash
 claude --plugin-dir /path/to/WolframComputationalResearch
 ```
