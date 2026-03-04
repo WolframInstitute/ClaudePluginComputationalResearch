@@ -216,6 +216,29 @@ do it as part of scaffolding, not as a follow-up suggestion.
 
 5. **Add BibTeX entries** to `Notes/references.bib` for every paper downloaded.
 
+### 7b. Search Wolfram web resources for topic connections
+
+After downloading arXiv papers, search the official Wolfram web resources for community
+notebooks and conceptual grounding related to the project topic. This step is **not optional**.
+
+1. **Scan the Technical Introduction** using `WebFetch` on
+   `https://wolframphysics.org/technical-introduction/`. Read the table of contents and
+   identify any sections that directly relate to the project topic. Summarise the relevant
+   connections in a Text cell appended to `<ProjectName>1.nb`.
+
+2. **Search the Wolfram Community Summer School** using `WebFetch` on
+   `https://community.wolfram.com/content?curTag=wolfram%20summer%20school`
+   to find posts whose titles or descriptions match the project topic. For each relevant
+   post found:
+   - Fetch the post page with `WebFetch` to check for downloadable `.nb` attachments
+   - If a `.nb` file is available, download it and save to `Papers/` using the naming
+     convention `Author_Year_Title.nb` (same as PDFs)
+   - Append a summary section to `Papers1.nb` (same format as paper summaries in step 7,
+     adapted for a notebook: title, author, year, topic, key techniques, relevance)
+
+3. If no directly downloadable notebooks are found, record the relevant post URLs in a
+   Text cell in `Papers1.nb` under a "Wolfram Community Resources" section header.
+
 ### 8. Paper management convention (ongoing)
 
 Throughout the project's life, whenever new papers are added:
@@ -240,6 +263,7 @@ Tell the user:
 - The project is set up at `<path>/<ProjectName>/`
 - Briefly describe what's in each folder
 - **List the papers that were downloaded and summarised**
+- **List any Wolfram Community notebooks downloaded and relevant Technical Introduction sections found**
 - Mention they can start working in `<ProjectName>1.nb`
 - Explain the notes/article relationship: `Notes/notes1.tex` is the article-form
   working notes (say "note this" to have Claude write here); `Notes/article1.tex`

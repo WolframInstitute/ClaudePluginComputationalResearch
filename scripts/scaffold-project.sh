@@ -100,6 +100,21 @@ cat > "$PROJECT_NAME/Notes/references.bib" << 'EOF'
   pages   = {537--598},
   year    = {2020}
 }
+
+@misc{wolfram2020technical,
+  author       = {Stephen Wolfram},
+  title        = {Technical Introduction to the {W}olfram Physics Project},
+  year         = {2020},
+  howpublished = {\url{https://wolframphysics.org/technical-introduction/}},
+  note         = {Online resource}
+}
+
+@misc{wolframsummerschool,
+  author       = {{Wolfram Research}},
+  title        = {Wolfram Summer School --- Community Posts},
+  howpublished = {\url{https://community.wolfram.com/content?curTag=wolfram\%20summer\%20school}},
+  note         = {Online community resource}
+}
 EOF
 sed -i '' "s/PROJECT_NAME/$PROJECT_NAME/g" "$PROJECT_NAME/Notes/references.bib"
 echo "Created: $PROJECT_NAME/Notes/references.bib"
