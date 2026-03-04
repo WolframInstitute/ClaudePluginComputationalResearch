@@ -2,7 +2,7 @@
 name: computational-research
 description: >
   Scaffold a new Wolfram-model research project with the standard folder structure
-  (Code/, Papers/, Notes/, numbered notebooks) and pre-populated templates.
+  (Code/, Papers/, Articles/, numbered notebooks) and pre-populated templates.
   Use this skill whenever Pavel asks to start a new project, create a new research
   project, set up a project folder, scaffold a project, or begin investigating a
   new topic. Also trigger when he says things like "new project on X", "let's start
@@ -56,7 +56,7 @@ Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh` to verify the environment.
 │   └── <ProjectName>Visualization.wl  ← visualization (initial scope)
 ├── Papers1.nb                  ← paper summaries notebook (one section per paper)
 ├── Papers/                     ← reference PDFs only (Author_Year_Title.pdf)
-└── Notes/
+└── Articles/
     ├── article1.tex           ← LaTeX scaffold for user's article (user writes here)
     ├── notes1.tex             ← article-form working notes (Claude writes here on request)
     └── references.bib         ← BibTeX file with header comment
@@ -82,9 +82,9 @@ The script creates:
 - `<ProjectName>/Code/<ProjectName>.wl` — core functions stub (initial scope)
 - `<ProjectName>/Code/<ProjectName>Visualization.wl` — visualization stub (initial scope)
 - `<ProjectName>/CLAUDE.md` — from claude_template.md with substitutions
-- `<ProjectName>/Notes/article1.tex` — LaTeX article scaffold
-- `<ProjectName>/Notes/notes1.tex` — working notes file
-- `<ProjectName>/Notes/references.bib` — with standard Wolfram references
+- `<ProjectName>/Articles/article1.tex` — LaTeX article scaffold
+- `<ProjectName>/Articles/notes1.tex` — working notes file
+- `<ProjectName>/Articles/references.bib` — with standard Wolfram references
 
 If the script fails (e.g., permission issue), fall back to creating these files
 manually using the templates in `${CLAUDE_PLUGIN_ROOT}/skills/computational-research/assets/`.
@@ -97,7 +97,7 @@ as if explaining the project to a colleague who will pick it up cold.
 
 ### 2. article1.tex purpose
 
-The LaTeX article scaffold (`Notes/article1.tex`) is **Pavel's writing space** — a
+The LaTeX article scaffold (`Articles/article1.tex`) is **Pavel's writing space** — a
 skeleton he will write into himself over time to produce a standalone paper. Because
 of this:
 
@@ -214,7 +214,7 @@ do it as part of scaffolding, not as a follow-up suggestion.
 
    **Do NOT create separate .md summary files in Papers/.**
 
-5. **Add BibTeX entries** to `Notes/references.bib` for every paper downloaded.
+5. **Add BibTeX entries** to `Articles/references.bib` for every paper downloaded.
 
 ### 7b. Search Wolfram web resources for topic connections
 
@@ -245,7 +245,7 @@ Throughout the project's life, whenever new papers are added:
 - Use `/computational-research:add-paper <arXivID or search>` for ongoing paper addition
 - Always rename to `Author_Year_Title.pdf` format in `Papers/`
 - Always append a new section to `Papers1.nb` (or latest PapersN.nb)
-- Always add BibTeX entries to `Notes/references.bib`
+- Always add BibTeX entries to `Articles/references.bib`
 
 ### 9. Notes management convention (ongoing)
 
@@ -265,8 +265,8 @@ Tell the user:
 - **List the papers that were downloaded and summarised**
 - **List any Wolfram Community notebooks downloaded and relevant Technical Introduction sections found**
 - Mention they can start working in `<ProjectName>1.nb`
-- Explain the notes/article relationship: `Notes/notes1.tex` is the article-form
-  working notes (say "note this" to have Claude write here); `Notes/article1.tex`
+- Explain the notes/article relationship: `Articles/notes1.tex` is the article-form
+  working notes (say "note this" to have Claude write here); `Articles/article1.tex`
   is the final article scaffold they write themselves, drawing from notes1.tex
 - Mention `/computational-research:add-paper` for adding future papers
 - Suggest next steps based on the papers and topic
