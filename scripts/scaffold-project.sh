@@ -24,8 +24,8 @@ TODAY=$(date +%Y-%m-%d)
 
 mkdir -p "$PROJECT_NAME/Code"
 mkdir -p "$PROJECT_NAME/Papers"
-mkdir -p "$PROJECT_NAME/Articles"
-echo "Created directories: $PROJECT_NAME/{Code,Papers,Articles}"
+mkdir -p "$PROJECT_NAME/Article"
+echo "Created directories: $PROJECT_NAME/{Code,Papers,Article}"
 
 # ── 2. Tools.wl ───────────────────────────────────────────────────────────
 
@@ -68,8 +68,8 @@ sed \
   -e "s|{{TITLE}}|$WORKING_TITLE|g" \
   -e "s|{{ABSTRACT}}|$ABSTRACT|g" \
   -e "s|{{CORE_SECTION_TITLE}}|${PROJECT_NAME} on graphs and hypergraphs|g" \
-  "$ASSETS_DIR/article_template.tex" > "$PROJECT_NAME/Articles/article1.tex"
-echo "Created: $PROJECT_NAME/Articles/article1.tex"
+  "$ASSETS_DIR/article_template.tex" > "$PROJECT_NAME/Article/article1.tex"
+echo "Created: $PROJECT_NAME/Article/article1.tex"
 
 # ── 6. notes1.tex ─────────────────────────────────────────────────────────
 
@@ -77,12 +77,12 @@ sed \
   -e "s|{{TITLE}}|Working Notes: $PROJECT_NAME|g" \
   -e "s|{{ABSTRACT}}|Article-form working notes for the $PROJECT_NAME project ($TOPIC_DESCRIPTION). Written by Claude when asked; serves as source material for article1.tex.|g" \
   -e "s|{{CORE_SECTION_TITLE}}|Observations|g" \
-  "$ASSETS_DIR/article_template.tex" > "$PROJECT_NAME/Articles/notes1.tex"
-echo "Created: $PROJECT_NAME/Articles/notes1.tex"
+  "$ASSETS_DIR/article_template.tex" > "$PROJECT_NAME/Article/notes1.tex"
+echo "Created: $PROJECT_NAME/Article/notes1.tex"
 
 # ── 7. references.bib ────────────────────────────────────────────────────
 
-cat > "$PROJECT_NAME/Articles/references.bib" << 'EOF'
+cat > "$PROJECT_NAME/Article/references.bib" << 'EOF'
 % References for: PROJECT_NAME
 
 @book{wolfram2020,
@@ -116,8 +116,8 @@ cat > "$PROJECT_NAME/Articles/references.bib" << 'EOF'
   note         = {Online community resource}
 }
 EOF
-sed -i '' "s/PROJECT_NAME/$PROJECT_NAME/g" "$PROJECT_NAME/Articles/references.bib"
-echo "Created: $PROJECT_NAME/Articles/references.bib"
+sed -i '' "s/PROJECT_NAME/$PROJECT_NAME/g" "$PROJECT_NAME/Article/references.bib"
+echo "Created: $PROJECT_NAME/Article/references.bib"
 
 # ── 8. Summary ────────────────────────────────────────────────────────────
 
@@ -129,7 +129,7 @@ echo "    Tools.wl                        — shared general utilities"
 echo "    $PROJECT_NAME.wl               — core functions (initial scope, empty)"
 echo "    ${PROJECT_NAME}Visualization.wl — visualization (initial scope, empty)"
 echo "  Papers/             — reference PDFs (Author_Year_Title.pdf)"
-echo "  Articles/"
+echo "  Article/"
 echo "    article1.tex      — LaTeX article scaffold (your writing space)"
 echo "    notes1.tex        — article-form working notes (Claude writes here when asked)"
 echo "    references.bib    — BibTeX with Wolfram standard references"
