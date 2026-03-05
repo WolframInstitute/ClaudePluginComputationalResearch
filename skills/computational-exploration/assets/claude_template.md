@@ -19,10 +19,10 @@ The interplay between these two approaches is a central question: when does the 
 
 New functional scopes get their own `Name.wl` + `NameVisualization.wl` pair.
 
-## Papers
+## Resources
 
-`Papers/` — reference papers, named as `Author_Year_Title.pdf`
-`Papers1.nb` — paper summaries notebook (one section per paper)
+`Resources/` — reference papers and community notebooks, named as `Author_Year_Title.pdf` or `.nb`
+`Resources1.nb` — paper summaries notebook (one section per paper)
 
 ## Notes
 

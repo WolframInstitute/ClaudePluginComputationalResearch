@@ -3,7 +3,7 @@
 #
 # Usage: scaffold-project.sh <ProjectName> ["Topic"] [output-dir] ["Author Name"] ["email"]
 #
-# Called by Claude during computational-research skill execution.
+# Called by Claude during computational-exploration skill execution.
 # Claude handles notebook creation and paper downloading via MCP separately.
 #
 # output-dir:   base directory where <ProjectName>/ will be created.
@@ -15,7 +15,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/computational-research/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/computational-exploration/assets"
 
 if [ $# -lt 1 ]; then
   echo "Usage: scaffold-project.sh <ProjectName> [\"Topic description\"] [output-dir]" >&2
@@ -35,9 +35,9 @@ cd "$OUTPUT_DIR"
 # ── 1. Directories ─────────────────────────────────────────────────────────
 
 mkdir -p "$PROJECT_NAME/Code"
-mkdir -p "$PROJECT_NAME/Papers"
+mkdir -p "$PROJECT_NAME/Resources"
 mkdir -p "$PROJECT_NAME/Article"
-echo "Created directories: $PROJECT_NAME/{Code,Papers,Article}"
+echo "Created directories: $PROJECT_NAME/{Code,Resources,Article}"
 
 # ── 2. Tools.wl ───────────────────────────────────────────────────────────
 
@@ -125,11 +125,11 @@ echo "  Code/"
 echo "    Tools.wl                        — shared general utilities"
 echo "    $PROJECT_NAME.wl               — core functions (initial scope, empty)"
 echo "    ${PROJECT_NAME}Visualization.wl — visualization (initial scope, empty)"
-echo "  Papers/             — reference PDFs (Author_Year_Title.pdf)"
+echo "  Resources/          — reference PDFs and notebooks (Author_Year_Title.pdf/.nb)"
 echo "  Article/"
 echo "    article1.tex      — LaTeX article scaffold (your writing space)"
 echo "    notes1.tex        — article-form working notes (Claude writes here when asked)"
 echo "    references.bib    — BibTeX with Wolfram standard references"
 echo "  CLAUDE.md           — project context for future Claude sessions"
 echo ""
-echo "Next: Claude will create $PROJECT_NAME/1.nb and Papers1.nb via Wolfram MCP."
+echo "Next: Claude will create $PROJECT_NAME/1.nb and Resources1.nb via Wolfram MCP."

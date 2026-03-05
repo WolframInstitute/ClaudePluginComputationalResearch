@@ -1,14 +1,17 @@
 ---
-name: computational-research
+name: computational-exploration
 description: >
   Scaffold a new Wolfram-model research project with the standard folder structure
-  (Code/, Papers/, Article/, numbered notebooks) and pre-populated templates.
-  Use this skill whenever Pavel asks to start a new project, create a new research
-  project, set up a project folder, scaffold a project, or begin investigating a
-  new topic. Also trigger when he says things like "new project on X", "let's start
-  a project about Y", "set up folders for Z", or "init project". Even if he just
-  says "I want to explore [topic]" and it sounds like the beginning of a new
-  research effort, use this skill.
+  (Code/, Resources/, Article/, numbered notebooks) and pre-populated templates,
+  then perform computational exploration. Also use this skill to perform
+  computational explorations within an existing research project, adding results
+  to it. Use this skill whenever Pavel asks to start a new project, create a new
+  research project, set up a project folder, scaffold a project, begin investigating
+  a new topic, or explore something computationally. Trigger on phrases like
+  "new project on X", "let's start a project about Y", "set up folders for Z",
+  "init project", "explore X computationally", "investigate Y", or "let's look
+  into Z". Even if he just says "I want to explore [topic]" and it sounds like
+  the beginning of a new research effort or computational exploration, use this skill.
 ---
 
 # Wolfram-Model Research Project Scaffolder
@@ -100,17 +103,17 @@ Use the combined results to determine the mode:
 │   ├── Tools.wl               ← shared general utilities
 │   ├── <ProjectName>.wl       ← core functions (initial scope)
 │   └── <ProjectName>Visualization.wl  ← visualization (initial scope)
-├── Papers1.nb                  ← paper summaries notebook (one section per paper)
-├── Papers/                     ← reference PDFs only (Author_Year_Title.pdf)
+├── Resources1.nb                  ← paper summaries notebook (one section per paper)
+├── Resources/                     ← reference PDFs only (Author_Year_Title.pdf)
 └── Article/
     ├── article1.tex           ← LaTeX scaffold for user's article (user writes here)
     ├── notes1.tex             ← article-form working notes (Claude writes here on request)
     └── references.bib         ← BibTeX file with header comment
 ```
 
-All created files use number suffixes (`<ProjectName>1.nb`, `Papers1.nb`, etc.).
+All created files use number suffixes (`<ProjectName>1.nb`, `Resources1.nb`, etc.).
 When the user asks for a new notebook, increment the number (`<ProjectName>2.nb`,
-`Papers2.nb`). Edits to an existing file keep the same number unless the user
+`Resources2.nb`). Edits to an existing file keep the same number unless the user
 explicitly asks for a new one.
 
 ## Step-by-step
@@ -142,7 +145,7 @@ The script creates:
 - `<ProjectName>/Article/references.bib` — with standard Wolfram references
 
 If the script fails (e.g., permission issue), fall back to creating these files
-manually using the templates in `${CLAUDE_PLUGIN_ROOT}/skills/computational-research/assets/`.
+manually using the templates in `${CLAUDE_PLUGIN_ROOT}/skills/computational-exploration/assets/`.
 
 The generated CLAUDE.md uses the template from `assets/claude_template.md`:
 replace `{{PROJECT_NAME}}` with the actual project name and `{{TOPIC_DESCRIPTION}}`
@@ -218,16 +221,16 @@ Get["Code/<ProjectName>Visualization.wl"]
 ```
 ```
 
-### 6b. Create the papers notebook
+### 6b. Create the resources notebook
 
-Create `Papers1.nb` in the project root using the same ExportString pipeline.
+Create `Resources1.nb` in the project root using the same ExportString pipeline.
 Build a minimal markdown with just the title:
 
 ```
-# Papers — <ProjectName>
+# Resources — <ProjectName>
 ```
 
-Run the pipeline and write the result to `<ProjectName>/Papers1.nb`.
+Run the pipeline and write the result to `<ProjectName>/Resources1.nb`.
 
 ### 7. Download key reference papers
 
@@ -244,11 +247,11 @@ do it as part of scaffolding, not as a follow-up suggestion.
    `mcp__arxiv-latex-mcp__get_paper_prompt` / `mcp__arxiv-latex-mcp__get_paper_section`
    to read the full content.
 
-3. **Save with the naming convention** `Author_Year_Title.pdf` in `Papers/`:
+3. **Save with the naming convention** `Author_Year_Title.pdf` in `Resources/`:
    first author's last name, publication year, short title (2–4 words, underscores).
    Examples: `Ollivier_2009_RicciCurvatureMarkovChains.pdf`
 
-4. **Add a summary section to Papers1.nb.** To append to an existing notebook,
+4. **Add a summary section to Resources1.nb.** To append to an existing notebook,
    use the read → append → rewrite workflow:
    1. Read the existing `.nb` file content as a string
    2. Build the new cells as markdown (Section heading + Text cells for each paper)
@@ -270,7 +273,7 @@ do it as part of scaffolding, not as a follow-up suggestion.
    - Text cell: **"Relevance to this project"** — map concepts to the discrete /
      graph-theoretic / Wolfram-model setting (most important part)
 
-   **Do NOT create separate .md summary files in Papers/.**
+   **Do NOT create separate .md summary files in Resources/.**
 
 5. **Add BibTeX entries** to `Article/references.bib` for every paper downloaded.
 
@@ -290,21 +293,21 @@ notebooks and conceptual grounding related to the project topic. This step is **
    to find posts whose titles or descriptions match the project topic. For each relevant
    post found:
    - Fetch the post page with `WebFetch` to check for downloadable `.nb` attachments
-   - If a `.nb` file is available, download it and save to `Papers/` using the naming
+   - If a `.nb` file is available, download it and save to `Resources/` using the naming
      convention `Author_Year_Title.nb` (same as PDFs)
-   - Append a summary section to `Papers1.nb` (same format as paper summaries in step 7,
+   - Append a summary section to `Resources1.nb` (same format as paper summaries in step 7,
      adapted for a notebook: title, author, year, topic, key techniques, relevance)
 
 3. If no directly downloadable notebooks are found, record the relevant post URLs in a
-   Text cell in `Papers1.nb` under a "Wolfram Community Resources" section header.
+   Text cell in `Resources1.nb` under a "Wolfram Community Resources" section header.
    Use the same read → append → rewrite workflow.
 
 ### 8. Paper management convention (ongoing)
 
 Throughout the project's life, whenever new papers are added:
-- Use `/computational-research:add-paper <arXivID or search>` for ongoing paper addition
-- Always rename to `Author_Year_Title.pdf` format in `Papers/`
-- Always append a new section to `Papers1.nb` (or latest PapersN.nb) using the
+- Use `/computational-research:add-resource <arXivID or search>` for ongoing resource addition
+- Always rename to `Author_Year_Title.pdf` format in `Resources/`
+- Always append a new section to `Resources1.nb` (or latest ResourcesN.nb) using the
   read → append → rewrite workflow described in step 7
 - Always add BibTeX entries to `Article/references.bib`
 
@@ -329,5 +332,5 @@ Tell the user:
 - Explain the notes/article relationship: `Article/notes1.tex` is the article-form
   working notes (say "note this" to have Claude write here); `Article/article1.tex`
   is the final article scaffold they write themselves, drawing from notes1.tex
-- Mention `/computational-research:add-paper` for adding future papers
+- Mention `/computational-research:add-resource` for adding future resources
 - Suggest next steps based on the papers and topic
