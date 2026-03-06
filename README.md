@@ -9,25 +9,23 @@ Read the motivation behind this plugin:
 
 ## Installation
 
-### Claude Desktop
-
-1. Download [`computational-research.zip`](computational-research.zip)
-2. Open Claude Desktop, go to the Cowork tab, click Customize, and upload the zip file
-
-### Claude Code — Marketplace
-
-> **Note:** Marketplace installation is still experimental and may have issues.
+### 1. Add the marketplace
 
 ```bash
 claude plugin marketplace add p135246/claude-plugins
+```
+
+In Claude Desktop, go to Settings → Plugins → Add Marketplace and enter
+`p135246/claude-plugins`.
+
+### 2. Install the plugin
+
+```bash
 claude plugin install computational-research@p135246
 ```
 
-### Claude Code — Direct Load
-
-```bash
-claude --plugin-dir /path/to/WolframComputationalResearch
-```
+In Claude Desktop, find **computational-research** in the marketplace and click
+Install.
 
 ## Requirements
 
