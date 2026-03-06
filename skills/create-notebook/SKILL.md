@@ -193,9 +193,16 @@ Common LaTeX commands that work: `\frac`, `\sum`, `\int`, `\partial`,
 `\mathbb`, `\mathcal`, `\alpha`–`\omega`, `\in`, `\subset`, `\to`, `\mapsto`,
 `\leq`, `\geq`, `\neq`, `\infty`, `\ldots`, `\cdots`, `\text`.
 
-**Important:** Wolfram notation like `\[Alpha]` does NOT work in markdown text
-cells — it gets stripped to plain `[Alpha]`. Use LaTeX `$\alpha$` for all math
-in text. Wolfram notation only works inside `wolfram` code blocks (Input cells).
+**Wolfram notation vs LaTeX in text cells:**
+- **Simple symbols** (Greek letters, relations, arrows): Wolfram `\[Alpha]`,
+  `\[Element]`, `\[RightArrow]`, etc. work — they become Unicode characters
+  (α, ∈, →) in the text cell. Use these for short inline symbols.
+- **Structural math** (fractions, subscripts, superscripts): use LaTeX
+  `$\frac{a}{b}$`, `$x_i$`, `$x^2$` — Wolfram box constructors like
+  `\[Subscript]` do NOT work in markdown text.
+- **Blackboard bold** (`ℝ`, `ℤ`, `ℕ`): use LaTeX `$\mathbb{R}$` — Wolfram's
+  `\[DoubleStruckCapitalR]` maps to a private-use Unicode codepoint that may
+  not render correctly.
 
 ### Code blocks
 
