@@ -163,6 +163,32 @@ When the user doesn't specify a structure, ask which template fits best (or infe
 | `  - subitem` (2-space indent) | `"Subitem"` |
 | `1. first` | `"ItemNumbered"` |
 
+### Math (LaTeX)
+
+`ImportString[..., {"Markdown", "Notebook"}]` supports LaTeX math:
+
+| Markdown | Result |
+|----------|--------|
+| `$...$` | Inline math — rendered as `InlineMath` within TextData |
+| `$$...$$` | Display math — rendered as a `DisplayFormula` cell |
+
+**Use math liberally in notebooks.** Definitions, theorems, formulas, and
+variable references should use LaTeX notation:
+
+- Inline: `The Ricci curvature $\kappa(x,y)$ on edge $(x,y)$`
+- Display: `$$\kappa(x,y) = 1 - \frac{W_1(\mu_x, \mu_y)}{d(x,y)}$$`
+
+**Escaping in Wolfram strings:** Since `\` is the Wolfram escape character,
+double all backslashes in LaTeX math:
+
+```wolfram
+md = "The curvature $\\kappa(x,y)$ is defined as\n\n$$\\kappa(x,y) = 1 - \\frac{W_1(\\mu_x, \\mu_y)}{d(x,y)}$$\n\n";
+```
+
+Common LaTeX commands that work: `\frac`, `\sum`, `\int`, `\partial`,
+`\mathbb`, `\mathcal`, `\alpha`–`\omega`, `\in`, `\subset`, `\to`, `\mapsto`,
+`\leq`, `\geq`, `\neq`, `\infty`, `\ldots`, `\cdots`, `\text`.
+
 ### Code blocks
 
 | Markdown fence tag | Cell Style | Purpose |
@@ -303,4 +329,6 @@ easier to debug which section is causing a parse issue.
 - Tables for structured comparisons
 - Untagged fences for pseudocode or expected output (become CodeText)
 - Bold (`**term**`) for key terms in explanations
+- **Inline math** (`$...$`) for variables, symbols, and short formulas in text
+- **Display math** (`$$...$$`) for definitions, theorems, and important equations
 - Keep code blocks focused and well-commented

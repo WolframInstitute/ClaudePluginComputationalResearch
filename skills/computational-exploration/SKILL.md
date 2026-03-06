@@ -257,10 +257,20 @@ do it as part of scaffolding, not as a follow-up suggestion.
    seminal paper, 1–2 recent developments, and anything bridging the topic to
    discrete/graph-theoretic settings or Wolfram models.
 
-2. **Download each paper.** Try `mcp__arxiv__download_paper` first. If the PDF
-   can't be saved to the filesystem directly, use `mcp__arxiv__read_paper` or
-   `mcp__arxiv-latex-mcp__get_paper_prompt` / `mcp__arxiv-latex-mcp__get_paper_section`
-   to read the full content.
+2. **Download each paper.**
+
+   - **Local mode:** Try `mcp__arxiv__download_paper` first to save the PDF directly.
+   - **Cowork mode:** The arXiv MCP cannot write to the mounted filesystem. Instead,
+     download the PDF from the VM using `curl` or `WebFetch` via the Bash tool:
+     ```bash
+     curl -L -o "$WORKSPACE_PATH/<ProjectName>/Resources/Author_Year_Title.pdf" \
+       "https://arxiv.org/pdf/<arXivID>.pdf"
+     ```
+     This writes directly to the mounted filesystem from the VM, which works.
+   - **Fallback** (if PDF download fails in either mode): use `mcp__arxiv__read_paper`
+     or `mcp__arxiv-latex-mcp__get_paper_prompt` /
+     `mcp__arxiv-latex-mcp__get_paper_section` to read the paper content. Summarize
+     it in Resources1.nb even without the PDF file.
 
 3. **Save with the naming convention** `Author_Year_Title.pdf` in `Resources/`:
    first author's last name, publication year, short title (2–4 words, underscores).

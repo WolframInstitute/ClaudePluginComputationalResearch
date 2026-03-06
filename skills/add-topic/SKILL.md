@@ -95,7 +95,9 @@ be an initialization cell so the working directory is set automatically on open)
 ```
 
 Each function section should contain:
-- A brief text description (1-2 sentences)
+- A brief text description (1-2 sentences) using inline math (`$...$`) for
+  variables and symbols
+- Display math (`$$...$$`) for the key formula or definition the function implements
 - One or more example calls showing typical usage
 - A short note on expected output
 
