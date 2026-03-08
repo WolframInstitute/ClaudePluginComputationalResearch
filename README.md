@@ -54,6 +54,7 @@ are needed for the full paper management workflow.
 |-------|-------------|
 | **computational-exploration** | Scaffold a new research project and perform computational exploration, or explore within an existing project |
 | **create-notebook** | Create `.nb` files from structured content via the Wolfram MCP |
+| **modify-notebook** | Edit an existing `.nb` file by exporting to Markdown, making changes, and re-importing |
 | **list-topics** | List all topics in a project with descriptions and source references |
 
 ## Slash Commands

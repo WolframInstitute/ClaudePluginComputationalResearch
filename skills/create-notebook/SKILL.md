@@ -11,6 +11,14 @@ description: >
   Do NOT use this skill for reading or editing existing .nb files — only for creation.
 ---
 
+## Hard Rules
+
+- **NEVER** read a `.nb` file with the `Read` tool or load its raw content into the
+  context window. To work with an existing notebook, use the `modify-notebook` skill,
+  which exports to Markdown first.
+- **NEVER** use `Export[path, ...]` in MCP code — always `ExportString[...]` and write
+  the result with the `Write` tool.
+
 # Wolfram Notebook Creator
 
 **All skills that create or modify `.nb` files must use this skill's pipeline and
@@ -31,28 +39,21 @@ using the local `Write` tool.
 
 ## Which MCP tool to use
 
-Use MCP tools in this priority order:
+For the markdown→notebook pipeline, use tools in this order:
 
-1. **Official Wolfram MCP** — `mcp__Wolfram__WolframLanguageEvaluator` (capital-W "Wolfram")
-   Primary tool for all Wolfram Language evaluation. Use it for the full
-   `ExportString[ImportString[...]]` pipeline whenever available.
+1. **Official Wolfram MCP** — `mcp__Wolfram__WolframLanguageEvaluator` (capital-W)
+   The canonical tool for all notebook creation. Always use this when available.
 
-2. **Unofficial Wolfram MCP** — `mcp__wolfram__evaluate` (lowercase "wolfram")
-   Fallback when the official MCP is not available or returns an error. Same
-   Wolfram Language code works with both tools. Additionally, prefer the unofficial
-   MCP for tasks that benefit from its **LSP integration** — diagnostics, go-to-
-   definition, hover information, and type-aware completions while working in `.wl`
-   files. When editing or inspecting code files (as opposed to just creating
-   notebooks), the unofficial MCP's LSP capabilities make it the better choice even
-   if the official MCP is available.
+2. **Unofficial Wolfram MCP** — `mcp__wolfram__evaluate` (lowercase)
+   Fallback only — use when the official MCP is unavailable or returns an error.
+   Same Wolfram Language code works with both.
 
 3. **Last resort** — If neither MCP is available, create a minimal plain-text `.nb`
-   file manually using the Write tool with the raw NB format. Warn the user that
-   the notebook will not render cell styles correctly without Mathematica opening it
-   to evaluate.
+   manually using the `Write` tool with raw NB format. Warn the user that cell styles
+   won't render correctly until Mathematica opens and evaluates the file.
 
-To check which MCP is active, call `mcp__wolfram__ping` (unofficial) or attempt a
-test evaluation with `1+1` before building the full notebook.
+To check availability: call `mcp__wolfram__ping` (unofficial) or evaluate `1+1`
+with the official MCP before building the full notebook.
 
 ## Backtick escaping — Critical
 
@@ -96,11 +97,17 @@ the `Write` tool to save it locally.
 3. **Write** the returned string to the target `.nb` file using the `Write` tool
 4. **Verify** by calling `mcp__wolfram__list_cells` on the written file to confirm cell count
 
-**Note on Cowork mode**: The Write tool operates on the local/mounted filesystem, so
-step 3 works uniformly in both local and Cowork mode. However, `mcp__wolfram__list_cells`
-(step 4) requires the unofficial MCP to read the file — this may fail in Cowork mode
-if the MCP kernel cannot see the mounted path. In that case, skip verification or
-check the file size as a sanity test instead.
+## Claude Desktop / VM mode
+
+When Claude runs inside a VM (Claude Desktop Projects or any sandboxed environment):
+
+- **Before any file work**, confirm that a shared folder exists and is accessible.
+  Ask the user for its path if not known. All files must live inside this folder —
+  never write to temp paths that won't survive the session.
+- The `Write` tool operates on the mounted filesystem, so the `ExportString` + `Write`
+  pipeline works correctly (this is already the canonical path — no special case needed).
+- `mcp__wolfram__list_cells` verification may fail if the MCP kernel cannot see the
+  mounted path. Check file size as a sanity test instead.
 
 ## Named templates
 

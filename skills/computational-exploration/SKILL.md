@@ -276,18 +276,10 @@ do it as part of scaffolding, not as a follow-up suggestion.
    first author's last name, publication year, short title (2–4 words, underscores).
    Examples: `Ollivier_2009_RicciCurvatureMarkovChains.pdf`
 
-4. **Add a summary section to Resources1.nb.** To append to an existing notebook,
-   use the read → append → rewrite workflow:
-   1. Read the existing `.nb` file content as a string
-   2. Build the new cells as markdown (Section heading + Text cells for each paper)
-   3. Convert the new markdown to notebook cells via the create-notebook pipeline
-      (`ImportString` → post-process → get cell list)
-   4. Merge the new cells into the existing notebook expression and `ExportString`
-      the result, then write it back to disk
-
-   Alternatively, if the notebook is short, rebuild the entire notebook from
-   scratch as markdown (title + all existing paper sections + new paper section)
-   and run the full pipeline.
+4. **Add a summary section to Resources1.nb** using the **modify-notebook** skill:
+   export the existing notebook to Markdown, append the new paper section, and
+   re-import via the create-notebook pipeline. If the notebook is short, rebuilding
+   it entirely from scratch (title + all sections) is simpler than patching.
 
    Each paper gets:
    - Section cell: "Author Year — Short Title"
@@ -310,8 +302,8 @@ notebooks and conceptual grounding related to the project topic. This step is **
 1. **Scan the Technical Introduction** using `WebFetch` on
    `https://wolframphysics.org/technical-introduction/`. Read the table of contents and
    identify any sections that directly relate to the project topic. Summarise the relevant
-   connections in a Text cell appended to `<ProjectName>1.nb` (using the read → append →
-   rewrite workflow described in step 7).
+   connections in a Text cell appended to `<ProjectName>1.nb` (using the **modify-notebook**
+   skill).
 
 2. **Search the Wolfram Community Summer School** using `WebFetch` on
    `https://community.wolfram.com/content?curTag=wolfram%20summer%20school`
@@ -320,12 +312,13 @@ notebooks and conceptual grounding related to the project topic. This step is **
    - Fetch the post page with `WebFetch` to check for downloadable `.nb` attachments
    - If a `.nb` file is available, download it and save to `Resources/` using the naming
      convention `Author_Year_Title.nb` (same as PDFs)
-   - Append a summary section to `Resources1.nb` (same format as paper summaries in step 7,
-     adapted for a notebook: title, author, year, topic, key techniques, relevance)
+   - Append a summary section to `Resources1.nb` using the **modify-notebook** skill
+     (same format as paper summaries in step 7, adapted: title, author, year, topic,
+     key techniques, relevance)
 
 3. If no directly downloadable notebooks are found, record the relevant post URLs in a
-   Text cell in `Resources1.nb` under a "Wolfram Community Resources" section header.
-   Use the same read → append → rewrite workflow.
+   Text cell in `Resources1.nb` under a "Wolfram Community Resources" section header,
+   using the **modify-notebook** skill.
 
 ### 8. Paper management convention (ongoing)
 
@@ -333,7 +326,7 @@ Throughout the project's life, whenever new papers are added:
 - Use `/computational-research:add-resource <arXivID or search>` for ongoing resource addition
 - Always rename to `Author_Year_Title.pdf` format in `Resources/`
 - Always append a new section to `Resources1.nb` (or latest ResourcesN.nb) using the
-  read → append → rewrite workflow described in step 7
+  **modify-notebook** skill
 - Always add BibTeX entries to `Article/references.bib`
 
 ### 9. Notes management convention (ongoing)
