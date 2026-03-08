@@ -1,3 +1,8 @@
+---
+allowed-tools:
+  - Bash
+  - mcp__wolfram__ping
+---
 Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh` using the Bash tool and display the full output.
 
 Then, **always** test MCP availability directly by calling `mcp__wolfram__ping`.

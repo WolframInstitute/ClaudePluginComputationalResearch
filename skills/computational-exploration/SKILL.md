@@ -17,10 +17,12 @@ description: >
 # Wolfram-Model Research Project Scaffolder
 
 You are setting up a new research project for the user.
-Every project follows the same physical layout and intellectual pattern: it connects
-some area of mathematics or physics to Wolfram models (hypergraph rewriting, multiway
-systems, rulial space, etc.) and develops the connection through Wolfram Language
-computation and structured research notes in LaTeX.
+Every project follows the same layout: it takes a research topic from **any scientific
+domain** — mathematics, physics, biology, chemistry, economics, computer science, or
+other fields — and explores how it connects to **Wolfram models** (hypergraph
+rewriting, multiway systems, rulial space, simple program complexity, causal
+invariance, the Wolfram Physics Project, etc.). The connection is developed through
+Wolfram Language computation and structured research notes in LaTeX.
 
 ## What to ask the user
 
@@ -287,8 +289,8 @@ do it as part of scaffolding, not as a follow-up suggestion.
    - Text cell: 3–4 sentence abstract summary (in your own words)
    - Text cell: key definitions
    - Text cell: key results (one sentence each)
-   - Text cell: **"Relevance to this project"** — map concepts to the discrete /
-     graph-theoretic / Wolfram-model setting (most important part)
+   - Text cell: **"Relevance to this project"** — map the resource's concepts to the
+     project's Wolfram-model framework (most important part)
 
    **Do NOT create separate .md summary files in Resources/.**
 
@@ -299,26 +301,50 @@ do it as part of scaffolding, not as a follow-up suggestion.
 After downloading arXiv papers, search the official Wolfram web resources for community
 notebooks and conceptual grounding related to the project topic. This step is **not optional**.
 
-1. **Scan the Technical Introduction** using `WebFetch` on
-   `https://wolframphysics.org/technical-introduction/`. Read the table of contents and
-   identify any sections that directly relate to the project topic. Summarise the relevant
-   connections in a Text cell appended to `<ProjectName>1.nb` (using the **modify-notebook**
-   skill).
+#### Pass 1 — Technical Introduction
 
-2. **Search the Wolfram Community Summer School** using `WebFetch` on
-   `https://community.wolfram.com/content?curTag=wolfram%20summer%20school`
-   to find posts whose titles or descriptions match the project topic. For each relevant
-   post found:
-   - Fetch the post page with `WebFetch` to check for downloadable `.nb` attachments
-   - If a `.nb` file is available, download it and save to `Resources/` using the naming
-     convention `Author_Year_Title.nb` (same as PDFs)
-   - Append a summary section to `Resources1.nb` using the **modify-notebook** skill
-     (same format as paper summaries in step 7, adapted: title, author, year, topic,
-     key techniques, relevance)
+Fetch `https://wolframphysics.org/technical-introduction/` with `WebFetch`, scan the
+table of contents, and identify sections directly related to the project topic. Summarise
+the relevant connections in a Text cell appended to `<ProjectName>1.nb` via the
+**modify-notebook** skill.
 
-3. If no directly downloadable notebooks are found, record the relevant post URLs in a
-   Text cell in `Resources1.nb` under a "Wolfram Community Resources" section header,
-   using the **modify-notebook** skill.
+#### Pass 2 — Wolfram Community title search
+
+Search the community across multiple tag pages. For each URL below, fetch with `WebFetch`
+and extract all post titles from the HTML (look for `<h2>` headings and `<a>` link text):
+
+- `https://community.wolfram.com/content?curTag=wolfram+physics+project`
+- `https://community.wolfram.com/content?curTag=wolfram+summer+school`
+- `https://community.wolfram.com/content?curTag=<url-encoded-topic-keywords>` — build
+  this from the project's main topic keywords (e.g. for "neural computation" use
+  `neural+computation`)
+
+Then fetch the community keyword search:
+- `https://community.wolfram.com/search?query=<url-encoded-topic-keywords>`
+
+**Title matching**: keep only posts whose title contains at least one keyword from the
+project topic (case-insensitive substring match). Discard unrelated posts.
+
+#### Pass 3 — Fetch matching posts and download notebooks
+
+For each title-matched post:
+1. Fetch the post page with `WebFetch`
+2. Look for `.nb` file attachment links in the page HTML
+3. If a `.nb` attachment is found: download it (via `Bash` curl or `WebFetch`) and save
+   to `Resources/` as `Author_Year_Title.nb`
+4. Append a summary section to `Resources1.nb` via the **modify-notebook** skill:
+   - Section cell: "Author Year — Post Title"
+   - Text cell: post URL, author, year
+   - Text cell: topic summary (2–3 sentences)
+   - Text cell: key techniques used
+   - Text cell: **"Relevance to this project"** — connection to the project's
+     Wolfram-model framework
+
+If no `.nb` attachment is found for a matched post, record its URL in a Text cell in
+`Resources1.nb` under a "Wolfram Community Links" section header.
+
+If no title matches are found across all passes, note this in `Resources1.nb` and
+proceed.
 
 ### 8. Paper management convention (ongoing)
 

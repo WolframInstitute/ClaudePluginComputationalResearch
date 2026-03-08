@@ -1,0 +1,8 @@
+[
+  {
+    "event": "PreToolUse",
+    "type": "script",
+    "script": "./hooks/check-nb-read.sh",
+    "outputFormat": "text"
+  }
+]

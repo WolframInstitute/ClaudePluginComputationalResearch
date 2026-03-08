@@ -1,11 +1,12 @@
 {
   "name": "computational-research",
-  "version": "1.1.0",
-  "description": "Scaffold computational research project in Wolfram notebooks including gathering papers and LaTeX note-taking.",
+  "version": "1.1.1",
+  "description": "Scaffold computational research projects exploring scientific topics through Wolfram models: gather papers, experiment with Wolfram Language, write LaTeX notes and notebooks.",
+  "category": "research",
   "author": {
     "name": "Pavel Hajek",
     "email": "p135246@gmail.com"
   },
   "license": "MIT",
-  "keywords": ["wolfram", "mathematica", "research", "notebook", "latex"]
+  "keywords": ["wolfram", "mathematica", "research", "notebook", "latex", "wolfram-physics", "hypergraph"]
 }

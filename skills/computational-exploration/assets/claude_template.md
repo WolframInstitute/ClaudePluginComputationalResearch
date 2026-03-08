@@ -4,12 +4,13 @@
 
 {{GOALS}}
 
-## Two approaches
+## Research approaches
 
-- **Purely metric / structural**: Work with the discrete structure directly — graph distances, combinatorial properties, local neighborhoods. Push this as far as possible before introducing continuous or spectral tools.
-- **Spectral / analytic**: Use the graph Laplacian, curvature notions, spectral embeddings, and other analytic tools to capture phenomena that the combinatorial structure alone cannot express.
+- **Wolfram-model mapping**: Identify the core structures of the topic (objects, relations, dynamics) and map them to hypergraph rewriting rules, multiway systems, or other Wolfram-model primitives. What emerges from simple rules?
+- **Computational / constructive**: Build explicit models in Wolfram Language, run experiments, generate and visualize data. Push this before introducing analytical tools.
+- **Analytical / theoretical**: Use mathematical analysis, approximations, or formal reasoning to explain patterns found computationally.
 
-The interplay between these two approaches is a central question: when does the analytic structure give genuinely new information beyond what the combinatorics provides?
+The central question is always: what does the Wolfram-model perspective add, and what new structures or predictions emerge?
 
 ## Code structure
 

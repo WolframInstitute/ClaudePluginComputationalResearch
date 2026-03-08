@@ -1,3 +1,6 @@
+---
+argument-hint: "[ProjectName] [topic description]"
+---
 Start a new Wolfram research project.
 
 $ARGUMENTS may contain:

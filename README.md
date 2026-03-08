@@ -1,8 +1,10 @@
 # computational-research
 
 A Claude plugin for AI-assisted computational research with Wolfram Language.
-Scaffolds research projects, creates Mathematica notebooks, manages papers and
-community resources, and handles LaTeX notes.
+Takes a research topic from **any scientific domain** and explores how it connects
+to **Wolfram models** (hypergraph rewriting, multiway systems, the Wolfram Physics
+Project, etc.). Scaffolds research projects, creates Mathematica notebooks, gathers
+papers and Wolfram Community resources, and handles LaTeX notes.
 
 Read the motivation behind this plugin:
 [AI-Assisted Computational Research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html)
@@ -68,8 +70,8 @@ are needed for the full paper management workflow.
 
 ## Conventions
 
-- **Resource naming**: `Author_Year_Title.pdf` or `.nb` in `Resources/`
-- **Resource summaries**: always in `Resources1.nb` (never as separate files)
+- **Resource naming**: `Author_Year_Title.pdf` (papers) or `Author_Year_Title.nb` (Wolfram Community notebooks) in `Resources/`
+- **Resource summaries**: always in `Resources1.nb` (never as separate files); includes both arXiv papers and Wolfram Community notebooks
 - **Notes versioning**: `notes1.tex` → `notes2.tex` when it exceeds ~300 lines
 - **Article file**: `article1.tex` is your writing space — Claude doesn't touch it
 - **Writing to notes**: only when explicitly asked ("note this", "write this down")
