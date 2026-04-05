@@ -1,384 +1,191 @@
 ---
 name: computational-exploration
 description: >
-  Scaffold a new Wolfram-model research project with the standard folder structure
-  (Code/, Resources/, Article/, numbered notebooks) and pre-populated templates,
-  then perform computational exploration. Also use this skill to perform
-  computational explorations within an existing research project, adding results
-  to it. Use this skill whenever Pavel asks to start a new project, create a new
-  research project, set up a project folder, scaffold a project, begin investigating
-  a new topic, or explore something computationally. Trigger on phrases like
-  "new project on X", "let's start a project about Y", "set up folders for Z",
-  "init project", "explore X computationally", "investigate Y", or "let's look
-  into Z". Even if he just says "I want to explore [topic]" and it sounds like
-  the beginning of a new research effort or computational exploration, use this skill.
+  Scaffold a new research project with the wiki-based knowledge management
+  system and perform initial computational exploration. Use whenever the user
+  asks to start a new project, create a new research project, set up a project
+  folder, scaffold a project, begin investigating a new topic, or explore
+  something computationally. Trigger on: "new project on X", "let's start a
+  project about Y", "set up folders for Z", "init project", "explore X
+  computationally", "investigate Y", "let's look into Z".
 ---
 
-# Wolfram-Model Research Project Scaffolder
+# Research Project Scaffolder
 
-You are setting up a new research project for the user.
-Every project follows the same layout: it takes a research topic from **any scientific
-domain** — mathematics, physics, biology, chemistry, economics, computer science, or
-other fields — and explores how it connects to **Wolfram models** (hypergraph
-rewriting, multiway systems, rulial space, simple program complexity, causal
-invariance, the Wolfram Physics Project, etc.). The connection is developed through
-Wolfram Language computation and structured research notes in LaTeX.
+Set up a new research project with the wiki knowledge base, Wolfram Language
+computation, and structured LaTeX notes. The project takes a research topic
+from **any scientific domain** and explores it through Wolfram models and
+computation.
 
 ## What to ask the user
 
 Before scaffolding, you need:
 
-1. **Project name** — a CamelCase name like `SyntheticInfrageometry` or
-   `DiscreteRicciFlow`. This becomes the root folder name and the base name for
-   notebooks.
-2. **Topic description** — a sentence or two about what the project is about.
-   For example: "Studying axiomatic geometry on graphs using shortest-path metrics"
-   or "Ollivier-Ricci curvature on hypergraph rewriting systems". This goes into
-   the CLAUDE.md and the research notes abstract.
-3. **Research depth** (optional) — how deep to go. See next section.
+1. **Project name** — CamelCase like `SyntheticInfrageometry` or `DiscreteRicciFlow`.
+   Becomes the root folder name.
+2. **Topic description** — a sentence or two. E.g., "Studying axiomatic geometry
+   on graphs using shortest-path metrics".
+3. **Code directory name** (optional) — default is `Code/`, but projects may use
+   `Wolfram/`, `src/`, `Lean/`, etc.
+4. **Domain folders** (optional) — what domain-specific wiki folders to create.
+   Suggest defaults based on the topic.
+5. **Research depth** (optional) — short / standard (default) / deep.
 
-The scaffold script also fills in the **author name** and **email** for LaTeX
-templates. Infer these from the user's profile or chat context. If unknown,
-the script defaults to `Pavel H\'ajek` / `p135246@gmail.com`.
-
-If the user already provided the project name and topic in their message, don't
-ask again.
+If the user already provided these in their message, don't ask again.
 
 ## Research depth
 
-The user can request different levels of depth. Detect from their wording:
-
-| Level | Triggers | Papers | Step 7b | Topic scope |
-|-------|----------|--------|---------|-------------|
-| **Short** | "short", "quick", "brief", "just the basics" | 1 key paper | Skip | Minimal functions, brief notebook |
-| **Standard** (default) | — | 2–5 papers | Full | Thorough initial topic |
-| **Deep** | "deep", "thorough", "comprehensive" | Exhaustive search | Full + extra sources | Multiple initial topics, detailed implementations |
-
-This affects:
-- Step 7: number of papers downloaded
-- Step 7b: whether to search Wolfram Community (skip for short)
-- add-topic calls: how many functions to create, how detailed the notebook
+| Level | Triggers | Papers | Wolfram Community |
+|-------|----------|--------|-------------------|
+| **Short** | "short", "quick", "brief" | 1 key paper | Skip |
+| **Standard** (default) | — | 2–5 papers | Full search |
+| **Deep** | "deep", "thorough" | Exhaustive | Full + extra sources |
 
 ## Cowork mode vs local mode
 
-This skill runs in two environments:
+- **Local mode** (default): filesystem directly accessible.
+- **Cowork mode**: remote VM, workspace is mounted. MCP can't write to mounted
+  filesystem — use ExportString fallback for notebooks.
 
-- **Local mode** (default): Claude runs on the user's machine. The filesystem is
-  directly accessible to both scripts and MCP tools. `mcp__wolfram__create_notebook`
-  can write to any local path.
-- **Cowork mode**: Claude runs in a remote VM. The user's workspace is mounted
-  (typically at a path like `/sessions/<id>/mnt/<folder>/`). Key differences:
-  - The Wolfram MCP kernel runs in a **separate** environment and **cannot** write
-    to the mounted filesystem (you'll get `[Errno 30] Read-only file system`).
-  - The scaffold script must be told where to write files (the mounted workspace
-    path), since its default CWD is the VM session root, not the workspace.
-  - Notebook creation must use the **ExportString fallback** exclusively — generate
-    the notebook content as a string via MCP, then write it to the mounted
-    filesystem using the Write/Bash tool.
-
-**Detection heuristic**: Cowork mode is likely when:
-- The working directory contains `/sessions/` or `/mnt/` in its path, or
-- `check-env.sh` reports no local Wolfram MCP, but `mcp__wolfram__ping` succeeds
-
-When Cowork mode is detected, set `WORKSPACE_PATH` to the mounted workspace
-directory (the directory where the project folder should be created) and use it
-throughout.
-
-## Step 0: Environment check (before anything else)
-
-Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh` to verify the environment.
-
-Then, **regardless of what the script reports**, test MCP availability directly
-by calling `mcp__wolfram__ping`. This is the authoritative test — the script can
-only detect local MCP installations, but in Cowork mode the MCP is available
-remotely.
-
-Use the combined results to determine the mode:
-
-| check-env.sh MCP result | mcp__wolfram__ping | Mode |
-|-------------------------|--------------------|------|
-| Detected | pong | Local — use MCP tools directly |
-| Not detected | pong | **Cowork** — MCP works but can't write to local filesystem |
-| Not detected | fails | No MCP — use ExportString fallback or skip notebooks |
-| Detected | fails | Unusual — try ExportString fallback |
-
-- If **wolframscript is missing**: warn the user, then proceed with all non-notebook
-  steps. Skip notebook creation (steps 6 and 6b) and note at the end that notebooks
-  must be created manually once Wolfram is installed.
-- If **Wolfram MCP is unavailable** (both local detection and ping fail): notebook
-  creation will use the ExportString fallback described in step 6. Proceed normally.
-- If **both are missing**: scaffold files only; note both limitations clearly.
-- If **Cowork mode detected**: set `WORKSPACE_PATH` to the mounted workspace directory
-  and pass it to the scaffold script. Use ExportString for all notebook creation.
-
-## Folder structure to create
-
-```
-<ProjectName>/
-├── CLAUDE.md
-├── <Topic>1.nb                ← topic notebook (created by add-topic skill)
-├── Test1.nb                   ← test notebook (created by make-test skill, not at scaffold time)
-├── Code/
-│   ├── Tools.wl               ← shared general utilities
-│   ├── <Topic>.wl             ← core functions (created by add-topic)
-│   ├── <Topic>Visualization.wl  ← visualization (created by add-topic)
-│   ├── <Topic>Experiment.wl   ← experiments (created by make-experiment, not at scaffold time)
-│   └── <Topic>Test.wl         ← tests (created by make-test, not at scaffold time)
-├── Resources1.nb              ← paper summaries notebook (one section per paper)
-├── Resources/                 ← reference PDFs only (Author_Year_Title.pdf)
-└── Article/
-    ├── article1.tex           ← LaTeX scaffold for user's article (user writes here)
-    ├── notes1.tex             ← article-form working notes (Claude writes here on request)
-    └── references.bib         ← BibTeX file with header comment
-```
-
-`<Topic>` starts as `<ProjectName>` for the initial scope. New topics are added
-via `/computational-research:add-topic`.
-
-All created files use number suffixes (`<Topic>1.nb`, `Resources1.nb`, etc.).
-When the user asks for a new notebook, increment the number (`<Topic>2.nb`,
-`Resources2.nb`). Edits to an existing file keep the same number unless the user
-explicitly asks for a new one.
+**Detection**: Cowork if working directory contains `/sessions/` or `/mnt/`, or
+`check-env.sh` reports no local MCP but `mcp__wolfram__ping` succeeds.
 
 ## Step-by-step
 
-### 1. Scaffold directories and file templates (script)
+### 0. Environment check
+
+Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh` then call `mcp__wolfram__ping`.
+Determine mode (local vs. Cowork) and available tools.
+
+### 1. Scaffold directories
 
 Run the scaffold script:
 
-**Local mode:**
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-project.sh" "<ProjectName>" "<topic description>" "." "<Author Name>" "<email>"
+"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-project.sh" "<ProjectName>" "<topic>" "." "<Author>" "<email>"
 ```
 
-**Cowork mode** (pass the mounted workspace path as third argument):
-```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-project.sh" "<ProjectName>" "<topic description>" "$WORKSPACE_PATH" "<Author Name>" "<email>"
+This creates:
+```
+<ProjectName>/
+├── CLAUDE.md
+├── Code/
+│   └── Tools.wl
+├── Resources/
+├── Article/
+│   ├── article1.tex
+│   ├── notes1.tex
+│   └── references.bib
+└── Scripts/
+    └── recover_resources.sh
 ```
 
-The script `cd`s into the output directory before creating the project tree, so
-all paths resolve correctly regardless of where the shell's CWD is.
+### 2. Initialize the wiki
 
-The script creates:
-- `<ProjectName>/Code/Tools.wl` — shared general utilities
-- `<ProjectName>/CLAUDE.md` — from claude_template.md with substitutions
-- `<ProjectName>/Article/article1.tex` — LaTeX article scaffold
-- `<ProjectName>/Article/notes1.tex` — working notes file
-- `<ProjectName>/Article/references.bib` — with standard Wolfram references
-
-**Note:** The script does NOT create topic-specific code files (`<Topic>.wl`,
-`<Topic>Visualization.wl`). Those are created by the add-topic skill in step 6.
-
-If the script fails (e.g., permission issue), fall back to creating these files
-manually using the templates in `${CLAUDE_PLUGIN_ROOT}/skills/computational-exploration/assets/`.
-
-The generated CLAUDE.md uses the template from `assets/claude_template.md`:
-replace `{{PROJECT_NAME}}` with the actual project name and `{{TOPIC_DESCRIPTION}}`
-with the user's topic description. Fill in 2-3 concrete goals inferred from the
-topic. The CLAUDE.md serves as the persistent memory for the project — write it
-as if explaining the project to a colleague who will pick it up cold.
-
-### 2. article1.tex purpose
-
-The LaTeX article scaffold (`Article/article1.tex`) is the **user's writing space** — a
-minimal skeleton with just an Introduction section and a Bibliography. The user adds
-new sections as the article develops. Don't fill it with content — keep it clean.
-
-### 3. notes1.tex purpose and rules
-
-`notes1.tex` is a **collection of topic sections** that serves as working notes and
-source material for `article1.tex`. Each section covers one topic — a definition,
-a result, an observation, a conjecture, etc. Notes accumulate as a flat list of
-topic sections. Claude writes to it when explicitly asked; the user draws from it
-when composing the final article.
-
-**Usage rules for notes1.tex:**
-- **Only write when the user explicitly asks.** Triggers: "note this", "write this
-  down", "record that", "add to notes". Do not auto-append during normal work.
-- Each new topic gets its own `\section{}`. Keep sections concise and self-contained.
-- Write mathematically precise text with citations where applicable.
-- Include tentative conjectures, open questions, partial results.
-
-**Versioning rule (important):**
-When `notes1.tex` grows past ~300 lines of content (excluding the preamble), or when
-the user explicitly asks to start a fresh notes file:
-1. Add a pointer at the end of the current file: "Continued in notes2.tex"
-2. Create `notes2.tex` with a back-pointer at the top
-3. Continue appending to the new file
-
-### 4. Create references.bib
-
-Already created by the scaffold script with standard Wolfram-model references.
-Add additional BibTeX entries whenever papers are downloaded (step 7).
-
-### 5. Code files and scope convention
-
-The Code/ layout follows a topic-based scope pattern. Each topic can have up to
-four files:
-
-- **`Tools.wl`** — shared general utilities used across the whole project.
-- **`<Topic>.wl`** — core functions (created by add-topic skill).
-- **`<Topic>Visualization.wl`** — visualization functions (created by add-topic skill).
-- **`<Topic>Experiment.wl`** — experiment functions (created by make-experiment skill, on demand).
-- **`<Topic>Test.wl`** — tests using `VerificationTest` + `TestReport` (created by make-test skill, on demand).
-
-`Topic` is a CamelCase functional grouping (e.g. `RicciCurvature`,
-`HypergraphEmbedding`). The project name is used as the initial topic name.
-As the project grows, add new topics via `/computational-research:add-topic`.
-Never put visualization code in the core `.wl` file.
-
-### 6. Create the initial topic
-
-Use the **add-topic** skill (`/computational-research:add-topic`) with the project
-name as the initial topic. This creates:
-- `Code/<ProjectName>.wl` — core functions
-- `Code/<ProjectName>Visualization.wl` — visualization functions
-- `<ProjectName>1.nb` — topic notebook with sections per function and illustrated calls
-
-The add-topic skill handles code file creation, function population, and notebook
-generation via the create-notebook ExportString pipeline.
-
-### 6b. Create the resources notebook
-
-Create `Resources1.nb` in the project root using the same ExportString pipeline.
-Build a minimal markdown with just the title:
+Use the **wiki-init** skill to create the wiki structure:
 
 ```
-# Resources — <ProjectName>
+<ProjectName>/
+├── Wiki/
+│   ├── Index.md
+│   ├── Status.md
+│   ├── Log.md
+│   ├── Concepts/
+│   ├── Resources/
+│   ├── Plans/
+│   ├── Notebooks/
+│   └── <Domain>/        ← project-specific folders
 ```
 
-Run the pipeline and write the result to `<ProjectName>/Resources1.nb`.
+The wiki-init skill will:
+- Ask for (or infer) domain-specific folders
+- Create seed files
+- Append wiki section to CLAUDE.md
+- Update .gitignore with `Tour/`, `Resources/`, `Notebooks/*.nb`
 
-### 7. Download key reference papers
+### 3. Create initial code files
 
-Every project needs a literature foundation. This step is **not optional** —
-do it as part of scaffolding, not as a follow-up suggestion.
+Create the initial topic code files in the code directory (default `Code/`,
+or whatever the user chose):
 
-1. **Search for papers** using the arXiv MCP (`mcp__arxiv__search_papers`) with
-   relevant keywords and categories. Identify 2–5 key papers: the foundational /
-   seminal paper, 1–2 recent developments, and anything bridging the topic to
-   discrete/graph-theoretic settings or Wolfram models.
+- `<CodeDir>/<ProjectName>.wl` — core functions with `<ProjectName><Action>` naming
+- `<CodeDir>/<ProjectName>Visualization.wl` — visualization functions
 
-2. **Download each paper.**
+Write starter functions based on the topic. Use the Wolfram Language coding
+standards from the user profile.
 
-   - **Local mode:** Try `mcp__arxiv__download_paper` first to save the PDF directly.
-   - **Cowork mode:** The arXiv MCP cannot write to the mounted filesystem. Instead,
-     download the PDF from the VM using `curl` or `WebFetch` via the Bash tool:
-     ```bash
-     curl -L -o "$WORKSPACE_PATH/<ProjectName>/Resources/Author_Year_Title.pdf" \
-       "https://arxiv.org/pdf/<arXivID>.pdf"
-     ```
-     This writes directly to the mounted filesystem from the VM, which works.
-   - **Fallback** (if PDF download fails in either mode): use `mcp__arxiv__read_paper`
-     or `mcp__arxiv-latex-mcp__get_paper_prompt` /
-     `mcp__arxiv-latex-mcp__get_paper_section` to read the paper content. Summarize
-     it in Resources1.nb even without the PDF file.
+Present the code to the user for review (revision workflow).
 
-3. **Save with the naming convention** `Author_Year_Title.pdf` in `Resources/`:
-   first author's last name, publication year, short title (2–4 words, underscores).
-   Examples: `Ollivier_2009_RicciCurvatureMarkovChains.pdf`
+### 4. Create initial wiki articles
 
-4. **Add a summary section to Resources1.nb** using the **modify-notebook** skill:
-   export the existing notebook to Markdown, append the new paper section, and
-   re-import via the create-notebook pipeline. If the notebook is short, rebuilding
-   it entirely from scratch (title + all sections) is simpler than patching.
+For each major concept in the project, create a wiki article:
 
-   Each paper gets:
-   - Section cell: "Author Year — Short Title"
-   - Text cell: full title, authors, year, arXiv ID or DOI
-   - Text cell: 3–4 sentence abstract summary (in your own words)
-   - Text cell: key definitions
-   - Text cell: key results (one sentence each)
-   - Text cell: **"Relevance to this project"** — map the resource's concepts to the
-     project's Wolfram-model framework (most important part)
+- `Wiki/Concepts/<ConceptName>.md` — for cross-cutting concepts
+- `Wiki/<Domain>/<EntityName>.md` — for domain-specific entities
 
-   **Do NOT create separate .md summary files in Resources/.**
+Populate `Wiki/Index.md` and `Wiki/Status.md`. Log the initialization.
 
-5. **Add BibTeX entries** to `Article/references.bib` for every paper downloaded.
+### 5. Download reference papers
 
-### 7b. Search Wolfram web resources for topic connections
+Every project needs a literature foundation. This step is **not optional**.
 
-After downloading arXiv papers, search the official Wolfram web resources for community
-notebooks and conceptual grounding related to the project topic. This step is **not optional**.
+1. Search arXiv with `mcp__arxiv__search_papers` using relevant keywords
+2. Download 2–5 key papers to `Resources/`
+3. For each paper, use the **resource-add** skill pipeline:
+   - Download PDF to `Resources/Author_Year_ShortTitle.pdf`
+   - Create `Wiki/Resources/Author_Year.md` with citation, summary, and Recover section
+   - Update `Wiki/Index.md`
+4. Add BibTeX entries to `Article/references.bib`
 
-#### Pass 1 — Technical Introduction
+### 5b. Search Wolfram web resources
 
-Fetch `https://wolframphysics.org/technical-introduction/` with `WebFetch`, scan the
-table of contents, and identify sections directly related to the project topic. Summarise
-the relevant connections in a Text cell appended to `<ProjectName>1.nb` via the
-**modify-notebook** skill.
+(Skip for short depth.)
 
-#### Pass 2 — Wolfram Community title search
+#### Technical Introduction
 
-Search the community across multiple tag pages. For each URL below, fetch with `WebFetch`
-and extract all post titles from the HTML (look for `<h2>` headings and `<a>` link text):
+Fetch `https://wolframphysics.org/technical-introduction/`, identify sections
+related to the project topic, summarize connections.
 
+#### Wolfram Community
+
+Search community tag pages and keyword search:
 - `https://community.wolfram.com/content?curTag=wolfram+physics+project`
-- `https://community.wolfram.com/content?curTag=wolfram+summer+school`
-- `https://community.wolfram.com/content?curTag=<url-encoded-topic-keywords>` — build
-  this from the project's main topic keywords (e.g. for "neural computation" use
-  `neural+computation`)
+- `https://community.wolfram.com/content?curTag=<topic-keywords>`
+- `https://community.wolfram.com/search?query=<topic-keywords>`
 
-Then fetch the community keyword search:
-- `https://community.wolfram.com/search?query=<url-encoded-topic-keywords>`
+Title-match posts to project keywords. For matched posts:
+- Download `.nb` attachments to `Resources/`
+- Create wiki resource articles via resource-add
+- Record URLs for posts without downloadable notebooks
 
-**Title matching**: keep only posts whose title contains at least one keyword from the
-project topic (case-insensitive substring match). Discard unrelated posts.
+### 6. Create initial notebook
 
-#### Pass 3 — Fetch matching posts and download notebooks
+Use the **notebook-create** skill to create `<ProjectName>1.nb` with:
+- Setup section (package loads)
+- Introductory text
+- Initial computations demonstrating the core functions
+- Visualization examples
 
-For each title-matched post:
-1. Fetch the post page with `WebFetch`
-2. Look for `.nb` file attachment links in the page HTML
-3. If a `.nb` attachment is found: download it (via `Bash` curl or `WebFetch`) and save
-   to `Resources/` as `Author_Year_Title.nb`
-4. Append a summary section to `Resources1.nb` via the **modify-notebook** skill:
-   - Section cell: "Author Year — Post Title"
-   - Text cell: post URL, author, year
-   - Text cell: topic summary (2–3 sentences)
-   - Text cell: key techniques used
-   - Text cell: **"Relevance to this project"** — connection to the project's
-     Wolfram-model framework
+If using the two-layer architecture, also write `Wiki/Notebooks/<ProjectName>.md`
+as the notebook source.
 
-If no `.nb` attachment is found for a matched post, record its URL in a Text cell in
-`Resources1.nb` under a "Wolfram Community Links" section header.
+### 7. Notes and article conventions
 
-If no title matches are found across all passes, note this in `Resources1.nb` and
-proceed.
-
-### 8. Paper management convention (ongoing)
-
-Throughout the project's life, whenever new papers are added:
-- Use `/computational-research:add-resource <arXivID or search>` for ongoing resource addition
-- Always rename to `Author_Year_Title.pdf` format in `Resources/`
-- Always append a new section to `Resources1.nb` (or latest ResourcesN.nb) using the
-  **modify-notebook** skill
-- Always add BibTeX entries to `Article/references.bib`
-
-### 9. Notes management convention (ongoing)
-
-Throughout the project's life:
-- **Only write to notes when explicitly asked.** Triggers: "note this", "write this
-  down", "record that", "add to notes".
-- Append to the current `notesN.tex`. Write in article form with proper citations.
-- When notes grow past ~300 lines of content, bump the version (see step 3 above).
-- The article file (`article1.tex`) is the user's writing space — don't append
-  running notes there.
+- `Article/article1.tex` — user's writing space. Don't fill it.
+- `Article/notes1.tex` — working notes. **Only write when explicitly asked** ("note
+  this", "write this down"). Bump to `notes2.tex` at ~300 lines.
+- `Article/references.bib` — add entries whenever papers are downloaded.
 
 ## After scaffolding
 
 Tell the user:
-- The project is set up at `<path>/<ProjectName>/`
-- Briefly describe what's in each folder
-- **List the papers that were downloaded and summarised**
-- **List any Wolfram Community notebooks downloaded and relevant Technical Introduction sections found**
-- Mention they can start working in `<ProjectName>1.nb`
-- Explain the notes/article relationship: `Article/notes1.tex` is the article-form
-  working notes (say "note this" to have Claude write here); `Article/article1.tex`
-  is the final article scaffold they write themselves, drawing from notes1.tex
-- Mention available skills for ongoing work:
-  - `/computational-research:add-resource` — add papers and references
-  - `/computational-research:add-topic` — add a new topic scope
-  - `/computational-research:make-experiment` — create experiments for a topic
-  - `/computational-research:make-test` — create tests for a topic
-- Suggest next steps based on the papers and topic
+- Project location and folder overview
+- Papers downloaded and summarized
+- Wolfram Community resources found (if any)
+- Available skills for ongoing work:
+  - `resource-add` — add papers and references
+  - `notebook-create` — create/edit notebooks
+  - `wiki-plan` — create structured plans
+  - `wiki-update` — update wiki after changes
+  - `tour-start` — interactive project walkthrough
+- Suggest next steps based on the topic and papers

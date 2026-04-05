@@ -1,12 +1,9 @@
----
-argument-hint: "[ProjectName] [topic description]"
----
-Start a new Wolfram research project.
+Scaffold a new research project using the `computational-exploration` skill.
 
-$ARGUMENTS may contain:
-- Just a project name (CamelCase): treat as the name, ask for the topic
-- Just a topic description: infer a CamelCase name and confirm with the user
-- Both: use them directly
+Ask the user for:
+1. Project name (CamelCase)
+2. Topic description
+3. Research depth (short/standard/deep) — default: standard
 
-Follow the `computational-exploration` skill instructions in full, starting from the
-environment check (Step 0). Do not skip any steps.
+Then run the full scaffolding pipeline: directories, wiki init, initial code,
+papers, and notebooks.

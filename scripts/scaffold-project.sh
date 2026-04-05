@@ -37,7 +37,8 @@ cd "$OUTPUT_DIR"
 mkdir -p "$PROJECT_NAME/Code"
 mkdir -p "$PROJECT_NAME/Resources"
 mkdir -p "$PROJECT_NAME/Article"
-echo "Created directories: $PROJECT_NAME/{Code,Resources,Article}"
+mkdir -p "$PROJECT_NAME/Scripts"
+echo "Created directories: $PROJECT_NAME/{Code,Resources,Article,Scripts}"
 
 # ── 2. Tools.wl ───────────────────────────────────────────────────────────
 
@@ -100,7 +101,15 @@ cat > "$PROJECT_NAME/Article/references.bib" << EOF
 EOF
 echo "Created: $PROJECT_NAME/Article/references.bib"
 
-# ── 7. Summary ────────────────────────────────────────────────────────────
+# ── 7. Scripts ────────────────────────────────────────────────────────────
+
+cp "$SCRIPT_DIR/recover_resources.sh" "$PROJECT_NAME/Scripts/recover_resources.sh"
+cp "$SCRIPT_DIR/generate_notebooks.wls" "$PROJECT_NAME/Scripts/generate_notebooks.wls"
+cp "$SCRIPT_DIR/publish_notebooks.wls" "$PROJECT_NAME/Scripts/publish_notebooks.wls"
+chmod +x "$PROJECT_NAME/Scripts/recover_resources.sh"
+echo "Created: $PROJECT_NAME/Scripts/{recover_resources.sh,generate_notebooks.wls,publish_notebooks.wls}"
+
+# ── 8. Summary ────────────────────────────────────────────────────────────
 
 echo ""
 echo "=== Project scaffolded: $PROJECT_NAME/ ==="
@@ -112,6 +121,8 @@ echo "  Article/"
 echo "    article1.tex        — LaTeX article scaffold (your writing space)"
 echo "    notes1.tex          — article-form working notes (Claude writes here when asked)"
 echo "    references.bib      — BibTeX with Wolfram standard references"
+echo "  Scripts/"
+echo "    recover_resources.sh — rebuild Resources/ from wiki ## Recover sections"
 echo "  CLAUDE.md             — project context for future Claude sessions"
 echo ""
 echo "Next: Claude will run add-topic for the initial scope, then create Resources1.nb."

@@ -1,10 +1,12 @@
 # computational-research
 
-A Claude plugin for AI-assisted computational research with Wolfram Language.
-Takes a research topic from **any scientific domain** and explores how it connects
-to **Wolfram models** (hypergraph rewriting, multiway systems, the Wolfram Physics
-Project, etc.). Scaffolds research projects, creates Mathematica notebooks, gathers
-papers and Wolfram Community resources, and handles LaTeX notes.
+A Claude plugin for AI-assisted computational research. Provides a plain-markdown
+wiki (knowledge base), a human revision workflow for code and deliverables, a
+guided tour system, resource management with recovery, notebook generation via
+Wolfram MCP, and activity logging.
+
+Works with any research domain — mathematics, physics, computer science, etc.
+Domain-agnostic workflow adapts to the project.
 
 Read the motivation behind this plugin:
 [AI-Assisted Computational Research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html)
@@ -36,9 +38,6 @@ Install.
 
 ## MCP Servers
 
-This plugin relies on four MCP servers. They must be installed and configured
-manually.
-
 | Server | Purpose | Source |
 |--------|---------|--------|
 | **Wolfram** (official) | Wolfram Language evaluation | Paclet `Wolfram/MCPServer` (Mathematica 14.2+) |
@@ -46,42 +45,67 @@ manually.
 | **arxiv** | Search and download arXiv papers | [blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server) |
 | **arxiv-latex-mcp** | Read LaTeX source of arXiv papers | [takashiishida/arxiv-latex-mcp](https://github.com/takashiishida/arxiv-latex-mcp) |
 
-You need **at least one** Wolfram MCP. The unofficial one is required for notebook
-creation/editing; the official one suffices for evaluation only. Both arXiv servers
-are needed for the full paper management workflow.
+You need **at least one** Wolfram MCP. Both arXiv servers are needed for the full
+paper management workflow.
 
 ## Skills
 
 | Skill | Description |
 |-------|-------------|
-| **computational-exploration** | Scaffold a new research project and perform computational exploration, or explore within an existing project |
-| **create-notebook** | Create `.nb` files from structured content via the Wolfram MCP |
-| **modify-notebook** | Edit an existing `.nb` file by exporting to Markdown, making changes, and re-importing |
-| **list-topics** | List all topics in a project with descriptions and source references |
+| **wiki-init** | Initialize a plain-markdown knowledge base (Wiki/) in any repo |
+| **wiki-update** | Update wiki articles, index, status, and log after changes |
+| **wiki-health** | Audit the wiki for stale articles, broken links, and gaps |
+| **wiki-plan** | Create or update structured plans with history tracking |
+| **revise** | Human revision protocol for code, functionality, and deliverables |
+| **resource-add** | Add papers, repos, notebooks, or other resources with recovery info |
+| **notebook-create** | Create or modify Wolfram notebooks via Markdown→MCP pipeline |
+| **tour-start** | Interactive guided tour with narrative and runnable code per section |
+| **computational-exploration** | Scaffold a new research project with wiki, code, papers, and notebooks |
 
 ## Slash Commands
 
 | Command | Description |
 |---------|-------------|
-| `/computational-research:check-env` | Check Wolfram kernel and MCP server availability |
+| `/computational-research:check-env` | Check Wolfram kernel and MCP availability |
 | `/computational-research:new-project` | Scaffold a new research project |
-| `/computational-research:add-resource` | Add a paper or resource to the current project |
-| `/computational-research:load-project` | Summarize project status and suggest next steps |
+| `/computational-research:add-resource` | Add a paper or resource to the wiki |
+| `/computational-research:load-project` | Summarize project status from the wiki |
 
-## Conventions
+## Design Principles
 
-- **Resource naming**: `Author_Year_Title.pdf` (papers) or `Author_Year_Title.nb` (Wolfram Community notebooks) in `Resources/`
-- **Resource summaries**: always in `Resources1.nb` (never as separate files); includes both arXiv papers and Wolfram Community notebooks
-- **Notes versioning**: `notes1.tex` → `notes2.tex` when it exceeds ~300 lines
-- **Article file**: `article1.tex` is your writing space — Claude doesn't touch it
-- **Writing to notes**: only when explicitly asked ("note this", "write this down")
+1. **Plain markdown only.** No databases, no embeddings. Works on GitHub, in
+   Obsidian, in any text editor.
+2. **LLM-navigable.** Index.md is the entry point. Folder structure is the taxonomy.
+3. **Human-readable.** Encyclopedia-style articles, not raw dumps.
+4. **Revision for code, not prose.** Code and plans get human review. Wiki articles
+   are documentation maintained automatically.
+5. **Resources are recoverable.** Wiki/Resources/ is the source of truth (tracked).
+   Resources/ holds ephemeral files (gitignored). `Scripts/recover_resources.sh`
+   rebuilds from `## Recover` sections.
+6. **On-demand local state.** Tour/ and Resources/ are created only when needed,
+   gitignored. Wiki/ is tracked.
+7. **Domain-agnostic.** Wiki subfolder names adapt to the project. The workflow
+   (index, status, log, plans, resources, tour) is universal.
 
-## Future Extensions
+## Wiki Structure
 
-- **notes-to-article** — seamlessly move note sections into the article at a given place
-- **setup-experiment** — scaffold a computational experiment notebook
-- Auto-install MCP servers via slash command
-- Move toward more standard plugin format with better integration
+The wiki is plain markdown — fully navigable on GitHub, in Obsidian, or any
+text editor. `Wiki/Index.md` is the entry point.
+
+```
+Wiki/
+  Index.md          master index (start here)
+  Status.md         current project state
+  Log.md            reverse-chronological activity log
+  Concepts/         cross-cutting concepts
+  Resources/        papers, repos, tools (summaries with recovery info)
+  Plans/            roadmaps, task breakdowns
+  Notebooks/        markdown sources for .nb files
+  <Domain>/         project-specific folders
+```
+
+All cross-references use standard markdown relative links, so every link is
+clickable on GitHub.
 
 ## License
 

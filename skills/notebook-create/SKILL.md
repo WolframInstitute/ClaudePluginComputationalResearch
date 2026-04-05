@@ -1,65 +1,120 @@
 ---
-name: create-notebook
+name: notebook-create
 description: >
-  Create Wolfram Notebooks (.nb) from structured content using the Wolfram MCP.
-  Use this skill whenever the user asks to create a notebook, generate a .nb file,
-  make a Wolfram/Mathematica notebook, or produce notebook-formatted output.
-  Also trigger when the user says things like "put this in a notebook",
-  "notebook about X", "create a .nb for Y", "make me a notebook with...",
-  or any request where the natural deliverable is a Wolfram Notebook file.
-  Even if the user just says "notebook" casually, this skill likely applies.
-  Do NOT use this skill for reading or editing existing .nb files — only for creation.
+  Create or modify Wolfram Notebooks (.nb) from structured Markdown content
+  using the Wolfram MCP. This is the unified notebook skill — use it for
+  creating new notebooks, editing existing ones, or converting Wiki/Notebooks/
+  markdown sources into .nb files. Triggers on: "create notebook", "make a
+  notebook", "notebook about X", "edit notebook", "update notebook",
+  "put this in a notebook", "generate .nb". Also used by other skills
+  (computational-exploration, tour-start) when they produce notebooks.
 ---
 
 ## Hard Rules
 
 - **NEVER** read a `.nb` file with the `Read` tool or load its raw content into the
-  context window. To work with an existing notebook, use the `modify-notebook` skill,
-  which exports to Markdown first.
+  context window. To work with an existing notebook, export to Markdown first
+  via `ExportString[Import[path], "Markdown"]` in the Wolfram MCP.
 - **NEVER** use `Export[path, ...]` in MCP code — always `ExportString[...]` and write
   the result with the `Write` tool.
 
-# Wolfram Notebook Creator
+# Wolfram Notebook Pipeline
 
 **All skills that create or modify `.nb` files must use this skill's pipeline and
 conventions** — including math formatting, backtick escaping, and post-processing.
-This applies to add-topic, make-experiment, make-test, and computational-exploration.
 
-This skill creates Wolfram Notebooks (.nb) by converting carefully structured Markdown
-into notebook expressions via the Wolfram MCP. The core technique is:
+The core technique:
 
 ```
 ExportString[ImportString[markdownString, {"Markdown", "Notebook"}], "NB"]
 ```
 
-No temporary files are created on any filesystem. The markdown lives as a string in the
-Wolfram kernel, gets imported as a Notebook expression, post-processed, then serialized
-back to a string via `ExportString`. You then write that string to the target `.nb` file
-using the local `Write` tool.
+No temporary files are created. The markdown lives as a string in the Wolfram kernel,
+gets imported as a Notebook expression, post-processed, then serialized back to a
+string via `ExportString`. You then write that string to the target `.nb` file using
+the local `Write` tool.
+
+## Two-layer architecture
+
+Notebook sources are Markdown files in `Wiki/Notebooks/`. They get converted to `.nb`
+files in `Notebooks/` (gitignored).
+
+```
+Wiki/Notebooks/Name.md   ← tracked in git, source of truth
+Notebooks/Name.nb        ← gitignored, generated from source
+```
+
+### When to use the source layer
+
+- Creating a notebook intended to persist across sessions → write `Wiki/Notebooks/Name.md`
+  as the source, then generate `.nb`
+- Quick one-off exploration → generate `.nb` directly, skip the wiki source
+
+### Source format (Wiki/Notebooks/Name.md)
+
+A structured Markdown file following the cell mapping rules below. Example:
+
+```markdown
+# Title
+
+## Setup
+<!-- Package loads, initialization — becomes InitializationCells -->
+
+## Topic A
+<!-- Narrative text and code blocks -->
+
+## Topic B
+<!-- More narrative and code -->
+```
+
+Use fenced code blocks tagged `wolfram` for evaluatable Input cells. Plain text
+becomes Text cells.
+
+### Generating .nb from source
+
+Read `Wiki/Notebooks/Name.md`, pass its content through the Wolfram MCP pipeline
+(below), write the result to `Notebooks/Name.nb`.
+
+Alternatively, run `Scripts/generate_notebooks.wls` to batch-convert
+all wiki notebook sources:
+
+```bash
+wolframscript -file Scripts/generate_notebooks.wls
+```
+
+To also publish to Wolfram Cloud:
+
+```bash
+wolframscript -file Scripts/publish_notebooks.wls
+```
+
+### Registering a notebook
+
+After creating a notebook with a wiki source:
+
+1. Add entry to `Wiki/Index.md` under Notebooks
+2. Append to `Wiki/Log.md`
 
 ## Which MCP tool to use
 
 For the markdown→notebook pipeline, use tools in this order:
 
 1. **Official Wolfram MCP** — `mcp__Wolfram__WolframLanguageEvaluator` (capital-W)
-   The canonical tool for all notebook creation. Always use this when available.
+   Canonical tool. Always use this when available.
 
 2. **Unofficial Wolfram MCP** — `mcp__wolfram__evaluate` (lowercase)
-   Fallback only — use when the official MCP is unavailable or returns an error.
-   Same Wolfram Language code works with both.
+   Fallback only.
 
 3. **Last resort** — If neither MCP is available, create a minimal plain-text `.nb`
-   manually using the `Write` tool with raw NB format. Warn the user that cell styles
-   won't render correctly until Mathematica opens and evaluates the file.
+   manually using the `Write` tool with raw NB format. Warn the user.
 
 To check availability: call `mcp__wolfram__ping` (unofficial) or evaluate `1+1`
-with the official MCP before building the full notebook.
+with the official MCP.
 
 ## Backtick escaping — Critical
 
-The Wolfram MCP interprets raw backtick characters (`` ` ``) as Wolfram context marks.
-This means triple-backtick fences (`` ``` ``) in markdown strings get corrupted if
-written as literal characters.
+The Wolfram MCP interprets raw backtick characters as Wolfram context marks.
+Triple-backtick fences in markdown strings get corrupted if written as literal characters.
 
 **Always construct backticks via `FromCharacterCode`:**
 
@@ -86,32 +141,46 @@ Input cells.
 ## Why ExportString instead of Export
 
 The Wolfram MCP kernel runs in a separate process with its own filesystem. `Export[...]`
-writes to the kernel's filesystem, which is **not** the local filesystem where the
-user's files live. Use `ExportString` to get the `.nb` content as a string, then use
-the `Write` tool to save it locally.
+writes to the kernel's filesystem, which is **not** the local filesystem. Use
+`ExportString` to get the `.nb` content as a string, then use the `Write` tool to
+save locally.
 
 ## Pipeline
+
+### Creating a new notebook
 
 1. **Compose** well-structured Markdown following the mapping rules below
 2. **Evaluate** via the Wolfram MCP: build string → `ImportString` → post-process → `ExportString`
 3. **Write** the returned string to the target `.nb` file using the `Write` tool
 4. **Verify** by calling `mcp__wolfram__list_cells` on the written file to confirm cell count
 
+### Modifying an existing notebook
+
+1. **Export** → `ExportString[Import["/path/to/file.nb"], "Markdown"]` via Wolfram MCP
+   (alternatively: `mcp__wolfram__export_notebook`)
+2. **Edit** the Markdown string (find/replace, append, restructure)
+3. **Re-import** through the full pipeline: `ImportString` → post-process → `ExportString`
+4. **Write** back to the original path (or a new file if the user wants to keep the original)
+5. **Verify** cell count
+
+**Short notebooks** (< ~30 cells): rebuild entirely from Markdown.
+**Long notebooks**: export → patch the relevant section → re-import.
+
+**Appending to a notebook**: export → append new Markdown sections at the end → re-import the full combined string.
+
+Do **not** manipulate raw `.nb` cell lists by hand — always go through the Markdown round-trip.
+
 ## Claude Desktop / VM mode
 
-When Claude runs inside a VM (Claude Desktop Projects or any sandboxed environment):
+When running inside a VM (Claude Desktop Projects or sandboxed environment):
 
-- **Before any file work**, confirm that a shared folder exists and is accessible.
-  Ask the user for its path if not known. All files must live inside this folder —
-  never write to temp paths that won't survive the session.
-- The `Write` tool operates on the mounted filesystem, so the `ExportString` + `Write`
-  pipeline works correctly (this is already the canonical path — no special case needed).
-- `mcp__wolfram__list_cells` verification may fail if the MCP kernel cannot see the
-  mounted path. Check file size as a sanity test instead.
+- Confirm that a shared folder exists and is accessible
+- The `ExportString` + `Write` pipeline works on mounted filesystems
+- `mcp__wolfram__list_cells` verification may fail — check file size instead
 
 ## Named templates
 
-When the user doesn't specify a structure, ask which template fits best (or infer from context):
+When the user doesn't specify a structure, infer from context or ask:
 
 ### `research` template
 ```
@@ -176,21 +245,14 @@ When the user doesn't specify a structure, ask which template fits best (or infe
 
 ### Math (LaTeX)
 
-`ImportString[..., {"Markdown", "Notebook"}]` supports LaTeX math:
-
 | Markdown | Result |
 |----------|--------|
-| `$...$` | Inline math — rendered as `InlineMath` within TextData |
-| `$$...$$` | Display math — rendered as a `DisplayFormula` cell |
+| `$...$` | Inline math — `InlineMath` within TextData |
+| `$$...$$` | Display math — `DisplayFormula` cell |
 
-**Use math liberally in notebooks.** Definitions, theorems, formulas, and
-variable references should use LaTeX notation:
+**Use math liberally.** Definitions, theorems, formulas, variable references → LaTeX.
 
-- Inline: `The Ricci curvature $\kappa(x,y)$ on edge $(x,y)$`
-- Display: `$$\kappa(x,y) = 1 - \frac{W_1(\mu_x, \mu_y)}{d(x,y)}$$`
-
-**Escaping in Wolfram strings:** Since `\` is the Wolfram escape character,
-double all backslashes in LaTeX math:
+**Escaping in Wolfram strings:** double all backslashes in LaTeX math:
 
 ```wolfram
 md = "The curvature $\\kappa(x,y)$ is defined as\n\n$$\\kappa(x,y) = 1 - \\frac{W_1(\\mu_x, \\mu_y)}{d(x,y)}$$\n\n";
@@ -201,15 +263,10 @@ Common LaTeX commands that work: `\frac`, `\sum`, `\int`, `\partial`,
 `\leq`, `\geq`, `\neq`, `\infty`, `\ldots`, `\cdots`, `\text`.
 
 **Wolfram notation vs LaTeX in text cells:**
-- **Simple symbols** (Greek letters, relations, arrows): Wolfram `\[Alpha]`,
-  `\[Element]`, `\[RightArrow]`, etc. work — they become Unicode characters
-  (α, ∈, →) in the text cell. Use these for short inline symbols.
-- **Structural math** (fractions, subscripts, superscripts): use LaTeX
-  `$\frac{a}{b}$`, `$x_i$`, `$x^2$` — Wolfram box constructors like
-  `\[Subscript]` do NOT work in markdown text.
-- **Blackboard bold** (`ℝ`, `ℤ`, `ℕ`): use LaTeX `$\mathbb{R}$` — Wolfram's
-  `\[DoubleStruckCapitalR]` maps to a private-use Unicode codepoint that may
-  not render correctly.
+- **Simple symbols** (Greek, relations, arrows): Wolfram `\[Alpha]`, `\[Element]`
+  etc. work — they become Unicode.
+- **Structural math** (fractions, sub/superscripts): use LaTeX `$\frac{a}{b}$`, `$x_i$`.
+- **Blackboard bold**: use LaTeX `$\mathbb{R}$`.
 
 ### Code blocks
 
@@ -217,8 +274,6 @@ Common LaTeX commands that work: `\frac`, `\sum`, `\int`, `\partial`,
 |----------|-----------|---------|
 | `wolfram` | `"Input"` | Evaluatable Wolfram code |
 | (no tag) | `"Program"` → post-processed to `"CodeText"` | Display-only code |
-
-Use `wolfram` fenced code blocks for evaluatable Wolfram Language input cells.
 
 ### Tables
 
@@ -236,8 +291,7 @@ cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts]
 
 ### 2. Initialization cells
 
-Mark Input cells under a "Setup"/"Initialization"/"Dependencies" heading as
-initialization cells (auto-evaluate on notebook open):
+Mark Input cells under "Setup"/"Initialization"/"Dependencies"/"Preamble" headings:
 
 ```wolfram
 markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
@@ -256,12 +310,10 @@ markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
 ];
 ```
 
-Note: uses `StringMatchQ` with wildcards (not `StringContainsQ`) to avoid false
-positives. For example, `"Indefinite Integrals"` must NOT trigger as an init section.
+Uses `StringMatchQ` with wildcards to avoid false positives (e.g., "Indefinite Integrals"
+must NOT trigger).
 
 ## The complete Wolfram MCP call
-
-Build the full pipeline as a single MCP evaluator call:
 
 ```wolfram
 Module[{md, nb, cells, markInitCells, tick, fence},
@@ -304,33 +356,25 @@ Module[{md, nb, cells, markInitCells, tick, fence},
 
 ## After the MCP call
 
-1. Take the string returned by the MCP and write it to the target file:
-   ```
-   Write tool → target_path/NotebookName.nb → content from ExportString result
-   ```
-
-2. **Verify** by calling `mcp__wolfram__list_cells` on the written file. Compare
-   the returned cell count to the number of sections and code blocks you defined.
-   If there is a large discrepancy, diagnose with
-   `ImportString[md, {"Markdown", "Notebook"}] // InputForm` to see what parsed.
+1. Write the returned string to the target file via the `Write` tool
+2. **Verify** by calling `mcp__wolfram__list_cells` on the written file
 
 ## String construction rules
 
-Always build the markdown with `StringJoin` (or `<>`) using `fence` and `tick` variables.
-Never write literal backtick characters in the string.
+Always build markdown with `StringJoin` using `fence` and `tick` variables.
+Never write literal backtick characters.
 
-**Escaping rules** (markdown lives inside a Wolfram Language string):
+**Escaping rules** (markdown inside a Wolfram Language string):
 
 - `\` → `\\`
 - `"` → `\"`
 - Newlines: `\n`
 - Backticks: NEVER literal — always use `tick` / `fence` variables
-- Wolfram context marks: use `tick` variable, e.g. `"Needs[\"Package" <> tick <> "\"]"`
+- Wolfram context marks: use `tick` variable
 
 ## Long notebook pattern
 
-For notebooks with more than ~30 cells, build the markdown in per-section chunks to
-avoid string length issues in the MCP:
+For notebooks with > ~30 cells, build per-section chunks:
 
 ```wolfram
 section1 = StringJoin["## Section 1\n\n", "Text.\n\n", fence, "wolfram\n...\n", fence, "\n\n"];
@@ -338,19 +382,21 @@ section2 = StringJoin["## Section 2\n\n", "Text.\n\n", fence, "wolfram\n...\n", 
 md = StringJoin["# Title\n\n", section1, section2];
 ```
 
-Build each section as a separate variable first, then join them. This also makes it
-easier to debug which section is causing a parse issue.
-
 ## Content best practices
 
 - One `# Title` at the top — only once
 - `## Setup` for package loads and configuration (becomes initialization cells)
-- One logical operation per `wolfram` code block (each becomes a separate Input cell)
-- Narrative Text paragraphs between code blocks to explain what's happening
+- One logical operation per `wolfram` code block
+- Narrative Text paragraphs between code blocks
 - Bullet lists for enumerated points
 - Tables for structured comparisons
 - Untagged fences for pseudocode or expected output (become CodeText)
-- Bold (`**term**`) for key terms in explanations
-- **Inline math** (`$...$`) for variables, symbols, and short formulas in text
-- **Display math** (`$$...$$`) for definitions, theorems, and important equations
-- Keep code blocks focused and well-commented
+- Bold for key terms
+- Inline math for variables and short formulas
+- Display math for definitions and important equations
+
+## Naming conventions
+
+- Single-topic notebooks: `TopicName.md` / `TopicName.nb`
+- Paper analysis: `Author_Year.md`
+- Chains/multi-topic: descriptive name (`UniversalityGraph.md`)
