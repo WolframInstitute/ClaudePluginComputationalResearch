@@ -7,7 +7,7 @@ description: >
   markdown sources into .nb files. Triggers on: "create notebook", "make a
   notebook", "notebook about X", "edit notebook", "update notebook",
   "put this in a notebook", "generate .nb". Also used by other skills
-  (computational-exploration, tour-start) when they produce notebooks.
+  (project-init, tour-start) when they produce notebooks.
 ---
 
 ## Hard Rules
@@ -97,19 +97,23 @@ After creating a notebook with a wiki source:
 
 ## Which MCP tool to use
 
-For the markdown→notebook pipeline, use tools in this order:
+The **Markdown→notebook pipeline** is the preferred way to create and modify
+notebooks.
 
 1. **Official Wolfram MCP** — `mcp__Wolfram__WolframLanguageEvaluator` (capital-W)
-   Canonical tool. Always use this when available.
+   Primary tool. Use for all evaluation, ImportString/ExportString pipeline,
+   and notebook generation.
 
 2. **Unofficial Wolfram MCP** — `mcp__wolfram__evaluate` (lowercase)
-   Fallback only.
+   Fallback for the Markdown pipeline when the official MCP is not available.
+   When the unofficial MCP **is** available alongside the official one, prefer
+   its **LSP functionality** (hover_info, find_definition, find_references,
+   get_diagnostics, document_symbols) over its notebook-manipulation tools.
 
-3. **Last resort** — If neither MCP is available, create a minimal plain-text `.nb`
-   manually using the `Write` tool with raw NB format. Warn the user.
+3. **Last resort** — If neither MCP is available, create a minimal plain-text
+   `.nb` manually using the `Write` tool with raw NB format. Warn the user.
 
-To check availability: call `mcp__wolfram__ping` (unofficial) or evaluate `1+1`
-with the official MCP.
+To check availability: evaluate `1+1` with the official MCP.
 
 ## Backtick escaping — Critical
 
@@ -152,12 +156,12 @@ save locally.
 1. **Compose** well-structured Markdown following the mapping rules below
 2. **Evaluate** via the Wolfram MCP: build string → `ImportString` → post-process → `ExportString`
 3. **Write** the returned string to the target `.nb` file using the `Write` tool
-4. **Verify** by calling `mcp__wolfram__list_cells` on the written file to confirm cell count
+4. **Verify** by checking file size or evaluating
+   `Length[First[Import["/path/to/file.nb"]]]` via the official MCP
 
 ### Modifying an existing notebook
 
-1. **Export** → `ExportString[Import["/path/to/file.nb"], "Markdown"]` via Wolfram MCP
-   (alternatively: `mcp__wolfram__export_notebook`)
+1. **Export** → `ExportString[Import["/path/to/file.nb"], "Markdown"]` via the official Wolfram MCP
 2. **Edit** the Markdown string (find/replace, append, restructure)
 3. **Re-import** through the full pipeline: `ImportString` → post-process → `ExportString`
 4. **Write** back to the original path (or a new file if the user wants to keep the original)
@@ -176,7 +180,7 @@ When running inside a VM (Claude Desktop Projects or sandboxed environment):
 
 - Confirm that a shared folder exists and is accessible
 - The `ExportString` + `Write` pipeline works on mounted filesystems
-- `mcp__wolfram__list_cells` verification may fail — check file size instead
+- Cell count verification via `Import` may fail — check file size instead
 
 ## Named templates
 
@@ -357,7 +361,8 @@ Module[{md, nb, cells, markInitCells, tick, fence},
 ## After the MCP call
 
 1. Write the returned string to the target file via the `Write` tool
-2. **Verify** by calling `mcp__wolfram__list_cells` on the written file
+2. **Verify** by checking file size or evaluating
+   `Length[First[Import["/path/to/file.nb"]]]` via the official MCP
 
 ## String construction rules
 

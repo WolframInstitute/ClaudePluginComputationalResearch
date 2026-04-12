@@ -1,11 +1,11 @@
 {
   "name": "computational-research",
-  "version": "2.0.0",
-  "description": "AI-assisted computational research with a wiki knowledge base, human revision workflow, guided tours, resource management, and Wolfram notebook generation.",
+  "version": "3.0.0",
+  "description": "AI-assisted computational research with wiki knowledge base, LaTeX paper scaffolding, Wolfram paclet development and publishing, notebook generation, guided tours, Wolfram ecosystem search, and revision workflow.",
 "author": {
     "name": "Pavel Hajek",
     "email": "p135246@gmail.com"
   },
   "license": "MIT",
-  "keywords": ["wolfram", "mathematica", "research", "notebook", "wiki", "knowledge-base", "tour"]
+  "keywords": ["wolfram", "mathematica", "research", "notebook", "wiki", "knowledge-base", "tour", "paclet"]
 }

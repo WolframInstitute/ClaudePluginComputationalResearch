@@ -1,9 +1,9 @@
-Scaffold a new research project using the `computational-exploration` skill.
+Scaffold a new project using the `project-init` skill.
 
 Ask the user for:
-1. Project name (CamelCase)
-2. Topic description
-3. Research depth (short/standard/deep) — default: standard
+1. Project type: **research** (default), **paclet-dev**, or **paclet**
+2. Project name (CamelCase)
+3. Topic description
+4. Type-specific options (paclet names, org, research depth, etc.)
 
-Then run the full scaffolding pipeline: directories, wiki init, initial code,
-papers, and notebooks.
+Then run the full scaffolding pipeline for the chosen type.

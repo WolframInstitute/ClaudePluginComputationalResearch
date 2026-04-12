@@ -6,7 +6,7 @@ description: >
   with a Recover section for reproducibility, and updates the index.
   Use when the user says "add this paper", "save this resource", "note
   this repo", or when encountering a new reference during work. Also
-  use during computational-exploration to register discovered papers
+  use during project-init to register discovered papers
   and Wolfram Community resources.
 ---
 
@@ -137,10 +137,14 @@ The recovery script parses these to rebuild `Resources/`.
 
 For papers specifically:
 
-1. Use arXiv MCP tools to get abstract and sections if available
-2. Read the PDF if downloaded (via MCP PDF reader or similar)
+1. **Prefer LaTeX source** — use `mcp__arxiv-latex-mcp` to read sections,
+   extract equations, and definitions directly from LaTeX. This is critical
+   for accurate Wolfram implementations of formulas.
+2. Fall back to `mcp__arxiv__read_paper` or PDF reading if LaTeX source
+   is unavailable.
 3. Write a substantive summary — not just the abstract, but key results,
-   theorems, definitions that matter for the project
+   theorems, definitions that matter for the project. Include important
+   equations in LaTeX form.
 4. Note specific connections to the current work in "Use in this project"
 
 ## Batch resource addition

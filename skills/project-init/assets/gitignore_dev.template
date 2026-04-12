@@ -1,0 +1,8 @@
+Paper/
+Resources/
+Notebooks/
+Tour/
+.claude/settings.local.json
+.DS_Store
+*.mx
+*.nb.bak

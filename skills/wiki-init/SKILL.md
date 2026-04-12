@@ -40,7 +40,7 @@ repo content:
 
 Also ask what the **code directory** should be called. Default is `Code/`, but
 some projects use `Wolfram/`, `src/`, `Lean/`, etc. This affects where the
-computational-exploration skill creates code files.
+project-init skill creates code files.
 
 If the user doesn't care, pick sensible defaults based on the repo.
 

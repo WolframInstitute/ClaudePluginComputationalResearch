@@ -1,0 +1,88 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{macros}
+
+% ── Fonts and math (amssymb before newpxmath to avoid \Bbbk conflict) ──
+\RequirePackage{newpxtext}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{amsthm,amsfonts,amsmath,amssymb}
+\RequirePackage{newpxmath}
+\RequirePackage{microtype}
+\RequirePackage{mathtools}
+\RequirePackage{mathrsfs}
+
+% ── Graphics and TikZ ──
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{tikz-cd}
+\RequirePackage{subcaption}
+\usetikzlibrary{calc,arrows.meta,decorations.markings,positioning}
+
+% ── Tables ──
+\RequirePackage{booktabs}
+\RequirePackage{array}
+
+% ── Colors ──
+\RequirePackage{xcolor}
+
+% ── Hyperlinks ──
+\RequirePackage[
+  colorlinks=true,
+  linkcolor=blue!70!black,
+  citecolor=red!70!black,
+  urlcolor=magenta!80!black
+]{hyperref}
+
+% ── Smart references (after hyperref) ──
+\RequirePackage[nameinlink,capitalize]{cleveref}
+
+% ── Bibliography ──
+\RequirePackage[
+  backend=biber,
+  style=alphabetic,
+  sorting=nyt,
+  maxbibnames=99,
+  doi=true,
+  url=true,
+  eprint=true
+]{biblatex}
+\addbibresource{references.bib}
+
+% ── Layout ──
+\RequirePackage{enumitem}
+\setlist{leftmargin=5.5mm}
+
+% ── Theorem environments ──
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{construction}[theorem]{Construction}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{question}[theorem]{Question}
+\newtheorem{observation}[theorem]{Observation}
+
+% ── Operators ──
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Hom}{Hom}
+
+% ── Shorthand ──
+\newcommand{\GG}{\mathcal{G}}
+\newcommand{\VV}{\mathcal{V}}
+\newcommand{\EE}{\mathcal{E}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\FF}{\mathbb{F}}
