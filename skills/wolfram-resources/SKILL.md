@@ -44,7 +44,7 @@ Returns JSON array of `{name, url, type}` where type is "symbol", "guide",
 or "tutorial". All keywords must match (AND search) for symbol names. Guide
 and tutorial results come from a web search of the documentation site.
 
-**Also try:** `mcp__Wolfram__WolframContext` with topic keywords for
+**Also try:** `mcp__Wolfram__WolframLanguageContext` with topic keywords for
 documentation context that includes usage patterns.
 
 **Output:** Report the function list to the user. If Wiki/ exists, create

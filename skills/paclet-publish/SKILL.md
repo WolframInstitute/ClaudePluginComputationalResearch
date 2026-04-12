@@ -25,16 +25,16 @@ Before publishing, verify:
 1. **Version bump** — check `PacletInfo.wl` version. If this is an update,
    the version should be higher than the last published version. Ask the user
    if they want to bump it.
-2. **Tests pass** — if test files exist (`Tests/*.wlt`), run them first:
-   ```bash
-   wolframscript -f <PacletName>/run_tests.wls
-   ```
-   or for dev repos:
-   ```bash
-   wolframscript -f Scripts/build_paclet.wls "<PacletName>"
-   ```
-3. **No uncommitted changes** — warn if there are uncommitted changes in the
+2. **Lint code** — if `mcp__Wolfram__CodeInspector` is available, run it on
+   each kernel file. Otherwise skip.
+3. **Tests pass** — if test files exist (`Tests/*.wlt`), run them:
+   - Preferred: `mcp__Wolfram__TestReport` (if available via MCP)
+   - Fallback: `wolframscript -f <PacletName>/run_tests.wls`
+4. **No uncommitted changes** — warn if there are uncommitted changes in the
    paclet's kernel files.
+5. **Generate documentation** — if `mcp__Wolfram__CreateSymbolDoc` is
+   available, offer to generate or update documentation notebooks for
+   exported symbols before publishing.
 
 ## Step-by-step
 

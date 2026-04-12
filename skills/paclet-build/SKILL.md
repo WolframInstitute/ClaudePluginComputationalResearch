@@ -57,6 +57,18 @@ After building, optionally verify the paclet loads:
 wolframscript -c 'Needs["<OrgName>`<PacletName>`"]; Print["OK"]'
 ```
 
+## Pre-build checks (via MCP)
+
+If the official Wolfram MCP has `WolframPacletDevelopment` tools available:
+
+1. **Lint code** — use `mcp__Wolfram__CodeInspector` on each kernel file
+   to catch syntax errors and style issues before building.
+2. **Run tests** — use `mcp__Wolfram__TestReport` on test files (`.wlt`)
+   instead of calling `wolframscript -f run_tests.wls`. Faster and
+   integrated.
+
+These are optional enhancements — the build script works without them.
+
 ## When to use
 
 - Before publishing — always build and test locally first

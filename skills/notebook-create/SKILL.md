@@ -97,21 +97,36 @@ After creating a notebook with a wiki source:
 
 ## Which MCP tool to use
 
-The **Markdown→notebook pipeline** is the preferred way to create and modify
-notebooks.
+### With WolframPacletDevelopment profile (preferred)
 
-1. **Official Wolfram MCP** — `mcp__Wolfram__WolframLanguageEvaluator` (capital-W)
-   Primary tool. Use for all evaluation, ImportString/ExportString pipeline,
-   and notebook generation.
+If the official Wolfram MCP is running the `WolframPacletDevelopment` profile,
+use the native notebook tools:
 
-2. **Unofficial Wolfram MCP** — `mcp__wolfram__evaluate` (lowercase)
-   Fallback for the Markdown pipeline when the official MCP is not available.
-   When the unofficial MCP **is** available alongside the official one, prefer
-   its **LSP functionality** (hover_info, find_definition, find_references,
-   get_diagnostics, document_symbols) over its notebook-manipulation tools.
+- `mcp__Wolfram__WriteNotebook` — write notebook content directly
+- `mcp__Wolfram__ReadNotebook` — read existing notebook content
 
-3. **Last resort** — If neither MCP is available, create a minimal plain-text
-   `.nb` manually using the `Write` tool with raw NB format. Warn the user.
+These handle `.nb` files natively without the Markdown→ImportString workaround.
+
+### Markdown pipeline (fallback)
+
+If `WriteNotebook`/`ReadNotebook` are not available (older profile), use the
+**Markdown→notebook pipeline** via `mcp__Wolfram__WolframLanguageEvaluator`:
+
+```wolfram
+ExportString[ImportString[markdownString, {"Markdown", "Notebook"}], "NB"]
+```
+
+### Unofficial Wolfram MCP
+
+When the unofficial MCP (`mcp__wolfram__`) is available, use its **LSP tools**
+(hover_info, find_definition, find_references, get_diagnostics,
+document_symbols) for code navigation. Do not use its notebook-manipulation
+tools when the official MCP is available.
+
+### Last resort
+
+If no MCP is available, create a minimal `.nb` manually using the `Write` tool
+with raw NB format. Warn the user.
 
 To check availability: evaluate `1+1` with the official MCP.
 
