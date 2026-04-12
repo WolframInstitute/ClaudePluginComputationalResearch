@@ -19,7 +19,7 @@ The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or
 
 | Server | Required | Purpose | Source |
 |--------|----------|---------|--------|
-| **Wolfram** (official) | yes | Wolfram Language evaluation, notebook generation | Paclet `Wolfram/MCPServer` |
+| **Wolfram** (official) | yes | Wolfram Language evaluation, notebook generation | [Wolfram/MCPServer](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/MCPServer) |
 | **arxiv-latex-mcp** | recommended | LaTeX source of arXiv papers | [takashiishida/arxiv-latex-mcp](https://github.com/takashiishida/arxiv-latex-mcp) |
 | **arxiv** | recommended | Search and download arXiv papers | [blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server) |
 | **wolfram** (unofficial) | optional | Wolfram Language LSP | [sw1sh/WolframMCP](https://github.com/sw1sh/WolframMCP) |
