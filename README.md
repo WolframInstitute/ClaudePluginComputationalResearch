@@ -13,6 +13,8 @@ claude plugin install computational-research@WolframInstitute
 
 **Claude Desktop app:** Install from the plugin marketplace GUI. Note: Claude Desktop runs in a VM (Cowork mode) where filesystem access is limited — this path has not been fully tested.
 
+The author uses the plugin with the Claude Code extension for VS Code.
+
 ## Recommended Setup
 
 The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or Mathematica) and the following MCP servers:
