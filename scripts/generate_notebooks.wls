@@ -58,6 +58,22 @@ Do[
 	nb = ImportString[md, {"Markdown", "Notebook"}];
 	cells = First[nb];
 	cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
+	cells = cells /. {
+		Cell[BoxData[content_String], style:("Input" | "Code"), opts___] :>
+			With[ { parsed = ToExpression[ content, StandardForm, Defer ] },
+				If[ parsed === $Failed,
+					Cell[ BoxData[ content ], style, opts ],
+					Cell[ BoxData[ ToBoxes[ parsed ] ], style, opts ]
+				]
+			],
+		Cell[content_String, style:("Input" | "Code"), opts___] :>
+			With[ { parsed = ToExpression[ content, StandardForm, Defer ] },
+				If[ parsed === $Failed,
+					Cell[ BoxData[ content ], style, opts ],
+					Cell[ BoxData[ ToBoxes[ parsed ] ], style, opts ]
+				]
+			]
+	};
 	cells = markInitCells[cells];
 
 	nbString = ExportString[Notebook[cells], "NB"];

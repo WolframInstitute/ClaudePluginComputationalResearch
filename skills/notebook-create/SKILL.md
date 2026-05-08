@@ -308,7 +308,45 @@ After `ImportString`, apply these transformations before `ExportString`:
 cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts]
 ```
 
-### 2. Initialization cells
+### 2. Boxify Input/Code cells — Critical
+
+`ImportString[md, {"Markdown", "Notebook"}]` produces `Cell[BoxData["raw string"], "Input"]`
+where the code is a single literal string inside `BoxData`. The front end will
+display this, but **hover help, F1 lookup, autocomplete, and the suggestion
+bar will not work** — those features rely on a structural `RowBox` tree where
+each symbol name is a leaf string and function tokens (`FindPoint`) are
+adjacent to their argument bracket (`[`).
+
+Boxify Input/Code cells via `ToBoxes[ToExpression[code, StandardForm, Defer]]`
+so the symbol structure is preserved:
+
+```wolfram
+boxifyInputCells[cellList_List] := cellList /. {
+  Cell[BoxData[content_String], style:("Input"|"Code"), opts___] :>
+    With[{parsed = ToExpression[content, StandardForm, Defer]},
+      If[parsed === $Failed,
+        Cell[BoxData[content], style, opts],
+        Cell[BoxData[ToBoxes[parsed]], style, opts]
+      ]
+    ],
+  Cell[content_String, style:("Input"|"Code"), opts___] :>
+    With[{parsed = ToExpression[content, StandardForm, Defer]},
+      If[parsed === $Failed,
+        Cell[BoxData[content], style, opts],
+        Cell[BoxData[ToBoxes[parsed]], style, opts]
+      ]
+    ]
+};
+```
+
+`Defer` keeps the parsed expression unevaluated so `ToBoxes` produces the
+structural box tree without running the code. Falls back to
+`BoxData[rawString]` if parsing fails (e.g. partial code).
+
+**Apply this AFTER `ImportString` and BEFORE `ExportString`** in every notebook
+pipeline. Do not skip — without it, every Input cell ships broken.
+
+### 3. Initialization cells
 
 Mark Input cells under "Setup"/"Initialization"/"Dependencies"/"Preamble" headings:
 
@@ -335,10 +373,27 @@ must NOT trigger).
 ## The complete Wolfram MCP call
 
 ```wolfram
-Module[{md, nb, cells, markInitCells, tick, fence},
+Module[{md, nb, cells, markInitCells, boxifyInputCells, tick, fence},
 
   tick = FromCharacterCode[96];
   fence = StringJoin[tick, tick, tick];
+
+  boxifyInputCells[cellList_List] := cellList /. {
+    Cell[BoxData[content_String], style:("Input"|"Code"), opts___] :>
+      With[{parsed = ToExpression[content, StandardForm, Defer]},
+        If[parsed === $Failed,
+          Cell[BoxData[content], style, opts],
+          Cell[BoxData[ToBoxes[parsed]], style, opts]
+        ]
+      ],
+    Cell[content_String, style:("Input"|"Code"), opts___] :>
+      With[{parsed = ToExpression[content, StandardForm, Defer]},
+        If[parsed === $Failed,
+          Cell[BoxData[content], style, opts],
+          Cell[BoxData[ToBoxes[parsed]], style, opts]
+        ]
+      ]
+  };
 
   markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
     Do[Which[
@@ -368,6 +423,7 @@ Module[{md, nb, cells, markInitCells, tick, fence},
   nb = ImportString[md, {"Markdown", "Notebook"}];
   cells = First[nb];
   cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
+  cells = boxifyInputCells[cells];
   cells = markInitCells[cells];
   ExportString[Notebook[cells], "NB"]
 ]
