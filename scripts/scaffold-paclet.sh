@@ -115,6 +115,8 @@ Needs[ "$ORG_NAME\`$PACLET_NAME\`" ]
 wolframscript -f run_tests.wls
 \`\`\`
 EOF
+printf '\n' >> "$REPO_ROOT/CLAUDE.md"
+cat "$ASSETS_DIR/code_style_template.md" >> "$REPO_ROOT/CLAUDE.md"
 echo "Created: $REPO_ROOT/CLAUDE.md"
 
 # ── 5. Summary ───────────────────────────────────────────────────────────

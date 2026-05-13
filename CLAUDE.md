@@ -79,6 +79,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | Template | Purpose |
 |----------|---------|
 | `claude_template.md` | CLAUDE.md for research projects |
+| `code_style_template.md` | Code-style rules appended to every generated CLAUDE.md (research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared preamble: fonts, math, biblatex, theorems, macros |
 | `latexmkrc_template` | latexmk config |

@@ -56,6 +56,8 @@ sed \
   -e "s|{{CODE_DIR}}|$CODE_DIR|g" \
   -e "s|{{GOALS}}|1. Understand the mathematical structure of $TOPIC_DESCRIPTION\n2. Develop computational tools in Wolfram Language\n3. Visualize and verify results computationally|g" \
   "$ASSETS_DIR/claude_template.md" > "$PROJECT_NAME/CLAUDE.md"
+printf '\n' >> "$PROJECT_NAME/CLAUDE.md"
+cat "$ASSETS_DIR/code_style_template.md" >> "$PROJECT_NAME/CLAUDE.md"
 echo "Created: $PROJECT_NAME/CLAUDE.md"
 
 # ── 4. Scripts ────────────────────────────────────────────────────────────

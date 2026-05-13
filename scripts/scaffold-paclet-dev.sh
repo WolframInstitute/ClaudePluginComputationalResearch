@@ -170,6 +170,8 @@ echo "Created: $DEV_REPO_NAME/.gitignore"
     done
     echo "\`\`\`"
 } > "$DEV_REPO_NAME/CLAUDE.md"
+printf '\n' >> "$DEV_REPO_NAME/CLAUDE.md"
+cat "$ASSETS_DIR/code_style_template.md" >> "$DEV_REPO_NAME/CLAUDE.md"
 echo "Created: $DEV_REPO_NAME/CLAUDE.md"
 
 # ── 6. Scripts ───────────────────────────────────────────────────────────

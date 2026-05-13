@@ -1,6 +1,6 @@
 {
   "name": "computational-research",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "AI-assisted computational research with wiki knowledge base, LaTeX paper scaffolding, Wolfram paclet development and publishing, notebook generation, guided tours, Wolfram ecosystem search, and revision workflow.",
 "author": {
     "name": "Pavel Hajek",
