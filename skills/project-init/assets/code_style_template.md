@@ -10,6 +10,7 @@
 - **Use `{x} |-> ...`, not `Function[{x}, ...]`.** Use `Function` only when the operator form genuinely will not work (named slots, attributes, multi-statement bodies). **Never nest one `|->` inside another** — restructure: lift the inner function to a named local with `With`, or chain the lambdas via `Map` / `Composition` / `RightComposition`.
 - **No nested `Module`.** A function may open *one* `Module` for its locals; if it needs another scope inside, use `With[{...}, ...]`. If a function feels like it wants two `Module`s, it is doing two things and should be split — not nested. Same rule inside `DynamicModule` / `Manipulate` bodies.
 - **`With` over `Module`** wherever the bindings are not mutated. `Module` is for genuinely mutable accumulators; everything else is `With`.
+- **No nested `With`.** `With[{a = ...}, With[{b = ...}, body]]` must be written as the multi-clause form `With[{a = ...}, {b = ...}, body]` (an undocumented but supported syntax). Later clauses see earlier bindings, so this is exactly the staged-binding behavior of nested `With` without the visual nesting.
 
 ### Comments
 
