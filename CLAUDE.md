@@ -15,29 +15,33 @@ hooks/                         — PreToolUse hooks (e.g., block .nb reads)
 skills/project-init/assets/    — templates for scaffolding
 ```
 
-### Skills (13)
+### Skills (16)
 
 | Skill | Type | Purpose |
 |-------|------|---------|
-| `project-init` | scaffolding | Scaffold new projects (research, paclet-dev, paclet) |
+| `project-init` | scaffolding | Scaffold new projects (research, math-research, paclet-dev, paclet) |
 | `paper-init` | scaffolding | Create Paper/ with LaTeX templates (amsart, biblatex, shared macros.sty) |
 | `wolfram-resources` | content | Search Wolfram docs, Function Repository, Community, writings |
+| `math-resources` | content | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
 | `wiki-init` | wiki | Create Wiki/ knowledge base from scratch |
 | `wiki-update` | wiki | Update articles, index, status, log after changes |
 | `wiki-health` | wiki | Audit wiki for staleness, gaps, broken links |
 | `wiki-plan` | wiki | Structured plans in Wiki/Plans/ with lifecycle |
 | `revise` | protocol | Human revision loop — not invoked directly, other skills follow it |
-| `resource-add` | content | Add papers/repos/tools with recovery info |
-| `notebook-create` | content | Markdown-to-notebook pipeline via Wolfram MCP |
+| `resource-add` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
+| `cite-from-id` | content | Generate BibTeX from arXiv ID or DOI |
+| `notebook-create` | content | Markdown-to-notebook pipeline via Wolfram MCP (research, computation, paper-analysis, theorem-proof templates) |
+| `lean-bridge` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
 | `tour-start` | presentation | Interactive guided walkthrough with code |
 | `paclet-build` | paclet | Build .paclet archive and install locally |
 | `paclet-publish` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
 
-### Scripts (15)
+### Scripts (22)
 
 | Script | Language | Called by |
 |--------|----------|----------|
 | `scaffold-project.sh` | bash | project-init (research type) |
+| `scaffold-math-project.sh` | bash | project-init (math-research type) |
 | `scaffold-paclet-dev.sh` | bash | project-init (paclet-dev type) |
 | `scaffold-paclet.sh` | bash | project-init (paclet type) |
 | `scaffold-paper.sh` | bash | paper-init skill |
@@ -48,12 +52,18 @@ skills/project-init/assets/    — templates for scaffolding
 | `search_wolfram_community.wls` | wolframscript | wolfram-resources skill (URL constructor) |
 | `search_wolfram_writings.wls` | wolframscript | wolfram-resources skill |
 | `search_wolfram_physics.wls` | wolframscript | wolfram-resources skill |
+| `search_mathworld.wls` | wolframscript | math-resources skill |
+| `search_nlab.wls` | wolframscript | math-resources skill |
+| `search_oeis.wls` | wolframscript | math-resources skill |
+| `search_dlmf.wls` | wolframscript | math-resources skill |
+| `search_wikipedia_math.wls` | wolframscript | math-resources skill |
+| `cite_from_id.wls` | wolframscript | cite-from-id skill |
 | `check-env.sh` | bash | check-env command |
 | `recover_resources.sh` | bash | copied into projects, also resource-add |
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-### Commands (14)
+### Commands (17)
 
 | Command | Invokes |
 |---------|---------|
@@ -66,6 +76,9 @@ skills/project-init/assets/    — templates for scaffolding
 | `add-resource` | resource-add |
 | `new-notebook` | notebook-create |
 | `search-wolfram` | wolfram-resources |
+| `search-math` | math-resources |
+| `cite-id` | cite-from-id |
+| `lean` | lean-bridge |
 | `build-paclet` | paclet-build |
 | `publish-paclet` | paclet-publish |
 | `start-tour` | tour-start |
@@ -79,6 +92,11 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | Template | Purpose |
 |----------|---------|
 | `claude_template.md` | CLAUDE.md for research projects |
+| `math_claude_template.md` | CLAUDE.md for math-research projects |
+| `math_categories_template.md` | Math-domain taxonomy seed (adapted from PureMath) |
+| `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by notebook-create) |
+| `formal_definition_template.md` | Wiki/Definitions/ article template |
+| `formalization_checklist_template.md` | Wiki/Plans/Formalize-*.md skeleton (used by lean-bridge) |
 | `code_style_template.md` | Code-style rules appended to every generated CLAUDE.md (research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared preamble: fonts, math, biblatex, theorems, macros |
@@ -95,7 +113,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 
 Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`,
 `{{GOALS}}`, `{{PACLET_NAME}}`, `{{ORG_NAME}}`, `{{AUTHOR}}`, `{{EMAIL}}`,
-`{{TITLE}}`, `{{ABSTRACT}}`.
+`{{TITLE}}`, `{{ABSTRACT}}`, `{{CODE_DIR}}`.
 
 ## Project Types (scaffolding)
 
@@ -103,13 +121,18 @@ The `project-init` skill asks users which type of project to create:
 
 - **research** (default) — Code/, Wiki/, Resources/, optional Paper/.
   Open-ended exploration of a topic.
+- **math-research** — Wiki/{Theorems,Definitions,Domains,Plans}/ pre-created,
+  math-domain taxonomy seeded, optional Lean/ subdirectory. Organised around
+  precise theorems and definitions rather than open-ended exploration. Pairs
+  with `math-resources`, `cite-from-id`, `lean-bridge`, and the `theorem-proof`
+  notebook template.
 - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules
   (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental
   work, Wiki/, .gitmodules. Optional Paper/ (gitignored).
 - **paclet** — standalone Wolfram paclet (double nesting), clean repo
   structure. Optional Wiki/.
 
-All types use `Package[]` / `PackageExport` / `PackageScope` (not
+All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not
 BeginPackage/EndPackage) for paclet code.
 
 ## How to Add a New Skill

@@ -1,11 +1,11 @@
 {
   "name": "computational-research",
-  "version": "3.0.2",
-  "description": "AI-assisted computational research with wiki knowledge base, LaTeX paper scaffolding, Wolfram paclet development and publishing, notebook generation, guided tours, Wolfram ecosystem search, and revision workflow.",
+  "version": "3.1.0",
+  "description": "AI-assisted computational research with wiki knowledge base, LaTeX paper scaffolding, Wolfram paclet development and publishing, notebook generation, guided tours, Wolfram ecosystem search, pure-math project scaffolding with MathWorld/nLab/OEIS/DLMF/Wikipedia search, BibTeX from arXiv/DOI, Lean/Mathlib formalization bridge, and revision workflow.",
 "author": {
     "name": "Pavel Hajek",
     "email": "p135246@gmail.com"
   },
   "license": "MIT",
-  "keywords": ["wolfram", "mathematica", "research", "notebook", "wiki", "knowledge-base", "tour", "paclet"]
+  "keywords": ["wolfram", "mathematica", "research", "notebook", "wiki", "knowledge-base", "tour", "paclet", "math", "lean", "mathlib", "mathworld", "nlab", "oeis", "dlmf", "bibtex"]
 }

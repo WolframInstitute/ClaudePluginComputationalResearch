@@ -37,6 +37,26 @@ Create `Resources/` if it doesn't exist.
 | Dataset | Download to `Resources/DatasetName.ext` |
 | Web page | No download — just the URL |
 | Tool/package | Download or note install command |
+| **MathWorld entry** | No download — wiki article with URL + summary |
+| **nLab page** | No download — wiki article with URL + summary |
+| **OEIS sequence** | No download — wiki article with A-number + first terms |
+| **DLMF formula/section** | No download — wiki article with locator + URL |
+| **Wikipedia article** | No download — wiki article with URL + summary |
+
+### URL-based source detection
+
+When a URL is the input, infer the source from the host + path:
+
+| URL pattern | Source | Article name |
+|-------------|--------|--------------|
+| `mathworld.wolfram.com/<Entry>.html` | MathWorld | `MathWorld_<Entry>.md` |
+| `ncatlab.org/nlab/show/<slug>` | nLab | `nLab_<KebabSlug>.md` |
+| `oeis.org/A######` | OEIS | `OEIS_A######.md` |
+| `dlmf.nist.gov/<locator>` | DLMF | `DLMF_<locator-sanitised>.md` |
+| `en.wikipedia.org/wiki/<Title>` | Wikipedia | `Wikipedia_<Title>.md` |
+
+OEIS A-numbers entered bare (e.g. `A000045`) without a URL should be treated
+as if the user typed `https://oeis.org/A000045`.
 
 **Naming convention for files:**
 - Papers: `Author_Year_ShortTitle.pdf` (first author last name, year, 2-4 word title)
@@ -115,6 +135,25 @@ URL: https://example.com/page
 
 Install: pip install package-name
 ```
+
+**MathWorld / nLab / DLMF / Wikipedia entry (URL-only):**
+```markdown
+## Recover
+
+URL: https://mathworld.wolfram.com/RiemannZetaFunction.html
+```
+
+**OEIS sequence:**
+```markdown
+## Recover
+
+URL: https://oeis.org/A000045
+OEIS: A000045
+```
+
+The `OEIS:` key is optional but useful for offline cross-reference
+(recovery scripts can use it to ping the OEIS JSON API and confirm the
+sequence is unchanged).
 
 The `## Recover` section is machine-readable. Each line is `Key: Value`.
 The recovery script parses these to rebuild `Resources/`.

@@ -231,6 +231,39 @@ When the user doesn't specify a structure, infer from context or ask:
 ## Visualization  ← plots and graphics
 ```
 
+### `theorem-proof` template
+
+For math-research projects (see [project-init](../project-init/SKILL.md)
+math-research type). The full markdown skeleton is at
+`${CLAUDE_PLUGIN_ROOT}/skills/project-init/assets/notebook_theorem_proof_template.md`
+— copy it as the starting point, then specialize.
+
+```
+# <Theorem Name>
+## Setup            ← package loads
+## Definitions      ← terms used in the statement (linked to Wiki/Definitions/)
+## Statement        ← precise theorem statement, numbered hypotheses
+## Proof
+###   Step 1        ← each major step is its own subsection
+###   Step 2
+###   Step N — Conclusion
+## Corollaries      ← downstream results with brief proofs
+## Examples         ← low-dimensional / finite verifications
+## Non-examples     ← cases where a hypothesis fails (justifies hypotheses)
+## References       ← Wiki/Theorems/ link + external refs
+```
+
+Notes:
+
+- One `Subsection` per proof step (use `###`); within a step, alternate
+  narrative text with `wolfram` code blocks that verify or illustrate.
+- Hypotheses get numbered ItemNumbered cells so the proof can refer to them
+  as "H1", "H2", etc.
+- Use **display math** (`$$ ... $$`) for the theorem statement and key
+  equations within the proof; **inline math** (`$ ... $`) for variables.
+- The full `boxifyInputCells` + `markInitCells` post-processing applies as
+  usual — do not skip them.
+
 ## Markdown-to-cell mapping
 
 ### Headings → Notebook Structure

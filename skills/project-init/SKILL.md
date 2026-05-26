@@ -25,6 +25,10 @@ Before scaffolding, you need:
 1. **Project type** — what kind of project to create:
    - **research** (default) — exploratory computation with Wiki, Code/,
      Resources/, optional Paper/. Use for open-ended investigation of a topic.
+   - **math-research** — pure-math project organised around precise theorems
+     and definitions. Wiki/{Theorems,Definitions,Domains,Plans}/ created
+     up front, math-domain taxonomy seeded, optional Lean/ subdirectory.
+     Use when the work is theorem-proving or formalisation-flavoured.
    - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules,
      experimental Code/, and research infrastructure. Use when developing one or
      more formal Wolfram paclets alongside research.
@@ -48,6 +52,16 @@ Before scaffolding, you need:
    `Wolfram/`, `src/`, `Lean/`, etc.
 6. **Domain folders** (optional) — what domain-specific wiki folders to create.
    Suggest defaults based on the topic.
+7. **Research depth** (optional) — short / standard (default) / deep.
+
+#### math-research
+
+4. **Include Paper/?** (optional) — default: yes.
+5. **Include Lean/?** (optional) — default: no. Set yes if the project will
+   formalise results in Lean/Mathlib. The scaffold creates an empty `Lean/`
+   directory; the user runs `lake new <ProjectName> math` inside it
+   themselves.
+6. **Code directory name** (optional) — default `Code/`.
 7. **Research depth** (optional) — short / standard (default) / deep.
 
 #### paclet-dev
@@ -198,6 +212,104 @@ and .latexmkrc. See paper-init skill for details.
 
 Seed `Paper/references.bib` with biblatex entries from the papers downloaded
 in step 5.
+
+---
+
+## Scaffolding: math-research type
+
+### 0. Environment check
+
+Same as research type. Also check whether `lean` is on `PATH` if the user
+wants Lean — warn (don't fail) if it's not.
+
+### 1. Scaffold the project
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-math-project.sh" \
+    "<ProjectName>" "<topic>" "." "<Author>" "<email>" "<CodeDir>" "<WithLean=0|1>"
+```
+
+This creates:
+
+```
+<ProjectName>/
+├── CLAUDE.md                        — math variant (see math_claude_template.md)
+├── <CodeDir>/
+│   └── Tools.wl
+├── Resources/
+├── Scripts/
+│   ├── recover_resources.sh
+│   ├── generate_notebooks.wls
+│   └── publish_notebooks.wls
+├── Wiki/
+│   ├── Theorems/                    — one .md per theorem
+│   ├── Definitions/
+│   │   └── _template.md             — copy for new definitions
+│   ├── Domains/
+│   │   └── categories.md            — math-domain taxonomy seed
+│   └── Plans/                       — wiki-plan + formalization checklists
+└── Lean/                            — only if WithLean=1
+```
+
+### 2. Initialize the wiki
+
+Run **wiki-init** inside `<ProjectName>/`. It will create `Index.md`,
+`Status.md`, `Log.md`, `Concepts/`, `Resources/`, `Notebooks/`. The
+`Theorems/`, `Definitions/`, `Domains/`, `Plans/` directories already exist
+and should be left alone.
+
+### 3. Adapt the domain taxonomy
+
+Read `Wiki/Domains/categories.md` and prune it to the project's actual scope.
+Anything not touched should be deleted — the file is a working catalogue, not
+a master reference. Add cross-links to the wiki articles you'll create next.
+
+### 4. Seed initial definitions and theorems
+
+For each central concept:
+
+- Copy `Wiki/Definitions/_template.md` to
+  `Wiki/Definitions/<Term>.md` and fill in Notation / Prerequisites /
+  Statement / Properties / Examples / References.
+
+For each central theorem the project wants to prove or use:
+
+- Create `Wiki/Theorems/<Name>.md` with a precise statement, hypotheses,
+  proof outline (math-level), status field (`open | outlined | proved |
+  formalised`), and cross-links to required definitions.
+
+Use **math-resources** to find authoritative external references for each.
+
+### 5. Create initial code files
+
+Same as research type. Code in `<CodeDir>/` is for computing examples,
+counterexamples, and visualisations — it is *not* the source of truth for
+the math.
+
+### 6. Download reference papers
+
+Same as research type. For math-research projects, prefer using
+**arxiv-latex-mcp** to read papers so equations are exact.
+
+### 7. Create initial notebook (theorem-proof template)
+
+If a central theorem already has an outlined proof, use **notebook-create**
+with the `theorem-proof` template type to produce a working notebook around
+it (Setup → Statement → Proof → Corollaries → Examples).
+
+### 8. (Optional) Initialize Lean
+
+If `WithLean=1` was set:
+
+1. Tell the user to run `cd <ProjectName>/Lean && lake new <ProjectName> math`
+   themselves — this skill does not run `lake` on their behalf.
+2. Once the lakefile exists, invoke **lean-bridge** to set up a
+   `Wiki/Plans/Formalize-<topic>.md` formalization checklist for the first
+   theorem.
+
+### 9. Paper (if requested)
+
+Same as research type step 7.
 
 ---
 
@@ -399,9 +511,17 @@ Tell the user:
 - Papers downloaded and summarized (if applicable)
 - Wolfram Community resources found (if any)
 - Available skills for ongoing work:
-  - `resource-add` — add papers and references
-  - `wolfram-resources` — search Wolfram documentation, Function Repository, Community, etc.
-  - `notebook-create` — create/edit notebooks
+  - `resource-add` — add papers and references (also recognises MathWorld,
+    nLab, OEIS, DLMF, Wikipedia URLs)
+  - `wolfram-resources` — search Wolfram documentation, Function Repository,
+    Community, etc.
+  - `math-resources` — search MathWorld, nLab, OEIS, DLMF, Wikipedia math
+    (tuned for math-research projects)
+  - `cite-from-id` — produce BibTeX from an arXiv ID or DOI
+  - `lean-bridge` — drive a Lean/Mathlib session (math-research projects
+    with `Lean/`)
+  - `notebook-create` — create/edit notebooks (supports a `theorem-proof`
+    template for math-research projects)
   - `wiki-plan` — create structured plans
   - `wiki-update` — update wiki after changes
   - `tour-start` — interactive project walkthrough

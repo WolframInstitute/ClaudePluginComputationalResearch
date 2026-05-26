@@ -30,17 +30,20 @@ The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or
 
 | Skill | Description |
 |-------|-------------|
-| **project-init** | Scaffold a new project (research, paclet-dev, or standalone paclet) |
+| **project-init** | Scaffold a new project (research, math-research, paclet-dev, paclet) |
 | **paper-init** | Create Paper/ with LaTeX article templates (amsart, biblatex, shared macros) |
 | **wiki-init** | Initialize a plain-markdown knowledge base (Wiki/) in any repo |
 | **wiki-update** | Update wiki articles, index, status, and log after changes |
 | **wiki-health** | Audit the wiki for stale articles, broken links, and gaps |
 | **wiki-plan** | Create or update structured plans with history tracking |
 | **revise** | Human revision protocol for code, functionality, and deliverables |
-| **resource-add** | Add papers, repos, notebooks, or other resources with recovery info |
-| **notebook-create** | Create or modify Wolfram notebooks via Markdown→MCP pipeline |
+| **resource-add** | Add papers, repos, notebooks, MathWorld/nLab/OEIS/DLMF/Wikipedia entries with recovery info |
+| **cite-from-id** | Generate BibTeX entries from arXiv IDs or DOIs |
+| **notebook-create** | Create or modify Wolfram notebooks via Markdown→MCP pipeline (research, computation, paper-analysis, theorem-proof templates) |
 | **tour-start** | Interactive guided tour with narrative and runnable code per section |
 | **wolfram-resources** | Search Wolfram docs, Function Repository, Community, and Wolfram writings |
+| **math-resources** | Search MathWorld, nLab, OEIS, DLMF, and Wikipedia math articles |
+| **lean-bridge** | Drive Lean/Mathlib formalization sessions via the lean-lsp MCP |
 | **paclet-build** | Build a Wolfram paclet archive and install locally |
 | **paclet-publish** | Build, install, and publish a paclet to Wolfram Cloud |
 
@@ -48,7 +51,7 @@ The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or
 
 | Command | Description |
 |---------|-------------|
-| `/computational-research:new-project` | Scaffold a new project (research, paclet-dev, paclet) |
+| `/computational-research:new-project` | Scaffold a new project (research, math-research, paclet-dev, paclet) |
 | `/computational-research:init-paper` | Create Paper/ with LaTeX templates |
 | `/computational-research:init-wiki` | Initialize Wiki/ knowledge base |
 | `/computational-research:update-wiki` | Update wiki after changes |
@@ -57,6 +60,9 @@ The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or
 | `/computational-research:add-resource` | Add a paper or resource to the wiki |
 | `/computational-research:new-notebook` | Create a Wolfram notebook |
 | `/computational-research:search-wolfram` | Search Wolfram ecosystem resources |
+| `/computational-research:search-math` | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
+| `/computational-research:cite-id` | Generate BibTeX from an arXiv ID or DOI |
+| `/computational-research:lean` | Drive a Lean/Mathlib formalization session |
 | `/computational-research:build-paclet` | Build paclet and install locally |
 | `/computational-research:publish-paclet` | Build, install, publish to Wolfram Cloud |
 | `/computational-research:start-tour` | Start or resume a guided project tour |
