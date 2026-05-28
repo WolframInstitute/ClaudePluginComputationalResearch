@@ -36,6 +36,12 @@ If the project has its own copy in `Scripts/`:
 wolframscript -f Scripts/build_paclet.wls "<PacletName>"
 ```
 
+**Documentation is excluded by default** for fast iterative builds. To bundle the
+paclet's `Documentation/` directory into the archive, add `--with-docs`:
+```bash
+wolframscript -f "${CLAUDE_PLUGIN_ROOT}/scripts/build_paclet.wls" "<PacletName>" --with-docs
+```
+
 ### 2. Report results
 
 The script outputs:

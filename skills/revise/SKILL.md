@@ -23,7 +23,7 @@ This applies to:
 
 - **Code** (Wolfram functions, Lean proofs, scripts, any language)
 - **New functionality** (new definitions, encodings, graph constructions, etc.)
-- **Plans** (what to do next, architecture decisions, task breakdowns)
+- **Work specs** (what to build, architecture decisions, task breakdowns)
 - **Tour sections** (narrative + code for presentation)
 
 ### What "waiting" means
@@ -62,7 +62,7 @@ for X") but not present article text for review unless the user asks to see it.
 When the user has **explicitly edited or written** something, the LLM must
 not silently overwrite it. This applies to:
 
-- User-edited plans in `Wiki/Plans/`
+- User-edited Specs and tasks in `Work/`
 - User-written code or configuration
 - User-crafted prose (articles the user specifically wrote by hand)
 - Any content the user explicitly created or revised
@@ -77,15 +77,9 @@ How to detect protected content: if the user typed it, pasted it, or explicitly
 edited it in the current or a recent session, treat it as protected. When in
 doubt, ask.
 
-## Logging
+## Recording what happened
 
-Every LLM action and every human revision goes into `Wiki/Log.md`:
-
-```markdown
-| YYYY-MM-DD | LLM | Created function FooBar in Code/Foo.wl |
-| YYYY-MM-DD | Human | Revised: changed FooBar to use different algorithm |
-| YYYY-MM-DD | LLM | Updated FooBar per user feedback |
-```
-
-This creates a clear audit trail of who did what. Log both the initial
-generation and any revisions.
+There is no activity log. The audit trail is **git history** — commit with clear
+messages (authorship already distinguishes human from LLM). Work done against a
+`Work/` item is also captured in that item's `## Progress` log, one block per
+session. Do not maintain a `Wiki/Log.md`.

@@ -22,9 +22,19 @@ what is conjectured, and what is open.
 - `Wiki/Theorems/` — one `.md` per theorem (statement, proof outline, status)
 - `Wiki/Definitions/` — one `.md` per formal definition (see `_template.md`)
 - `Wiki/Domains/categories.md` — math-domain taxonomy (adapt to project scope)
-- `Wiki/Plans/` — multi-session plans, including formalization checklists
+- `Work/` — multi-session work items: spec, tasks, per-session progress (incl. formalization checklists); `Work/README.md` is the board
 - `Resources/` — reference PDFs, notebooks (gitignored)
 - `Lean/` (if present) — Mathlib-style formalization
+
+## Work
+
+`Work/` holds execution state — what's being built now, separate from the Wiki
+(durable knowledge). Each file is one **work item**: a Spec (what to build),
+Tasks (one ≈ one session), and a Progress log; `Work/README.md` is the board.
+Lean formalizations live here too as `Type: formalization` work items.
+
+- `/work <goal>` — create a work item (drafts a Spec for approval, then tasks)
+- `/next-session [Name]` — in a FRESH session, do exactly one task, log progress, stop
 
 ## Working style
 
@@ -50,11 +60,13 @@ what is conjectured, and what is open.
 - `lean-bridge` — drive a Lean/Mathlib session (only if `Lean/` exists)
 - `notebook-create` — supports a `theorem-proof` template type for
   Statement/Proof/Corollaries/Examples notebooks
-- `resource-add`, `wiki-update`, `wiki-plan` — standard wiki workflow
+- `resource-add`, `wiki-update` — standard wiki workflow
+- `work`, `next-session` — multi-session work tracking (spec / tasks / progress)
 
 ## MCP usage
 
 - **Official Wolfram MCP** — computation, notebook generation, plotting.
+  Prefer the current Wolfram/AgentTools paclet; the older Wolfram/MCPServer is a fallback.
 - **arxiv-latex-mcp** — preferred for reading math papers (LaTeX source
   gives exact statements and proofs).
 - **lean-lsp** — driven by `lean-bridge` for formalization.

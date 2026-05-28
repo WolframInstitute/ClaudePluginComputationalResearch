@@ -34,7 +34,8 @@ Before publishing, verify:
    paclet's kernel files.
 5. **Generate documentation** — if `mcp__Wolfram__CreateSymbolDoc` is
    available, offer to generate or update documentation notebooks for
-   exported symbols before publishing.
+   exported symbols before publishing. Documentation is **not bundled by
+   default** — pass `--with-docs` (see below) to include it in the published paclet.
 
 ## Step-by-step
 
@@ -47,6 +48,12 @@ wolframscript -f "${CLAUDE_PLUGIN_ROOT}/scripts/publish_paclet.wls" "<PacletName
 If the project has its own copy in `Scripts/`:
 ```bash
 wolframscript -f Scripts/publish_paclet.wls "<PacletName>"
+```
+
+To bundle the paclet's `Documentation/` directory into the published archive,
+add `--with-docs` (it is excluded by default):
+```bash
+wolframscript -f "${CLAUDE_PLUGIN_ROOT}/scripts/publish_paclet.wls" "<PacletName>" --with-docs
 ```
 
 ### 2. Parse the output

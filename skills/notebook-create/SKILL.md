@@ -93,7 +93,6 @@ wolframscript -file Scripts/publish_notebooks.wls
 After creating a notebook with a wiki source:
 
 1. Add entry to `Wiki/Index.md` under Notebooks
-2. Append to `Wiki/Log.md`
 
 ## Which MCP tool to use
 

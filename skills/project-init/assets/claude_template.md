@@ -24,10 +24,21 @@ Notebooks: `<Topic>1.nb` per topic, `Test1.nb` for tests.
 
 `Resources/` — reference papers and community notebooks, named as `Author_Year_Title.pdf` or `.nb`
 
+## Work
+
+`Work/` holds execution state — what's being built now. Each file is one **work
+item**: a Spec (what to build), Tasks (one ≈ one session), and a Progress log;
+`Work/README.md` is the board. Durable knowledge goes in the Wiki; plans, todos,
+and progress go in Work.
+
+- `/work <goal>` — create a work item (drafts a Spec for approval, then tasks)
+- `/next-session [Name]` — in a FRESH session, do exactly one task, log progress, stop
+
 ## MCP usage
 
-- **Official Wolfram MCP** — primary server for all evaluation, notebook
-  generation (Markdown pipeline), and computation.
+- **Official Wolfram MCP** — primary server for evaluation, notebook I/O
+  (Markdown pipeline), docs search, and computation. Prefer the current
+  Wolfram/AgentTools paclet; the older Wolfram/MCPServer works as a fallback.
 - **arxiv-latex-mcp** — preferred for reading papers. LaTeX source gives
   exact equations and definitions for Wolfram implementations. Fall back to
   arxiv MCP PDF reading only if LaTeX source is unavailable.

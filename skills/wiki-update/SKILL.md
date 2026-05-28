@@ -20,12 +20,12 @@ documentation — update freely, no human sign-off needed for prose.
 ## What counts as "substantial"
 
 - New code written or existing code changed
-- A plan created, updated, or completed
+- A work item created, updated, or completed
 - A resource added or analyzed
 - A bug found and fixed
 - A design decision made
 - An experiment run and results obtained
-- Any task completed from a plan's step list
+- Any task completed from a work item
 
 ## Update procedure
 
@@ -84,25 +84,14 @@ Brief summary of where the project stands.
 
 ## In progress
 
-- What's currently being worked on
+- Active work items and their next task (see Work/README.md)
 
 ## Blockers
 
 - What's blocking progress (if anything)
 ```
 
-### 5. Append to Wiki/Log.md
-
-Add a row to the activity log table. Always append at the top (reverse
-chronological — newest first, right after the table header):
-
-```markdown
-| YYYY-MM-DD | LLM/Human | Brief description of what happened |
-```
-
-Use "LLM" for automated actions, "Human" for user-directed changes.
-
-### 6. Add cross-links
+### 5. Add cross-links
 
 In every article mentioned by or related to the changed articles, add a
 relative markdown link in the "See also" section if not already present.

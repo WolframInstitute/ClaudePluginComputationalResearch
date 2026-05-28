@@ -57,15 +57,6 @@ Ask the user (or infer from context):
 - **Stdout only** — when the user is just looking up a citation in
   conversation.
 
-### Step 4 — Update wiki log (if appended somewhere)
-
-If the entry was appended to a tracked file, add a one-line entry to
-`Wiki/Log.md`:
-
-```markdown
-| YYYY-MM-DD | LLM | Added BibTeX entry: <Key> |
-```
-
 ## Batch mode
 
 If the user supplies multiple identifiers (newline- or comma-separated),

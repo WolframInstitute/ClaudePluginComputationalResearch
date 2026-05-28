@@ -3,8 +3,9 @@
 #
 # Usage: scaffold-math-project.sh <ProjectName> ["Topic"] [output-dir] ["Author"] ["email"] ["CodeDir"] [WithLean=0|1]
 #
-# Differs from scaffold-project.sh by adding Wiki/{Theorems,Definitions,Domains,Plans}/
-# upfront and seeding Wiki/Domains/categories.md from the math taxonomy template.
+# Differs from scaffold-project.sh by adding Wiki/{Theorems,Definitions,Domains}/
+# and a top-level Work/ folder upfront, and seeding Wiki/Domains/categories.md
+# from the math taxonomy template.
 # Optionally scaffolds a Lean/ subdirectory for Mathlib-style formalization
 # (just the directory + a placeholder lakefile reference, not a real lake new).
 
@@ -38,11 +39,15 @@ mkdir -p "$PROJECT_NAME/Scripts"
 mkdir -p "$PROJECT_NAME/Wiki/Theorems"
 mkdir -p "$PROJECT_NAME/Wiki/Definitions"
 mkdir -p "$PROJECT_NAME/Wiki/Domains"
-mkdir -p "$PROJECT_NAME/Wiki/Plans"
+mkdir -p "$PROJECT_NAME/Work"
 if [ "$WITH_LEAN" = "1" ]; then
   mkdir -p "$PROJECT_NAME/Lean"
 fi
-echo "Created directories: $PROJECT_NAME/{$CODE_DIR,Resources,Scripts,Wiki/{Theorems,Definitions,Domains,Plans}}$([ "$WITH_LEAN" = "1" ] && echo ',Lean' || true)"
+echo "Created directories: $PROJECT_NAME/{$CODE_DIR,Resources,Scripts,Work,Wiki/{Theorems,Definitions,Domains}}$([ "$WITH_LEAN" = "1" ] && echo ',Lean' || true)"
+
+sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+  "$ASSETS_DIR/work_readme_template.md" > "$PROJECT_NAME/Work/README.md"
+echo "Created: $PROJECT_NAME/Work/README.md"
 
 # ── 2. Tools.wl ───────────────────────────────────────────────────────────
 
@@ -92,10 +97,11 @@ echo "    Theorems/                   — one .md per theorem (statement, proof 
 echo "    Definitions/                — one .md per formal definition"
 echo "      _template.md              — copy this for new definitions"
 echo "    Domains/categories.md       — math-domain taxonomy (adapt to project scope)"
-echo "    Plans/                      — wiki-plan and formalization checklists"
+echo "  Work/"
+echo "    README.md                   — work-item board (formalizations live here too)"
 if [ "$WITH_LEAN" = "1" ]; then
   echo "  Lean/                         — formalization (run 'lake new $PROJECT_NAME math' here)"
 fi
 echo "  CLAUDE.md                     — project context"
 echo ""
-echo "Next: Claude will run wiki-init for Index/Status/Log, then seed initial theorems/definitions."
+echo "Next: Claude will run wiki-init for Index/Status, then seed initial theorems/definitions."

@@ -1,6 +1,7 @@
 # Formalize: <Theorem / Definition / Topic>
 
-Status: **outlined** | in-progress | proved | verified
+> Status: **outlined**    <!-- outlined | in-progress | proved | verified -->
+> Type: formalization
 
 Owner / driver: <name>
 Started: <YYYY-MM-DD>
@@ -57,7 +58,7 @@ beyond this gets flagged by `lean_verify` and must be justified here.
 - [ ] No `sorryAx` in final proof
 - [ ] No unexpected axioms beyond classical defaults
 
-## Sessions log
+## Progress
 
 Append one bullet per session:
 

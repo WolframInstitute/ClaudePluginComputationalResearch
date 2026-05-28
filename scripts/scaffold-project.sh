@@ -39,7 +39,12 @@ cd "$OUTPUT_DIR"
 mkdir -p "$PROJECT_NAME/$CODE_DIR"
 mkdir -p "$PROJECT_NAME/Resources"
 mkdir -p "$PROJECT_NAME/Scripts"
-echo "Created directories: $PROJECT_NAME/{$CODE_DIR,Resources,Scripts}"
+mkdir -p "$PROJECT_NAME/Work"
+echo "Created directories: $PROJECT_NAME/{$CODE_DIR,Resources,Scripts,Work}"
+
+sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+  "$ASSETS_DIR/work_readme_template.md" > "$PROJECT_NAME/Work/README.md"
+echo "Created: $PROJECT_NAME/Work/README.md"
 
 # ── 2. Tools.wl ───────────────────────────────────────────────────────────
 
@@ -78,6 +83,8 @@ echo "    Tools.wl           — shared general utilities"
 echo "  Resources/            — reference PDFs and notebooks"
 echo "  Scripts/"
 echo "    recover_resources.sh — rebuild Resources/ from wiki ## Recover sections"
+echo "  Work/"
+echo "    README.md            — work-item board (spec / tasks / progress per effort)"
 echo "  CLAUDE.md             — project context for future Claude sessions"
 echo ""
 echo "Next: Claude will initialize Wiki/, optionally create Paper/, and download papers."

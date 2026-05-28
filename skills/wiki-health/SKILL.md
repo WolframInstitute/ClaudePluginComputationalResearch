@@ -42,7 +42,6 @@ Scan the repo for entities that should have wiki coverage but don't:
 - Code files with no corresponding article
 - Functions/classes/modules not mentioned in any article
 - Resources in `Wiki/Resources/` not indexed
-- Plans not indexed
 - Notebooks not indexed
 
 For each missing entity: **create** a wiki article and add it to the index.
@@ -66,10 +65,17 @@ For each `Wiki/Resources/*.md` file:
 ### 6. Verify index completeness
 
 Compare the files in `Wiki/` subdirectories against entries in `Wiki/Index.md`.
-Every `.md` file (except Index.md, Status.md, Log.md) should have an index entry.
+Every `.md` file (except Index.md, Status.md) should have an index entry.
 Add missing entries.
 
-### 7. Report
+### 7. Check work items
+
+Read `Work/README.md` and scan `Work/*.md`. Flag any item with `Status: active`
+whose `## Progress` has no recent session (or none at all) — it may be stalled.
+Flag board rows whose "next task" no longer matches the first unchecked task.
+Light check — report, don't auto-fix.
+
+### 8. Report
 
 Present a summary to the user:
 
@@ -81,6 +87,7 @@ Wiki Health Check:
 - Broken links fixed: N
 - Missing index entries added: N
 - Resource issues: N (list)
+- Stalled work items: N (list)
 ```
 
 If everything is clean: "Wiki is healthy. No issues found."

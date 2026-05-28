@@ -26,7 +26,7 @@ Before scaffolding, you need:
    - **research** (default) — exploratory computation with Wiki, Code/,
      Resources/, optional Paper/. Use for open-ended investigation of a topic.
    - **math-research** — pure-math project organised around precise theorems
-     and definitions. Wiki/{Theorems,Definitions,Domains,Plans}/ created
+     and definitions. Wiki/{Theorems,Definitions,Domains}/ and a top-level Work/
      up front, math-domain taxonomy seeded, optional Lean/ subdirectory.
      Use when the work is theorem-proving or formalisation-flavoured.
    - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules,
@@ -127,8 +127,10 @@ This creates:
 ├── <CodeDir>/
 │   └── Tools.wl
 ├── Resources/
-└── Scripts/
-    └── recover_resources.sh
+├── Scripts/
+│   └── recover_resources.sh
+└── Work/
+    └── README.md
 ```
 
 ### 2. Initialize the wiki
@@ -140,10 +142,8 @@ Use the **wiki-init** skill to create the wiki structure:
 ├── Wiki/
 │   ├── Index.md
 │   ├── Status.md
-│   ├── Log.md
 │   ├── Concepts/
 │   ├── Resources/
-│   ├── Plans/
 │   ├── Notebooks/
 │   └── <Domain>/        <- project-specific folders
 ```
@@ -245,17 +245,18 @@ This creates:
 │   ├── Theorems/                    — one .md per theorem
 │   ├── Definitions/
 │   │   └── _template.md             — copy for new definitions
-│   ├── Domains/
-│   │   └── categories.md            — math-domain taxonomy seed
-│   └── Plans/                       — wiki-plan + formalization checklists
+│   └── Domains/
+│       └── categories.md            — math-domain taxonomy seed
+├── Work/                            — work items (incl. formalization checklists)
+│   └── README.md
 └── Lean/                            — only if WithLean=1
 ```
 
 ### 2. Initialize the wiki
 
 Run **wiki-init** inside `<ProjectName>/`. It will create `Index.md`,
-`Status.md`, `Log.md`, `Concepts/`, `Resources/`, `Notebooks/`. The
-`Theorems/`, `Definitions/`, `Domains/`, `Plans/` directories already exist
+`Status.md`, `Concepts/`, `Resources/`, `Notebooks/`. The
+`Theorems/`, `Definitions/`, `Domains/` directories already exist
 and should be left alone.
 
 ### 3. Adapt the domain taxonomy
@@ -304,7 +305,7 @@ If `WithLean=1` was set:
 1. Tell the user to run `cd <ProjectName>/Lean && lake new <ProjectName> math`
    themselves — this skill does not run `lake` on their behalf.
 2. Once the lakefile exists, invoke **lean-bridge** to set up a
-   `Wiki/Plans/Formalize-<topic>.md` formalization checklist for the first
+   `Work/Formalize-<topic>.md` formalization checklist for the first
    theorem.
 
 ### 9. Paper (if requested)
@@ -522,7 +523,8 @@ Tell the user:
     with `Lean/`)
   - `notebook-create` — create/edit notebooks (supports a `theorem-proof`
     template for math-research projects)
-  - `wiki-plan` — create structured plans
+  - `work` — create work items (spec / tasks / progress)
+  - `next-session` — run one task per fresh session against a work item
   - `wiki-update` — update wiki after changes
   - `tour-start` — interactive project walkthrough
 - Suggest next steps based on the topic and papers

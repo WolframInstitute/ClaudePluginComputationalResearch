@@ -3,7 +3,7 @@ name: lean-bridge
 description: >
   Drive a Lean 4 / Mathlib formalization session via the lean-lsp MCP.
   Opens a file, reads the goal state, searches Mathlib for closing lemmas,
-  verifies proofs, and writes a formalization checklist to Wiki/Plans/.
+  verifies proofs, and writes a formalization checklist to Work/.
   Use when the user says "formalize in Lean", "prove this in Lean",
   "what's the Mathlib name for X", "check this Lean proof", "lean state",
   or during math-research projects with a Lean/ subdirectory.
@@ -13,7 +13,7 @@ description: >
 
 Coherent workflow around the `lean-lsp` MCP for formalization work. The
 MCP itself is rate-limited and read-only; this skill orchestrates calls
-into a useful sequence and persists progress to `Wiki/Plans/`.
+into a useful sequence and persists progress to `Work/`.
 
 ## When this skill kicks in
 
@@ -96,7 +96,7 @@ When the user asks to **formalize** a math statement (vs. closing one
 specific goal), seed a checklist before opening Lean:
 
 1. Read `${CLAUDE_PLUGIN_ROOT}/skills/project-init/assets/formalization_checklist_template.md`.
-2. Write a copy to `Wiki/Plans/Formalize-<KebabTopic>.md`, filling in:
+2. Write a copy to `Work/Formalize-<KebabTopic>.md`, filling in:
    - **Statement** — the precise theorem in math + Lean syntax
    - **Hypotheses** — what's needed, what's assumed
    - **Proof outline** — math-level proof sketch
@@ -130,9 +130,10 @@ When you produce Lean code for the user:
 
 - [math-resources](../math-resources/SKILL.md) — look up math background
   before formalizing (nLab definitions, MathWorld theorem statements).
-- [wiki-plan](../wiki-plan/SKILL.md) — the formalization checklist is a
-  structured plan; update it via `wiki-plan` if the formalization is
-  multi-session.
+- [work](../work/SKILL.md) — the formalization checklist is a `Type:
+  formalization` work item; [next-session](../next-session/SKILL.md) drives it
+  across sessions (one Lean sub-goal per session) while this skill is the
+  per-task engine.
 - [resource-add](../resource-add/SKILL.md) — when a Mathlib commit, blog
   post, or proof-assistant paper informs the work, add it as a resource.
 

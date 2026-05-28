@@ -22,10 +22,8 @@ The core structure is fixed:
 Wiki/
   Index.md
   Status.md
-  Log.md
   Concepts/
   Resources/
-  Plans/
   Notebooks/
   <Domain>/         ← user chooses these
 ```
@@ -47,7 +45,7 @@ If the user doesn't care, pick sensible defaults based on the repo.
 ## Step 2 — Create the folder structure
 
 Create all directories and seed files. Use empty `.gitkeep` files in folders
-that start empty (except `Plans/`, `Concepts/`, `Resources/`, `Notebooks/` which
+that start empty (except `Concepts/`, `Resources/`, `Notebooks/` which
 get populated via other skills).
 
 ## Step 3 — Seed Index.md
@@ -58,13 +56,13 @@ get populated via other skills).
 Knowledge base for [project]. Updated after each substantial step.
 All articles are **draft** until reviewed — see revision workflow.
 
-## Status & Log
+## Status
 - [Status](Status.md) — current state
-- [Activity Log](Log.md) — what happened and when
 
-## Plans
+## Work
 
-(none yet)
+Execution state (specs, tasks, per-session progress) lives in the top-level
+`Work/` folder, not the Wiki. See `Work/README.md`.
 
 ## Concepts
 
@@ -110,19 +108,7 @@ Wiki initialized. No articles yet.
 
 Populate with real information if the repo already has content worth summarizing.
 
-## Step 5 — Seed Log.md
-
-```markdown
-# Activity Log
-
-Reverse-chronological record of all actions.
-
-| Date | Actor | Action |
-|---|---|---|
-| YYYY-MM-DD | LLM | Initialized wiki |
-```
-
-## Step 6 — Update CLAUDE.md
+## Step 5 — Update CLAUDE.md
 
 Append the wiki section to the repo's `CLAUDE.md` (create the file if it
 doesn't exist). Use this template:
@@ -139,17 +125,22 @@ After every substantial step, the LLM:
 1. Creates or updates relevant articles in Wiki/
 2. Updates Wiki/Index.md
 3. Updates Wiki/Status.md
-4. Appends to Wiki/Log.md
-5. Adds cross-links in See also sections
+4. Adds cross-links in See also sections
 
 The wiki is documentation — the LLM keeps it accurate automatically.
 No human sign-off needed for wiki prose.
 
 ### Human revision (code & functionality)
 
-The LLM always presents new code, functionality, and plans to the user for
+The LLM always presents new code, functionality, and work specs to the user for
 review. It does not silently overwrite user-edited content. The revision loop:
 generate → present → wait for feedback → revise or proceed.
+
+### Work items (execution state)
+
+Multi-session work lives in the top-level `Work/` folder (spec / tasks /
+progress per item), separate from the Wiki. Run `/next-session` in a fresh
+session to do the next task. See `Work/README.md`.
 
 ### Resources
 
@@ -172,7 +163,7 @@ created on demand (local, gitignored). Each section produces a narrative .md
 and runnable code file. The LLM stops after each section for feedback.
 ```
 
-## Step 7 — Update .gitignore
+## Step 6 — Update .gitignore
 
 Add these entries if not already present:
 
@@ -188,7 +179,7 @@ with lines like `!Resources/SubmoduleName/`.
 `Wiki/` itself is tracked. `Tour/`, `Resources/` (binary files), and generated
 `.nb` files are gitignored.
 
-## Step 8 — Scan and seed articles
+## Step 7 — Scan and seed articles
 
 If the repo already has code, documentation, or other content:
 

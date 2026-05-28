@@ -2,7 +2,8 @@
 
 A Claude plugin for AI-assisted computational research with a wiki-based
 knowledge management system, human revision workflow, guided tours, Wolfram
-paclet development, LaTeX paper scaffolding, and notebook generation.
+paclet development, LaTeX paper scaffolding, notebook generation, and
+session-based work tracking (spec/tasks/progress).
 
 ## Plugin Architecture
 
@@ -15,7 +16,7 @@ hooks/                         — PreToolUse hooks (e.g., block .nb reads)
 skills/project-init/assets/    — templates for scaffolding
 ```
 
-### Skills (16)
+### Skills (17)
 
 | Skill | Type | Purpose |
 |-------|------|---------|
@@ -26,7 +27,8 @@ skills/project-init/assets/    — templates for scaffolding
 | `wiki-init` | wiki | Create Wiki/ knowledge base from scratch |
 | `wiki-update` | wiki | Update articles, index, status, log after changes |
 | `wiki-health` | wiki | Audit wiki for staleness, gaps, broken links |
-| `wiki-plan` | wiki | Structured plans in Wiki/Plans/ with lifecycle |
+| `work` | workflow | Create/manage work items in Work/ (spec, tasks, per-session progress) |
+| `next-session` | workflow | Run one task per fresh session against a work item, then stop |
 | `revise` | protocol | Human revision loop — not invoked directly, other skills follow it |
 | `resource-add` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
 | `cite-from-id` | content | Generate BibTeX from arXiv ID or DOI |
@@ -63,7 +65,7 @@ skills/project-init/assets/    — templates for scaffolding
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-### Commands (17)
+### Commands (18)
 
 | Command | Invokes |
 |---------|---------|
@@ -72,7 +74,8 @@ skills/project-init/assets/    — templates for scaffolding
 | `init-wiki` | wiki-init |
 | `update-wiki` | wiki-update |
 | `check-wiki` | wiki-health |
-| `plan` | wiki-plan |
+| `work` | work |
+| `next-session` | next-session |
 | `add-resource` | resource-add |
 | `new-notebook` | notebook-create |
 | `search-wolfram` | wolfram-resources |
@@ -83,7 +86,7 @@ skills/project-init/assets/    — templates for scaffolding
 | `publish-paclet` | paclet-publish |
 | `start-tour` | tour-start |
 | `check-env` | check-env.sh + MCP ping |
-| `load-project` | reads Wiki/ status |
+| `load-project` | reads Wiki/ + Work/ status |
 
 ### Templates (in skills/project-init/assets/)
 
@@ -96,7 +99,9 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `math_categories_template.md` | Math-domain taxonomy seed (adapted from PureMath) |
 | `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by notebook-create) |
 | `formal_definition_template.md` | Wiki/Definitions/ article template |
-| `formalization_checklist_template.md` | Wiki/Plans/Formalize-*.md skeleton (used by lean-bridge) |
+| `formalization_checklist_template.md` | Work/Formalize-*.md skeleton, a Type: formalization work item (used by lean-bridge) |
+| `work_item_template.md` | Work/<Name>.md skeleton: Spec / Tasks / Progress / Decisions (used by work, next-session) |
+| `work_readme_template.md` | Work/README.md board, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules appended to every generated CLAUDE.md (research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared preamble: fonts, math, biblatex, theorems, macros |
@@ -113,15 +118,15 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 
 Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`,
 `{{GOALS}}`, `{{PACLET_NAME}}`, `{{ORG_NAME}}`, `{{AUTHOR}}`, `{{EMAIL}}`,
-`{{TITLE}}`, `{{ABSTRACT}}`, `{{CODE_DIR}}`.
+`{{TITLE}}`, `{{ABSTRACT}}`, `{{CODE_DIR}}`, `{{ITEM_NAME}}`.
 
 ## Project Types (scaffolding)
 
 The `project-init` skill asks users which type of project to create:
 
-- **research** (default) — Code/, Wiki/, Resources/, optional Paper/.
+- **research** (default) — Code/, Wiki/, Work/, Resources/, optional Paper/.
   Open-ended exploration of a topic.
-- **math-research** — Wiki/{Theorems,Definitions,Domains,Plans}/ pre-created,
+- **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created,
   math-domain taxonomy seeded, optional Lean/ subdirectory. Organised around
   precise theorems and definitions rather than open-ended exploration. Pairs
   with `math-resources`, `cite-from-id`, `lean-bridge`, and the `theorem-proof`

@@ -167,11 +167,6 @@ The recovery script parses these to rebuild `Resources/`.
 
 2. Add cross-links to related articles' See also sections
 
-3. Append to `Wiki/Log.md`:
-   ```markdown
-   | YYYY-MM-DD | LLM | Added resource: Author Year — Short Title |
-   ```
-
 ### Step 4 — Read and summarize (if paper)
 
 For papers specifically:
