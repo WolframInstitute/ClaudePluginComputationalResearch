@@ -38,7 +38,7 @@ skills/project-init/assets/    — templates for scaffolding
 | `paclet-build` | paclet | Build .paclet archive and install locally |
 | `paclet-publish` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
 
-### Scripts (22)
+### Scripts (23)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -49,6 +49,7 @@ skills/project-init/assets/    — templates for scaffolding
 | `scaffold-paper.sh` | bash | paper-init skill |
 | `build_paclet.wls` | wolframscript | paclet-build skill |
 | `publish_paclet.wls` | wolframscript | paclet-publish skill |
+| `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls) |
 | `search_wolfram_docs.wls` | wolframscript | wolfram-resources skill |
 | `search_function_repo.wls` | wolframscript | wolfram-resources skill |
 | `search_wolfram_community.wls` | wolframscript | wolfram-resources skill (URL constructor) |
