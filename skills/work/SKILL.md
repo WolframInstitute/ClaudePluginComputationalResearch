@@ -26,21 +26,6 @@ If `Work/` does not exist, create it and seed `Work/README.md` from
 `${CLAUDE_PLUGIN_ROOT}/skills/project-init/assets/work_readme_template.md`
 (substitute the project name). The folder is tracked in git — do not gitignore it.
 
-## Migrate old plans (first use)
-
-If the project still has a non-empty `Wiki/Plans/` (from before this system), the
-planning role has moved to `Work/`. Offer to migrate, then follow `revise` — plans
-are user content:
-
-1. Map each `Wiki/Plans/<Name>.md` to `Work/<Name>.md`:
-   - `## Goal` → the `## Spec` opening paragraph
-   - `## Steps` → `## Tasks` (checked steps go to `### Done`)
-   - `## Decisions` → `## Decisions`
-   - `## History` → a first `## Progress` note summarizing prior work
-   - the `> Status:` line carries over (`completed` → `done`)
-2. Present the mapping for the first plan, wait for approval, then convert the rest.
-3. Remove `Wiki/Plans/` and drop its pointer from `Wiki/Index.md`.
-
 ## Creating a work item
 
 ### 1. Draft

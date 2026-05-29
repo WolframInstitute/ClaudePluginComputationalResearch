@@ -36,6 +36,11 @@ cd "$OUTPUT_DIR"
 mkdir -p "$DEV_REPO_NAME/Code"
 echo "Created: $DEV_REPO_NAME/Code/"
 
+mkdir -p "$DEV_REPO_NAME/Work"
+sed -e "s/{{PROJECT_NAME}}/$DEV_REPO_NAME/g" \
+    "$ASSETS_DIR/work_readme_template.md" > "$DEV_REPO_NAME/Work/README.md"
+echo "Created: $DEV_REPO_NAME/Work/README.md"
+
 # ── 2. Each paclet (triple-nested) ───────────────────────────────────────
 
 for PACLET in "${PACLETS[@]}"; do
@@ -155,6 +160,7 @@ echo "Created: $DEV_REPO_NAME/.gitignore"
     echo ""
     echo "## Other directories"
     echo ""
+    echo "- \`Work/\` — execution state (specs / tasks / per-session progress); \`Work/README.md\` is the board. Use \`/work\` and \`/next-session\`."
     echo "- \`Code/\` — experimental/unrevised code (dev repo only)"
     echo "- \`Wiki/\` — plain-markdown knowledge base"
     echo "- \`Notebooks/\` — generated .nb files (gitignored)"
@@ -204,6 +210,7 @@ for PACLET in "${PACLETS[@]}"; do
     echo "    run_tests.wls"
 done
 echo "  Code/                             — experimental/unrevised code"
+echo "  Work/README.md                    — work-item board (spec / tasks / progress)"
 echo "  Scripts/"
 echo "  .gitmodules"
 echo "  .gitignore"

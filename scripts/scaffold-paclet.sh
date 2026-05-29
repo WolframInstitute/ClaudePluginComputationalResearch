@@ -30,6 +30,11 @@ PACLET_DIR="$REPO_ROOT/$PACLET_NAME"
 
 mkdir -p "$PACLET_DIR/Kernel"
 mkdir -p "$PACLET_DIR/Tests"
+mkdir -p "$REPO_ROOT/Work"
+
+sed -e "s/{{PROJECT_NAME}}/$PACLET_NAME/g" \
+    "$ASSETS_DIR/work_readme_template.md" > "$REPO_ROOT/Work/README.md"
+echo "Created: $REPO_ROOT/Work/README.md"
 
 # ── 2. Paclet files ──────────────────────────────────────────────────────
 
@@ -93,7 +98,15 @@ $PACLET_NAME/              <- repo root
       RunAllTests.wl
   run_tests.wls
   README.md
+  Work/                    <- execution state (specs / tasks / progress)
 \`\`\`
+
+## Work
+
+\`Work/\` holds execution state — what's being built now. Each file is one work
+item: a Spec, Tasks (one ≈ one session), and a Progress log; \`Work/README.md\`
+is the board. Use \`/work <goal>\` to create one and \`/next-session\` to do one
+task per fresh session.
 
 ## Package system
 
@@ -131,6 +144,7 @@ echo "  $PACLET_NAME/Tests/"
 echo "  run_tests.wls"
 echo "  README.md"
 echo "  .gitignore"
+echo "  Work/README.md       — work-item board (spec / tasks / progress per effort)"
 echo "  CLAUDE.md"
 echo ""
 echo "Next: add kernel modules, tests, and optionally initialize Wiki/."
