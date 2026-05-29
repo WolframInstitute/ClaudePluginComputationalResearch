@@ -167,15 +167,17 @@ git clone git@github.com:WolframInstitute/ClaudePluginMarketplace.git ClaudePlug
 
 ### Blog post
 
-The plugin's blog post lives in a local clone of `p135246/p135246.github.io`
-(gitignored). When skills, commands, or features change, update the post:
+The plugin's blog post lives in the author's **live** clone of
+`p135246/p135246.github.io`:
 
-- `p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md`
+- `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md`
 
-If missing, re-clone:
-```bash
-git clone git@github.com:p135246/p135246.github.io.git p135246.github.io
-```
+When skills, commands, or features change, update the post there. This is an
+active, **public** repo that carries the author's own commits and may be ahead
+of / behind its remote — edit the post and present changes for review, but do
+**not** commit or push it as part of plugin changes; the author syncs and
+publishes it. The in-project `ComputationalResearch/p135246.github.io/` clone is
+stale and **not** canonical.
 
 ### Keeping CLAUDE.md current
 
