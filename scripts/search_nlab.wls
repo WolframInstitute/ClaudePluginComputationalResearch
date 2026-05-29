@@ -17,6 +17,7 @@ links = Quiet @ Import[
     "https://ncatlab.org/nlab/search?query=" <> URLEncode[ keywords ],
     "Hyperlinks"
 ];
+If[ !ListQ[ links ], WriteString[ $Messages, "search_nlab: fetch failed (network or site markup change)\n" ] ];
 
 pageLinks = If[ ListQ[ links ],
     Union @ Select[ links,

@@ -17,6 +17,7 @@ links = Quiet @ Import[
     "https://mathworld.wolfram.com/search/?query=" <> URLEncode[ keywords ],
     "Hyperlinks"
 ];
+If[ !ListQ[ links ], WriteString[ $Messages, "search_mathworld: fetch failed (network or site markup change)\n" ] ];
 
 entryLinks = If[ ListQ[ links ],
     Union @ Select[ links,

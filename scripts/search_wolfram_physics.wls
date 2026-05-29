@@ -17,18 +17,9 @@ keywordPattern = Alternatives @@ keywords;
 
 baseUrl = "https://www.wolframphysics.org";
 
-(* Helper: fetch links and filter by keywords *)
-fetchAndFilter[ url_String, linkPattern_String ] :=
-    Module[ { links },
-        links = Quiet @ Import[ url, "Hyperlinks" ];
-        If[ !ListQ[ links ], Return[ {} ] ];
-        links = Union @ Select[ links, StringContainsQ[ #, linkPattern ] & ];
-        Select[ links,
-            StringContainsQ[ #, keywordPattern, IgnoreCase -> True ] & ]
-    ]
-
 (* 1. Glossary — terms and definitions *)
 glossaryLinks = Quiet @ Import[ baseUrl <> "/glossary/", "Hyperlinks" ];
+If[ !ListQ[ glossaryLinks ], WriteString[ $Messages, "search_wolfram_physics: glossary fetch failed (network or site markup change)\n" ] ];
 glossaryTerms = If[ ListQ[ glossaryLinks ],
     Module[ { termLinks },
         termLinks = Select[ glossaryLinks,
@@ -53,6 +44,7 @@ glossaryTerms = Select[ glossaryTerms,
 
 (* 2. Archives — bulletins and working materials *)
 archiveLinks = Quiet @ Import[ baseUrl <> "/archives/index/", "Hyperlinks" ];
+If[ !ListQ[ archiveLinks ], WriteString[ $Messages, "search_wolfram_physics: archives fetch failed (network or site markup change)\n" ] ];
 archives = If[ ListQ[ archiveLinks ],
     Module[ { bulletinLinks },
         bulletinLinks = Select[ archiveLinks,
@@ -74,6 +66,7 @@ archives = If[ ListQ[ archiveLinks ],
 
 (* 3. Technical documents *)
 techLinks = Quiet @ Import[ baseUrl <> "/technical-documents/", "Hyperlinks" ];
+If[ !ListQ[ techLinks ], WriteString[ $Messages, "search_wolfram_physics: technical-documents fetch failed (network or site markup change)\n" ] ];
 techDocs = If[ ListQ[ techLinks ],
     Module[ { docLinks },
         docLinks = Select[ techLinks,
@@ -94,6 +87,7 @@ techDocs = If[ ListQ[ techLinks ],
 
 (* 4. Tools page — list available software *)
 toolLinks = Quiet @ Import[ baseUrl <> "/tools/", "Hyperlinks" ];
+If[ !ListQ[ toolLinks ], WriteString[ $Messages, "search_wolfram_physics: tools fetch failed (network or site markup change)\n" ] ];
 tools = If[ ListQ[ toolLinks ],
     Module[ { toolPageLinks },
         toolPageLinks = Select[ toolLinks,

@@ -72,8 +72,9 @@ Update summaries if they've changed. Entry format:
 
 ### 4. Update Wiki/Status.md
 
-If the project state changed (something completed, new blocker, new in-progress
-work), update the relevant sections:
+If the knowledge base changed (new results, articles, or open questions), update
+the relevant sections. Execution state — active work and blockers — lives in
+`Work/README.md`, not here:
 
 ```markdown
 # Status
@@ -82,13 +83,13 @@ work), update the relevant sections:
 
 Brief summary of where the project stands.
 
-## In progress
+## Recent changes
 
-- Active work items and their next task (see Work/README.md)
+- What changed recently in the knowledge base
 
-## Blockers
+## Open questions
 
-- What's blocking progress (if anything)
+- Unresolved questions worth surfacing
 ```
 
 ### 5. Add cross-links

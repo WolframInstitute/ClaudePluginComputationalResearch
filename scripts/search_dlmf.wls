@@ -19,6 +19,7 @@ html = Quiet @ Import[
     "https://dlmf.nist.gov/search/search?q=" <> URLEncode[ keywords ],
     "Text"
 ];
+If[ !StringQ[ html ], WriteString[ $Messages, "search_dlmf: fetch failed (network or site markup change)\n" ] ];
 
 matches = If[ StringQ[ html ],
     StringCases[ html, RegularExpression[ "\\.\\./([0-9]+(?:\\.[0-9A-Za-z]+)+(?:#[A-Za-z0-9._]+)?)" ] :> "$1" ],

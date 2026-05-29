@@ -29,7 +29,6 @@ OUTPUT_DIR="${3:-.}"
 AUTHOR_NAME="${4:-Pavel H\'ajek}"
 AUTHOR_EMAIL="${5:-p135246@gmail.com}"
 CODE_DIR="${6:-Code}"
-TODAY=$(date +%Y-%m-%d)
 
 mkdir -p "$OUTPUT_DIR"
 cd "$OUTPUT_DIR"

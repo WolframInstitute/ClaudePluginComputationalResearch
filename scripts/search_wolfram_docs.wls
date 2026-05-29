@@ -32,6 +32,7 @@ guideLinks = Quiet @ Import[
     "https://reference.wolfram.com/language/search/?query=" <> URLEncode[ StringRiffle[ keywords, " " ] ],
     "Hyperlinks"
 ];
+If[ !ListQ[ guideLinks ], WriteString[ $Messages, "search_wolfram_docs: guide/tutorial fetch failed (network or site markup change)\n" ] ];
 guides = If[ ListQ[ guideLinks ],
     Union @ Select[ guideLinks,
         StringContainsQ[ #, {"/guide/", "/tutorial/"} ] &&

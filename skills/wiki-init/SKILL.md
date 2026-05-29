@@ -97,14 +97,17 @@ One section per domain folder. Link format: `[Title](Folder/File.md) — summary
 
 Wiki initialized. No articles yet.
 
-## In progress
+## Recent changes
 
-(nothing)
+(none yet)
 
-## Blockers
+## Open questions
 
 (none)
 ```
+
+`Status.md` summarizes the knowledge base. Execution state — active work, next
+tasks, blockers — lives in `Work/README.md`, not here.
 
 Populate with real information if the repo already has content worth summarizing.
 

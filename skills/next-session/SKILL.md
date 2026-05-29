@@ -57,8 +57,8 @@ row in the `Work/README.md` board (status + next task).
 
 Invoke `wiki-update` for anything that became durable knowledge this session — a new
 function, a result, a definition, a decision. It updates `Wiki/` articles and
-`Status.md` (point "In progress" at the active work items). There is no activity
-log; git and `## Progress` are the record.
+`Status.md`. The Work board (already updated above) owns active items and blockers.
+There is no activity log; git and `## Progress` are the record.
 
 ## 8. Commit
 

@@ -17,8 +17,6 @@ If[!DirectoryQ[outDir],
 	CreateDirectory[outDir]
 ];
 
-tick = FromCharacterCode[96];
-
 markInitCells[cellList_List] :=
 	Module[
 		{inSetup = False, result = {}},

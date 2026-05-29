@@ -13,7 +13,7 @@ keywords = StringRiffle[ $ScriptCommandLine[[ 2 ;; ]], " " ];
 url = "https://writings.stephenwolfram.com/?s=" <> URLEncode[ keywords ];
 
 links = Quiet @ Import[ url, "Hyperlinks" ];
-If[ !ListQ[ links ], Print[ "[]" ]; Exit[ 0 ] ];
+If[ !ListQ[ links ], WriteString[ $Messages, "search_wolfram_writings: fetch failed (network or site markup change)\n" ]; Print[ "[]" ]; Exit[ 0 ] ];
 
 postLinks = Union @ Select[ links,
     StringMatchQ[ #, "https://writings.stephenwolfram.com/20" ~~ __ ] &&

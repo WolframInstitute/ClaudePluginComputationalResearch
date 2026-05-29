@@ -41,6 +41,7 @@ If[ Length[ results ] == 0,
         "https://resources.wolframcloud.com/FunctionRepository/search/?search=" <> URLEncode[ keywords ],
         "Hyperlinks"
     ];
+    If[ !ListQ[ links ], WriteString[ $Messages, "search_function_repo: fallback fetch failed (network or site markup change)\n" ] ];
     If[ ListQ[ links ],
         functionLinks = Union @ Select[ links,
             StringContainsQ[ #, "/FunctionRepository/resources/" ] &&
