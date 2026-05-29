@@ -1,20 +1,18 @@
 #!/usr/bin/env wolframscript
 
-(* generate_notebooks.wls — Build .nb files from Wiki/Notebooks/*.md sources *)
+(* generate_notebooks.wls — Build .nb files from NotebooksLLM/*.md sources.
+   Source .md and generated .nb are co-located in NotebooksLLM/; .md is
+   tracked, .nb is gitignored. Notebooks/ (hand-authored) is never touched. *)
 
-root = DirectoryName[$ScriptCommandLine[[1]]];
-wikiDir = FileNameJoin[{root, "Wiki", "Notebooks"}];
-outDir = FileNameJoin[{root, "Notebooks"}];
+(* Scripts live in <root>/Scripts/, so climb one level for the project root. *)
+root = ParentDirectory[DirectoryName[$ScriptCommandLine[[1]]]];
+nbDir = FileNameJoin[{root, "NotebooksLLM"}];
 
-mdFiles = FileNames["*.md", wikiDir];
+mdFiles = FileNames["*.md", nbDir];
 
 If[mdFiles === {},
-	Print["No .md sources found in ", wikiDir];
+	Print["No .md sources found in ", nbDir];
 	Exit[1]
-];
-
-If[!DirectoryQ[outDir],
-	CreateDirectory[outDir]
 ];
 
 markInitCells[cellList_List] :=
@@ -36,6 +34,28 @@ markInitCells[cellList_List] :=
 			{c, cellList}
 		];
 		result
+	]
+
+(* Boxifying a cell whose code builds Graphics (Plot, HighlightGraph,
+   InfraSceneHighlight, ...) strands it with a "Map is not a Graphics
+   primitive" error at front-end evaluation, so leave such cells as plain
+   text and boxify everything else (for hover/F1 docs). *)
+vizHeads = {"Graphics", "Plot", "HighlightGraph", "InfraSceneHighlight",
+	"Chart", "Histogram", "Manipulate", "Animate", "ArrayPlot", "MatrixPlot",
+	"DensityPlot", "ContourPlot", "RegionPlot", "GraphPlot", "Show[", "Graph["};
+
+vizCellQ[content_String] :=
+	StringContainsQ[content, vizHeads]
+
+boxifyCell[content_String, style_, opts___] :=
+	If[vizCellQ[content],
+		Cell[BoxData[content], style, opts],
+		With[{parsed = ToExpression[content, StandardForm, Defer]},
+			If[parsed === $Failed,
+				Cell[BoxData[content], style, opts],
+				Cell[BoxData[ToBoxes[parsed]], style, opts]
+			]
+		]
 	]
 
 (* Parse a leading `<!-- provenance: key: value ... -->` block (see the
@@ -63,15 +83,14 @@ parseProvenance[text_String] :=
 
 Print["Notebook Generator"];
 Print["==================="];
-Print["Source:  ", wikiDir];
-Print["Output:  ", outDir];
+Print["Folder:  ", nbDir];
 Print[""];
 
 results = {};
 
 Do[
 	baseName = FileBaseName[mdFile];
-	outFile = FileNameJoin[{outDir, baseName <> ".nb"}];
+	outFile = FileNameJoin[{nbDir, baseName <> ".nb"}];
 	Print["[", baseName, "] Converting..."];
 
 	md = Import[mdFile, "Text"];
@@ -85,20 +104,8 @@ Do[
 	cells = First[nb];
 	cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
 	cells = cells /. {
-		Cell[BoxData[content_String], style:("Input" | "Code"), opts___] :>
-			With[ { parsed = ToExpression[ content, StandardForm, Defer ] },
-				If[ parsed === $Failed,
-					Cell[ BoxData[ content ], style, opts ],
-					Cell[ BoxData[ ToBoxes[ parsed ] ], style, opts ]
-				]
-			],
-		Cell[content_String, style:("Input" | "Code"), opts___] :>
-			With[ { parsed = ToExpression[ content, StandardForm, Defer ] },
-				If[ parsed === $Failed,
-					Cell[ BoxData[ content ], style, opts ],
-					Cell[ BoxData[ ToBoxes[ parsed ] ], style, opts ]
-				]
-			]
+		Cell[BoxData[content_String], style:("Input" | "Code"), opts___] :> boxifyCell[content, style, opts],
+		Cell[content_String, style:("Input" | "Code"), opts___] :> boxifyCell[content, style, opts]
 	};
 	cells = markInitCells[cells];
 

@@ -1,6 +1,6 @@
 Paper/
 Resources/
-Notebooks/
+NotebooksLLM/*.nb
 Tour/
 .claude/settings.local.json
 .DS_Store

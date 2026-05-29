@@ -53,8 +53,9 @@ Prompt tracking: **off**
   must first have a `Wiki/Definitions/<Term>.md` entry. Copy
   `Wiki/Definitions/_template.md` for the right structure.
 - **Compute to explore.** Use Wolfram code (in `{{CODE_DIR}}/`) for examples,
-  counterexamples, plotting structure, testing conjectures. Notebooks live
-  under `Wiki/Notebooks/*.md` → `Notebooks/*.nb` (two-layer pipeline).
+  counterexamples, plotting structure, testing conjectures. LLM notebooks live
+  under `NotebooksLLM/*.md` → `NotebooksLLM/*.nb` (co-located two-layer pipeline);
+  `Notebooks/` is reserved for your hand-authored files and is never touched.
 - **Reference precisely.** When a fact comes from MathWorld, nLab, DLMF,
   OEIS, Wikipedia, or a paper, link it from the relevant `Wiki/Definitions/`
   or `Wiki/Theorems/` article. Use the `search-math` skill to discover

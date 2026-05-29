@@ -1,10 +1,10 @@
 #!/usr/bin/env wolframscript
 
-(* publish_notebooks.wls — Build .nb from Wiki/Notebooks/*.md and upload to Wolfram Cloud *)
+(* publish_notebooks.wls — Build .nb from NotebooksLLM/*.md and upload to Wolfram Cloud *)
 
-root = DirectoryName[$ScriptCommandLine[[1]]];
-wikiDir = FileNameJoin[{root, "Wiki", "Notebooks"}];
-nbDir = FileNameJoin[{root, "Notebooks"}];
+(* Scripts live in <root>/Scripts/, so climb one level for the project root. *)
+root = ParentDirectory[DirectoryName[$ScriptCommandLine[[1]]]];
+nbDir = FileNameJoin[{root, "NotebooksLLM"}];
 
 (* First generate notebooks from wiki sources *)
 Print["Building notebooks from wiki sources..."];

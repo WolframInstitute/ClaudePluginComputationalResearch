@@ -18,7 +18,9 @@ Additional topic scopes follow the same pattern:
 - `{{CODE_DIR}}/<Topic>Experiment.wl` — experiments
 - `{{CODE_DIR}}/<Topic>Test.wl` — tests (VerificationTest + TestReport)
 
-Notebooks: `<Topic>1.nb` per topic, `Test1.nb` for tests.
+Notebooks: LLM-generated notebooks go in `NotebooksLLM/` (`<Topic>1.nb` per
+topic, `Test1.nb` for tests); `Notebooks/` is reserved for your hand-authored
+files and is never touched by the LLM.
 
 ## Resources
 

@@ -3,7 +3,7 @@ name: new-notebook
 description: >
   Create or modify Wolfram Notebooks (.nb) from structured Markdown content
   using the Wolfram MCP. This is the unified notebook skill — use it for
-  creating new notebooks, editing existing ones, or converting Wiki/Notebooks/
+  creating new notebooks, editing existing ones, or converting NotebooksLLM/
   markdown sources into .nb files. Triggers on: "create notebook", "make a
   notebook", "notebook about X", "edit notebook", "update notebook",
   "put this in a notebook", "generate .nb". Also used by other skills
@@ -34,23 +34,34 @@ gets imported as a Notebook expression, post-processed, then serialized back to 
 string via `ExportString`. You then write that string to the target `.nb` file using
 the local `Write` tool.
 
-## Two-layer architecture
+## Where notebooks live — Critical
 
-Notebook sources are Markdown files in `Wiki/Notebooks/`. They get converted to `.nb`
-files in `Notebooks/` (gitignored).
+All LLM notebook artifacts live in `NotebooksLLM/`. The plain `Notebooks/`
+folder is reserved for user-authored notebooks — **never read, write, or
+overwrite anything in `Notebooks/`.** Within `NotebooksLLM/` you may freely
+create and overwrite; you may not touch `Notebooks/`.
+
+## Two-layer architecture (co-located)
+
+Source and output live side by side in `NotebooksLLM/`:
 
 ```
-Wiki/Notebooks/Name.md   ← tracked in git, source of truth
-Notebooks/Name.nb        ← gitignored, generated from source
+NotebooksLLM/Name.md   ← tracked in git, source of truth
+NotebooksLLM/Name.nb   ← gitignored (NotebooksLLM/*.nb), generated from the .md
+Notebooks/             ← user-authored notebooks; LLM never touches these
 ```
+
+The `.md` source is the durable, hand-editable artifact; the `.nb` is
+regenerated from it. These are **not** wiki articles — they do not go in
+`Wiki/`.
 
 ### When to use the source layer
 
-- Creating a notebook intended to persist across sessions → write `Wiki/Notebooks/Name.md`
-  as the source, then generate `.nb`
-- Quick one-off exploration → generate `.nb` directly, skip the wiki source
+- Creating a notebook intended to persist across sessions → write `NotebooksLLM/Name.md`
+  as the source, then generate the `.nb`
+- Quick one-off exploration → generate `NotebooksLLM/Name.nb` directly, skip the `.md` source
 
-### Source format (Wiki/Notebooks/Name.md)
+### Source format (NotebooksLLM/Name.md)
 
 A structured Markdown file following the cell mapping rules below. Example:
 
@@ -72,11 +83,11 @@ becomes Text cells.
 
 ### Generating .nb from source
 
-Read `Wiki/Notebooks/Name.md`, pass its content through the Wolfram MCP pipeline
-(below), write the result to `Notebooks/Name.nb`.
+Read `NotebooksLLM/Name.md`, pass its content through the Wolfram MCP pipeline
+(below), write the result to `NotebooksLLM/Name.nb`.
 
 Alternatively, run `Scripts/generate_notebooks.wls` to batch-convert
-all wiki notebook sources:
+all `.md` sources in `NotebooksLLM/`:
 
 ```bash
 wolframscript -file Scripts/generate_notebooks.wls
@@ -88,12 +99,6 @@ To also publish to Wolfram Cloud:
 wolframscript -file Scripts/publish_notebooks.wls
 ```
 
-### Registering a notebook
-
-After creating a notebook with a wiki source:
-
-1. Add entry to `Wiki/Index.md` under Notebooks
-
 ### Provenance (optional)
 
 If the project has prompt tracking on (a `Prompt tracking: **on**` line in
@@ -101,7 +106,7 @@ If the project has prompt tracking on (a `Prompt tracking: **on**` line in
 originating prompt/intent for the notebook:
 
 1. Write a leading `<!-- provenance: ... -->` comment at the top of the
-   `Wiki/Notebooks/Name.md` source. `generate_notebooks.wls` strips it before
+   `NotebooksLLM/Name.md` source. `generate_notebooks.wls` strips it before
    import and injects it into the `.nb` as
    `Notebook[cells, TaggingRules -> {"Provenance" -> <|...|>}]`. Do **not** write
    `TaggingRules` yourself.
@@ -365,30 +370,45 @@ each symbol name is a leaf string and function tokens (`FindPoint`) are
 adjacent to their argument bracket (`[`).
 
 Boxify Input/Code cells via `ToBoxes[ToExpression[code, StandardForm, Defer]]`
-so the symbol structure is preserved:
+so the symbol structure is preserved — **except** cells that build graphics.
+
+**Visualization guard — Critical.** Boxifying a cell whose code produces
+`Graphics` (`Plot`, `HighlightGraph`, `InfraSceneHighlight`, `ListLinePlot`,
+`GraphPlot`, charts, etc.) strands the cell with a `Map is not a Graphics
+primitive` error at front-end evaluation. Leave those cells as plain-text
+`BoxData[content]` (same as the parse-failure fallback) and boxify everything
+else:
 
 ```wolfram
+vizHeads = {"Graphics", "Plot", "HighlightGraph", "InfraSceneHighlight",
+  "Chart", "Histogram", "Manipulate", "Animate", "ArrayPlot", "MatrixPlot",
+  "DensityPlot", "ContourPlot", "RegionPlot", "GraphPlot", "Show[", "Graph["};
+vizCellQ[content_String] := StringContainsQ[content, vizHeads];
+
 boxifyInputCells[cellList_List] := cellList /. {
   Cell[BoxData[content_String], style:("Input"|"Code"), opts___] :>
-    With[{parsed = ToExpression[content, StandardForm, Defer]},
-      If[parsed === $Failed,
-        Cell[BoxData[content], style, opts],
-        Cell[BoxData[ToBoxes[parsed]], style, opts]
-      ]
-    ],
+    If[vizCellQ[content], Cell[BoxData[content], style, opts],
+      With[{parsed = ToExpression[content, StandardForm, Defer]},
+        If[parsed === $Failed,
+          Cell[BoxData[content], style, opts],
+          Cell[BoxData[ToBoxes[parsed]], style, opts]
+        ]
+      ]],
   Cell[content_String, style:("Input"|"Code"), opts___] :>
-    With[{parsed = ToExpression[content, StandardForm, Defer]},
-      If[parsed === $Failed,
-        Cell[BoxData[content], style, opts],
-        Cell[BoxData[ToBoxes[parsed]], style, opts]
-      ]
-    ]
+    If[vizCellQ[content], Cell[BoxData[content], style, opts],
+      With[{parsed = ToExpression[content, StandardForm, Defer]},
+        If[parsed === $Failed,
+          Cell[BoxData[content], style, opts],
+          Cell[BoxData[ToBoxes[parsed]], style, opts]
+        ]
+      ]]
 };
 ```
 
 `Defer` keeps the parsed expression unevaluated so `ToBoxes` produces the
 structural box tree without running the code. Falls back to
-`BoxData[rawString]` if parsing fails (e.g. partial code).
+`BoxData[rawString]` if parsing fails (e.g. partial code) or if the cell is a
+visualization cell.
 
 **Apply this AFTER `ImportString` and BEFORE `ExportString`** in every notebook
 pipeline. Do not skip — without it, every Input cell ships broken.
@@ -420,26 +440,33 @@ must NOT trigger).
 ## The complete Wolfram MCP call
 
 ```wolfram
-Module[{md, nb, cells, markInitCells, boxifyInputCells, tick, fence},
+Module[{md, nb, cells, markInitCells, boxifyInputCells, vizCellQ, vizHeads, tick, fence},
 
   tick = FromCharacterCode[96];
   fence = StringJoin[tick, tick, tick];
 
+  vizHeads = {"Graphics", "Plot", "HighlightGraph", "InfraSceneHighlight",
+    "Chart", "Histogram", "Manipulate", "Animate", "ArrayPlot", "MatrixPlot",
+    "DensityPlot", "ContourPlot", "RegionPlot", "GraphPlot", "Show[", "Graph["};
+  vizCellQ[content_String] := StringContainsQ[content, vizHeads];
+
   boxifyInputCells[cellList_List] := cellList /. {
     Cell[BoxData[content_String], style:("Input"|"Code"), opts___] :>
-      With[{parsed = ToExpression[content, StandardForm, Defer]},
-        If[parsed === $Failed,
-          Cell[BoxData[content], style, opts],
-          Cell[BoxData[ToBoxes[parsed]], style, opts]
-        ]
-      ],
+      If[vizCellQ[content], Cell[BoxData[content], style, opts],
+        With[{parsed = ToExpression[content, StandardForm, Defer]},
+          If[parsed === $Failed,
+            Cell[BoxData[content], style, opts],
+            Cell[BoxData[ToBoxes[parsed]], style, opts]
+          ]
+        ]],
     Cell[content_String, style:("Input"|"Code"), opts___] :>
-      With[{parsed = ToExpression[content, StandardForm, Defer]},
-        If[parsed === $Failed,
-          Cell[BoxData[content], style, opts],
-          Cell[BoxData[ToBoxes[parsed]], style, opts]
-        ]
-      ]
+      If[vizCellQ[content], Cell[BoxData[content], style, opts],
+        With[{parsed = ToExpression[content, StandardForm, Defer]},
+          If[parsed === $Failed,
+            Cell[BoxData[content], style, opts],
+            Cell[BoxData[ToBoxes[parsed]], style, opts]
+          ]
+        ]]
   };
 
   markInitCells[cellList_List] := Module[{inSetup = False, result = {}},

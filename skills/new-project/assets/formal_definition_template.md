@@ -51,7 +51,7 @@ At least two examples. Prefer one degenerate and one canonical.
 
 If a Wolfram computation can verify these, link the relevant notebook:
 
-- See `Wiki/Notebooks/<TermName>.md` for computed examples.
+- See `NotebooksLLM/<TermName>.md` for computed examples.
 
 ## Non-examples
 

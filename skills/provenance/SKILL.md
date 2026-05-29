@@ -54,12 +54,12 @@ One small set of fields, reused in the ledger and in every embedded back-pointer
 | Field | Meaning |
 |-------|---------|
 | `date` | Absolute `YYYY-MM-DD` (from the current date). |
-| `artifact` | Path relative to project root (`Notebooks/Ricci.nb`, `Code/Curvature.wl`). |
+| `artifact` | Path relative to project root (`NotebooksLLM/Ricci.nb`, `Code/Curvature.wl`). |
 | `intent` | One-line distilled goal. **Always present.** |
 | `prompt` | Verbatim user request. Optional — include when short, or when the user asks. |
 | `generator` | The skill that produced it (`new-notebook`, `update-wiki`, …). |
 | `model` | Model id (e.g. `claude-opus-4-8`). |
-| `source` | Notebooks only: the `Wiki/Notebooks/*.md` source path. |
+| `source` | Notebooks only: the `NotebooksLLM/*.md` source path. |
 
 **Fidelity:** default to a concise one-line `intent`. Add the verbatim `prompt`
 when the request is short, reproducibility matters, or the user asks for it.
@@ -76,11 +76,11 @@ One `###` block per generation event:
 Append-only record of the prompts/intent behind generated artifacts.
 Toggle in CLAUDE.md (`Prompt tracking`). See the `provenance` skill for the format.
 
-### 2026-05-29 — Notebooks/RicciCurvature.nb
+### 2026-05-29 — NotebooksLLM/RicciCurvature.nb
 - **Intent:** Explore Ollivier–Ricci curvature on graphs with pastel plots
 - **Prompt:** "make a notebook about ollivier ricci curvature on graphs"
 - **Generator:** new-notebook · claude-opus-4-8
-- **Source:** Wiki/Notebooks/RicciCurvature.md
+- **Source:** NotebooksLLM/RicciCurvature.md
 ```
 
 Omit lines that don't apply (e.g. no `Source:` for a `.wl` file; drop `Prompt:`
@@ -100,7 +100,7 @@ survives when the file is shared standalone.
 
 ### Notebooks
 
-Write a leading HTML comment into the `Wiki/Notebooks/*.md` source. HTML comments
+Write a leading HTML comment into the `NotebooksLLM/*.md` source. HTML comments
 are dropped by the `{"Markdown","Notebook"}` importer, so they never become cells:
 
 ```markdown
@@ -122,7 +122,7 @@ exactly as before (no `TaggingRules`). See [new-notebook](../new-notebook/SKILL.
 To read it back from a notebook:
 
 ```wolfram
-"Provenance" /. (TaggingRules /. Options[Import["Notebooks/Name.nb"], TaggingRules])
+"Provenance" /. (TaggingRules /. Options[Import["NotebooksLLM/Name.nb"], TaggingRules])
 ```
 
 ### Paclet functions / code (`Kernel/*.wl`, `Code/*.wl`)

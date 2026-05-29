@@ -42,7 +42,9 @@ Scan the repo for entities that should have wiki coverage but don't:
 - Code files with no corresponding article
 - Functions/classes/modules not mentioned in any article
 - Resources in `Wiki/Resources/` not indexed
-- Notebooks not indexed
+
+(Notebooks are generated artifacts in `NotebooksLLM/`, not wiki articles — do
+not expect them in the index.)
 
 For each missing entity: **create** a wiki article and add it to the index.
 

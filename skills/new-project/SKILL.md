@@ -152,7 +152,6 @@ Use the **init-wiki** skill to create the wiki structure:
 │   ├── Status.md
 │   ├── Concepts/
 │   ├── Resources/
-│   ├── Notebooks/
 │   └── <Domain>/        <- project-specific folders
 ```
 
@@ -160,7 +159,7 @@ The init-wiki skill will:
 - Ask for (or infer) domain-specific folders
 - Create seed files
 - Append wiki section to CLAUDE.md
-- Update .gitignore with `Tour/`, `Resources/`, `Notebooks/*.nb`
+- Update .gitignore with `Tour/`, `Resources/`, `NotebooksLLM/`
 
 ### 3. Create initial code files
 
@@ -198,13 +197,13 @@ Every project needs a literature foundation. This step is **not optional**.
 
 ### 6. Create initial notebook
 
-Use the **new-notebook** skill to create `<ProjectName>1.nb` with:
+Use the **new-notebook** skill to create `NotebooksLLM/<ProjectName>1.nb` with:
 - Setup section (package loads)
 - Introductory text
 - Initial computations demonstrating the core functions
 - Visualization examples
 
-If using the two-layer architecture, also write `Wiki/Notebooks/<ProjectName>.md`
+If using the two-layer architecture, also write `NotebooksLLM/<ProjectName>.md`
 as the notebook source.
 
 ### 7. Create Paper/ (if requested)
@@ -265,7 +264,7 @@ This creates:
 ### 2. Initialize the wiki
 
 Run **init-wiki** inside `<ProjectName>/`. It will create `Index.md`,
-`Status.md`, `Concepts/`, `Resources/`, `Notebooks/`. The
+`Status.md`, `Concepts/`, `Resources/`. The
 `Theorems/`, `Definitions/`, `Domains/` directories already exist
 and should be left alone.
 

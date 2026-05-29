@@ -24,7 +24,6 @@ Wiki/
   Status.md
   Concepts/
   Resources/
-  Notebooks/
   <Domain>/         ← user chooses these
 ```
 
@@ -45,7 +44,7 @@ If the user doesn't care, pick sensible defaults based on the repo.
 ## Step 2 — Create the folder structure
 
 Create all directories and seed files. Use empty `.gitkeep` files in folders
-that start empty (except `Concepts/`, `Resources/`, `Notebooks/` which
+that start empty (except `Concepts/` and `Resources/` which
 get populated via other skills).
 
 ## Step 3 — Seed Index.md
@@ -69,10 +68,6 @@ Execution state (specs, tasks, per-session progress) lives in the top-level
 (none yet)
 
 ## Resources
-
-(none yet)
-
-## Notebooks
 
 (none yet)
 
@@ -155,9 +150,11 @@ The script parses ## Recover sections from Wiki/Resources/*.md.
 
 ### Notebooks
 
-Wiki/Notebooks/ holds .md sources for Wolfram notebooks. Notebooks/ (gitignored)
-holds generated .nb files. Scripts convert .md → .nb and optionally publish to
-Wolfram Cloud. README.md lists all notebooks with source and cloud links.
+LLM notebook artifacts live in NotebooksLLM/: the .md source (tracked) and the
+generated .nb (gitignored via NotebooksLLM/*.nb) sit side by side. The plain
+Notebooks/ folder is reserved for user-authored notebooks and is never touched
+by the LLM. Scripts convert .md → .nb and optionally publish to Wolfram Cloud.
+These are generated artifacts, not wiki articles — they do not go in Wiki/.
 
 ### Guided Tour
 
@@ -173,7 +170,7 @@ Add these entries if not already present:
 ```
 Tour/
 Resources/
-Notebooks/
+NotebooksLLM/*.nb
 ```
 
 Exceptions: if the project has git submodules in `Resources/`, preserve them
