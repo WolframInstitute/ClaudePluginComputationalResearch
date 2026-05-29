@@ -1,5 +1,5 @@
 Build, install, and publish a paclet to Wolfram Cloud using the
-`paclet-publish` skill.
+`publish-paclet` skill.
 
 Runs pre-publish checks (version bump, tests, uncommitted changes), builds
 the archive, installs locally, and uploads to Wolfram Cloud as a public

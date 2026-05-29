@@ -12,7 +12,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/project-init/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
 
 if [ $# -lt 1 ]; then
   echo "Usage: scaffold-math-project.sh <ProjectName> [\"Topic\"] [output-dir] [\"Author\"] [\"email\"] [\"CodeDir\"] [WithLean=0|1]" >&2
@@ -104,4 +104,4 @@ if [ "$WITH_LEAN" = "1" ]; then
 fi
 echo "  CLAUDE.md                     — project context"
 echo ""
-echo "Next: Claude will run wiki-init for Index/Status, then seed initial theorems/definitions."
+echo "Next: Claude will run init-wiki for Index/Status, then seed initial theorems/definitions."

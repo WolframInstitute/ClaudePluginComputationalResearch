@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/project-init/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
 
 if [ $# -lt 1 ]; then
     echo "Usage: scaffold-paclet.sh <PacletName> [OrgName] [Topic] [Author] [Email] [OutputDir]" >&2
@@ -127,6 +127,13 @@ Needs[ "$ORG_NAME\`$PACLET_NAME\`" ]
 \`\`\`bash
 wolframscript -f run_tests.wls
 \`\`\`
+
+## Provenance
+
+Prompt tracking: **off**
+<!-- When on, generated artifacts record their originating prompt/intent in
+     Wiki/Prompts.md and carry an embedded back-pointer. Toggle with /provenance;
+     see the \`provenance\` skill. -->
 EOF
 printf '\n' >> "$REPO_ROOT/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$REPO_ROOT/CLAUDE.md"

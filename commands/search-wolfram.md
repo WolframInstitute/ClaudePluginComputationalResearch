@@ -1,4 +1,4 @@
-Search Wolfram ecosystem resources using the `wolfram-resources` skill.
+Search Wolfram ecosystem resources using the `search-wolfram` skill.
 
 Searches documentation, Function Repository, Community forum, Stephen
 Wolfram's writings, and the Wolfram Physics Project. Downloads relevant

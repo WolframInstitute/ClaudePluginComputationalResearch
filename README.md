@@ -1,78 +1,108 @@
-# Computational Research
+# 🤖 Computational Research
 
-A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computational research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html). Turns a folder with code and resources into an organized repo, maintains the repo, gathers and summarizes resources, grows a wiki knowledge base, scaffolds a LaTeX paper, turns Wolfram code into a paclet, helps with its compilation and publication, generates expository Wolfram notebooks via Markdown and publishes them on [Wolfram Cloud](https://www.wolframcloud.com), offers a tour guiding a human through the project, tracks multi-session work with spec/tasks/progress, and offers a revision workflow.
+A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computational research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html).
 
-## Installation
+* 📁 Turns a folder with resources (code, PDFs, Markdown, notebooks, ...) into an organized git repo, which it maintains.
+* 🐺 Imports and exports Wolfram notebooks via conversion to Markdown.
+* 📚 Grows and maintains a wiki knowledge base.
+* 🔍 Gathers and summarizes resources, keeping a Markdown summary and recovery options (e.g. where to download).
+* 📦 Converts code into a paclet and helps with its build and deployment (e.g. with or without docs, local build or cloud).
+* 📓 Generates expository Wolfram notebooks and helps publish them on Wolfram Cloud (explicitly marked as LLM-generated, keeping a Markdown mirror).
+* 📝 Scaffolds a LaTeX or Typst paper (edits the user-owned document on request) and administers a running notes file (the LLM writes the notes).
+* 🧬 Optionally records the prompt and intent behind every generated artifact, keeping it traceable.
+* 🧭 Offers a guided tour through the project for a human, and a revision protocol (stateful for multi-session work).
+* ✅ Tracks plans, todos, and state.
 
-Install from the [WolframInstitute plugin marketplace](https://github.com/WolframInstitute/ClaudePluginMarketplace):
+> **⚠️ Disclaimer.** This repo grows on the fly out of my own thoughts and needs around AI assistance in computational research. It is a working draft, in need of human revision and selective improvement. **Helpers and testers welcome!**
+
+## 📥 Installation
+
+The plugin is distributed through the [WolframInstitute plugin marketplace](https://github.com/WolframInstitute/ClaudePluginMarketplace).
+
+**Claude Code (CLI / VS Code extension)** — the author's setup:
 
 ```bash
 claude plugin marketplace add WolframInstitute/ClaudePluginMarketplace
 claude plugin install computational-research@WolframInstitute
 ```
 
-**Claude Desktop app:** Install from the plugin marketplace GUI. Note: Claude Desktop runs in a VM (Cowork mode) where filesystem access is limited — this path has not been fully tested.
+**Claude Desktop app** — install from the marketplace GUI.
 
-The author uses the plugin with the Claude Code extension for VS Code.
+> **Note:** Operation in Cowork mode and Chat mode has not been tested.
 
-## Recommended Setup
+## ⚙️ Recommended Setup
 
-The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or Mathematica) and the following MCP servers:
+The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or Mathematica).
+
+**MCP servers** — the plugin draws on these:
 
 | Server | Required | Purpose | Source |
 |--------|----------|---------|--------|
-| **Wolfram** (official) | yes | Evaluation, notebook I/O, docs search, code inspection, tests | [Wolfram/AgentTools](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/AgentTools) |
-| **arxiv-latex-mcp** | recommended | LaTeX source of arXiv papers | [takashiishida/arxiv-latex-mcp](https://github.com/takashiishida/arxiv-latex-mcp) |
+| **Wolfram** (official) | yes | Evaluation, notebook I/O, docs search, tests | [Wolfram/AgentTools](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/AgentTools) |
+| **arxiv-latex-mcp** | recommended | Download LaTeX source of arXiv papers | [takashiishida/arxiv-latex-mcp](https://github.com/takashiishida/arxiv-latex-mcp) |
 | **arxiv** | recommended | Search and download arXiv papers | [blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server) |
-| **wolfram** (unofficial) | optional | Wolfram Language LSP | [sw1sh/WolframMCP](https://github.com/sw1sh/WolframMCP) |
+| **wolfram** (unofficial) | optional | Additionally supports Wolfram Language LSP, similar to [Serena](https://github.com/oraios/serena) | [sw1sh/WolframMCP](https://github.com/sw1sh/WolframMCP) |
 
-Install the official server with `InstallMCPServer["ClaudeCode", "WolframLanguage"]` (the [Wolfram/AgentTools](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/AgentTools) paclet). The older [Wolfram/MCPServer](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/MCPServer) paclet still works as a fallback if that is what you have installed.
+**Installing the official Wolfram server:**
 
-## Skills
+```wolfram
+InstallMCPServer["ClaudeCode", "WolframLanguage"]
+```
+
+> **Note:** On older Wolfram versions, the legacy [Wolfram/MCPServer](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/MCPServer) paclet still works as a fallback if that is what you have installed.
+
+## 🧩 Skills
+
+Skills share their name with the matching slash command (one name per feature),
+grouped by domain.
 
 | Skill | Description |
 |-------|-------------|
-| **project-init** | Scaffold a new project (research, math-research, paclet-dev, paclet) |
-| **paper-init** | Create Paper/ with LaTeX article templates (amsart, biblatex, shared macros) |
-| **wiki-init** | Initialize a plain-markdown knowledge base (Wiki/) in any repo |
-| **wiki-update** | Update wiki articles, index, status, and log after changes |
-| **wiki-health** | Audit the wiki for stale articles, broken links, and gaps |
-| **work** | Create and manage work items in Work/ (spec, tasks, per-session progress) |
-| **next-session** | Run one task per fresh session against a work item, then stop |
-| **revise** | Human revision protocol for code, functionality, and deliverables |
-| **resource-add** | Add papers, repos, notebooks, MathWorld/nLab/OEIS/DLMF/Wikipedia entries with recovery info |
-| **cite-from-id** | Generate BibTeX entries from arXiv IDs or DOIs |
-| **notebook-create** | Create or modify Wolfram notebooks via Markdown→MCP pipeline (research, computation, paper-analysis, theorem-proof templates) |
-| **tour-start** | Interactive guided tour with narrative and runnable code per section |
-| **wolfram-resources** | Search Wolfram docs, Function Repository, Community, and Wolfram writings |
-| **math-resources** | Search MathWorld, nLab, OEIS, DLMF, and Wikipedia math articles |
-| **lean-bridge** | Drive Lean/Mathlib formalization sessions via the lean-lsp MCP |
-| **paclet-build** | Build a Wolfram paclet archive and install locally |
-| **paclet-publish** | Build, install, and publish a paclet to Wolfram Cloud |
+| **new-project** | Scaffold a new project (research, math, paclet-dev, paclet) |
+| **scaffold-paper** | Scaffold a LaTeX or Typst paper, then edit it on request |
+| **notes** | Keep a running LaTeX/Typst notes file (scaffold, add, list) |
+| **init-wiki** | Create a markdown knowledge base (Wiki/) |
+| **update-wiki** | Update wiki articles, index, and log |
+| **check-wiki** | Audit the wiki for staleness and gaps |
+| **search-wolfram** | Search Wolfram docs, Function Repository, Community, writings |
+| **search-math** | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
+| **add-resource** | Add a paper, repo, or page with recovery info |
+| **cite** | BibTeX from an arXiv ID or DOI |
+| **new-notebook** | Build Wolfram notebooks from Markdown |
+| **lean** | Drive a Lean/Mathlib formalization session |
+| **build-paclet** | Build a paclet and install it locally |
+| **publish-paclet** | Build, install, and publish a paclet to the Cloud |
+| **work** | Manage multi-session work items (spec, tasks, progress) |
+| **next-session** | Run the next task in a fresh session, then stop |
+| **provenance** | Track the prompt behind each generated artifact |
+| **start-tour** | Run a guided tour of the project |
+| **revise** | Human revision protocol for deliverables (no command) |
 
-## Slash Commands
+## ⌨️ Slash Commands
 
 | Command | Description |
 |---------|-------------|
-| `/computational-research:new-project` | Scaffold a new project (research, math-research, paclet-dev, paclet) |
-| `/computational-research:init-paper` | Create Paper/ with LaTeX templates |
-| `/computational-research:init-wiki` | Initialize Wiki/ knowledge base |
-| `/computational-research:update-wiki` | Update wiki after changes |
-| `/computational-research:check-wiki` | Audit wiki for staleness and gaps |
-| `/computational-research:work` | Create or manage a work item (spec / tasks / progress) |
-| `/computational-research:next-session` | Run the next task in a fresh session |
-| `/computational-research:add-resource` | Add a paper or resource to the wiki |
+| `/computational-research:new-project` | Scaffold a new project |
+| `/computational-research:scaffold-paper` | Scaffold a LaTeX or Typst paper |
+| `/computational-research:notes` | Scaffold, add, or list notes |
+| `/computational-research:init-wiki` | Create the Wiki/ knowledge base |
+| `/computational-research:update-wiki` | Update the wiki after changes |
+| `/computational-research:check-wiki` | Audit the wiki |
+| `/computational-research:search-wolfram` | Search the Wolfram ecosystem |
+| `/computational-research:search-math` | Search external math resources |
+| `/computational-research:add-resource` | Add a resource to the wiki |
+| `/computational-research:cite` | BibTeX from an arXiv ID or DOI |
 | `/computational-research:new-notebook` | Create a Wolfram notebook |
-| `/computational-research:search-wolfram` | Search Wolfram ecosystem resources |
-| `/computational-research:search-math` | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
-| `/computational-research:cite-id` | Generate BibTeX from an arXiv ID or DOI |
-| `/computational-research:lean` | Drive a Lean/Mathlib formalization session |
-| `/computational-research:build-paclet` | Build paclet and install locally |
-| `/computational-research:publish-paclet` | Build, install, publish to Wolfram Cloud |
-| `/computational-research:start-tour` | Start or resume a guided project tour |
-| `/computational-research:check-env` | Check Wolfram kernel and MCP availability |
-| `/computational-research:load-project` | Summarize project status from wiki + Work/ |
+| `/computational-research:lean` | Drive a Lean/Mathlib session |
+| `/computational-research:build-paclet` | Build and install a paclet |
+| `/computational-research:publish-paclet` | Publish a paclet to the Cloud |
+| `/computational-research:work` | Create or manage a work item |
+| `/computational-research:next-session` | Run the next task, then stop |
+| `/computational-research:provenance` | Toggle/show prompt tracking |
+| `/computational-research:start-tour` | Start or resume a guided tour |
+| `/computational-research:check-env` | Check kernel and MCP availability |
+| `/computational-research:load-project` | Summarize project status |
 
-## License
+## 📄 License
 
 MIT

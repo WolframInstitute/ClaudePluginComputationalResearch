@@ -38,6 +38,29 @@ markInitCells[cellList_List] :=
 		result
 	]
 
+(* Parse a leading `<!-- provenance: key: value ... -->` block (see the
+   `provenance` skill). Returns an Association or None. *)
+provenanceComment[text_String] :=
+	SelectFirst[
+		StringCases[text, Shortest["<!--" ~~ b___ ~~ "-->"] :> b],
+		StringContainsQ[#, "provenance", IgnoreCase -> True] &,
+		None
+	]
+
+parseProvenance[text_String] :=
+	Module[{block, pairs},
+		block = provenanceComment[text];
+		If[block === None, Return[None]];
+		pairs = Flatten @ StringCases[
+			StringSplit[block, "\n"],
+			StartOfString ~~ WhitespaceCharacter ... ~~ key : (LetterCharacter ..) ~~ ":" ~~
+				WhitespaceCharacter ... ~~ val : __ :>
+				(key -> StringTrim[StringTrim[val], "\""])
+		];
+		pairs = DeleteCases[pairs, ("provenance" -> _)];
+		If[pairs === {}, None, Association[pairs]]
+	]
+
 Print["Notebook Generator"];
 Print["==================="];
 Print["Source:  ", wikiDir];
@@ -52,6 +75,11 @@ Do[
 	Print["[", baseName, "] Converting..."];
 
 	md = Import[mdFile, "Text"];
+
+	prov = parseProvenance[md];
+	(* Drop only the provenance comment; leave any other HTML comments intact. *)
+	md = StringReplace[md, Shortest["<!--" ~~ c___ ~~ "-->"] :>
+		If[StringContainsQ[c, "provenance", IgnoreCase -> True], "", "<!--" <> c <> "-->"]];
 
 	nb = ImportString[md, {"Markdown", "Notebook"}];
 	cells = First[nb];
@@ -74,7 +102,11 @@ Do[
 	};
 	cells = markInitCells[cells];
 
-	nbString = ExportString[Notebook[cells], "NB"];
+	nbExpr = If[prov === None,
+		Notebook[cells],
+		Notebook[cells, TaggingRules -> {"Provenance" -> prov}]
+	];
+	nbString = ExportString[nbExpr, "NB"];
 	Export[outFile, nbString, "Text"];
 
 	Print["[", baseName, "] Written: ", outFile];

@@ -31,4 +31,4 @@ If WolframPacletDevelopment is not active, suggest switching by setting
 `MCP_SERVER_NAME=WolframPacletDevelopment` in the MCP server config.
 
 Also check whether Wiki/ exists in the current directory. If not, suggest running
-wiki-init to set up the knowledge base.
+init-wiki to set up the knowledge base.

@@ -1,4 +1,4 @@
-Drive a Lean / Mathlib formalization session using the `lean-bridge` skill.
+Drive a Lean / Mathlib formalization session using the `lean` skill.
 
 Requires the `lean-lsp` MCP. Reads goal state, searches Mathlib for closing
 lemmas, tries tactics without editing, verifies proofs, and maintains a

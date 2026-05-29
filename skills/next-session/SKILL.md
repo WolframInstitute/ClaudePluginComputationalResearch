@@ -43,10 +43,16 @@ Add a block to `## Progress`:
 
 ```
 ### Session N — YYYY-MM-DD — Tk
+- **Prompt:** the request that drove this session (optional)
 - **Did:** what was completed
 - **Learned:** facts/gotchas worth carrying forward
 - **Next:** the next task
 ```
+
+If the project has prompt tracking on (see the
+[provenance](../provenance/SKILL.md) skill), keep the `**Prompt:**` line and
+mirror an entry to `Wiki/Prompts.md` for any artifact generated this session.
+When tracking is off, the `**Prompt:**` line is optional.
 
 ## 6. Close the task
 
@@ -55,7 +61,7 @@ row in the `Work/README.md` board (status + next task).
 
 ## 7. Sync durable knowledge
 
-Invoke `wiki-update` for anything that became durable knowledge this session — a new
+Invoke `update-wiki` for anything that became durable knowledge this session — a new
 function, a result, a definition, a decision. It updates `Wiki/` articles and
 `Status.md`. The Work board (already updated above) owns active items and blockers.
 There is no activity log; git and `## Progress` are the record.
@@ -73,5 +79,5 @@ next task." Do not continue.
 ## Type-aware execution
 
 For a `Type: formalization` item, "do one task" (step 4) means close one Lean
-sub-goal via the `lean-bridge` core loop, and the Progress "Learned" note records
+sub-goal via the `lean` core loop, and the Progress "Learned" note records
 which Mathlib lemma or tactic closed it.

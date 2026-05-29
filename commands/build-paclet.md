@@ -1,4 +1,4 @@
-Build a Wolfram paclet archive and install locally using the `paclet-build`
+Build a Wolfram paclet archive and install locally using the `build-paclet`
 skill.
 
 Auto-detects the paclet directory (triple or double nesting). Pass paclet

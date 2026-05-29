@@ -10,7 +10,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/project-init/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
 
 if [ $# -lt 2 ]; then
     echo "Usage: scaffold-paclet-dev.sh <DevRepoName> <PacletNames> [OrgName] [GitHubUser] [Topic] [Author] [Email] [OutputDir]" >&2
@@ -175,6 +175,13 @@ echo "Created: $DEV_REPO_NAME/.gitignore"
         echo "wolframscript -f $PACLET/run_tests.wls"
     done
     echo "\`\`\`"
+    echo ""
+    echo "## Provenance"
+    echo ""
+    echo "Prompt tracking: **off**"
+    echo "<!-- When on, generated artifacts record their originating prompt/intent in"
+    echo "     Wiki/Prompts.md and carry an embedded back-pointer. Toggle with /provenance;"
+    echo "     see the \`provenance\` skill. -->"
 } > "$DEV_REPO_NAME/CLAUDE.md"
 printf '\n' >> "$DEV_REPO_NAME/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$DEV_REPO_NAME/CLAUDE.md"

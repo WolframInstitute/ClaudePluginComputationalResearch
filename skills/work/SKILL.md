@@ -23,7 +23,7 @@ and waits for approval before work begins.
 ## Bootstrap
 
 If `Work/` does not exist, create it and seed `Work/README.md` from
-`${CLAUDE_PLUGIN_ROOT}/skills/project-init/assets/work_readme_template.md`
+`${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/work_readme_template.md`
 (substitute the project name). The folder is tracked in git — do not gitignore it.
 
 ## Creating a work item
@@ -31,9 +31,13 @@ If `Work/` does not exist, create it and seed `Work/README.md` from
 ### 1. Draft
 
 Ask for a CamelCase name and a one-line goal. Copy
-`${CLAUDE_PLUGIN_ROOT}/skills/project-init/assets/work_item_template.md` to
+`${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/work_item_template.md` to
 `Work/<Name>.md`, set the heading, and draft the `## Spec` — for a quick item the
 one-paragraph goal is enough; for a heavy one fill Requirements / Design / Edge cases.
+
+Fill the `Origin:` line in the Spec with the user's originating request. If the
+project has prompt tracking on (see the [provenance](../provenance/SKILL.md)
+skill), also append a `Wiki/Prompts.md` ledger entry for the new item.
 
 ### 2. Present and wait
 
@@ -67,7 +71,7 @@ it is LLM-drafted and unapproved, edit directly.
 ## Relationship to other skills
 
 - `next-session` executes one task per fresh session against an item created here.
-- `wiki-update` records durable knowledge in `Wiki/` — this skill does not touch
+- `update-wiki` records durable knowledge in `Wiki/` — this skill does not touch
   the Wiki; it manages execution state only.
 - The `revise` protocol governs every Spec and task-list interaction.
-- For Lean formalization, `lean-bridge` creates a `Type: formalization` item here.
+- For Lean formalization, `lean` creates a `Type: formalization` item here.

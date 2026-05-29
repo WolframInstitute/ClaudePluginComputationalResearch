@@ -2,8 +2,8 @@
 
 A Claude plugin for AI-assisted computational research with a wiki-based
 knowledge management system, human revision workflow, guided tours, Wolfram
-paclet development, LaTeX paper scaffolding, notebook generation, and
-session-based work tracking (spec/tasks/progress).
+paclet development, LaTeX/Typst paper and notes scaffolding, notebook
+generation, and session-based work tracking (spec/tasks/progress).
 
 ## Plugin Architecture
 
@@ -13,83 +13,88 @@ skills/*/SKILL.md              — skill definitions (auto-discovered)
 scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
 hooks/                         — PreToolUse hooks (e.g., block .nb reads)
-skills/project-init/assets/    — templates for scaffolding
+skills/new-project/assets/    — templates for scaffolding
 ```
 
-### Skills (17)
+### Skills (19)
 
 | Skill | Type | Purpose |
 |-------|------|---------|
-| `project-init` | scaffolding | Scaffold new projects (research, math-research, paclet-dev, paclet) |
-| `paper-init` | scaffolding | Create Paper/ with LaTeX templates (amsart, biblatex, shared macros.sty) |
-| `wolfram-resources` | content | Search Wolfram docs, Function Repository, Community, writings |
-| `math-resources` | content | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
-| `wiki-init` | wiki | Create Wiki/ knowledge base from scratch |
-| `wiki-update` | wiki | Update articles, index, status, log after changes |
-| `wiki-health` | wiki | Audit wiki for staleness, gaps, broken links |
+| `new-project` | scaffolding | Scaffold new projects (research, math-research, paclet-dev, paclet) |
+| `scaffold-paper` | scaffolding | Scaffold Paper/ with LaTeX (amsart, biblatex) or Typst templates; then edit the user-owned doc |
+| `notes` | scaffolding | Administer a running LaTeX/Typst notes doc (scaffold, add dated entries, list); LLM writes entries |
+| `search-wolfram` | content | Search Wolfram docs, Function Repository, Community, writings |
+| `search-math` | content | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
+| `init-wiki` | wiki | Create Wiki/ knowledge base from scratch |
+| `update-wiki` | wiki | Update articles, index, status, log after changes |
+| `check-wiki` | wiki | Audit wiki for staleness, gaps, broken links |
+| `provenance` | workflow | Optionally track prompts/intent behind generated artifacts (ledger + embedded back-pointers); per-project toggle |
 | `work` | workflow | Create/manage work items in Work/ (spec, tasks, per-session progress) |
 | `next-session` | workflow | Run one task per fresh session against a work item, then stop |
 | `revise` | protocol | Human revision loop — not invoked directly, other skills follow it |
-| `resource-add` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
-| `cite-from-id` | content | Generate BibTeX from arXiv ID or DOI |
-| `notebook-create` | content | Markdown-to-notebook pipeline via Wolfram MCP (research, computation, paper-analysis, theorem-proof templates) |
-| `lean-bridge` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
-| `tour-start` | presentation | Interactive guided walkthrough with code |
-| `paclet-build` | paclet | Build .paclet archive and install locally |
-| `paclet-publish` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
+| `add-resource` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
+| `cite` | content | Generate BibTeX from arXiv ID or DOI |
+| `new-notebook` | content | Markdown-to-notebook pipeline via Wolfram MCP (research, computation, paper-analysis, theorem-proof templates) |
+| `lean` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
+| `start-tour` | presentation | Interactive guided walkthrough with code |
+| `build-paclet` | paclet | Build .paclet archive and install locally |
+| `publish-paclet` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
 
-### Scripts (23)
+### Scripts (24)
 
 | Script | Language | Called by |
 |--------|----------|----------|
-| `scaffold-project.sh` | bash | project-init (research type) |
-| `scaffold-math-project.sh` | bash | project-init (math-research type) |
-| `scaffold-paclet-dev.sh` | bash | project-init (paclet-dev type) |
-| `scaffold-paclet.sh` | bash | project-init (paclet type) |
-| `scaffold-paper.sh` | bash | paper-init skill |
-| `build_paclet.wls` | wolframscript | paclet-build skill |
-| `publish_paclet.wls` | wolframscript | paclet-publish skill |
+| `scaffold-project.sh` | bash | new-project (research type) |
+| `scaffold-math-project.sh` | bash | new-project (math-research type) |
+| `scaffold-paclet-dev.sh` | bash | new-project (paclet-dev type) |
+| `scaffold-paclet.sh` | bash | new-project (paclet type) |
+| `scaffold-paper.sh` | bash | scaffold-paper skill (`--typst` for Typst) |
+| `scaffold-notes.sh` | bash | notes skill (`--typst` for Typst) |
+| `build_paclet.wls` | wolframscript | build-paclet skill |
+| `publish_paclet.wls` | wolframscript | publish-paclet skill |
 | `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls) |
-| `search_wolfram_docs.wls` | wolframscript | wolfram-resources skill |
-| `search_function_repo.wls` | wolframscript | wolfram-resources skill |
-| `search_wolfram_community.wls` | wolframscript | wolfram-resources skill (URL constructor) |
-| `search_wolfram_writings.wls` | wolframscript | wolfram-resources skill |
-| `search_wolfram_physics.wls` | wolframscript | wolfram-resources skill |
-| `search_mathworld.wls` | wolframscript | math-resources skill |
-| `search_nlab.wls` | wolframscript | math-resources skill |
-| `search_oeis.wls` | wolframscript | math-resources skill |
-| `search_dlmf.wls` | wolframscript | math-resources skill |
-| `search_wikipedia_math.wls` | wolframscript | math-resources skill |
-| `cite_from_id.wls` | wolframscript | cite-from-id skill |
+| `search_wolfram_docs.wls` | wolframscript | search-wolfram skill |
+| `search_function_repo.wls` | wolframscript | search-wolfram skill |
+| `search_wolfram_community.wls` | wolframscript | search-wolfram skill (URL constructor) |
+| `search_wolfram_writings.wls` | wolframscript | search-wolfram skill |
+| `search_wolfram_physics.wls` | wolframscript | search-wolfram skill |
+| `search_mathworld.wls` | wolframscript | search-math skill |
+| `search_nlab.wls` | wolframscript | search-math skill |
+| `search_oeis.wls` | wolframscript | search-math skill |
+| `search_dlmf.wls` | wolframscript | search-math skill |
+| `search_wikipedia_math.wls` | wolframscript | search-math skill |
+| `cite_from_id.wls` | wolframscript | cite skill |
 | `check-env.sh` | bash | check-env command |
-| `recover_resources.sh` | bash | copied into projects, also resource-add |
+| `recover_resources.sh` | bash | copied into projects, also add-resource |
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-### Commands (18)
+### Commands (20)
 
 | Command | Invokes |
 |---------|---------|
-| `new-project` | project-init |
-| `init-paper` | paper-init |
-| `init-wiki` | wiki-init |
-| `update-wiki` | wiki-update |
-| `check-wiki` | wiki-health |
+| `new-project` | new-project |
+| `scaffold-paper` | scaffold-paper |
+| `notes` | notes |
+| `init-wiki` | init-wiki |
+| `update-wiki` | update-wiki |
+| `check-wiki` | check-wiki |
+| `search-wolfram` | search-wolfram |
+| `search-math` | search-math |
+| `add-resource` | add-resource |
+| `cite` | cite |
+| `new-notebook` | new-notebook |
+| `lean` | lean |
+| `build-paclet` | build-paclet |
+| `publish-paclet` | publish-paclet |
 | `work` | work |
 | `next-session` | next-session |
-| `add-resource` | resource-add |
-| `new-notebook` | notebook-create |
-| `search-wolfram` | wolfram-resources |
-| `search-math` | math-resources |
-| `cite-id` | cite-from-id |
-| `lean` | lean-bridge |
-| `build-paclet` | paclet-build |
-| `publish-paclet` | paclet-publish |
-| `start-tour` | tour-start |
+| `provenance` | provenance |
+| `start-tour` | start-tour |
 | `check-env` | check-env.sh + MCP ping |
 | `load-project` | reads Wiki/ + Work/ status |
 
-### Templates (in skills/project-init/assets/)
+### Templates (in skills/new-project/assets/)
 
 Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 
@@ -98,14 +103,18 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `claude_template.md` | CLAUDE.md for research projects |
 | `math_claude_template.md` | CLAUDE.md for math-research projects |
 | `math_categories_template.md` | Math-domain taxonomy seed (adapted from PureMath) |
-| `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by notebook-create) |
+| `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by new-notebook) |
 | `formal_definition_template.md` | Wiki/Definitions/ article template |
-| `formalization_checklist_template.md` | Work/Formalize-*.md skeleton, a Type: formalization work item (used by lean-bridge) |
+| `formalization_checklist_template.md` | Work/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
 | `work_item_template.md` | Work/<Name>.md skeleton: Spec / Tasks / Progress / Decisions (used by work, next-session) |
 | `work_readme_template.md` | Work/README.md board, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules appended to every generated CLAUDE.md (research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
-| `macros_template.sty` | Shared preamble: fonts, math, biblatex, theorems, macros |
+| `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |
+| `main_template.typ` | Typst article (imports macros.typ, native bibliography) |
+| `macros_template.typ` | Shared Typst preamble: style, math shorthand, theorem blocks |
+| `notes_template.tex` | LaTeX running notes doc (article + macros.sty, end-marker) |
+| `notes_template.typ` | Typst running notes doc (imports macros.typ, end-marker) |
 | `latexmkrc_template` | latexmk config |
 | `tools_starter.wl` | Starter Wolfram code file |
 | `pacletinfo_template.wl` | PacletInfo.wl |
@@ -123,14 +132,14 @@ Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`,
 
 ## Project Types (scaffolding)
 
-The `project-init` skill asks users which type of project to create:
+The `new-project` skill asks users which type of project to create:
 
 - **research** (default) — Code/, Wiki/, Work/, Resources/, optional Paper/.
   Open-ended exploration of a topic.
 - **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created,
   math-domain taxonomy seeded, optional Lean/ subdirectory. Organised around
   precise theorems and definitions rather than open-ended exploration. Pairs
-  with `math-resources`, `cite-from-id`, `lean-bridge`, and the `theorem-proof`
+  with `search-math`, `cite`, `lean`, and the `theorem-proof`
   notebook template.
 - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules
   (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental

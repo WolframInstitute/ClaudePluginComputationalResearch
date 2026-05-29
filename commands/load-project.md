@@ -7,4 +7,4 @@ Read `Wiki/Index.md`, `Wiki/Status.md`, the `Work/README.md` board, and recent
 4. Active work items and their next task (from Work/README.md and Work/*.md)
 5. Suggested next steps — point to `/next-session` to run the next task
 
-If Wiki/ doesn't exist, suggest running wiki-init.
+If Wiki/ doesn't exist, suggest running init-wiki.

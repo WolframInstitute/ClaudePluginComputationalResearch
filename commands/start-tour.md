@@ -1,4 +1,4 @@
-Start, resume, or manage a guided tour using the `tour-start` skill.
+Start, resume, or manage a guided tour using the `start-tour` skill.
 
 If Tour/ exists, resume from where you left off. Otherwise generate a new
 tour plan from Wiki/ content, present it for approval, then walk through

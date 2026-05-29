@@ -1,7 +1,7 @@
-Search external math resources using the `math-resources` skill.
+Search external math resources using the `search-math` skill.
 
 Searches MathWorld, nLab, OEIS, DLMF, and Wikipedia math articles in
-parallel, ranks the results, and optionally hands them to `resource-add`
+parallel, ranks the results, and optionally hands them to `add-resource`
 to register in the wiki.
 
 Pass keywords as arguments (e.g., `/search-math Bessel function asymptotics`).

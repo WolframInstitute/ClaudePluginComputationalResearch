@@ -1,4 +1,4 @@
-Create or modify a Wolfram notebook using the `notebook-create` skill.
+Create or modify a Wolfram notebook using the `new-notebook` skill.
 
 If arguments are provided (e.g., `/new-notebook graph curvature examples`),
 create a notebook on that topic. Otherwise ask what the notebook should cover.

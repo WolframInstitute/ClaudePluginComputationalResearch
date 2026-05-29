@@ -11,3 +11,6 @@ p135246.github.io/
 *.toc
 *.pdf
 *.zip
+
+# Editor
+.vscode/

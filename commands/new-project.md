@@ -1,4 +1,4 @@
-Scaffold a new project using the `project-init` skill.
+Scaffold a new project using the `new-project` skill.
 
 Ask the user for:
 1. Project type: **research** (default), **paclet-dev**, or **paclet**
