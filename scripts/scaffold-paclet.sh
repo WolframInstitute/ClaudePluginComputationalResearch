@@ -139,6 +139,18 @@ printf '\n' >> "$REPO_ROOT/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$REPO_ROOT/CLAUDE.md"
 echo "Created: $REPO_ROOT/CLAUDE.md"
 
+# ── 4b. Commit-message hook (Conventional Commits) ─────────────────────────
+
+mkdir -p "$REPO_ROOT/.githooks"
+cp "$SCRIPT_DIR/commit-msg" "$REPO_ROOT/.githooks/commit-msg"
+chmod +x "$REPO_ROOT/.githooks/commit-msg"
+if [ "$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/null)" = "$(cd "$REPO_ROOT" && pwd)" ]; then
+  git -C "$REPO_ROOT" config core.hooksPath .githooks
+  echo "Created: $REPO_ROOT/.githooks/commit-msg (activated: core.hooksPath=.githooks)"
+else
+  echo "Created: $REPO_ROOT/.githooks/commit-msg (run 'git config core.hooksPath .githooks' after 'git init')"
+fi
+
 # ── 5. Summary ───────────────────────────────────────────────────────────
 
 echo ""

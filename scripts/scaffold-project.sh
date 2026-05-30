@@ -72,6 +72,18 @@ cp "$SCRIPT_DIR/publish_notebooks.wls" "$PROJECT_NAME/Scripts/publish_notebooks.
 chmod +x "$PROJECT_NAME/Scripts/recover_resources.sh"
 echo "Created: $PROJECT_NAME/Scripts/{recover_resources.sh,generate_notebooks.wls,publish_notebooks.wls}"
 
+# ── 4b. Commit-message hook (Conventional Commits) ─────────────────────────
+
+mkdir -p "$PROJECT_NAME/.githooks"
+cp "$SCRIPT_DIR/commit-msg" "$PROJECT_NAME/.githooks/commit-msg"
+chmod +x "$PROJECT_NAME/.githooks/commit-msg"
+if [ "$(git -C "$PROJECT_NAME" rev-parse --show-toplevel 2>/dev/null)" = "$(cd "$PROJECT_NAME" && pwd)" ]; then
+  git -C "$PROJECT_NAME" config core.hooksPath .githooks
+  echo "Created: $PROJECT_NAME/.githooks/commit-msg (activated: core.hooksPath=.githooks)"
+else
+  echo "Created: $PROJECT_NAME/.githooks/commit-msg (run 'git config core.hooksPath .githooks' after 'git init')"
+fi
+
 # ── 5. Summary ────────────────────────────────────────────────────────────
 
 echo ""

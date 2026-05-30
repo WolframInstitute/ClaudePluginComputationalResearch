@@ -458,12 +458,17 @@ After scaffolding, tell the user:
 
 Example git setup:
 ```bash
-cd <DevRepoName> && git init
-# For each paclet:
-cd <PacletName> && git init && git remote add origin git@github.com:<OrgName>/<PacletName>.git && cd ..
+cd <DevRepoName> && git init && git config core.hooksPath .githooks
+# (.githooks/commit-msg enforces Conventional Commits — scaffolded already)
+# For each paclet (each becomes its own repo, so activate its hook too):
+cd <PacletName> && git init && git config core.hooksPath .githooks && git remote add origin git@github.com:<OrgName>/<PacletName>.git && cd ..
 # Then register submodules and set up dev repo remote
 git remote add origin git@github.com:<GitHubUser>/<DevRepoName>.git
 ```
+
+The scaffold drops `.githooks/commit-msg` into each repo; `core.hooksPath`
+is set automatically when the scaffold runs inside an existing repo, otherwise
+run `git config core.hooksPath .githooks` once after `git init`.
 
 ---
 

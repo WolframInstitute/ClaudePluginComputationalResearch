@@ -40,7 +40,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `build-paclet` | paclet | Build .paclet archive and install locally |
 | `publish-paclet` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
 
-### Scripts (24)
+### Scripts (25)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -64,6 +64,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `search_dlmf.wls` | wolframscript | search-math skill |
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
+| `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
 | `generate_notebooks.wls` | wolframscript | copied into projects |

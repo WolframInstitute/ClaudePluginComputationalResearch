@@ -81,7 +81,13 @@ for PACLET in "${PACLETS[@]}"; do
 
     cp "$ASSETS_DIR/gitignore_submodule.template" "$SUBMODULE_DIR/.gitignore"
 
-    echo "Created paclet: $SUBMODULE_DIR/$PACLET/ (triple-nested)"
+    # Commit-message hook: each submodule becomes its own git repo, so it
+    # needs its own .githooks/ (activated by `git init` guidance below).
+    mkdir -p "$SUBMODULE_DIR/.githooks"
+    cp "$SCRIPT_DIR/commit-msg" "$SUBMODULE_DIR/.githooks/commit-msg"
+    chmod +x "$SUBMODULE_DIR/.githooks/commit-msg"
+
+    echo "Created paclet: $SUBMODULE_DIR/$PACLET/ (triple-nested, with .githooks/)"
 done
 
 # ── 3. .gitmodules ────────────────────────────────────────────────────────
@@ -201,6 +207,18 @@ if [ -f "$SCRIPT_DIR/publish_notebooks.wls" ]; then
     cp "$SCRIPT_DIR/publish_notebooks.wls" "$DEV_REPO_NAME/Scripts/publish_notebooks.wls"
 fi
 echo "Created: $DEV_REPO_NAME/Scripts/"
+
+# ── 6b. Commit-message hook (Conventional Commits) ─────────────────────────
+
+mkdir -p "$DEV_REPO_NAME/.githooks"
+cp "$SCRIPT_DIR/commit-msg" "$DEV_REPO_NAME/.githooks/commit-msg"
+chmod +x "$DEV_REPO_NAME/.githooks/commit-msg"
+if [ "$(git -C "$DEV_REPO_NAME" rev-parse --show-toplevel 2>/dev/null)" = "$(cd "$DEV_REPO_NAME" && pwd)" ]; then
+  git -C "$DEV_REPO_NAME" config core.hooksPath .githooks
+  echo "Created: $DEV_REPO_NAME/.githooks/commit-msg (activated: core.hooksPath=.githooks)"
+else
+  echo "Created: $DEV_REPO_NAME/.githooks/commit-msg (run 'git config core.hooksPath .githooks' after 'git init')"
+fi
 
 # ── 7. Summary ───────────────────────────────────────────────────────────
 

@@ -36,3 +36,8 @@
 When the project has a `Wiki/`:
 
 - **One article per mathematical concept, not per exported symbol.** An article on a concept covers its definition, candidate methods, relationships, and open questions — not the function's signature, options, and accessor lists (those live in `::usage` and in any `APIConventions` article the project maintains). If you find yourself writing one article per `Find*` / `*Q` symbol, stop — you are duplicating the function reference. Merge into the underlying concept and link via `## See also`.
+
+### Commits
+
+- **Conventional Commits.** Subject line is `type(scope): subject` — e.g. `fix(curvature): correct Ollivier sign`. Types: `feat fix docs style refactor perf test build ci chore revert`; scope optional; `!` after the type marks a breaking change. Keep the subject ≤ 72 chars, imperative mood, no trailing period.
+- A `.githooks/commit-msg` hook enforces this and rejects non-conforming subjects (`core.hooksPath=.githooks`). If a commit is rejected, rewrite the subject to match — do not bypass with `--no-verify`.

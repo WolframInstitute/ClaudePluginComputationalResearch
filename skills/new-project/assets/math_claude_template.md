@@ -91,3 +91,8 @@ Get @ FileNameJoin[{dir, "{{CODE_DIR}}", "Tools.wl"}]
 Get @ FileNameJoin[{dir, "{{CODE_DIR}}", "{{PROJECT_NAME}}.wl"}]
 Get @ FileNameJoin[{dir, "{{CODE_DIR}}", "{{PROJECT_NAME}}Visualization.wl"}]
 ```
+
+## Commits
+
+- **Conventional Commits.** Subject line is `type(scope): subject` — e.g. `feat(theorems): add midpoint uniqueness`. Types: `feat fix docs style refactor perf test build ci chore revert`; scope optional; `!` marks a breaking change. Subject ≤ 72 chars, imperative mood, no trailing period.
+- A `.githooks/commit-msg` hook enforces this (`core.hooksPath=.githooks`). If a commit is rejected, rewrite the subject — do not bypass with `--no-verify`.
