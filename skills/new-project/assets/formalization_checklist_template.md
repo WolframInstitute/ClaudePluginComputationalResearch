@@ -1,6 +1,6 @@
 # Formalize: <Theorem / Definition / Topic>
 
-> Status: **outlined**    <!-- outlined | in-progress | proved | verified -->
+> Proof: **outlined**    <!-- outlined | in-progress | proved | verified (proof stage; lifecycle status is the folder) -->
 > Type: formalization
 
 Owner / driver: <name>

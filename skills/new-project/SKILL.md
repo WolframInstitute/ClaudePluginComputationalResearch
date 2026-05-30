@@ -256,7 +256,7 @@ This creates:
 │   │   └── _template.md             — copy for new definitions
 │   └── Domains/
 │       └── categories.md            — math-domain taxonomy seed
-├── Work/                            — work items (incl. formalization checklists)
+├── Work/                            — work items; status = folder (Active/Backlog/Done/Dropped)
 │   └── README.md
 └── Lean/                            — only if WithLean=1
 ```
@@ -314,8 +314,8 @@ If `WithLean=1` was set:
 1. Tell the user to run `cd <ProjectName>/Lean && lake new <ProjectName> math`
    themselves — this skill does not run `lake` on their behalf.
 2. Once the lakefile exists, invoke **lean** to set up a
-   `Work/Formalize-<topic>.md` formalization checklist for the first
-   theorem.
+   `Work/Backlog/Formalize-<topic>.md` formalization checklist for the
+   first theorem.
 
 ### 9. Paper (if requested)
 

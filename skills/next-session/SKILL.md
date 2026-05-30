@@ -18,9 +18,12 @@ builds up over a long chat. Read `revise` first; it governs the deliverable.
 
 ## 1. Locate the item
 
-- If a name was given (`/next-session GraphCurvature`), use `Work/<Name>.md`.
-- Else read the board in `Work/README.md`; if exactly one item is `active`, use it;
-  if several, ask which.
+- If a name was given (`/next-session GraphCurvature`), use `Work/Active/<Name>.md`.
+  If it is in `Work/Backlog/` instead, `git mv` it into `Active/` first (it is being
+  started). An archived item (`Work/Done/` or `Work/Dropped/`) has no next task —
+  surface that instead.
+- Else read `Work/README.md` (it lists active items); if exactly one is active, use
+  it; if several, ask which.
 
 ## 2. Load minimal context
 
@@ -57,13 +60,16 @@ When tracking is off, the `**Prompt:**` line is optional.
 ## 6. Close the task
 
 Check the box and move it to `### Done` with the session number. Update the item's
-row in the `Work/README.md` board (status + next task).
+line in `Work/README.md` (next task). If that was the **last** task, complete the
+item: `git mv` the file from `Active/` into `Done/`, prefixing it with today's date
+(`Work/Done/YYYY-MM-DD-<Name>.md`), and remove its line from `Work/README.md`. The
+folder is now its status — there is no field to flip.
 
 ## 7. Sync durable knowledge
 
 Invoke `update-wiki` for anything that became durable knowledge this session — a new
 function, a result, a definition, a decision. It updates `Wiki/` articles and
-`Status.md`. The Work board (already updated above) owns active items and blockers.
+`Status.md`. `Work/` (the folders + the index, already updated above) owns active items and blockers.
 There is no activity log; git and `## Progress` are the record.
 
 ## 8. Commit

@@ -29,9 +29,10 @@ files and is never touched by the LLM.
 ## Work
 
 `Work/` holds execution state — what's being built now. Each file is one **work
-item**: a Spec (what to build), Tasks (one ≈ one session), and a Progress log;
-`Work/README.md` is the board. Durable knowledge goes in the Wiki; plans, todos,
-and progress go in Work.
+item**: a Spec (what to build), Tasks (one ≈ one session), and a Progress log. An
+item's status is its **folder** — `Active/`, `Backlog/`, `Done/`, `Dropped/` —
+changed by `git mv`, not a field; `Work/README.md` indexes the active ones.
+Durable knowledge goes in the Wiki; plans, todos, and progress go in Work.
 
 - `/work <goal>` — create a work item (drafts a Spec for approval, then tasks)
 - `/next-session [Name]` — in a FRESH session, do exactly one task, log progress, stop

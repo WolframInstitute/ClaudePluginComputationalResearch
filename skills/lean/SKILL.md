@@ -96,7 +96,8 @@ When the user asks to **formalize** a math statement (vs. closing one
 specific goal), seed a checklist before opening Lean:
 
 1. Read `${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/formalization_checklist_template.md`.
-2. Write a copy to `Work/Formalize-<KebabTopic>.md`, filling in:
+2. Write a copy to `Work/Backlog/Formalize-<KebabTopic>.md` (move to `Active/` when
+   you start, archived to `Done/` when complete — folder is the status), filling in:
    - **Statement** — the precise theorem in math + Lean syntax
    - **Hypotheses** — what's needed, what's assumed
    - **Proof outline** — math-level proof sketch

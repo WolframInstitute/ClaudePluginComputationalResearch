@@ -22,16 +22,18 @@ what is conjectured, and what is open.
 - `Wiki/Theorems/` — one `.md` per theorem (statement, proof outline, status)
 - `Wiki/Definitions/` — one `.md` per formal definition (see `_template.md`)
 - `Wiki/Domains/categories.md` — math-domain taxonomy (adapt to project scope)
-- `Work/` — multi-session work items: spec, tasks, per-session progress (incl. formalization checklists); `Work/README.md` is the board
+- `Work/` — multi-session work items: spec, tasks, per-session progress (incl. formalization checklists); status is the folder (`Active/Backlog/Done/Dropped`), `Work/README.md` indexes active items
 - `Resources/` — reference PDFs, notebooks (gitignored)
 - `Lean/` (if present) — Mathlib-style formalization
 
 ## Work
 
 `Work/` holds execution state — what's being built now, separate from the Wiki
-(durable knowledge). Each file is one **work item**: a Spec (what to build),
-Tasks (one ≈ one session), and a Progress log; `Work/README.md` is the board.
-Lean formalizations live here too as `Type: formalization` work items.
+(durable knowledge). Each file is one **work item**: a Spec (what to build), Tasks
+(one ≈ one session), and a Progress log. An item's status is its **folder** —
+`Active/`, `Backlog/`, `Done/`, `Dropped/` — changed by `git mv`, not a field;
+`Work/README.md` indexes the active ones. Lean formalizations live here too as
+`Type: formalization` work items.
 
 - `/work <goal>` — create a work item (drafts a Spec for approval, then tasks)
 - `/next-session [Name]` — in a FRESH session, do exactly one task, log progress, stop

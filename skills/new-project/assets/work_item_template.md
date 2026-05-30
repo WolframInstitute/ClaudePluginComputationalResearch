@@ -1,7 +1,7 @@
 # {{ITEM_NAME}}
 
-> Status: **draft**    <!-- draft | active | done | abandoned -->
-> Type: research       <!-- research | formalization | refactor | investigation -->
+> Type: research    <!-- research | formalization | refactor | investigation -->
+<!-- Status is the folder: Active/ Backlog/ Done/ Dropped/. Move the file to change it. -->
 
 ## Spec
 

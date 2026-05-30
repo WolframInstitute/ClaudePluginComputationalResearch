@@ -106,9 +106,9 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `math_categories_template.md` | Math-domain taxonomy seed (adapted from PureMath) |
 | `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by new-notebook) |
 | `formal_definition_template.md` | Wiki/Definitions/ article template |
-| `formalization_checklist_template.md` | Work/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
-| `work_item_template.md` | Work/<Name>.md skeleton: Spec / Tasks / Progress / Decisions (used by work, next-session) |
-| `work_readme_template.md` | Work/README.md board, seeded by the scaffolds |
+| `formalization_checklist_template.md` | Work/Backlog/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
+| `work_item_template.md` | Work item skeleton: Spec / Tasks / Progress / Decisions (used by work, next-session); status is the folder (Active/Backlog/Done/Dropped) |
+| `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules appended to every generated CLAUDE.md (research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |

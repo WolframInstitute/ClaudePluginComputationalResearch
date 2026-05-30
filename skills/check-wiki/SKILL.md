@@ -72,10 +72,11 @@ Add missing entries.
 
 ### 7. Check work items
 
-Read `Work/README.md` and scan `Work/*.md`. Flag any item with `Status: active`
-whose `## Progress` has no recent session (or none at all) — it may be stalled.
-Flag board rows whose "next task" no longer matches the first unchecked task.
-Light check — report, don't auto-fix.
+Read `Work/README.md` and scan `Work/Active/*.md` (an item's status is its folder).
+Flag any active item whose `## Progress` has no recent session (or none at all) — it
+may be stalled. Flag index rows whose "next task" no longer matches the first
+unchecked task, and active items missing from the index. Light check — report,
+don't auto-fix.
 
 ### 8. Report
 

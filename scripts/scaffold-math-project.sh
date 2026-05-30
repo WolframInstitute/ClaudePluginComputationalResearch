@@ -110,7 +110,7 @@ echo "    Definitions/                — one .md per formal definition"
 echo "      _template.md              — copy this for new definitions"
 echo "    Domains/categories.md       — math-domain taxonomy (adapt to project scope)"
 echo "  Work/"
-echo "    README.md                   — work-item board (formalizations live here too)"
+echo "    README.md                   — active-item index; status = folder (formalizations live here too)"
 if [ "$WITH_LEAN" = "1" ]; then
   echo "  Lean/                         — formalization (run 'lake new $PROJECT_NAME math' here)"
 fi

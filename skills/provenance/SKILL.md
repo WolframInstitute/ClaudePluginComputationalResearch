@@ -145,7 +145,7 @@ A `## Provenance` section at the bottom of the article, mirroring `## Recover`:
 - Ledger: Wiki/Prompts.md
 ```
 
-### Work items (`Work/<Name>.md`)
+### Work items (`Work/<bucket>/<Name>.md`)
 
 Capture the originating request in the Spec and each session's prompt in Progress:
 
