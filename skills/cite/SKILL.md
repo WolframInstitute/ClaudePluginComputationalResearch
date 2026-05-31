@@ -26,6 +26,20 @@ wiki article via [add-resource](../add-resource/SKILL.md).
 | DOI URL | `https://doi.org/10.1088/...` |
 | `doi:` prefixed | `doi:10.1088/...` |
 
+## Kernel execution (license-aware)
+
+`cite_from_id.wls` spawns a fresh `wolframscript` kernel (a single `Import` of
+the arXiv/Crossref metadata), which consumes a license seat. Before running it,
+check headroom on the AgentTools MCP (no extra seat):
+
+```wolfram
+With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
+```
+
+If `free <= 0`, do **not** spawn `wolframscript` — run the same `Import[...]`
+through `mcp__Wolfram__WolframLanguageEvaluator` instead. The script remains the
+path when the MCP is unavailable.
+
 ## Workflow
 
 ### Step 1 — Run the script

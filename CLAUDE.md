@@ -5,6 +5,36 @@ knowledge management system, human revision workflow, guided tours, Wolfram
 paclet development, LaTeX/Typst paper and notes scaffolding, notebook
 generation, and session-based work tracking (spec/tasks/progress).
 
+## Wolfram Kernel Execution Policy
+
+Every running kernel consumes one of the license's `$MaxLicenseProcesses` seats:
+each Wolfram MCP server, each open front-end, and **each `wolframscript`
+invocation** (which spawns a fresh kernel). Once seats are saturated, a new
+`wolframscript` call fails with a license error — the common failure mode when
+the official + unofficial Wolfram MCP servers and a front-end are all running.
+
+**The plugin is MCP-first.** All Wolfram-touching skills prefer the official
+AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator`, `WriteNotebook`,
+`ReadNotebook`, `TestReport`, `CodeInspector`, `SymbolDefinition`,
+`WolframLanguageContext`) — one persistent kernel, no extra seat. The `.wls`
+scripts (paclet build/publish, notebook generation, `search_*`, `cite`) are kept
+as a **fallback** for when no MCP is attached (headless/cron runs) or for bulk
+batch use — they are not deleted.
+
+Before spawning `wolframscript`, a skill checks headroom on the MCP (this costs
+no seat — it runs on the already-running kernel):
+
+```wolfram
+With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
+```
+
+If `free <= 0`, the skill does **not** spawn `wolframscript`; it routes the work
+through the MCP or asks the user to free a seat. `/check-env` reports live
+headroom and flags when two Wolfram MCP servers are configured at once. This
+policy is **detect + warn** — it never hard-blocks. The per-skill "Kernel
+execution (license-aware)" blocks are the short reminders of this rule; this
+section is authoritative.
+
 ## Plugin Architecture
 
 ```

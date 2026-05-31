@@ -26,6 +26,22 @@ for projects that build on or connect to the Wolfram Language ecosystem.
    If Wiki/ exists, resources are registered via add-resource. If not,
    results are just reported.
 
+## Kernel execution (license-aware)
+
+The search scripts below each spawn a fresh `wolframscript` kernel, which
+consumes a license seat. Before running them, check headroom on the AgentTools
+MCP (no extra seat):
+
+```wolfram
+With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
+```
+
+If `free <= 0`, do **not** spawn `wolframscript` — instead run the equivalent
+`Import[...]`/`ResourceSearch[...]` query through
+`mcp__Wolfram__WolframLanguageEvaluator` (and `mcp__Wolfram__WolframLanguageContext`
+for documentation), which reuse the one persistent kernel. The `.wls` scripts
+remain the path when the MCP is unavailable.
+
 ## Sources
 
 Run these scripts in parallel where possible. Skip any source that is

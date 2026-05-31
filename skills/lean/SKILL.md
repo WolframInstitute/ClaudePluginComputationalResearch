@@ -141,6 +141,8 @@ When you produce Lean code for the user:
 ## When NOT to use
 
 - Pure math content questions with no intent to formalize → [search-math](../search-math/SKILL.md).
-- Closed-form symbolic computation → use the Wolfram MCP instead.
+- Closed-form symbolic computation → use the AgentTools Wolfram MCP
+  (`mcp__Wolfram__WolframLanguageEvaluator`) — the persistent kernel, not a new
+  `wolframscript` process.
 - Wolfram-paclet correctness checks → use the existing test infrastructure
   (`run_tests.wls`), not Lean.

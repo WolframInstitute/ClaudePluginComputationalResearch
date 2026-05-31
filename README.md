@@ -51,6 +51,15 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 
 > **Note:** On older Wolfram versions, the legacy [Wolfram/MCPServer](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/MCPServer) paclet still works as a fallback if that is what you have installed.
 
+> **🔑 License seats.** Each running kernel — every Wolfram MCP server, every
+> open front-end, every `wolframscript` call — consumes one of your license's
+> `$MaxLicenseProcesses` seats. The plugin is **MCP-first**: it routes Wolfram
+> work through the official server's single persistent kernel and treats the
+> `.wls` scripts as a fallback for when no MCP is attached (e.g. headless runs).
+> Before spawning `wolframscript` it checks headroom and warns rather than
+> failing opaquely. Running both Wolfram MCP servers at once uses two seats —
+> `/check-env` reports live headroom and flags this.
+
 ## 🧩 Skills
 
 Skills share their name with the matching slash command (one name per feature),

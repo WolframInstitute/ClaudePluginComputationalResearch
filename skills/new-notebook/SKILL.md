@@ -18,6 +18,22 @@ description: >
 - **NEVER** use `Export[path, ...]` in MCP code — always `ExportString[...]` and write
   the result with the `Write` tool.
 
+## Kernel execution (license-aware)
+
+This skill runs entirely on the AgentTools MCP (`mcp__Wolfram__WriteNotebook`,
+`mcp__Wolfram__ReadNotebook`, `mcp__Wolfram__WolframLanguageEvaluator`) — one
+persistent kernel, no extra license seat. The batch
+`Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` helpers spawn
+a fresh `wolframscript` kernel and are a **license-gated fallback** for bulk
+runs only. Before invoking them, confirm a seat is free via the MCP:
+
+```wolfram
+With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
+```
+
+If `free <= 0`, generate notebooks one at a time through the MCP instead of
+calling the batch scripts.
+
 # Wolfram Notebook Pipeline
 
 **All skills that create or modify `.nb` files must use this skill's pipeline and
@@ -86,8 +102,9 @@ becomes Text cells.
 Read `NotebooksLLM/Name.md`, pass its content through the Wolfram MCP pipeline
 (below), write the result to `NotebooksLLM/Name.nb`.
 
-Alternatively, run `Scripts/generate_notebooks.wls` to batch-convert
-all `.md` sources in `NotebooksLLM/`:
+Alternatively — **only as the license-gated fallback** (MCP unavailable and a
+seat free; see *Kernel execution* above) — run `Scripts/generate_notebooks.wls`
+to batch-convert all `.md` sources in `NotebooksLLM/`:
 
 ```bash
 wolframscript -file Scripts/generate_notebooks.wls

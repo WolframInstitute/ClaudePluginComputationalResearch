@@ -108,13 +108,34 @@ else
   ok "To confirm MCP is active in this session, run /mcp inside Claude"
 fi
 
+# Warn if BOTH an official (Wolfram/AgentTools) and an unofficial (wolfram-mcp)
+# server are configured — each runs its own kernel and holds a license seat.
+# The two markers may live in different config files, so scan them separately.
+HAS_OFFICIAL=0
+HAS_UNOFFICIAL=0
+for cfg in "${MCP_CONFIGS[@]}" "$HOME/.claude.json" "$HOME/.claude/mcp.json"; do
+  [ -f "$cfg" ] || continue
+  grep -qi "AgentTools" "$cfg" 2>/dev/null && HAS_OFFICIAL=1
+  grep -qi "wolfram_mcp" "$cfg" 2>/dev/null && HAS_UNOFFICIAL=1
+done
+if [ "$HAS_OFFICIAL" -eq 1 ] && [ "$HAS_UNOFFICIAL" -eq 1 ]; then
+  warn "Two Wolfram MCP servers are configured (official AgentTools + unofficial"
+  warn "wolfram-mcp). Each holds a separate kernel/license seat. Disabling the"
+  warn "unused one frees a seat for wolframscript."
+fi
+warn "License seats are finite (\$MaxLicenseProcesses). Run /check-env inside"
+warn "Claude for live headroom — that step queries the kernel via the MCP."
+
 echo ""
 
 # ── 3. Summary ─────────────────────────────────────────────────────────────
 
 echo "=== Summary ==="
 if [ -n "$WOLFRAMSCRIPT" ] && [ "$RESULT" = "2" ] && [ "$MCP_FOUND" -eq 1 ]; then
-  echo -e "  ${GREEN}Environment ready for Wolfram research.${NC}"
+  echo -e "  ${GREEN}Wolfram kernel and MCP available.${NC}"
+  echo "  Prefer the MCP (one persistent kernel) for evaluation; wolframscript"
+  echo "  spawns a new seat-consuming kernel. Run /check-env in Claude for"
+  echo "  live license headroom before relying on wolframscript."
 elif [ -n "$WOLFRAMSCRIPT" ] && [ "$MCP_FOUND" -eq 0 ]; then
   echo -e "  ${YELLOW}Kernel available, but MCP server not detected locally.${NC}"
   echo "  MCP may still be available remotely — test with mcp__wolfram__ping."
