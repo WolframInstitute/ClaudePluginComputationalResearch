@@ -14,7 +14,7 @@ description: >
 # Research Project Scaffolder
 
 Set up a new project with the wiki knowledge base and optional Wolfram Language
-computation, paclet development, or structured LaTeX notes. The project takes a
+computation, paclet development, or a structured LaTeX/Typst journal. The project takes a
 research topic from **any scientific domain** and explores it through Wolfram
 models and computation.
 
@@ -546,5 +546,7 @@ Tell the user:
   - `next-session` — run one task per fresh session against a work item
   - `update-wiki` — update wiki after changes
   - `provenance` — optionally track the prompts/intent behind generated artifacts
+  - `journal` — optionally keep a running, cited LaTeX/Typst journal of
+    definitions, theorems, and main claims (off by default; `/journal on`)
   - `start-tour` — interactive project walkthrough
 - Suggest next steps based on the topic and papers

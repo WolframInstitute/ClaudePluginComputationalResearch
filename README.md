@@ -8,8 +8,9 @@ A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computatio
 * 🔍 Gathers and summarizes resources, keeping a Markdown summary and recovery options (e.g. where to download).
 * 📦 Converts code into a paclet and helps with its build and deployment (e.g. with or without docs, local build or cloud).
 * 📓 Generates expository Wolfram notebooks and helps publish them on Wolfram Cloud (explicitly marked as LLM-generated, keeping a Markdown mirror).
-* 📝 Scaffolds a LaTeX or Typst paper (edits the user-owned document on request) and administers a running notes file (the LLM writes the notes).
+* 📝 Scaffolds a LaTeX or Typst paper and edits the user-owned document on request.
 * 🧬 Optionally records the prompt and intent behind every generated artifact, keeping it traceable.
+* 📔 Optionally keeps a running scientific journal in LaTeX or Typst — concise, cited def/thm/rem entries of what was learned.
 * 🧭 Offers a guided tour through the project for a human, and a revision protocol (stateful for multi-session work).
 * ✅ Tracks plans, todos, and state.
 
@@ -69,7 +70,7 @@ grouped by domain.
 |-------|-------------|
 | **new-project** | Scaffold a new project (research, math, paclet-dev, paclet) |
 | **scaffold-paper** | Scaffold a LaTeX or Typst paper, then edit it on request |
-| **notes** | Keep a running LaTeX/Typst notes file (scaffold, add, list) |
+| **journal** | Keep an optional cited LaTeX/Typst journal (def/thm/rem), off by default |
 | **init-wiki** | Create a markdown knowledge base (Wiki/) |
 | **update-wiki** | Update wiki articles, index, and log |
 | **check-wiki** | Audit the wiki for staleness and gaps |
@@ -93,7 +94,7 @@ grouped by domain.
 |---------|-------------|
 | `/computational-research:new-project` | Scaffold a new project |
 | `/computational-research:scaffold-paper` | Scaffold a LaTeX or Typst paper |
-| `/computational-research:notes` | Scaffold, add, or list notes |
+| `/computational-research:journal` | Toggle, scaffold, add, or list journal entries |
 | `/computational-research:init-wiki` | Create the Wiki/ knowledge base |
 | `/computational-research:update-wiki` | Update the wiki after changes |
 | `/computational-research:check-wiki` | Audit the wiki |

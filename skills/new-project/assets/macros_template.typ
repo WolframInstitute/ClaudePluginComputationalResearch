@@ -1,4 +1,4 @@
-// macros.typ — shared Typst preamble, imported by main.typ / notes.typ
+// macros.typ — shared Typst preamble, imported by main.typ / journal.typ
 // Apply with:  #show: macros
 
 // ── Document style ──
@@ -47,4 +47,8 @@
 #let definition(body) = thmbox("Definition", body, italic: false)
 #let example(body) = thmbox("Example", body, italic: false)
 #let remark(body) = thmbox("Remark", body, italic: false)
+#let claim(body) = thmbox("Claim", body)
+#let observation(body) = thmbox("Observation", body, italic: false)
+#let question(body) = thmbox("Question", body, italic: false)
+#let construction(body) = thmbox("Construction", body, italic: false)
 #let proof(body) = block(width: 100%)[_Proof._ #body #h(1fr) $square$]

@@ -115,6 +115,14 @@ article you **newly generated** this step:
 
 When tracking is off (default), skip this entirely.
 
+### 7. Record to the scientific journal (optional)
+
+If the project's scientific journal is on (a `Scientific journal: **on**` line in
+`CLAUDE.md` — see the [journal](../journal/SKILL.md) skill), also append the newly
+established definition/theorem/claim to `Journal/` as a dated def/thm/rem/claim
+entry, citing any resource used. The Wiki gets the deduplicated, timeless article;
+the journal gets the dated, cited record of learning it. When off, skip.
+
 ## What NOT to do
 
 - Do not ask the user for permission to update wiki prose

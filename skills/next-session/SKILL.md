@@ -72,6 +72,10 @@ function, a result, a definition, a decision. It updates `Wiki/` articles and
 `Status.md`. `Work/` (the folders + the index, already updated above) owns active items and blockers.
 There is no activity log; git and `## Progress` are the record.
 
+If the project's scientific journal is on (see the [journal](../journal/SKILL.md)
+skill), append a concise dated def/thm/rem/claim entry for what was established
+this session, citing resources used. When off, skip.
+
 ## 8. Commit
 
 If the user commits, use the `commit` skill. git history is now the project's audit

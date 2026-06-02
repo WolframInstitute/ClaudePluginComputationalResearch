@@ -65,6 +65,9 @@ Ask the user (or infer from context):
 - **`Paper/references.bib`** — if a Paper/ directory exists and the
   citation is for the paper being written. Append at end, **after** checking
   the key is not already present (`grep` first).
+- **`Journal/references.bib`** — if a `Journal/` directory exists and the
+  citation supports a journal entry (see the [journal](../journal/SKILL.md) skill).
+  Append at end, after `grep`-checking the key is not already present, as for Paper.
 - **`Wiki/Resources/<Key>.md`** — if the citation deserves a full wiki
   article (will be summarised). Invoke [add-resource](../add-resource/SKILL.md)
   with the BibTeX and the URL.
@@ -94,3 +97,5 @@ keys** (suffix `a`, `b`, ... if collisions occur), then write the batch.
   MathWorld / Wikipedia that often have DOIs; pipe those DOIs into this skill.
 - [scaffold-paper](../scaffold-paper/SKILL.md) — produces the `Paper/references.bib`
   this skill appends to.
+- [journal](../journal/SKILL.md) — owns `Journal/references.bib`; cite into it the
+  same way as Paper.

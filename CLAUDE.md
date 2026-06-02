@@ -2,8 +2,9 @@
 
 A Claude plugin for AI-assisted computational research with a wiki-based
 knowledge management system, human revision workflow, guided tours, Wolfram
-paclet development, LaTeX/Typst paper and notes scaffolding, notebook
-generation, and session-based work tracking (spec/tasks/progress).
+paclet development, LaTeX/Typst paper scaffolding, an optional cited
+scientific journal, notebook generation, and session-based work tracking
+(spec/tasks/progress).
 
 ## Wolfram Kernel Execution Policy
 
@@ -52,7 +53,7 @@ skills/new-project/assets/    — templates for scaffolding
 |-------|------|---------|
 | `new-project` | scaffolding | Scaffold new projects (research, math-research, paclet-dev, paclet) |
 | `scaffold-paper` | scaffolding | Scaffold Paper/ with LaTeX (amsart, biblatex) or Typst templates; then edit the user-owned doc |
-| `notes` | scaffolding | Administer a running LaTeX/Typst notes doc (scaffold, add dated entries, list); LLM writes entries |
+| `journal` | scaffolding | Optional cited LaTeX/Typst journal (one day-file per day under entries/, dated def/thm/rem/claim); per-project toggle |
 | `search-wolfram` | content | Search Wolfram docs, Function Repository, Community, writings |
 | `search-math` | content | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
 | `init-wiki` | wiki | Create Wiki/ knowledge base from scratch |
@@ -79,7 +80,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `scaffold-paclet-dev.sh` | bash | new-project (paclet-dev type) |
 | `scaffold-paclet.sh` | bash | new-project (paclet type) |
 | `scaffold-paper.sh` | bash | scaffold-paper skill (`--typst` for Typst) |
-| `scaffold-notes.sh` | bash | notes skill (`--typst` for Typst) |
+| `scaffold-journal.sh` | bash | journal skill (`--typst` for Typst) |
 | `build_paclet.wls` | wolframscript | build-paclet skill |
 | `publish_paclet.wls` | wolframscript | publish-paclet skill |
 | `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls) |
@@ -106,7 +107,7 @@ skills/new-project/assets/    — templates for scaffolding
 |---------|---------|
 | `new-project` | new-project |
 | `scaffold-paper` | scaffold-paper |
-| `notes` | notes |
+| `journal` | journal |
 | `init-wiki` | init-wiki |
 | `update-wiki` | update-wiki |
 | `check-wiki` | check-wiki |
@@ -144,8 +145,8 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |
 | `main_template.typ` | Typst article (imports macros.typ, native bibliography) |
 | `macros_template.typ` | Shared Typst preamble: style, math shorthand, theorem blocks |
-| `notes_template.tex` | LaTeX running notes doc (article + macros.sty, end-marker) |
-| `notes_template.typ` | Typst running notes doc (imports macros.typ, end-marker) |
+| `journal_template.tex` | LaTeX master journal doc (article + macros.sty, \input day-files, \printbibliography) |
+| `journal_template.typ` | Typst master journal doc (imports macros.typ, #include day-files, #bibliography) |
 | `latexmkrc_template` | latexmk config |
 | `tools_starter.wl` | Starter Wolfram code file |
 | `pacletinfo_template.wl` | PacletInfo.wl |

@@ -98,7 +98,7 @@ Shared preamble loaded by main.tex:
 - **Bibliography**: biblatex with biber (alphabetic style)
 - **References**: cleveref (nameinlink, capitalize)
 - **Theorem environments**: theorem, corollary, proposition, lemma, conjecture,
-  definition, example, construction, remark, question, observation
+  claim, definition, example, construction, remark, question, observation
 - **Operators**: dist, diam, Aut, End, Hom
 - **Shorthand**: \NN, \ZZ, \QQ, \RR, \CC, \FF, \GG, \VV, \EE
 
