@@ -1,6 +1,6 @@
 {
   "name": "computational-research",
-  "version": "3.9.0",
+  "version": "3.10.0",
   "description": "AI-assisted computational research with license-aware MCP-first Wolfram execution, wiki knowledge base, LaTeX/Typst paper scaffolding, Wolfram paclet development and publishing, notebook generation, guided tours, Wolfram ecosystem search, pure-math project scaffolding with MathWorld/nLab/OEIS/DLMF/Wikipedia search, BibTeX from arXiv/DOI, Lean/Mathlib formalization bridge, multi-session work tracking (spec/tasks/progress), Conventional-Commits enforcement via scaffolded git hooks, optional prompt-provenance tracking for generated artifacts, an optional cited scientific journal (def/thm/rem) in LaTeX/Typst, and revision workflow.",
 "author": {
     "name": "Pavel Hajek",

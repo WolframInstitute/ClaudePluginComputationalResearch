@@ -175,7 +175,10 @@ The `new-project` skill asks users which type of project to create:
   notebook template.
 - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules
   (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental
-  work, Wiki/, .gitmodules. Optional Paper/ (gitignored).
+  work, Wiki/, .gitmodules. Optional Paper/ (gitignored). Work items that change
+  paclet code land as PRs on the paclet submodules — developed on a `work/<item>`
+  branch in a gitignored `<Paclet>--<item>/` worktree — while the dev repo's
+  Wiki and Work stay linear on `main` (see the `next-session` skill).
 - **paclet** — standalone Wolfram paclet (double nesting), clean repo
   structure. Optional Wiki/.
 

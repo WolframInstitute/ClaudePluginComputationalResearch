@@ -6,3 +6,6 @@ Tour/
 .DS_Store
 *.mx
 *.nb.bak
+
+# Paclet work-item worktrees: <Paclet>--<item>/ (a git worktree of a submodule on branch work/<item>)
+*--*/

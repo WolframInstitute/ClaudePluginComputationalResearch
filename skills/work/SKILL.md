@@ -102,6 +102,10 @@ it is LLM-drafted and unapproved, edit directly.
 ## Relationship to other skills
 
 - `next-session` executes one task per fresh session against an item created here.
+  In a paclet-dev repo, an item that changes paclet code is developed on a
+  `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree and lands as a
+  PR on that paclet's repo (the dev repo stays on `main`) — name the target paclet
+  in the Spec.
 - `update-wiki` records durable knowledge in `Wiki/` — this skill does not touch
   the Wiki; it manages execution state only.
 - The `revise` protocol governs every Spec and task-list interaction.
