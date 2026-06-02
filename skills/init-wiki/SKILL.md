@@ -126,7 +126,8 @@ After every substantial step, the LLM:
 4. Adds cross-links in See also sections
 
 The wiki is documentation — the LLM keeps it accurate automatically.
-No human sign-off needed for wiki prose.
+No human sign-off needed for wiki prose. Every article carries a
+`[ LLM Generated ]` marker directly under its `# Title`.
 
 ### Human revision (code & functionality)
 

@@ -1,5 +1,7 @@
 # <Term>
 
+*[ LLM Generated ]*
+
 One-line gloss of what this term means in this project.
 
 ## Notation

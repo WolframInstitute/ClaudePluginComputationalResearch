@@ -36,6 +36,16 @@ markInitCells[cellList_List] :=
 		result
 	]
 
+addLLMSubtitle[cellList_List] :=
+	With[{cleaned = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]]},
+		With[{pos = FirstPosition[cleaned, Cell[_, "Title", ___], Missing[], {1}]},
+			If[MissingQ[pos],
+				Prepend[cleaned, Cell["[ LLM Generated ]", "Subtitle"]],
+				Insert[cleaned, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]
+			]
+		]
+	]
+
 (* Boxifying a cell whose code builds Graphics (Plot, HighlightGraph,
    InfraSceneHighlight, ...) strands it with a "Map is not a Graphics
    primitive" error at front-end evaluation, so leave such cells as plain
@@ -108,6 +118,7 @@ Do[
 		Cell[content_String, style:("Input" | "Code"), opts___] :> boxifyCell[content, style, opts]
 	};
 	cells = markInitCells[cells];
+	cells = addLLMSubtitle[cells];
 
 	nbExpr = If[prov === None,
 		Notebook[cells],

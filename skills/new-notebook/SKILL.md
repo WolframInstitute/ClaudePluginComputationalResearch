@@ -454,10 +454,30 @@ markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
 Uses `StringMatchQ` with wildcards to avoid false positives (e.g., "Indefinite Integrals"
 must NOT trigger).
 
+### 4. LLM-generated subtitle — Critical
+
+Every generated notebook is **explicitly marked as LLM-generated**: a `"Subtitle"`
+cell reading `[ LLM Generated ]` goes directly under the `"Title"` cell. Insert it
+idempotently (replacing any existing one), after `markInitCells` and before
+`ExportString`:
+
+```wolfram
+addLLMSubtitle[cellList_List] := With[
+  {cleaned = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]]},
+  With[{pos = FirstPosition[cleaned, Cell[_, "Title", ___], Missing[], {1}]},
+    If[MissingQ[pos],
+      Prepend[cleaned, Cell["[ LLM Generated ]", "Subtitle"]],
+      Insert[cleaned, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]]
+];
+```
+
+Never ship an LLM-generated `.nb` without this marker (paclet code is exempt;
+notebooks are not).
+
 ## The complete Wolfram MCP call
 
 ```wolfram
-Module[{md, nb, cells, markInitCells, boxifyInputCells, vizCellQ, vizHeads, tick, fence},
+Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ, vizHeads, tick, fence},
 
   tick = FromCharacterCode[96];
   fence = StringJoin[tick, tick, tick];
@@ -501,6 +521,14 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, vizCellQ, vizHeads, tick
     result
   ];
 
+  addLLMSubtitle[cellList_List] := With[
+    {cleaned = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]]},
+    With[{pos = FirstPosition[cleaned, Cell[_, "Title", ___], Missing[], {1}]},
+      If[MissingQ[pos],
+        Prepend[cleaned, Cell["[ LLM Generated ]", "Subtitle"]],
+        Insert[cleaned, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]]
+  ];
+
   md = StringJoin[
     "# My Notebook Title\n\n",
     "Introductory text.\n\n",
@@ -516,6 +544,7 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, vizCellQ, vizHeads, tick
   cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
   cells = boxifyInputCells[cells];
   cells = markInitCells[cells];
+  cells = addLLMSubtitle[cells];
   ExportString[Notebook[cells], "NB"]
 ]
 ```

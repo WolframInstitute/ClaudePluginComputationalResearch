@@ -71,6 +71,8 @@ Write `Wiki/Resources/Name.md`:
 ```markdown
 # Author Year — Short Title
 
+*[ LLM Generated ]*
+
 Full citation. *Journal/venue*, volume, pages, year.
 
 ## Summary

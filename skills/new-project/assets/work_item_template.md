@@ -1,5 +1,7 @@
 # {{ITEM_NAME}}
 
+*[ LLM Generated ]*
+
 > Type: research    <!-- research | formalization | refactor | investigation -->
 <!-- Status is the folder: Active/ Backlog/ Done/ Dropped/. Move the file to change it. -->
 

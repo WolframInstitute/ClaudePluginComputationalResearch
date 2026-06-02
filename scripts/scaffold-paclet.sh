@@ -135,6 +135,15 @@ Prompt tracking: **off**
 <!-- When on, generated artifacts record their originating prompt/intent in
      Wiki/Prompts.md and carry an embedded back-pointer. Toggle with /provenance;
      see the \`provenance\` skill. -->
+
+## Scientific journal
+
+Scientific journal: **off**
+<!-- When on, the LLM keeps a running LaTeX/Typst journal in Journal/ — a concise,
+     structured, append-only stream of dated def/thm/rem/claim entries recording the
+     math/physics content and main claims established, with resources cited into
+     Journal/references.bib. Plain "on" = very concise; "on (verbose)" = fuller
+     detail. Toggle with /journal; see the \`journal\` skill. -->
 EOF
 printf '\n' >> "$REPO_ROOT/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$REPO_ROOT/CLAUDE.md"

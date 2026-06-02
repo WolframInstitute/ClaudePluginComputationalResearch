@@ -43,10 +43,12 @@ For each entity affected by the change:
 - **Changed entity**: update the relevant article's content to match current reality
 - **Removed entity**: delete the article and remove its index entry
 
-Article format:
+Article format (every new article carries a `[ LLM Generated ]` marker under its title):
 
 ```markdown
 # Title
+
+*[ LLM Generated ]*
 
 One-paragraph summary.
 
