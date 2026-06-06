@@ -1,3 +1,17 @@
+## Source formatting
+
+Semantic line breaks: **on**
+<!-- When on, prose you write in source files — markdown (.md) and LaTeX/Typst
+     (.tex/.typ) — uses one sentence per line (semantic line breaks): each sentence
+     starts on its own source line, and a long sentence may also break at clause
+     boundaries. This changes only the source; rendered output is unchanged. Set to
+     **off** to wrap prose into filled paragraphs. Applies to wiki articles, work
+     items, resources, journal entries, and papers — not to code, tables, headings,
+     or YAML/TOML front matter. Do not reflow an existing paragraph onto one line,
+     and do not add blank lines between a paragraph's sentences (a blank line still
+     separates paragraphs). Detect with:
+     grep -qiE 'semantic line breaks:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || echo off -->
+
 ## Code style
 
 **Exploratory research code.** Mathematical clarity matters more than robustness. Functionality first, readability second, performance third — but readability is non-negotiable. Code should read like a mathematician at a blackboard, not production software.

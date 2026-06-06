@@ -203,3 +203,6 @@ This skill is the single source of truth for the format — the others reference
 - One file per day under `entries/`; never reorder the include lines and never
   rewrite a past day-file.
 - Put images/plots in `Journal/figures/`.
+- When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source
+  formatting* rule), write the prose inside def/thm/rem/claim environments one
+  sentence per source line. This is source-only; the typeset output is unchanged.

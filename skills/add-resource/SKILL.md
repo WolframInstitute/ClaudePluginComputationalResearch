@@ -66,6 +66,10 @@ as if the user typed `https://oeis.org/A000045`.
 
 ### Step 2 — Create wiki article
 
+When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source
+formatting* rule), write the article's prose (Summary, Use in this project) one
+sentence per source line. The `## Recover` lines stay as `Key: Value`.
+
 Write `Wiki/Resources/Name.md`:
 
 ```markdown

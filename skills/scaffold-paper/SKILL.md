@@ -134,3 +134,8 @@ This skill **scaffolds and edits**; it does not write the paper.
   theorem environments as needed.
 - **references.bib** — add entries when papers are downloaded or cited.
 - When you do add prose at the user's request, write in the user's voice.
+- **Source formatting.** When `CLAUDE.md` has `Semantic line breaks: on` (the
+  default — see its *Source formatting* rule), write any prose you add or rewrite
+  in `main.tex` / `main.typ` one sentence per source line. This affects only the
+  `.tex` / `.typ` source; the compiled PDF is unchanged. Do not reflow paragraphs
+  of existing user prose you were not asked to touch.

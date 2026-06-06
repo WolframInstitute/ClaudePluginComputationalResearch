@@ -64,6 +64,10 @@ Fill the `Origin:` line in the Spec with the user's originating request. If the
 project has prompt tracking on (see the [provenance](../provenance/SKILL.md)
 skill), also append a `Wiki/Prompts.md` ledger entry for the new item.
 
+When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source
+formatting* rule), write the Spec and other prose in this item one sentence per
+source line.
+
 ### 2. Present and wait
 
 Show the Spec and wait (revise loop). A spec in `Backlog/` is still a malleable

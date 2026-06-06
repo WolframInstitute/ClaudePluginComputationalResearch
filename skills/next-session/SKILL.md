@@ -59,6 +59,10 @@ If the project has prompt tracking on (see the
 mirror an entry to `Wiki/Prompts.md` for any artifact generated this session.
 When tracking is off, the `**Prompt:**` line is optional.
 
+When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source
+formatting* rule), write the Progress prose one sentence per source line. The
+deliverable from step 4 follows the same rule for any prose source it produces.
+
 ## 6. Close the task
 
 Check the box and move it to `### Done` with the session number. Update the item's

@@ -140,7 +140,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `formalization_checklist_template.md` | Work/Backlog/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
 | `work_item_template.md` | Work item skeleton: Spec / Tasks / Progress / Decisions (used by work, next-session); status is the folder (Active/Backlog/Done/Dropped) |
 | `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
-| `code_style_template.md` | Code-style rules appended to every generated CLAUDE.md (research, paclet-dev, paclet) |
+| `code_style_template.md` | Code-style rules + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |
 | `main_template.typ` | Typst article (imports macros.typ, native bibliography) |

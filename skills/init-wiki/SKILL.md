@@ -164,6 +164,22 @@ created on demand (local, gitignored). Each section produces a narrative .md
 and runnable code file. The LLM stops after each section for feedback.
 ```
 
+If `CLAUDE.md` does not already contain a `Semantic line breaks:` line (a
+scaffolded project gets one from `code_style_template.md`), also append the
+source-formatting toggle so this repo carries the config:
+
+```markdown
+## Source formatting
+
+Semantic line breaks: **on**
+<!-- When on, prose in source files — markdown (.md) and LaTeX/Typst (.tex/.typ) —
+     uses one sentence per line (semantic line breaks): each sentence starts on its
+     own source line. Source only; rendered output is unchanged. Set to **off** to
+     wrap prose into filled paragraphs. Do not reflow paragraphs onto one line; a
+     blank line still separates paragraphs. Detect with:
+     grep -qiE 'semantic line breaks:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || echo off -->
+```
+
 ## Step 6 — Update .gitignore
 
 Add these entries if not already present:
@@ -209,6 +225,9 @@ Body. Use subsections as needed.
 ```
 
 No status headers on wiki articles — they're documentation, maintained automatically.
+
+When `CLAUDE.md` has `Semantic line breaks: on` (the default), write seeded
+article prose one sentence per source line — see the *Source formatting* rule.
 
 ## Backlink convention
 
