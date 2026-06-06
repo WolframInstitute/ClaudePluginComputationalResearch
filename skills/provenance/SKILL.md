@@ -13,14 +13,12 @@ description: >
 
 # Prompt Provenance
 
-Record *what was asked* to produce a generated artifact. The plugin already
-records *who* generated code (git `Co-Authored-By` trailer) and *what changed*
-(`Wiki/Status.md`, Work `## Progress`). Provenance fills the remaining gap: the
-originating prompt/intent behind each artifact.
+Record *what was asked* to produce a generated artifact.
+The plugin already records *who* generated code (git `Co-Authored-By` trailer) and *what changed* (`Wiki/Status.md`, Work `## Progress`).
+Provenance fills the remaining gap: the originating prompt/intent behind each artifact.
 
-This mirrors the existing `## Recover` convention (see [add-resource](../add-resource/SKILL.md)):
-plain markdown, git-tracked, machine-readable, no database. It is **optional** —
-nothing here runs unless the project toggle is on.
+This mirrors the existing `## Recover` convention (see [add-resource](../add-resource/SKILL.md)): plain markdown, git-tracked, machine-readable, no database.
+It is **optional** — nothing here runs unless the project toggle is on.
 
 ## The toggle (check this first)
 
@@ -40,12 +38,12 @@ Before recording anything, check the toggle:
 grep -qiE 'prompt tracking:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || echo off
 ```
 
-- **off** (default, or section absent): do nothing. Never create `Wiki/Prompts.md`,
-  never embed back-pointers. Stay silent — do not nag the user to turn it on.
+- **off** (default, or section absent): do nothing.
+  Never create `Wiki/Prompts.md`, never embed back-pointers.
+  Stay silent — do not nag the user to turn it on.
 - **on**: record provenance for each artifact you generate, per the rules below.
 
-To flip the toggle, edit the `Prompt tracking:` line in `CLAUDE.md` (and seed
-`Wiki/Prompts.md` the first time it goes on — see *Turning it on*).
+To flip the toggle, edit the `Prompt tracking:` line in `CLAUDE.md` (and seed `Wiki/Prompts.md` the first time it goes on — see *Turning it on*).
 
 ## The canonical record
 
@@ -61,8 +59,8 @@ One small set of fields, reused in the ledger and in every embedded back-pointer
 | `model` | Model id (e.g. `claude-opus-4-8`). |
 | `source` | Notebooks only: the `NotebooksLLM/*.md` source path. |
 
-**Fidelity:** default to a concise one-line `intent`. Add the verbatim `prompt`
-when the request is short, reproducibility matters, or the user asks for it.
+**Fidelity:** default to a concise one-line `intent`.
+Add the verbatim `prompt` when the request is short, reproducibility matters, or the user asks for it.
 Do not paste long conversational text into the ledger.
 
 ## The central ledger — `Wiki/Prompts.md`
@@ -83,9 +81,8 @@ Toggle in CLAUDE.md (`Prompt tracking`). See the `provenance` skill for the form
 - **Source:** NotebooksLLM/RicciCurvature.md
 ```
 
-Omit lines that don't apply (e.g. no `Source:` for a `.wl` file; drop `Prompt:`
-when you're only keeping the distilled intent). Register the ledger once in
-`Wiki/Index.md` under a `## Prompts` section:
+Omit lines that don't apply (e.g. no `Source:` for a `.wl` file; drop `Prompt:` when you're only keeping the distilled intent).
+Register the ledger once in `Wiki/Index.md` under a `## Prompts` section:
 
 ```markdown
 ## Prompts
@@ -95,13 +92,12 @@ when you're only keeping the distilled intent). Register the ledger once in
 
 ## Embedded back-pointers (so provenance travels with the file)
 
-In addition to the ledger entry, embed provenance **inside** each artifact so it
-survives when the file is shared standalone.
+In addition to the ledger entry, embed provenance **inside** each artifact so it survives when the file is shared standalone.
 
 ### Notebooks
 
-Write a leading HTML comment into the `NotebooksLLM/*.md` source. HTML comments
-are dropped by the `{"Markdown","Notebook"}` importer, so they never become cells:
+Write a leading HTML comment into the `NotebooksLLM/*.md` source.
+HTML comments are dropped by the `{"Markdown","Notebook"}` importer, so they never become cells:
 
 ```markdown
 <!-- provenance:
@@ -113,11 +109,10 @@ are dropped by the `{"Markdown","Notebook"}` importer, so they never become cell
 # Ollivier–Ricci Curvature
 ```
 
-`Scripts/generate_notebooks.wls` parses that block and injects it into the
-generated `.nb` as `Notebook[cells, TaggingRules -> {"Provenance" -> <|...|>}]` —
-Wolfram's native, non-rendering metadata slot. You do not write `TaggingRules`
-by hand; the script does it. When the comment is absent, the `.nb` is generated
-exactly as before (no `TaggingRules`). See [new-notebook](../new-notebook/SKILL.md).
+`Scripts/generate_notebooks.wls` parses that block and injects it into the generated `.nb` as `Notebook[cells, TaggingRules -> {"Provenance" -> <|...|>}]` — Wolfram's native, non-rendering metadata slot.
+You do not write `TaggingRules` by hand; the script does it.
+When the comment is absent, the `.nb` is generated exactly as before (no `TaggingRules`).
+See [new-notebook](../new-notebook/SKILL.md).
 
 To read it back from a notebook:
 
@@ -156,31 +151,25 @@ Capture the originating request in the Spec and each session's prompt in Progres
 
 When the user asks to enable provenance:
 
-1. Set `Prompt tracking: **on**` in the project's `CLAUDE.md` (add the
-   `## Provenance` section if absent).
+1. Set `Prompt tracking: **on**` in the project's `CLAUDE.md` (add the `## Provenance` section if absent).
 2. Create `Wiki/Prompts.md` with the header shown above (if it doesn't exist).
 3. Add the `## Prompts` entry to `Wiki/Index.md`.
 
-To disable, set `Prompt tracking: **off**`. Leave existing entries in place —
-they are part of the git history.
+To disable, set `Prompt tracking: **off**`.
+Leave existing entries in place — they are part of the git history.
 
 ## Backfilling
 
-When the user wants to record provenance for something just produced (or an
-older artifact), append a ledger entry and add the matching embedded back-pointer
-using the rules above. Distil the intent from the conversation; include the
-verbatim prompt only if it's short or requested.
+When the user wants to record provenance for something just produced (or an older artifact), append a ledger entry and add the matching embedded back-pointer using the rules above.
+Distil the intent from the conversation; include the verbatim prompt only if it's short or requested.
 
 ## How other skills use this
 
 These skills check the toggle and, when on, record provenance in this format:
 
-- **new-notebook** — writes the leading HTML comment into the notebook source
-  and appends a ledger entry. The script propagates the comment to `TaggingRules`.
-- **update-wiki** — appends a `## Provenance` section to newly generated articles
-  and a ledger entry.
-- **work** / **next-session** — record `Origin:` in the Spec and `**Prompt:**`
-  in each Progress block; mirror to the ledger when on.
+- **new-notebook** — writes the leading HTML comment into the notebook source and appends a ledger entry.
+  The script propagates the comment to `TaggingRules`.
+- **update-wiki** — appends a `## Provenance` section to newly generated articles and a ledger entry.
+- **work** / **next-session** — record `Origin:` in the Spec and `**Prompt:**` in each Progress block; mirror to the ledger when on.
 
-This skill is the single source of truth for the format — the others reference it
-rather than redefining it.
+This skill is the single source of truth for the format — the others reference it rather than redefining it.

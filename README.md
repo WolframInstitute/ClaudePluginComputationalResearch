@@ -63,8 +63,7 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 
 ## 🧩 Skills
 
-Skills share their name with the matching slash command (one name per feature),
-grouped by domain.
+Skills share their name with the matching slash command (one name per feature), grouped by domain.
 
 | Skill | Description |
 |-------|-------------|

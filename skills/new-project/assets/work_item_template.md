@@ -9,8 +9,8 @@
 
 Origin: <!-- the originating request that prompted this item (provenance) -->
 
-One-paragraph goal: what this work item delivers and why. A quick item may stop
-here; a heavy one fills the subsections below.
+One-paragraph goal: what this work item delivers and why.
+A quick item may stop here; a heavy one fills the subsections below.
 
 ### Requirements
 
@@ -26,8 +26,7 @@ Function signatures, data shapes, theorem statements — the contract to build a
 
 ## Tasks
 
-One unchecked box ≈ one focused session — small enough to finish, report, and
-commit in a single sitting.
+One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
 - [ ] T1 — ...
 - [ ] T2 — ...
@@ -38,8 +37,8 @@ commit in a single sitting.
 
 ## Progress
 
-Per-session reports, append-only, newest at the bottom. `/next-session` adds one
-block per session in this shape:
+Per-session reports, append-only, newest at the bottom.
+`/next-session` adds one block per session in this shape:
 
 ```
 ### Session N — YYYY-MM-DD — Tk

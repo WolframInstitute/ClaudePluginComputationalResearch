@@ -10,10 +10,11 @@ Get @ FileNameJoin[{NotebookDirectory[], "..", "Code", "Tools.wl"}]
 
 ## Definitions
 
-State the definitions used in the theorem statement. Prefer linking each to
-a `Wiki/Definitions/<Term>.md` article rather than restating in full.
+State the definitions used in the theorem statement.
+Prefer linking each to a `Wiki/Definitions/<Term>.md` article rather than restating in full.
 
-- **<Term 1>** — see `Wiki/Definitions/Term1.md`. Brief inline reminder.
+- **<Term 1>** — see `Wiki/Definitions/Term1.md`.
+  Brief inline reminder.
 - **<Term 2>** — see `Wiki/Definitions/Term2.md`.
 
 Notation: list any non-standard notation used below.
@@ -29,14 +30,13 @@ Hypotheses (numbered for proof reference):
 
 Conclusion: $C$.
 
-Optionally cross-link a `Wiki/Theorems/<Name>.md` article that tracks the
-proof status.
+Optionally cross-link a `Wiki/Theorems/<Name>.md` article that tracks the proof status.
 
 ## Proof
 
-Outline first, then steps. Each major step gets its own subsection. Within a
-step, narrative text alternates with `wolfram` code blocks that verify the
-step computationally where possible (small examples, sanity checks, plots).
+Outline first, then steps.
+Each major step gets its own subsection.
+Within a step, narrative text alternates with `wolfram` code blocks that verify the step computationally where possible (small examples, sanity checks, plots).
 
 ### Step 1 — <short label>
 
@@ -72,7 +72,8 @@ Brief proof sketch (often one line: "Apply Theorem to $X$").
 
 ## Examples
 
-Small, hand-checkable examples. Use these to:
+Small, hand-checkable examples.
+Use these to:
 
 - Verify the theorem on a low-dimensional / finite case.
 - Test the corollaries.
@@ -88,8 +89,8 @@ Small, hand-checkable examples. Use these to:
 
 ## Non-examples
 
-Cases where the hypotheses fail and the conclusion can fail too. This is
-essential — the non-examples justify the hypotheses.
+Cases where the hypotheses fail and the conclusion can fail too.
+This is essential — the non-examples justify the hypotheses.
 
 ```wolfram
 (* non-example demonstrating the hypothesis is needed *)
@@ -98,5 +99,4 @@ essential — the non-examples justify the hypotheses.
 ## References
 
 - [[../Theorems/<Name>]] — the wiki tracker for this theorem
-- External: MathWorld / nLab / DLMF / paper / textbook references with full
-  citations
+- External: MathWorld / nLab / DLMF / paper / textbook references with full citations

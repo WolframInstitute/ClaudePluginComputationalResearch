@@ -16,11 +16,11 @@ Resources have two layers:
 
 1. **Wiki article** (`Wiki/Resources/Name.md`) — tracked in git, permanent.
    Contains citation, summary, and a machine-readable `## Recover` section.
-2. **Local file** (`Resources/`) — gitignored, ephemeral. The actual PDF,
-   repo clone, notebook, or dataset.
+2. **Local file** (`Resources/`) — gitignored, ephemeral.
+   The actual PDF, repo clone, notebook, or dataset.
 
-The wiki article is the source of truth. Local files can be rebuilt from
-`## Recover` sections via `Scripts/recover_resources.sh`.
+The wiki article is the source of truth.
+Local files can be rebuilt from `## Recover` sections via `Scripts/recover_resources.sh`.
 
 ## Adding a resource
 
@@ -55,8 +55,7 @@ When a URL is the input, infer the source from the host + path:
 | `dlmf.nist.gov/<locator>` | DLMF | `DLMF_<locator-sanitised>.md` |
 | `en.wikipedia.org/wiki/<Title>` | Wikipedia | `Wikipedia_<Title>.md` |
 
-OEIS A-numbers entered bare (e.g. `A000045`) without a URL should be treated
-as if the user typed `https://oeis.org/A000045`.
+OEIS A-numbers entered bare (e.g. `A000045`) without a URL should be treated as if the user typed `https://oeis.org/A000045`.
 
 **Naming convention for files:**
 - Papers: `Author_Year_ShortTitle.pdf` (first author last name, year, 2-4 word title)
@@ -66,9 +65,8 @@ as if the user typed `https://oeis.org/A000045`.
 
 ### Step 2 — Create wiki article
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source
-formatting* rule), write the article's prose (Summary, Use in this project) one
-sentence per source line. The `## Recover` lines stay as `Key: Value`.
+When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the article's prose (Summary, Use in this project) one sentence per source line.
+The `## Recover` lines stay as `Key: Value`.
 
 Write `Wiki/Resources/Name.md`:
 
@@ -157,11 +155,10 @@ URL: https://oeis.org/A000045
 OEIS: A000045
 ```
 
-The `OEIS:` key is optional but useful for offline cross-reference
-(recovery scripts can use it to ping the OEIS JSON API and confirm the
-sequence is unchanged).
+The `OEIS:` key is optional but useful for offline cross-reference (recovery scripts can use it to ping the OEIS JSON API and confirm the sequence is unchanged).
 
-The `## Recover` section is machine-readable. Each line is `Key: Value`.
+The `## Recover` section is machine-readable.
+Each line is `Key: Value`.
 The recovery script parses these to rebuild `Resources/`.
 
 ### Step 3 — Update wiki
@@ -177,14 +174,11 @@ The recovery script parses these to rebuild `Resources/`.
 
 For papers specifically:
 
-1. **Prefer LaTeX source** — use `mcp__arxiv-latex-mcp` to read sections,
-   extract equations, and definitions directly from LaTeX. This is critical
-   for accurate Wolfram implementations of formulas.
-2. Fall back to `mcp__arxiv__read_paper` or PDF reading if LaTeX source
-   is unavailable.
-3. Write a substantive summary — not just the abstract, but key results,
-   theorems, definitions that matter for the project. Include important
-   equations in LaTeX form.
+1. **Prefer LaTeX source** — use `mcp__arxiv-latex-mcp` to read sections, extract equations, and definitions directly from LaTeX.
+   This is critical for accurate Wolfram implementations of formulas.
+2. Fall back to `mcp__arxiv__read_paper` or PDF reading if LaTeX source is unavailable.
+3. Write a substantive summary — not just the abstract, but key results, theorems, definitions that matter for the project.
+   Include important equations in LaTeX form.
 4. Note specific connections to the current work in "Use in this project"
 
 ## Batch resource addition
@@ -198,7 +192,8 @@ When adding multiple resources at once (e.g., during initial exploration):
 
 ## Resource recovery
 
-`Resources/` is gitignored. To rebuild from scratch:
+`Resources/` is gitignored.
+To rebuild from scratch:
 
 ```bash
 Scripts/recover_resources.sh
@@ -212,11 +207,10 @@ The script:
 5. Parses `Install:` lines → runs install command
 6. Submodules recovered via `git submodule update --init --recursive`
 
-**Git submodules:** When adding a repo that the project depends on at build time
-(e.g., a Lean dependency, a Wolfram paclet), prefer `git submodule add` over a
-plain clone. The submodule is tracked in `.gitmodules` and survives across clones.
-Add a `!Resources/SubmoduleName/` exception to `.gitignore` so the submodule
-directory isn't ignored. The Recover section uses `Submodule:` instead of `Clone:`:
+**Git submodules:** When adding a repo that the project depends on at build time (e.g., a Lean dependency, a Wolfram paclet), prefer `git submodule add` over a plain clone.
+The submodule is tracked in `.gitmodules` and survives across clones.
+Add a `!Resources/SubmoduleName/` exception to `.gitignore` so the submodule directory isn't ignored.
+The Recover section uses `Submodule:` instead of `Clone:`:
 
 ```markdown
 ## Recover

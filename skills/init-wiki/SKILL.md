@@ -10,9 +10,9 @@ description: >
 
 # Wiki Initialization
 
-Create a `Wiki/` knowledge base in the current repo. The wiki is plain Markdown —
-no databases, no embeddings, no special tooling. Works on GitHub, in Obsidian, in
-any text editor.
+Create a `Wiki/` knowledge base in the current repo.
+The wiki is plain Markdown — no databases, no embeddings, no special tooling.
+Works on GitHub, in Obsidian, in any text editor.
 
 ## Step 1 — Ask the user for domain folders
 
@@ -27,25 +27,23 @@ Wiki/
   <Domain>/         ← user chooses these
 ```
 
-Ask the user what domain-specific folders to create. Give examples based on the
-repo content:
+Ask the user what domain-specific folders to create.
+Give examples based on the repo content:
 
 - Math project: `Systems/`, `Proofs/`, `Theorems/`
 - Formalization project: `Systems/`, `Proofs/`, `Concepts/`
 - Software project: `Architecture/`, `APIs/`, `Modules/`
 - Research project: `Experiments/`, `Methods/`, `Datasets/`
 
-Also ask what the **code directory** should be called. Default is `Code/`, but
-some projects use `Wolfram/`, `src/`, `Lean/`, etc. This affects where the
-new-project skill creates code files.
+Also ask what the **code directory** should be called.
+Default is `Code/`, but some projects use `Wolfram/`, `src/`, `Lean/`, etc. This affects where the new-project skill creates code files.
 
 If the user doesn't care, pick sensible defaults based on the repo.
 
 ## Step 2 — Create the folder structure
 
-Create all directories and seed files. Use empty `.gitkeep` files in folders
-that start empty (except `Concepts/` and `Resources/` which
-get populated via other skills).
+Create all directories and seed files.
+Use empty `.gitkeep` files in folders that start empty (except `Concepts/` and `Resources/` which get populated via other skills).
 
 ## Step 3 — Seed Index.md
 
@@ -81,7 +79,8 @@ Tour data lives in `Tour/` (local, gitignored).
 (none yet)
 ```
 
-One section per domain folder. Link format: `[Title](Folder/File.md) — summary`.
+One section per domain folder.
+Link format: `[Title](Folder/File.md) — summary`.
 
 ## Step 4 — Seed Status.md
 
@@ -101,15 +100,15 @@ Wiki initialized. No articles yet.
 (none)
 ```
 
-`Status.md` summarizes the knowledge base. Execution state — active work, next
-tasks, blockers — lives in `Work/README.md`, not here.
+`Status.md` summarizes the knowledge base.
+Execution state — active work, next tasks, blockers — lives in `Work/README.md`, not here.
 
 Populate with real information if the repo already has content worth summarizing.
 
 ## Step 5 — Update CLAUDE.md
 
-Append the wiki section to the repo's `CLAUDE.md` (create the file if it
-doesn't exist). Use this template:
+Append the wiki section to the repo's `CLAUDE.md` (create the file if it doesn't exist).
+Use this template:
 
 ```markdown
 ## Knowledge Base (Wiki)
@@ -164,9 +163,7 @@ created on demand (local, gitignored). Each section produces a narrative .md
 and runnable code file. The LLM stops after each section for feedback.
 ```
 
-If `CLAUDE.md` does not already contain a `Semantic line breaks:` line (a
-scaffolded project gets one from `code_style_template.md`), also append the
-source-formatting toggle so this repo carries the config:
+If `CLAUDE.md` does not already contain a `Semantic line breaks:` line (a scaffolded project gets one from `code_style_template.md`), also append the source-formatting toggle so this repo carries the config:
 
 ```markdown
 ## Source formatting
@@ -190,11 +187,10 @@ Resources/
 NotebooksLLM/*.nb
 ```
 
-Exceptions: if the project has git submodules in `Resources/`, preserve them
-with lines like `!Resources/SubmoduleName/`.
+Exceptions: if the project has git submodules in `Resources/`, preserve them with lines like `!Resources/SubmoduleName/`.
 
-`Wiki/` itself is tracked. `Tour/`, `Resources/` (binary files), and generated
-`.nb` files are gitignored.
+`Wiki/` itself is tracked.
+`Tour/`, `Resources/` (binary files), and generated `.nb` files are gitignored.
 
 ## Step 7 — Scan and seed articles
 
@@ -226,8 +222,7 @@ Body. Use subsections as needed.
 
 No status headers on wiki articles — they're documentation, maintained automatically.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default), write seeded
-article prose one sentence per source line — see the *Source formatting* rule.
+When `CLAUDE.md` has `Semantic line breaks: on` (the default), write seeded article prose one sentence per source line — see the *Source formatting* rule.
 
 ## Backlink convention
 
@@ -237,7 +232,8 @@ Use standard markdown relative links so the wiki is clickable on GitHub:
 [Article Title](../Folder/Article.md)
 ```
 
-Paths are relative to the current file. Examples from `Wiki/Systems/TM.md`:
+Paths are relative to the current file.
+Examples from `Wiki/Systems/TM.md`:
 - Link to a proof: `[TM → GS](../Proofs/TMtoGS.md)`
 - Link to a concept: `[Simulation Encoding](../Concepts/SimulationEncoding.md)`
 - Link to a resource: `[Moore 1991](../Resources/Moore1991.md)`

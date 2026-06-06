@@ -5,13 +5,11 @@
 > Proof: **outlined**    <!-- outlined | in-progress | proved | verified (proof stage; lifecycle status is the folder) -->
 > Type: formalization
 
-Owner / driver: <name>
-Started: <YYYY-MM-DD>
+Owner / driver: <name> Started: <YYYY-MM-DD>
 
 ## Statement
 
-Math statement (exactly as it appears in `Wiki/Theorems/<Name>.md` or
-`Wiki/Definitions/<Name>.md`):
+Math statement (exactly as it appears in `Wiki/Theorems/<Name>.md` or `Wiki/Definitions/<Name>.md`):
 
 > ...
 
@@ -31,9 +29,12 @@ theorem <name> (...) : ... := by
 
 ## Proof outline (math-level)
 
-1. ... (key idea)
-2. ... (reduction)
-3. ... (closing argument)
+1. ...
+   (key idea)
+2. ...
+   (reduction)
+3. ...
+   (closing argument)
 
 Each step gets a Lean sub-goal below.
 
@@ -46,16 +47,15 @@ Each step gets a Lean sub-goal below.
 
 ## Mathlib dependencies
 
-Lemmas / definitions discovered via `lean_leansearch`, `lean_leanfinder`,
-`lean_state_search`:
+Lemmas / definitions discovered via `lean_leansearch`, `lean_leanfinder`, `lean_state_search`:
 
 - `Mathlib.<Module>.<Name>` — one-line summary
 - ...
 
 ## Axioms allowed
 
-Default expectation: `propext`, `Classical.choice`, `Quot.sound`. Anything
-beyond this gets flagged by `lean_verify` and must be justified here.
+Default expectation: `propext`, `Classical.choice`, `Quot.sound`.
+Anything beyond this gets flagged by `lean_verify` and must be justified here.
 
 - [ ] No `sorryAx` in final proof
 - [ ] No unexpected axioms beyond classical defaults

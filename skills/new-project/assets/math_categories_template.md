@@ -7,10 +7,8 @@
 
 # Math Domains
 
-This file is the project's working taxonomy of mathematical fields. It is
-**meant to be edited**: prune everything that doesn't touch the project,
-add subfields you actually use, and link wiki articles + external references
-under each entry as they appear.
+This file is the project's working taxonomy of mathematical fields.
+It is **meant to be edited**: prune everything that doesn't touch the project, add subfields you actually use, and link wiki articles + external references under each entry as they appear.
 
 For each domain you keep, the recommended structure is:
 
@@ -24,10 +22,8 @@ For each domain you keep, the recommended structure is:
 
 ## Foundational
 
-- **Logic & Set Theory** — propositional / first-order / higher-order logic,
-  Zermelo–Fraenkel, large cardinals, descriptive set theory.
-- **Category Theory** — categories, functors, natural transformations,
-  limits/colimits, monoidal structure, higher categories, topos theory.
+- **Logic & Set Theory** — propositional / first-order / higher-order logic, Zermelo–Fraenkel, large cardinals, descriptive set theory.
+- **Category Theory** — categories, functors, natural transformations, limits/colimits, monoidal structure, higher categories, topos theory.
 - **Type Theory** — dependent types, HoTT, intuitionistic foundations.
 - **Model Theory** — first-order theories, definability, stability.
 - **Proof Theory** — formal systems, cut elimination, ordinal analysis.
@@ -35,40 +31,31 @@ For each domain you keep, the recommended structure is:
 
 ## Algebra
 
-- **Group Theory** — finite and infinite groups, representation theory,
-  group cohomology.
-- **Ring & Module Theory** — commutative rings, modules, ideals, Galois
-  theory, homological algebra.
+- **Group Theory** — finite and infinite groups, representation theory, group cohomology.
+- **Ring & Module Theory** — commutative rings, modules, ideals, Galois theory, homological algebra.
 - **Field Theory** — extensions, Galois theory, transcendence.
 - **Lie Theory** — Lie groups, Lie algebras, root systems, representations.
 - **Algebraic Geometry** — schemes, varieties, sheaves, cohomology.
 - **Algebraic Topology** — homotopy, (co)homology, spectra, K-theory.
-- **Commutative Algebra** — local rings, dimension, Cohen–Macaulay,
-  Gorenstein.
-- **Noncommutative Algebra** — operator algebras, quantum groups, Hopf
-  algebras.
+- **Commutative Algebra** — local rings, dimension, Cohen–Macaulay, Gorenstein.
+- **Noncommutative Algebra** — operator algebras, quantum groups, Hopf algebras.
 
 ## Analysis
 
 - **Real Analysis** — measure, integration, function spaces.
-- **Complex Analysis** — holomorphic functions, Riemann surfaces, complex
-  manifolds.
-- **Functional Analysis** — Banach/Hilbert spaces, operator theory,
-  spectral theory.
-- **Harmonic Analysis** — Fourier analysis, representation theory of
-  topological groups.
+- **Complex Analysis** — holomorphic functions, Riemann surfaces, complex manifolds.
+- **Functional Analysis** — Banach/Hilbert spaces, operator theory, spectral theory.
+- **Harmonic Analysis** — Fourier analysis, representation theory of topological groups.
 - **PDE / ODE** — existence, regularity, asymptotics.
 - **Calculus of Variations & Optimal Control**.
-- **Special Functions** — Bessel, Legendre, hypergeometric, theta, modular
-  forms. See DLMF.
+- **Special Functions** — Bessel, Legendre, hypergeometric, theta, modular forms.
+  See DLMF.
 
 ## Geometry & Topology
 
-- **Differential Geometry** — manifolds, connections, curvature, Riemannian
-  & Lorentzian.
+- **Differential Geometry** — manifolds, connections, curvature, Riemannian & Lorentzian.
 - **Symplectic & Contact Geometry**.
-- **Algebraic Topology** — duplicated under Algebra; keep the project's
-  preferred home.
+- **Algebraic Topology** — duplicated under Algebra; keep the project's preferred home.
 - **Geometric Topology** — knots, 3- and 4-manifolds.
 - **Metric Geometry** — length spaces, Gromov–Hausdorff, CAT(κ), Alexandrov.
 - **Discrete & Combinatorial Geometry** — polytopes, arrangements, rigidity.
@@ -90,18 +77,15 @@ For each domain you keep, the recommended structure is:
 
 ## Probability & Statistics
 
-- **Probability Theory** — measure-theoretic foundations, stochastic
-  processes, large deviations.
+- **Probability Theory** — measure-theoretic foundations, stochastic processes, large deviations.
 - **Statistical Inference** — estimation, hypothesis testing, Bayes.
-- **Statistical Mechanics** (mathematical) — Gibbs measures, phase
-  transitions.
+- **Statistical Mechanics** (mathematical) — Gibbs measures, phase transitions.
 
 ## Applied & Computational
 
 - **Numerical Analysis** — error analysis, stability, finite elements.
 - **Optimisation** — convex, integer, stochastic.
-- **Mathematical Physics** — classical and quantum systems, integrable
-  systems, gauge theory.
+- **Mathematical Physics** — classical and quantum systems, integrable systems, gauge theory.
 - **Dynamical Systems** — flows, maps, ergodic theory.
 - **Information Theory & Coding**.
 - **Cryptography**.

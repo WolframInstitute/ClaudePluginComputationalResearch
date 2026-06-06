@@ -10,12 +10,13 @@ description: >
 
 # Wiki Update
 
-After every substantial step, update the wiki to keep it accurate. The wiki is
-documentation — update freely, no human sign-off needed for prose.
+After every substantial step, update the wiki to keep it accurate.
+The wiki is documentation — update freely, no human sign-off needed for prose.
 
 ## Prerequisites
 
-`Wiki/` must exist. If it doesn't, invoke the `init-wiki` skill first.
+`Wiki/` must exist.
+If it doesn't, invoke the `init-wiki` skill first.
 
 ## What counts as "substantial"
 
@@ -32,8 +33,8 @@ documentation — update freely, no human sign-off needed for prose.
 ### 1. Read current state
 
 Read `Wiki/Index.md` to understand what articles exist and the wiki structure.
-Skim `Wiki/Status.md` for current project state. You do NOT need to read every
-article — only read the ones you'll modify.
+Skim `Wiki/Status.md` for current project state.
+You do NOT need to read every article — only read the ones you'll modify.
 
 ### 2. Create or update articles
 
@@ -61,16 +62,18 @@ Body. Use subsections as needed.
 - [Other Article](../Folder/OtherArticle.md) — why it's related
 ```
 
-Keep articles concise and factual. Write like an encyclopedia, not a journal.
+Keep articles concise and factual.
+Write like an encyclopedia, not a journal.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source
-formatting* rule), write the article source one sentence per line. This changes
-only the source; the rendered article is unchanged.
+When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the article source one sentence per line.
+This changes only the source; the rendered article is unchanged.
 
 ### 3. Update Wiki/Index.md
 
-Add one-line entries for new articles. Remove entries for deleted articles.
-Update summaries if they've changed. Entry format:
+Add one-line entries for new articles.
+Remove entries for deleted articles.
+Update summaries if they've changed.
+Entry format:
 
 ```markdown
 - [Title](Folder/Name.md) — one-line summary
@@ -78,9 +81,8 @@ Update summaries if they've changed. Entry format:
 
 ### 4. Update Wiki/Status.md
 
-If the knowledge base changed (new results, articles, or open questions), update
-the relevant sections. Execution state — active work and blockers — lives in
-`Work/README.md`, not here:
+If the knowledge base changed (new results, articles, or open questions), update the relevant sections.
+Execution state — active work and blockers — lives in `Work/README.md`, not here:
 
 ```markdown
 # Status
@@ -100,8 +102,7 @@ Brief summary of where the project stands.
 
 ### 5. Add cross-links
 
-In every article mentioned by or related to the changed articles, add a
-relative markdown link in the "See also" section if not already present.
+In every article mentioned by or related to the changed articles, add a relative markdown link in the "See also" section if not already present.
 Links are bidirectional — if A references B, B should reference A.
 
 Use standard markdown links with relative paths:
@@ -111,23 +112,18 @@ Use standard markdown links with relative paths:
 
 ### 6. Record provenance (optional)
 
-If the project has prompt tracking on (a `Prompt tracking: **on**` line in
-`CLAUDE.md` — see the [provenance](../provenance/SKILL.md) skill), then for each
-article you **newly generated** this step:
+If the project has prompt tracking on (a `Prompt tracking: **on**` line in `CLAUDE.md` — see the [provenance](../provenance/SKILL.md) skill), then for each article you **newly generated** this step:
 
-- Append a `## Provenance` section to the article (Intent / Generated / Ledger),
-  mirroring the `## Recover` convention.
+- Append a `## Provenance` section to the article (Intent / Generated / Ledger), mirroring the `## Recover` convention.
 - Append an entry to the `Wiki/Prompts.md` ledger.
 
 When tracking is off (default), skip this entirely.
 
 ### 7. Record to the scientific journal (optional)
 
-If the project's scientific journal is on (a `Scientific journal: **on**` line in
-`CLAUDE.md` — see the [journal](../journal/SKILL.md) skill), also append the newly
-established definition/theorem/claim to `Journal/` as a dated def/thm/rem/claim
-entry, citing any resource used. The Wiki gets the deduplicated, timeless article;
-the journal gets the dated, cited record of learning it. When off, skip.
+If the project's scientific journal is on (a `Scientific journal: **on**` line in `CLAUDE.md` — see the [journal](../journal/SKILL.md) skill), also append the newly established definition/theorem/claim to `Journal/` as a dated def/thm/rem/claim entry, citing any resource used.
+The Wiki gets the deduplicated, timeless article; the journal gets the dated, cited record of learning it.
+When off, skip.
 
 ## What NOT to do
 

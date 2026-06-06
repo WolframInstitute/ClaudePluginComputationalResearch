@@ -1,40 +1,37 @@
 # Computational Research Plugin
 
-A Claude plugin for AI-assisted computational research with a wiki-based
-knowledge management system, human revision workflow, guided tours, Wolfram
-paclet development, LaTeX/Typst paper scaffolding, an optional cited
-scientific journal, notebook generation, and session-based work tracking
-(spec/tasks/progress).
+A Claude plugin for AI-assisted computational research with a wiki-based knowledge management system, human revision workflow, guided tours, Wolfram paclet development, LaTeX/Typst paper scaffolding, an optional cited scientific journal, notebook generation, and session-based work tracking (spec/tasks/progress).
+
+## Source formatting
+
+Semantic line breaks: **on**
+<!-- This repo's own prose follows the rule the plugin ships: prose in source files —
+     markdown (.md) and LaTeX/Typst (.tex/.typ) — uses one sentence per line (semantic
+     line breaks). Each sentence starts on its own source line; a long sentence may also
+     break at clause boundaries. Source only; rendered output is unchanged. Do not reflow
+     an existing paragraph onto one line, and do not add blank lines between a paragraph's
+     sentences (a blank line still separates paragraphs). Exempt: code, tables, headings,
+     and YAML front matter. Detect with:
+     grep -qiE 'semantic line breaks:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || echo off -->
 
 ## Wolfram Kernel Execution Policy
 
-Every running kernel consumes one of the license's `$MaxLicenseProcesses` seats:
-each Wolfram MCP server, each open front-end, and **each `wolframscript`
-invocation** (which spawns a fresh kernel). Once seats are saturated, a new
-`wolframscript` call fails with a license error — the common failure mode when
-the official + unofficial Wolfram MCP servers and a front-end are all running.
+Every running kernel consumes one of the license's `$MaxLicenseProcesses` seats: each Wolfram MCP server, each open front-end, and **each `wolframscript` invocation** (which spawns a fresh kernel).
+Once seats are saturated, a new `wolframscript` call fails with a license error — the common failure mode when the official + unofficial Wolfram MCP servers and a front-end are all running.
 
-**The plugin is MCP-first.** All Wolfram-touching skills prefer the official
-AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator`, `WriteNotebook`,
-`ReadNotebook`, `TestReport`, `CodeInspector`, `SymbolDefinition`,
-`WolframLanguageContext`) — one persistent kernel, no extra seat. The `.wls`
-scripts (paclet build/publish, notebook generation, `search_*`, `cite`) are kept
-as a **fallback** for when no MCP is attached (headless/cron runs) or for bulk
-batch use — they are not deleted.
+**The plugin is MCP-first.** All Wolfram-touching skills prefer the official AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator`, `WriteNotebook`, `ReadNotebook`, `TestReport`, `CodeInspector`, `SymbolDefinition`, `WolframLanguageContext`) — one persistent kernel, no extra seat.
+The `.wls` scripts (paclet build/publish, notebook generation, `search_*`, `cite`) are kept as a **fallback** for when no MCP is attached (headless/cron runs) or for bulk batch use — they are not deleted.
 
-Before spawning `wolframscript`, a skill checks headroom on the MCP (this costs
-no seat — it runs on the already-running kernel):
+Before spawning `wolframscript`, a skill checks headroom on the MCP (this costs no seat — it runs on the already-running kernel):
 
 ```wolfram
 With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
 ```
 
-If `free <= 0`, the skill does **not** spawn `wolframscript`; it routes the work
-through the MCP or asks the user to free a seat. `/check-env` reports live
-headroom and flags when two Wolfram MCP servers are configured at once. This
-policy is **detect + warn** — it never hard-blocks. The per-skill "Kernel
-execution (license-aware)" blocks are the short reminders of this rule; this
-section is authoritative.
+If `free <= 0`, the skill does **not** spawn `wolframscript`; it routes the work through the MCP or asks the user to free a seat.
+`/check-env` reports live headroom and flags when two Wolfram MCP servers are configured at once.
+This policy is **detect + warn** — it never hard-blocks.
+The per-skill "Kernel execution (license-aware)" blocks are the short reminders of this rule; this section is authoritative.
 
 ## Plugin Architecture
 
@@ -158,9 +155,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `gitignore_dev.template` | Dev repo .gitignore |
 | `gitignore_submodule.template` | Paclet submodule .gitignore |
 
-Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`,
-`{{GOALS}}`, `{{PACLET_NAME}}`, `{{ORG_NAME}}`, `{{AUTHOR}}`, `{{EMAIL}}`,
-`{{TITLE}}`, `{{ABSTRACT}}`, `{{CODE_DIR}}`, `{{ITEM_NAME}}`.
+Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`, `{{GOALS}}`, `{{PACLET_NAME}}`, `{{ORG_NAME}}`, `{{AUTHOR}}`, `{{EMAIL}}`, `{{TITLE}}`, `{{ABSTRACT}}`, `{{CODE_DIR}}`, `{{ITEM_NAME}}`.
 
 ## Project Types (scaffolding)
 
@@ -168,30 +163,23 @@ The `new-project` skill asks users which type of project to create:
 
 - **research** (default) — Code/, Wiki/, Work/, Resources/, optional Paper/.
   Open-ended exploration of a topic.
-- **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created,
-  math-domain taxonomy seeded, optional Lean/ subdirectory. Organised around
-  precise theorems and definitions rather than open-ended exploration. Pairs
-  with `search-math`, `cite`, `lean`, and the `theorem-proof`
-  notebook template.
-- **paclet-dev** — WolframInstitute-style dev repo with paclet submodules
-  (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental
-  work, Wiki/, .gitmodules. Optional Paper/ (gitignored). Work items that change
-  paclet code land as PRs on the paclet submodules — developed on a `work/<item>`
-  branch in a gitignored `<Paclet>--<item>/` worktree — while the dev repo's
-  Wiki and Work stay linear on `main` (see the `next-session` skill).
-- **paclet** — standalone Wolfram paclet (double nesting), clean repo
-  structure. Optional Wiki/.
+- **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created, math-domain taxonomy seeded, optional Lean/ subdirectory.
+  Organised around precise theorems and definitions rather than open-ended exploration.
+  Pairs with `search-math`, `cite`, `lean`, and the `theorem-proof` notebook template.
+- **paclet-dev** — WolframInstitute-style dev repo with paclet submodules (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental work, Wiki/, .gitmodules.
+  Optional Paper/ (gitignored).
+  Work items that change paclet code land as PRs on the paclet submodules — developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree — while the dev repo's Wiki and Work stay linear on `main` (see the `next-session` skill).
+- **paclet** — standalone Wolfram paclet (double nesting), clean repo structure.
+  Optional Wiki/.
 
-All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not
-BeginPackage/EndPackage) for paclet code.
+All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not BeginPackage/EndPackage) for paclet code.
 
 ## How to Add a New Skill
 
 1. Create `skills/<skill-name>/SKILL.md` with frontmatter (`name`, `description`)
 2. Write the procedural instructions in the body
 3. The plugin system auto-discovers skills from the `skills/` directory
-4. If the skill needs a script, add it to `scripts/` and reference it via
-   `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
+4. If the skill needs a script, add it to `scripts/` and reference it via `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
 5. If the skill should have a slash command, create `commands/<name>.md`
 6. Update README.md skills table and this file's tables
 
@@ -204,28 +192,23 @@ After any changes to plugin files:
    - Bump `version`, update `description` and `keywords` to match plugin.json
    - `cd ClaudePluginMarketplace && git add -A && git commit -m "..." && git push`
 
-The marketplace repo (`WolframInstitute/ClaudePluginMarketplace`) is cloned
-locally at `ClaudePluginMarketplace/` (gitignored). If missing, re-clone:
+The marketplace repo (`WolframInstitute/ClaudePluginMarketplace`) is cloned locally at `ClaudePluginMarketplace/` (gitignored).
+If missing, re-clone:
 ```bash
 git clone git@github.com:WolframInstitute/ClaudePluginMarketplace.git ClaudePluginMarketplace
 ```
 
 ### Blog post
 
-The plugin's blog post lives in the author's **live** clone of
-`p135246/p135246.github.io`:
+The plugin's blog post lives in the author's **live** clone of `p135246/p135246.github.io`:
 
 - `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md`
 
-When skills, commands, or features change, update the post there. This is an
-active, **public** repo that carries the author's own commits and may be ahead
-of / behind its remote — edit the post and present changes for review, but do
-**not** commit or push it as part of plugin changes; the author syncs and
-publishes it. The in-project `ComputationalResearch/p135246.github.io/` clone is
-stale and **not** canonical.
+When skills, commands, or features change, update the post there.
+This is an active, **public** repo that carries the author's own commits and may be ahead of / behind its remote — edit the post and present changes for review, but do **not** commit or push it as part of plugin changes; the author syncs and publishes it.
+The in-project `ComputationalResearch/p135246.github.io/` clone is stale and **not** canonical.
 
 ### Keeping CLAUDE.md current
 
-When skills, scripts, commands, or templates are added, removed, or renamed,
-update the tables and counts in this file to match. Do not update CLAUDE.md
-in response to CLAUDE.md-only changes (that would cycle).
+When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in this file to match.
+Do not update CLAUDE.md in response to CLAUDE.md-only changes (that would cycle).

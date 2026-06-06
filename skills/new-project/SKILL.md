@@ -13,43 +13,40 @@ description: >
 
 # Research Project Scaffolder
 
-Set up a new project with the wiki knowledge base and optional Wolfram Language
-computation, paclet development, or a structured LaTeX/Typst journal. The project takes a
-research topic from **any scientific domain** and explores it through Wolfram
-models and computation.
+Set up a new project with the wiki knowledge base and optional Wolfram Language computation, paclet development, or a structured LaTeX/Typst journal.
+The project takes a research topic from **any scientific domain** and explores it through Wolfram models and computation.
 
 ## What to ask the user
 
 Before scaffolding, you need:
 
 1. **Project type** — what kind of project to create:
-   - **research** (default) — exploratory computation with Wiki, Code/,
-     Resources/, optional Paper/. Use for open-ended investigation of a topic.
-   - **math-research** — pure-math project organised around precise theorems
-     and definitions. Wiki/{Theorems,Definitions,Domains}/ and a top-level Work/
-     up front, math-domain taxonomy seeded, optional Lean/ subdirectory.
+   - **research** (default) — exploratory computation with Wiki, Code/, Resources/, optional Paper/.
+     Use for open-ended investigation of a topic.
+   - **math-research** — pure-math project organised around precise theorems and definitions.
+     Wiki/{Theorems,Definitions,Domains}/ and a top-level Work/ up front, math-domain taxonomy seeded, optional Lean/ subdirectory.
      Use when the work is theorem-proving or formalisation-flavoured.
-   - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules,
-     experimental Code/, and research infrastructure. Use when developing one or
-     more formal Wolfram paclets alongside research.
-   - **paclet** — standalone Wolfram paclet. Clean paclet repo structure without
-     dev-repo extras. Use for publishing a single paclet.
+   - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules, experimental Code/, and research infrastructure.
+     Use when developing one or more formal Wolfram paclets alongside research.
+   - **paclet** — standalone Wolfram paclet.
+     Clean paclet repo structure without dev-repo extras.
+     Use for publishing a single paclet.
 
 2. **Project name** — CamelCase like `SyntheticInfrageometry` or `DiscreteRicciFlow`.
-   Becomes the root folder name. For paclet-dev, this is the dev repo name
-   (often `<PacletName>Dev`).
+   Becomes the root folder name.
+   For paclet-dev, this is the dev repo name (often `<PacletName>Dev`).
 
-3. **Topic description** — a sentence or two. E.g., "Studying axiomatic geometry
-   on graphs using shortest-path metrics".
+3. **Topic description** — a sentence or two.
+   E.g., "Studying axiomatic geometry on graphs using shortest-path metrics".
 
 ### Type-specific questions
 
 #### research (default)
 
-4. **Include Paper/?** (optional) — default: yes. Creates Paper/ with LaTeX
-   article templates (amsart, biblatex, shared macros). Say no to skip.
-5. **Code directory name** (optional) — default is `Code/`, but projects may use
-   `Wolfram/`, `src/`, `Lean/`, etc.
+4. **Include Paper/?** (optional) — default: yes.
+   Creates Paper/ with LaTeX article templates (amsart, biblatex, shared macros).
+   Say no to skip.
+5. **Code directory name** (optional) — default is `Code/`, but projects may use `Wolfram/`, `src/`, `Lean/`, etc.
 6. **Domain folders** (optional) — what domain-specific wiki folders to create.
    Suggest defaults based on the topic.
 7. **Research depth** (optional) — short / standard (default) / deep.
@@ -57,10 +54,8 @@ Before scaffolding, you need:
 #### math-research
 
 4. **Include Paper/?** (optional) — default: yes.
-5. **Include Lean/?** (optional) — default: no. Set yes if the project will
-   formalise results in Lean/Mathlib. The scaffold creates an empty `Lean/`
-   directory; the user runs `lake new <ProjectName> math` inside it
-   themselves.
+5. **Include Lean/?** (optional) — default: no. Set yes if the project will formalise results in Lean/Mathlib.
+   The scaffold creates an empty `Lean/` directory; the user runs `lake new <ProjectName> math` inside it themselves.
 6. **Code directory name** (optional) — default `Code/`.
 7. **Research depth** (optional) — short / standard (default) / deep.
 
@@ -70,25 +65,22 @@ Before scaffolding, you need:
    E.g., `SyntheticInfrageometry,Infrageometry`.
 5. **Organization name** (optional) — GitHub org for public paclet repos.
    Default: `WolframInstitute`.
-6. **GitHub username** (optional) — for the private dev repo. Default: from
-   git config.
-7. **Include Paper/?** (optional) — default: no. Paper/ is gitignored in
-   paclet-dev repos.
+6. **GitHub username** (optional) — for the private dev repo.
+   Default: from git config.
+7. **Include Paper/?** (optional) — default: no. Paper/ is gitignored in paclet-dev repos.
 8. **Research depth** (optional) — short / standard (default) / deep.
 
 #### paclet
 
 4. **Organization name** (optional) — default: `WolframInstitute`.
-5. **Include wiki?** (optional) — default: no. If yes, init-wiki runs inside
-   the paclet repo for knowledge management.
+5. **Include wiki?** (optional) — default: no. If yes, init-wiki runs inside the paclet repo for knowledge management.
 
 #### all types
 
-- **Track prompts?** (optional) — default: **no**. If yes, turn on prompt
-  provenance: generated artifacts record their originating prompt/intent in
-  `Wiki/Prompts.md` plus an embedded back-pointer. See the `provenance` skill.
-  The scaffolds always write the toggle as `off`; flip it on after scaffolding
-  if the user wants it (see *After scaffolding*).
+- **Track prompts?** (optional) — default: **no**.
+  If yes, turn on prompt provenance: generated artifacts record their originating prompt/intent in `Wiki/Prompts.md` plus an embedded back-pointer.
+  See the `provenance` skill.
+  The scaffolds always write the toggle as `off`; flip it on after scaffolding if the user wants it (see *After scaffolding*).
 
 If the user already provided these in their message, don't ask again.
 
@@ -103,11 +95,10 @@ If the user already provided these in their message, don't ask again.
 ## Cowork mode vs local mode
 
 - **Local mode** (default): filesystem directly accessible.
-- **Cowork mode**: remote VM, workspace is mounted. MCP can't write to mounted
-  filesystem — use ExportString fallback for notebooks.
+- **Cowork mode**: remote VM, workspace is mounted.
+  MCP can't write to mounted filesystem — use ExportString fallback for notebooks.
 
-**Detection**: Cowork if working directory contains `/sessions/` or `/mnt/`, or
-`check-env.sh` reports no local MCP but the official Wolfram MCP responds.
+**Detection**: Cowork if working directory contains `/sessions/` or `/mnt/`, or `check-env.sh` reports no local MCP but the official Wolfram MCP responds.
 
 ---
 
@@ -115,8 +106,8 @@ If the user already provided these in their message, don't ask again.
 
 ### 0. Environment check
 
-Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh` then evaluate `1+1` with the
-official Wolfram MCP. Determine mode (local vs. Cowork) and available tools.
+Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh` then evaluate `1+1` with the official Wolfram MCP.
+Determine mode (local vs. Cowork) and available tools.
 
 ### 1. Scaffold directories
 
@@ -163,14 +154,13 @@ The init-wiki skill will:
 
 ### 3. Create initial code files
 
-Create the initial topic code files in the code directory (default `Code/`,
-or whatever the user chose):
+Create the initial topic code files in the code directory (default `Code/`, or whatever the user chose):
 
 - `<CodeDir>/<ProjectName>.wl` — core functions with `<ProjectName><Action>` naming
 - `<CodeDir>/<ProjectName>Visualization.wl` — visualization functions
 
-Write starter functions based on the topic. Use the Wolfram Language coding
-standards from the user profile.
+Write starter functions based on the topic.
+Use the Wolfram Language coding standards from the user profile.
 
 Present the code to the user for review (revision workflow).
 
@@ -181,11 +171,13 @@ For each major concept in the project, create a wiki article:
 - `Wiki/Concepts/<ConceptName>.md` — for cross-cutting concepts
 - `Wiki/<Domain>/<EntityName>.md` — for domain-specific entities
 
-Populate `Wiki/Index.md` and `Wiki/Status.md`. Log the initialization.
+Populate `Wiki/Index.md` and `Wiki/Status.md`.
+Log the initialization.
 
 ### 5. Download reference papers
 
-Every project needs a literature foundation. This step is **not optional**.
+Every project needs a literature foundation.
+This step is **not optional**.
 
 1. Search arXiv with `mcp__arxiv__search_papers` using relevant keywords
 2. Download 2–5 key papers to `Resources/`
@@ -203,24 +195,20 @@ Use the **new-notebook** skill to create `NotebooksLLM/<ProjectName>1.nb` with:
 - Initial computations demonstrating the core functions
 - Visualization examples
 
-If using the two-layer architecture, also write `NotebooksLLM/<ProjectName>.md`
-as the notebook source.
+If using the two-layer architecture, also write `NotebooksLLM/<ProjectName>.md` as the notebook source.
 
 ### 7. Create Paper/ (if requested)
 
-If the user wants a paper, use the **scaffold-paper** skill (add `--typst` for a
-Typst paper instead of the default LaTeX):
+If the user wants a paper, use the **scaffold-paper** skill (add `--typst` for a Typst paper instead of the default LaTeX):
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] "<ProjectName>" "<Title>" "<Author>" "<email>"
 ```
 
-This creates `Paper/` with main.tex, macros.sty, references.bib, figures/,
-and .latexmkrc (LaTeX) or main.typ, macros.typ, references.bib, figures/
-(Typst). See scaffold-paper skill for details.
+This creates `Paper/` with main.tex, macros.sty, references.bib, figures/, and .latexmkrc (LaTeX) or main.typ, macros.typ, references.bib, figures/ (Typst).
+See scaffold-paper skill for details.
 
-Seed `Paper/references.bib` with biblatex entries from the papers downloaded
-in step 5.
+Seed `Paper/references.bib` with biblatex entries from the papers downloaded in step 5.
 
 ---
 
@@ -228,8 +216,8 @@ in step 5.
 
 ### 0. Environment check
 
-Same as research type. Also check whether `lean` is on `PATH` if the user
-wants Lean — warn (don't fail) if it's not.
+Same as research type.
+Also check whether `lean` is on `PATH` if the user wants Lean — warn (don't fail) if it's not.
 
 ### 1. Scaffold the project
 
@@ -263,59 +251,48 @@ This creates:
 
 ### 2. Initialize the wiki
 
-Run **init-wiki** inside `<ProjectName>/`. It will create `Index.md`,
-`Status.md`, `Concepts/`, `Resources/`. The
-`Theorems/`, `Definitions/`, `Domains/` directories already exist
-and should be left alone.
+Run **init-wiki** inside `<ProjectName>/`.
+It will create `Index.md`, `Status.md`, `Concepts/`, `Resources/`.
+The `Theorems/`, `Definitions/`, `Domains/` directories already exist and should be left alone.
 
 ### 3. Adapt the domain taxonomy
 
 Read `Wiki/Domains/categories.md` and prune it to the project's actual scope.
-Anything not touched should be deleted — the file is a working catalogue, not
-a master reference. Add cross-links to the wiki articles you'll create next.
+Anything not touched should be deleted — the file is a working catalogue, not a master reference.
+Add cross-links to the wiki articles you'll create next.
 
 ### 4. Seed initial definitions and theorems
 
 For each central concept:
 
-- Copy `Wiki/Definitions/_template.md` to
-  `Wiki/Definitions/<Term>.md` and fill in Notation / Prerequisites /
-  Statement / Properties / Examples / References.
+- Copy `Wiki/Definitions/_template.md` to `Wiki/Definitions/<Term>.md` and fill in Notation / Prerequisites / Statement / Properties / Examples / References.
 
 For each central theorem the project wants to prove or use:
 
-- Create `Wiki/Theorems/<Name>.md` with a precise statement, hypotheses,
-  proof outline (math-level), status field (`open | outlined | proved |
-  formalised`), and cross-links to required definitions.
+- Create `Wiki/Theorems/<Name>.md` with a precise statement, hypotheses, proof outline (math-level), status field (`open | outlined | proved | formalised`), and cross-links to required definitions.
 
 Use **search-math** to find authoritative external references for each.
 
 ### 5. Create initial code files
 
-Same as research type. Code in `<CodeDir>/` is for computing examples,
-counterexamples, and visualisations — it is *not* the source of truth for
-the math.
+Same as research type.
+Code in `<CodeDir>/` is for computing examples, counterexamples, and visualisations — it is *not* the source of truth for the math.
 
 ### 6. Download reference papers
 
-Same as research type. For math-research projects, prefer using
-**arxiv-latex-mcp** to read papers so equations are exact.
+Same as research type.
+For math-research projects, prefer using **arxiv-latex-mcp** to read papers so equations are exact.
 
 ### 7. Create initial notebook (theorem-proof template)
 
-If a central theorem already has an outlined proof, use **new-notebook**
-with the `theorem-proof` template type to produce a working notebook around
-it (Setup → Statement → Proof → Corollaries → Examples).
+If a central theorem already has an outlined proof, use **new-notebook** with the `theorem-proof` template type to produce a working notebook around it (Setup → Statement → Proof → Corollaries → Examples).
 
 ### 8. (Optional) Initialize Lean
 
 If `WithLean=1` was set:
 
-1. Tell the user to run `cd <ProjectName>/Lean && lake new <ProjectName> math`
-   themselves — this skill does not run `lake` on their behalf.
-2. Once the lakefile exists, invoke **lean** to set up a
-   `Work/Backlog/Formalize-<topic>.md` formalization checklist for the
-   first theorem.
+1. Tell the user to run `cd <ProjectName>/Lean && lake new <ProjectName> math` themselves — this skill does not run `lake` on their behalf.
+2. Once the lakefile exists, invoke **lean** to set up a `Work/Backlog/Formalize-<topic>.md` formalization checklist for the first theorem.
 
 ### 9. Paper (if requested)
 
@@ -370,8 +347,7 @@ PacletName/PacletName/Kernel/PacletName.wl
 ```
 
 - Level 1 (`PacletName/`): the git submodule directory in the dev repo
-- Level 2 (`PacletName/PacletName/`): the actual paclet root containing
-  PacletInfo.wl, Kernel/, Tests/
+- Level 2 (`PacletName/PacletName/`): the actual paclet root containing PacletInfo.wl, Kernel/, Tests/
 - The submodule repo root also has `run_tests.wls`, `README.md`, `.gitignore`
 
 ### Package system
@@ -401,8 +377,8 @@ Usage.wl — all `::usage` strings, also starts with `Package["OrgName`PacletNam
 
 ### 2. Initialize the wiki
 
-Use **init-wiki** inside `<DevRepoName>/`. The domain folders should reflect
-the paclet's subject matter.
+Use **init-wiki** inside `<DevRepoName>/`.
+The domain folders should reflect the paclet's subject matter.
 
 ### 3. Create initial kernel modules
 
@@ -437,8 +413,8 @@ For each kernel module, create a test file:
 
 - `<PacletName>/<PacletName>/Tests/<ModuleName>Tests.wlt`
 
-Use `VerificationTest[...]` format. Test files mirror kernel files:
-`NameTests.wlt` tests `Name.wl`.
+Use `VerificationTest[...]` format.
+Test files mirror kernel files: `NameTests.wlt` tests `Name.wl`.
 
 ### 6. Download reference papers
 
@@ -466,9 +442,7 @@ cd <PacletName> && git init && git config core.hooksPath .githooks && git remote
 git remote add origin git@github.com:<GitHubUser>/<DevRepoName>.git
 ```
 
-The scaffold drops `.githooks/commit-msg` into each repo; `core.hooksPath`
-is set automatically when the scaffold runs inside an existing repo, otherwise
-run `git config core.hooksPath .githooks` once after `git init`.
+The scaffold drops `.githooks/commit-msg` into each repo; `core.hooksPath` is set automatically when the scaffold runs inside an existing repo, otherwise run `git config core.hooksPath .githooks` once after `git init`.
 
 ---
 
@@ -509,8 +483,8 @@ If the user wants wiki support, run **init-wiki** inside `<PacletName>/`.
 
 ### 3. Create initial kernel module
 
-Create at least one kernel module, add `PackageExport` declarations and
-`::usage` messages. Present for review.
+Create at least one kernel module, add `PackageExport` declarations and `::usage` messages.
+Present for review.
 
 ### 4. Create initial tests
 
@@ -520,10 +494,8 @@ Create test files in `<PacletName>/<PacletName>/Tests/`.
 
 ## After scaffolding
 
-If the user asked to track prompts, turn provenance on via the `provenance`
-skill: set `Prompt tracking: **on**` in `CLAUDE.md`, create `Wiki/Prompts.md`,
-and add its `## Prompts` entry to `Wiki/Index.md`. Otherwise leave the toggle at
-its scaffolded default (`off`).
+If the user asked to track prompts, turn provenance on via the `provenance` skill: set `Prompt tracking: **on**` in `CLAUDE.md`, create `Wiki/Prompts.md`, and add its `## Prompts` entry to `Wiki/Index.md`.
+Otherwise leave the toggle at its scaffolded default (`off`).
 
 Tell the user:
 - Project location and folder overview
