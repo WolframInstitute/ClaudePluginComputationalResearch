@@ -565,6 +565,21 @@ md = StringJoin["# Title\n\n", section1, section2];
 - Inline math for variables and short formulas
 - Display math for definitions and important equations
 
+## Style rules — Critical
+
+These govern the *content* of every LLM-generated notebook. Apply them as you compose the markdown.
+
+- **Concise** — keep text simple and short; don't over-complicate or over-explain.
+- **Prefer bullet points over prose** — use bulleted lists, not flowing paragraphs, wherever possible.
+- **Text first, then code** — explain in a Text cell, then show the code cell. Never interleave text and code within a paragraph.
+- **No inline code in prose** — keep calls and code out of flowing sentences; they belong in their own cells.
+- **Focus on substance** — the math, algorithms, and what functions do. Explain things properly; don't just print numbers.
+- **Clear structure** — few sections, no sprawl.
+- **Visual, not numeric** — favor graph and plot visualizations over numeric output.
+- **No LaTeX math in table cells** — use plain text inside table cells so they render.
+- **Only meaningful functions** — define only functions with genuine mathematical meaning. No utility/helper functions (no frame/anim/origin/ecc-style helpers).
+- **Lean on defaults** — only style what carries meaning; otherwise use default rendering.
+
 ## Naming conventions
 
 The `.md` source name is undated; the generated `.nb` appends the first-creation date (`_YYYY-MM-DD`, preserved across regenerations — see *Two-layer architecture*).
