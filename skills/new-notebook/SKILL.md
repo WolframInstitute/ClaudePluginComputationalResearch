@@ -577,6 +577,9 @@ These govern the *content* of every LLM-generated notebook. Apply them as you co
 - **Clear structure** — few sections, no sprawl.
 - **Visual, not numeric** — favor graph and plot visualizations over numeric output.
 - **No LaTeX math in table cells** — use plain text inside table cells so they render.
+- **Plain tables** — no separating lines, dividers, or frames in tables; use plain rows and `Grid`.
+- **No labels on graphics** — no `PlotLabel`, axis labels, or annotations; let the surrounding text carry the meaning.
+- **Name after the code, not prose** — subsection titles and any labels should name the function call or option being illustrated, e.g. `FindPoint`, `"From" -> "Center"` — not a descriptive sentence.
 - **Only meaningful functions** — define only functions with genuine mathematical meaning. No utility/helper functions (no frame/anim/origin/ecc-style helpers).
 - **Lean on defaults** — only style what carries meaning; otherwise use default rendering.
 
