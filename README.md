@@ -78,7 +78,8 @@ Skills share their name with the matching slash command (one name per feature), 
 | **add-resource** | Add a paper, repo, or page with recovery info |
 | **cite** | BibTeX from an arXiv ID or DOI |
 | **new-notebook** | Build Wolfram notebooks from Markdown |
-| **dev-notebook** | Build a cloud-deployed paclet demo notebook, linked from the README |
+| **demo-notebook** | Build a cloud-deployed paclet demo notebook, linked from the README |
+| **research-notebook** | Research document notebook: definitions, conjectures with evidence, open questions, literature |
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **build-paclet** | Build a paclet and install it locally |
 | **publish-paclet** | Build, install, and publish a paclet to the Cloud |
@@ -103,7 +104,8 @@ Skills share their name with the matching slash command (one name per feature), 
 | `/computational-research:add-resource` | Add a resource to the wiki |
 | `/computational-research:cite` | BibTeX from an arXiv ID or DOI |
 | `/computational-research:new-notebook` | Create a Wolfram notebook |
-| `/computational-research:dev-notebook` | Build & deploy the paclet demo notebook |
+| `/computational-research:demo-notebook` | Build & deploy the paclet demo notebook |
+| `/computational-research:research-notebook` | Build & deploy a research notebook on a topic |
 | `/computational-research:lean` | Drive a Lean/Mathlib session |
 | `/computational-research:build-paclet` | Build and install a paclet |
 | `/computational-research:publish-paclet` | Publish a paclet to the Cloud |

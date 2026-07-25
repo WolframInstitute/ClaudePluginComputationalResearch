@@ -1,10 +1,10 @@
 #!/usr/bin/env wolframscript
 
-(* build_dev_notebook.wls — assemble, evaluate, smoke-test, and cloud-deploy a
-   paclet "dev notebook": a self-contained reference card + worked examples that
+(* build_demo_notebook.wls — assemble, evaluate, smoke-test, and cloud-deploy a
+   paclet "demo notebook": a self-contained reference card + worked examples that
    shows what the paclet does, embedded outputs and all.
 
-   This file is a TEMPLATE. The dev-notebook skill copies it into a paclet repo as
+   This file is a TEMPLATE. The demo-notebook skill copies it into a paclet repo as
    Scripts/build_<name>_notebook.wls and fills the three marked sections:
      (A) CONFIG        — paclet name, context, directory, title, intro
      (B) REFERENCE     — exported symbols grouped by source module
@@ -26,10 +26,10 @@ pacletAuthor = "{{AUTHOR}}";                      (* shown in the README section
 pacletDir    = "{{PACLET_DIR}}";                  (* abs dir holding PacletInfo.wl *)
 pacletNeeds  = "{{ORG_NAME}}`" <> pacletName <> "`";  (* context to Needs[] *)
 notebooksDir = "{{NOTEBOOKS_DIR}}";               (* gitignored output dir, e.g. NotebooksLLM *)
-cloudName    = "DevNotebooks/" <> pacletName <> ".nb";  (* stable cloud object name *)
+cloudName    = "DemoNotebooks/" <> pacletName <> ".nb";  (* stable cloud object name *)
 
 nbTitle    = pacletName;
-nbSubtitle = "Dev notebook \[Dash] " <> pacletName;
+nbSubtitle = "Demo notebook \[Dash] " <> pacletName;
 nbIntro    = "{{INTRO}}";  (* 2-4 plain sentences: what it is, what you're looking at.
                               NO formulas, function names, or option names here. *)
 
@@ -167,7 +167,7 @@ Print[ "Smoke test: 0 messages." ];
    ───────────────────────────────────────────────────────────────────────── *)
 
 If[ ! DirectoryQ @ notebooksDir, CreateDirectory[ notebooksDir, CreateIntermediateDirectories -> True ] ];
-localPath = FileNameJoin[ { notebooksDir, pacletName <> "DevNotebook.nb" } ];
+localPath = FileNameJoin[ { notebooksDir, pacletName <> "DemoNotebook.nb" } ];
 Export[ localPath, notebook ];
 Print[ "Wrote ", localPath ];
 

@@ -1,18 +1,18 @@
 ---
-name: dev-notebook
+name: demo-notebook
 description: >
-  Build an LLM-generated "dev notebook" for the paclet under development: a
+  Build an LLM-generated "demo notebook" for the paclet under development: a
   self-contained, evaluated, cloud-deployed Wolfram notebook that presents every
   exported function (a reference card) plus a sequence of worked examples, each
   mostly code and each producing a picture. Outputs are embedded (graphics
   rasterized, small symbolic results kept as live boxes), the build is smoke-
   tested headless to zero messages, deployed public to the Wolfram Cloud, and the
-  stable URL is linked from the README. Use when the user says "dev notebook",
-  "demo notebook", "build the paclet demo", "show what the paclet does",
-  "reference notebook for the paclet", or the /dev-notebook command.
+  stable URL is linked from the README. Use when the user says "demo notebook",
+  "dev notebook", "build the paclet demo", "show what the paclet does",
+  "reference notebook for the paclet", or the /demo-notebook command.
 ---
 
-# Dev Notebook
+# Demo Notebook
 
 A single script builds one notebook a reader can open in the browser and
 immediately *see* what the paclet does: a reference card of every exported
@@ -24,7 +24,7 @@ The script — `Scripts/build_<name>_notebook.wls` in the paclet repo — is the
 script rebuilds and redeploys to the **same cloud object**, so the public URL is
 stable across versions.
 
-The template lives at `${CLAUDE_PLUGIN_ROOT}/scripts/build_dev_notebook.wls` and
+The template lives at `${CLAUDE_PLUGIN_ROOT}/scripts/build_demo_notebook.wls` and
 is reusable across paclet repos. Copy it in, fill the three marked sections, run.
 
 ## Kernel execution (license-aware)
@@ -99,7 +99,7 @@ names ("the 3D variant") — the subsection title is the option.
 
 ### 3. Fill the template
 
-Copy `${CLAUDE_PLUGIN_ROOT}/scripts/build_dev_notebook.wls` to
+Copy `${CLAUDE_PLUGIN_ROOT}/scripts/build_demo_notebook.wls` to
 `Scripts/build_<name>_notebook.wls` and fill the three marked sections:
 
 - **(A) CONFIG** — `pacletName`, `pacletAuthor`, `pacletDir`, `pacletNeeds`,
@@ -136,9 +136,9 @@ Handled by `outCell` / `rasterizeQ` in the template — do not bypass them:
 
 ### 5. The mandatory subtitle — do not omit
 
-Like every LLM-generated notebook in this plugin, the dev notebook carries the
+Like every LLM-generated notebook in this plugin, the demo notebook carries the
 **`[LLM Generated]` Subtitle** marker directly under the Title. The template adds
-two subtitle cells: the spec subtitle `Dev notebook — <Name>` **and** the
+two subtitle cells: the spec subtitle `Demo notebook — <Name>` **and** the
 `[LLM Generated]` marker. Never ship the notebook without the `[LLM Generated]`
 marker.
 
@@ -160,18 +160,18 @@ The script exports the local `.nb` (gitignored), `CloudDeploy`s it
 `=== DEV_NOTEBOOK_URL: <url> ===`. Extract the URL from that line.
 
 If running through the MCP instead: evaluate the same assembly, then
-`CloudConnect[]` and `CloudDeploy[ notebook, CloudObject[ "DevNotebooks/<Name>.nb" ], Permissions -> "Public" ]`;
+`CloudConnect[]` and `CloudDeploy[ notebook, CloudObject[ "DemoNotebooks/<Name>.nb" ], Permissions -> "Public" ]`;
 the returned object's `First` is the public URL. (If `CloudConnect` fails, the
 user must authenticate once.)
 
 ### 8. README integration
 
 Link the deployed URL from the paclet's `README.md` under a clearly named
-section — **`## Dev notebook — <Author>`** — noting it runs on the Wolfram Cloud
+section — **`## Demo notebook — <Author>`** — noting it runs on the Wolfram Cloud
 and how to rebuild:
 
 ```markdown
-## Dev notebook — <Author>
+## Demo notebook — <Author>
 
 A live, evaluated demo of every function, hosted on the Wolfram Cloud:
 
@@ -190,7 +190,7 @@ If the section already exists, update the URL only if the cloud object changed
 - [ ] Each example section: short prose + mostly clean code + embedded output.
 - [ ] Options shown as subsections titled by their literal code form.
 - [ ] Graphics rasterized; small symbolic output kept as live boxes.
-- [ ] `[LLM Generated]` subtitle present (plus the `Dev notebook — <Name>` subtitle).
+- [ ] `[LLM Generated]` subtitle present (plus the `Demo notebook — <Name>` subtitle).
 - [ ] Build evaluates everything, zero messages, deploys public, prints the URL.
 - [ ] README links the URL and the rebuild command.
 

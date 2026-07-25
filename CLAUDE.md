@@ -63,7 +63,8 @@ skills/new-project/assets/    — templates for scaffolding
 | `add-resource` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
 | `cite` | content | Generate BibTeX from arXiv ID or DOI |
 | `new-notebook` | content | Markdown-to-notebook pipeline via Wolfram MCP (research, computation, paper-analysis, theorem-proof templates) |
-| `dev-notebook` | paclet | Build/evaluate/cloud-deploy a paclet demo notebook (function reference + worked examples), link from README |
+| `demo-notebook` | paclet | Build/evaluate/cloud-deploy a paclet demo notebook (function reference + worked examples), link from README |
+| `research-notebook` | content | Research document notebook (definitions, conjectures + evidence, open questions, literature); md↔nb two-way sync; cloud-published, linked from README |
 | `lean` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
 | `start-tour` | presentation | Interactive guided walkthrough with code |
 | `build-paclet` | paclet | Build .paclet archive and install locally |
@@ -93,7 +94,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `search_dlmf.wls` | wolframscript | search-math skill |
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
-| `build_dev_notebook.wls` | wolframscript | dev-notebook skill (template copied into Scripts/build_<name>_notebook.wls) |
+| `build_demo_notebook.wls` | wolframscript | demo-notebook skill (template copied into Scripts/build_<name>_notebook.wls) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
@@ -115,7 +116,8 @@ skills/new-project/assets/    — templates for scaffolding
 | `add-resource` | add-resource |
 | `cite` | cite |
 | `new-notebook` | new-notebook |
-| `dev-notebook` | dev-notebook |
+| `demo-notebook` | demo-notebook |
+| `research-notebook` | research-notebook |
 | `lean` | lean |
 | `build-paclet` | build-paclet |
 | `publish-paclet` | publish-paclet |
