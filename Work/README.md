@@ -29,6 +29,6 @@ The notebook items are investigations that should inform each other.
 
 | Item | Next task |
 |---|---|
-| [EvaluateMarkdownToNotebook](Active/EvaluateMarkdownToNotebook.md) | T1 — Clone MarkdownToNotebook, inventory it, classify the Wolfram side |
+| [EvaluateMarkdownToNotebook](Active/EvaluateMarkdownToNotebook.md) | T2 — Evaluate the Claude side: plugin or not, skills, name collisions |
 | [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T1 — Clone MathNotebook, verify installability, enumerate real styles |
 | [PacletDocumentation](Active/PacletDocumentation.md) | T1 — Study PureMath's doc layout, catalogue the doc-authoring MCP tools |
