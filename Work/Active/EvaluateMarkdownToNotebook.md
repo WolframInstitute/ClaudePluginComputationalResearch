@@ -50,7 +50,6 @@ Do not spawn `wolframscript` for it unless `$MaxLicenseProcesses - $LicenseProce
 
 One unchecked box ≈ one focused session.
 
-- [ ] T2 — Evaluate the Claude side: is it a plugin? Catalogue its skills and commands, check name collisions against our 21, and determine how it is meant to be installed.
 - [ ] T3 — Smoke-test the Markdown → notebook conversion on an existing source via the Wolfram MCP; feature-diff against our pipeline.
 - [ ] T4 — Write the recommendation (depend / vendor / ignore) with an integration plan, and present it for approval.
 
@@ -96,6 +95,49 @@ One unchecked box ≈ one focused session.
   The absence of a license is the single most consequential finding and is worth raising with the author directly; it is cheap for him to fix and it unblocks the vendor option.
   `NotebookToMarkdown` was not in the Spec's scope but is arguably the more interesting half for this plugin.
 - **Next:** T2 — evaluate the Claude side: is it a plugin, what are its 12 skills, do they collide with ours.
+
+### Session 2 — 2026-07-27 — T2
+
+- **Did:** answered the Claude-side question.
+
+  **It is not a Claude plugin.**
+  There is no `.claude-plugin/`, no `plugin.json`, no `commands/`, and no marketplace entry — a `find` for all four returns nothing.
+  What it has is a bare `skills/` directory plus `install-skills.sh`, which *symlinks* each `skills/*/` into `$HOME/.claude/skills` (overridable via `CLAUDE_SKILLS_DIR`).
+  The script's own comment states the reasoning: that directory *is* the install location for personal skills, and `claude plugin install` only applies to marketplace-published plugins.
+  So these are **personal skills, installed by symlink**, not a distributable plugin — answering the Origin's "I don't know how they are supposed to be used. Is it a claude plugin?" with a clean no.
+  Symlinking rather than copying means the installed skills track the repo's `main`, which given yesterday's commit date is a live feed, not a snapshot.
+  Confirmed not currently installed here: `~/.claude/skills/` does not exist.
+  Per the Spec, `install-skills.sh` was **not** run.
+
+  **The 12 skills.** One orchestrator plus eleven authoring skills, each covering one Wolfram publishing genre:
+
+  | Their skill | Authors |
+  |---|---|
+  | `create-wolfram-documentation` | entry point — surveys a project, picks doc types, ports existing `.nb` to `.md`, wires the build |
+  | `wolfram-symbol-page` | a `ref/` reference page (DocumentationTools `Symbol` template) |
+  | `wolfram-guide-page` | a paclet's `guide/` home page |
+  | `wolfram-tech-note` | a `tutorial/` tech note |
+  | `wolfram-overview-page` | a paclet TOC / Overview page (`TOCChapter`/`TOCSection` hierarchy) |
+  | `wolfram-paclet` | a Paclet Repository `ResourceDefinition.nb` |
+  | `wolfram-function-resource` | a Function Repository definition notebook |
+  | `wolfram-data-repository` | a Data Repository resource |
+  | `wolfram-example-repository` | an Example Repository resource |
+  | `wolfram-demonstration` | a Demonstrations Project `Manipulate` notebook |
+  | `wolfram-prompt` | a Prompt Repository Persona/Function/Modifier |
+  | `wolfram-computational-essay` | a Computational Essay (`CodeText`-narrated notebook) |
+
+  **Name collisions with our 21: zero.**
+  Every one of theirs is `create-wolfram-documentation` or `wolfram-*`; none of ours uses that prefix.
+  Mechanically they would also coexist even if a name *did* clash, since plugin skills are addressed as `computational-research:<name>` while personal skills are unnamespaced — this repo already relies on that, as a personal `cite` skill coexists with our plugin `cite` today.
+
+  **The real conflict is semantic, not nominal.**
+  Their descriptions claim very broad triggers — `create-wolfram-documentation` fires on "whenever the user wants to document a Wolfram paclet or project", and `wolfram-paclet` on "whenever the user wants to create, write, or publish a Wolfram Language paclet".
+  Those overlap our `build-paclet` / `publish-paclet` and, especially, the still-unstarted `PacletDocumentation` work item, whose entire subject is the `ref/`+`guide/`+`tutorial/` gap that four of their skills already fill.
+  Installing them alongside this plugin would leave two plausible responders for "document my paclet" with no arbitration between them.
+- **Learned:** the twelve skills are not a competing version of this plugin — there is no overlap at all with the wiki, work-tracking, paper, resource, or search halves.
+  They are a *documentation-authoring* layer sitting exactly where `PacletDocumentation` was scoped to build one, which makes that item the place this evaluation actually lands.
+  Their uniform `wolfram-<genre>` naming is also the reason collisions are zero, and it is a naming convention worth keeping if any of this is adopted.
+- **Next:** T3 — smoke-test the conversion via the Wolfram MCP and feature-diff against our pipeline.
 
 ## Decisions
 
