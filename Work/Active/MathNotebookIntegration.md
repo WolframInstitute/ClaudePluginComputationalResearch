@@ -53,7 +53,6 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T2 — Test the `CloudDeploy` styling risk first: deploy a throwaway notebook using the stylesheet and confirm environments render for a reader without the paclet. Decide referenced vs. embedded `StyleDefinitions`.
 - [ ] T3 — Implement marker → environment-cell post-processing; verify rendering and numbering via the MCP.
 - [ ] T4 — Reconcile the displayed-math convention with the stylesheet; verify typeset output.
 - [ ] T5 — Implement the citation → References path, tied to `cite` and `references.bib`.
@@ -62,6 +61,7 @@ One unchecked box ≈ one focused session.
 ### Done
 
 - [x] T1 — Clone and inspect MathNotebook; verify installability; enumerate the real stylesheet and cell-style names; write the correction list against `research-notebook/SKILL.md`. *(Session 1)*
+- [x] T2 — Test the `CloudDeploy` styling risk first: deploy a throwaway notebook using the stylesheet and confirm environments render for a reader without the paclet. Decide referenced vs. embedded `StyleDefinitions`. *(Session 2)*
 
 ## Progress
 
@@ -120,8 +120,50 @@ One unchecked box ≈ one focused session.
   Its warning that `Scripts/PublishPaclet.wls` must be used instead of this plugin's generic `publish-paclet` — because the generic recipe copies only `Kernel/` and `Tests/` and would ship a paclet with no palette and no stylesheets — is a defect report against *our* skill, and is worth its own work item.
 - **Next:** T2 — confirm the embedded-vs-referenced `StyleDefinitions` decision for cloud readers.
 
+### Session 2 — 2026-07-27 — T2
+
+- **Did:** built one probe notebook body — Title, Section, then a `Definition`, `Theorem`, `Conjecture`, `Remark` and a `DisplayFormula` — and wrapped it three ways to separate the variables cleanly.
+
+  **Established the discriminator first.**
+  Measured through a real front end (`UsingFrontEnd` + `NotebookPut`), reading `{Title FontSize, Definition CounterIncrements, Conjecture has a dingbat}`:
+
+  | `StyleDefinitions` | Title `FontSize` | `Definition` `CounterIncrements` |
+  |---|---|---|
+  | `FrontEnd`FileName[{"MathNotebook"}, "AMSArticle.nb"]` | 26 | `"Theorem"` |
+  | `Get[<absolute path to AMSArticle.nb>]` (embedded) | 26 | `"Theorem"` |
+  | `"Default.nb"` (the failure case) | 45 | `{}` |
+
+  Note that "has a dingbat" is `True` in all three rows and is therefore **not** a usable discriminator — `Default.nb` resolves a generic `CellDingbat` too.
+  `CounterIncrements` is the one to assert on: `"Theorem"` means the sheet loaded, `{}` means it silently did not.
+  Both forms resolve correctly *on this machine*, which is exactly why a local check proves nothing about a reader.
+
+  **The cloud test settles it.**
+  Deployed both variants public and read each back with `CloudGet`:
+
+  | Deployed variant | `StyleData` cells in the file | `StyleDefinitions` head | Size |
+  |---|---|---|---|
+  | referenced | **0** | `FrontEnd`FileName` | 2.9 kB |
+  | embedded | **57** | `Notebook` | 49.8 kB |
+
+  The referenced notebook travels with **no style definitions at all** — only a file name pointing into a paclet layer on the author's disk.
+  A reader without the paclet therefore gets the `Default.nb` row of the first table: no `Theorem` counter, so every environment renders as unnumbered body text, and the labels are gone entirely because the label *is* the `CellDingbat` the sheet supplies.
+  The embedded notebook carries all 57 `StyleData` cells (32 style names plus their `"Printout"` variants) inside the file and is self-contained.
+
+  Public probe URLs, left up for the browser confirmation the Requirements ask for — **both are throwaway and should be deleted afterwards**:
+  - referenced: `https://www.wolframcloud.com/obj/hajek_pavel/MathNotebookProbe/referenced.nb`
+  - embedded: `https://www.wolframcloud.com/obj/hajek_pavel/MathNotebookProbe/embedded.nb`
+
+  **Decision: embed, unconditionally.**
+  The cost is about 47 kB per notebook, which is nothing next to a single rasterized plot, and it buys a notebook that renders correctly for a reader with no paclet, no install, and no front-end menu reset.
+- **Learned:** the paclet's `CLAUDE.md` was right that embedding is the answer, but its stated reason — silent fallback in headless runs — is the weaker one.
+  The stronger reason is measurable and unconditional: a referenced sheet is simply *not in the deployed file*, so its resolution is a property of the reader's machine rather than of the document.
+  Also worth carrying to T3: numbering is dynamic, not baked.
+  The numbers are `CounterBox`es evaluated by the reader's front end, so they are correct in the deployed notebook *provided* the definitions travel with it — the two findings are the same finding.
+- **Next:** T3 — marker → environment-cell post-processing.
+
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-07-27 | Embed the stylesheet in every generated notebook (`StyleDefinitions -> Get[<absolute path>]`), never reference it by name. | A deployed notebook using the `FrontEnd`FileName` form carries 0 `StyleData` cells, measured by reading it back with `CloudGet`; its styling is a property of the reader's machine, not of the document. Embedding costs ~47 kB and makes the notebook self-contained. |
 | 2026-07-27 | Proceed despite the repo being private, rather than stopping as the Spec's edge case directs. | That edge case exists to prevent inferring an API from a name. Access is real here — an SSH clone succeeds with the authenticated account — so nothing is being guessed; every claim above is read off the source or measured in the kernel. |

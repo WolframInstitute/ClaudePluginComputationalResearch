@@ -29,5 +29,5 @@ Both are investigations; `PacletDocumentation` should be re-scoped first — see
 
 | Item | Next task |
 |---|---|
-| [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T2 — Confirm embedded vs referenced StyleDefinitions for cloud readers |
+| [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T3 — Implement marker → environment-cell post-processing |
 | [PacletDocumentation](Active/PacletDocumentation.md) | T1 — Study PureMath's doc layout, catalogue the doc-authoring MCP tools |
