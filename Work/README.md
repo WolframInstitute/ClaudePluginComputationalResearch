@@ -29,5 +29,5 @@ Both are investigations; `PacletDocumentation` should be re-scoped first — see
 
 | Item | Next task |
 |---|---|
-| [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T4 — Reconcile the displayed-math convention with the stylesheet |
+| [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T5 — Implement the citation → References path |
 | [PacletDocumentation](Active/PacletDocumentation.md) | T1 — Study PureMath's doc layout, catalogue the doc-authoring MCP tools |

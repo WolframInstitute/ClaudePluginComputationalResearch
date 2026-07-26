@@ -7,8 +7,14 @@ $MathNotebookEnvironmentStyles = {
 $MathNotebookStyleSheetName = "AMSArticle.nb";
 
 MathNotebookDocument[ cells_List, opts : OptionsPattern[ Notebook ] ] :=
-  Notebook[ ConvertEnvironmentCells @ cells, opts,
+  Notebook[ NumberTaggedFormulas @ ConvertEnvironmentCells @ cells, opts,
     StyleDefinitions -> MathNotebookStyleSheet[ ] ]
+
+NumberTaggedFormulas[ cells_List ] :=
+  Replace[ cells,
+    Cell[ content_, "DisplayFormula", opts___ ] /; ! FreeQ[ { opts }, CellTags ] :>
+      Cell[ content, "DisplayFormulaNumbered", opts ],
+    { 1 } ]
 
 ConvertEnvironmentCells[ Notebook[ cells_List, opts___ ] ] :=
   Notebook[ ConvertEnvironmentCells @ cells, opts ]

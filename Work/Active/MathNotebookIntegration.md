@@ -53,7 +53,6 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T4 — Reconcile the displayed-math convention with the stylesheet; verify typeset output.
 - [ ] T5 — Implement the citation → References path, tied to `cite` and `references.bib`.
 - [ ] T6 — End-to-end build of one real research notebook; update `research-notebook/SKILL.md` to verified reality.
 
@@ -62,6 +61,7 @@ One unchecked box ≈ one focused session.
 - [x] T1 — Clone and inspect MathNotebook; verify installability; enumerate the real stylesheet and cell-style names; write the correction list against `research-notebook/SKILL.md`. *(Session 1)*
 - [x] T2 — Test the `CloudDeploy` styling risk first: deploy a throwaway notebook using the stylesheet and confirm environments render for a reader without the paclet. Decide referenced vs. embedded `StyleDefinitions`. *(Session 2)*
 - [x] T3 — Implement marker → environment-cell post-processing; verify rendering and numbering via the MCP. *(Session 3)*
+- [x] T4 — Reconcile the displayed-math convention with the stylesheet; verify typeset output. *(Session 4)*
 
 ## Progress
 
@@ -188,6 +188,30 @@ One unchecked box ≈ one focused session.
   Numbering in this stylesheet is unreadable by every obvious kernel-side route — it is not a cell option, not a counter value, and invisible to a single-cell rasterize — and the only honest assertion is a whole-notebook render.
   Any future test of numbering has to go through `Export[file, notebookObject]`, and any future *regression* test should assert on the rendered image, not on style names, because correct style names with a missing stylesheet look identical in the cell expression and blank on the page.
 - **Next:** T4 — reconcile the displayed-math convention with the stylesheet.
+
+### Session 4 — 2026-07-27 — T4
+
+- **Did:** reconciled the skill's displayed-math convention against the sheet, and verified the typeset output by rendering.
+
+  **The skill's convention is already correct, and MathNotebook defines no separate equation environment.**
+  What the sheet declares is three math styles: `DisplayFormula` (centered, `FontSize` 13, left margin 66), `DisplayFormulaNumbered` (the same plus a number), and `DisplayFormulaEquationNumber` (the number's own character style).
+  So the Spec's "if MathNotebook defines its own equation environment, prefer it" branch does not fire — `DisplayFormula` *is* the environment, and the existing `FormBox[…]`-fence → `DisplayFormula` rule stands unchanged.
+
+  Rendered a probe with the `FormBox[ ToBoxes[ expr ], TraditionalForm ]` form the skill prescribes: the Basel sum came out fully typeset — `∑` with both limits, a real built-up fraction, centered — and the integral rendered with proper limits and differential. The convention produces genuine typeset math, not a linearised approximation.
+
+  **What was missing is the numbered variant.**
+  `DisplayFormulaNumbered` sets `CounterIncrements -> "DisplayFormulaNumbered"` and puts `("(" CounterBox["DisplayFormulaNumbered"] ")")` in the right-hand `CellFrameLabels`, so the number renders flush right as `(1)`, `(2)`, `(3)` — confirmed in the render.
+
+  **A counter asymmetry the skill needs to state.**
+  `Section` carries `CounterAssignments -> {{"Subsection", 0}, {"Subsubsection", 0}, {"Theorem", 0}}` — the equation counter is *not* in that list.
+  Verified visually in the same render: entering section 3 reset the theorem counter (the next environment numbered `Theorem 3.1.`) while the following equation continued to `(3)`.
+  So **theorem numbers are per-section `⟨section⟩.⟨n⟩` and equation numbers are document-global `(n)`.** An author who assumes equations are numbered per-section will write wrong cross-references.
+
+  **Implemented `NumberTaggedFormulas`** in `scripts/mathnotebook_post.wl` and wired it into `MathNotebookDocument`: a `DisplayFormula` cell that carries `CellTags` is promoted to `DisplayFormulaNumbered`.
+  The rule is that an equation gets a number exactly when something can cite it, which keeps the decision in one place and needs no new Markdown syntax — the tags come from T5's citation path, and `CellTags` is also what `CounterBox[counter, tag]` resolves against, so a tagged equation is simultaneously numberable and citable.
+  Verified: untagged stays `DisplayFormula`, two tagged cells become `DisplayFormulaNumbered`.
+- **Learned:** the numbering asymmetry is the kind of thing that only shows up in a render across three sections — the style options alone read as if both counters behaved the same, since both are plain `CounterIncrements`; it is the *absence* of the equation counter from `Section`'s `CounterAssignments` that distinguishes them, and absences are easy to miss when reading a stylesheet.
+- **Next:** T5 — the citation → References path.
 
 ## Decisions
 
