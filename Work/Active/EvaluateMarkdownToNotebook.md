@@ -50,7 +50,6 @@ Do not spawn `wolframscript` for it unless `$MaxLicenseProcesses - $LicenseProce
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — Smoke-test the Markdown → notebook conversion on an existing source via the Wolfram MCP; feature-diff against our pipeline.
 - [ ] T4 — Write the recommendation (depend / vendor / ignore) with an integration plan, and present it for approval.
 
 ### Done
@@ -138,6 +137,47 @@ One unchecked box ≈ one focused session.
   They are a *documentation-authoring* layer sitting exactly where `PacletDocumentation` was scoped to build one, which makes that item the place this evaluation actually lands.
   Their uniform `wolfram-<genre>` naming is also the reason collisions are zero, and it is a naming convention worth keeping if any of this is adopted.
 - **Next:** T3 — smoke-test the conversion via the Wolfram MCP and feature-diff against our pipeline.
+
+### Session 3 — 2026-07-27 — T3
+
+- **Did:** smoke-tested the converter on our own `skills/new-project/assets/notebook_theorem_proof_template.md` through the official Wolfram MCP's persistent kernel (15.0.0; `$MaxLicenseProcesses` is `Infinity` on this license, so the headroom check is moot here), then ran a second synthetic probe aimed squarely at the constructs `CLAUDE.md` records as *not* rendering through MCP.
+
+  **It works, first try, on a source written for our pipeline.**
+  `Get` of the 5273-line file succeeded and `MarkdownToNotebook[src, "Evaluate" -> False]` returned a 44-cell `Notebook`.
+  Cell styles produced: `Title` ×1, `Section` ×8, `Subsection` ×3, `Text` ×16, `Item` ×7, `ItemNumbered` ×2, `Input` ×7, plus inline `InlineFormula` ×7 and `InlineCode` ×4.
+  All seven ` ```wolfram ` fences became `Input` cells with `CellLabel`s, so it accepts our fence tag and not just its own ` ```wl `.
+  Writing to a `.nb` also works: 13.8 kB on disk.
+  Messages during conversion were `PersistentObject` cache misses plus one `MIMETypeToFormatList::fmterr` — noise from the disabled evaluation path, not failures.
+
+  **Feature diff — it produces everything our MCP route cannot.**
+  Every construct in the `CLAUDE.md` "do NOT use in Text/Item cells" list came out as real, correct boxes:
+
+  | Construct | `CLAUDE.md` says, via MCP | MarkdownToNotebook produces |
+  |---|---|---|
+  | inline math `$x^2$`, `$a_i$` | `\[Superscript]`/`\[Subscript]` do not render | `Cell[BoxData[SuperscriptBox[…]], "InlineFormula", FontSize -> 0.9 Inherited]` nested in `TextData` |
+  | display math `$$\int_0^1 x^2\,dx$$` | no form | `Cell[BoxData[PaneBox[SubsuperscriptBox["∫",0,1] …FractionBox[1,3]]], "DisplayFormula"]` |
+  | `**bold**` / `*italic*` | `StyleBox` does not render | `StyleBox[…, FontWeight -> Bold]` / `StyleBox[…, "TI"]` |
+  | `[link](url)` | `Hyperlink` does not render | `ButtonBox["link", BaseStyle -> "Hyperlink", ButtonData -> {URL[…], None}]` |
+  | pipe table | plain text tables only | `GridBox` of `Cell[…, "TableText"]` in `2ColumnTableMod` with `ModInfo` gutters — the official docs table |
+  | `> blockquote` | no form | styled callout: left `CellFrame`, italic, `Background -> LightDarkSwitched[…]` |
+  | newline inside a paragraph | `\n` does not render | soft-wrapped lines are joined with a space into one `Text` cell, per CommonMark |
+
+  The reason is structural, and is the most useful thing this task established: **our limitation is a property of the MCP append-cell transport, not of notebooks.**
+  MarkdownToNotebook assembles the whole `Notebook[…]` expression in the kernel and writes it in one go, so `TextData`, `BoxData`, `StyleBox`, and `ButtonBox` are simply never marshalled through a cell-append tool call.
+
+  **Where it is no better than us:** nested bullets.
+  `- a / - b / - c` at three indent levels all flatten to plain `Item` — no `SubItem`, no `SubSubItem`, no dingbat or margin distinction.
+  That matches our own constraint exactly, so it is parity, not a gain.
+  Wikilinks (`[[../Theorems/Name]]`) pass through as literal text; also parity, since neither side resolves them.
+
+  **The reverse direction exists and matters.**
+  `NotebookToMarkdown.wl` (1505 lines) round-tripped the generated `.nb` back to 2022 characters of Markdown against the 2075-character original — but the losses are exactly the ones that would hurt here: the ` ```wolfram ` fence normalises to ` ```wl `, inline-code backticks are gone (they became `InlineFormula` boxes on the way in and return as plain text), the `>` blockquote marker is dropped, and **every soft line break is reflowed into one long line**.
+  Their `docs/gaps.md` also documents `"PreserveSource" -> True`, which stashes the original Markdown in the notebook's `TaggingRules`, and states that `NotebookToMarkdown` deliberately does *not* read that stash so an edited `.nb` round-trips with the edits visible — which is precisely the two-way-sync design `research-notebook` currently hand-rolls.
+- **Learned:** the reflow is a hard incompatibility with this project's `Semantic line breaks: on` rule and with `research-notebook`'s md↔nb sync: running `NotebookToMarkdown` over our sources would collapse one-sentence-per-line prose into paragraphs and produce a large spurious diff on every sync.
+  Any adoption of the reverse direction needs a re-wrap step or an option that does not exist yet.
+  The forward direction has no such problem.
+  Separately, `docs/gaps.md` is an honest, maintained self-assessment listing what the Markdown side still cannot express (tooltips, reviewer comments, table cell spanning, guide-listing layout choice) — worth reading before building anything in this space, because it is a map of a design area we have not explored.
+- **Next:** T4 — write the recommendation and integration plan.
 
 ## Decisions
 
