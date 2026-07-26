@@ -24,12 +24,11 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-Suggested order: `MarketplaceReadme` → `EvaluateMarkdownToNotebook` → `MathNotebookIntegration` → `PacletDocumentation`.
-The marketplace README is quick and self-contained; the notebook items are investigations that should inform each other.
+Suggested order: `EvaluateMarkdownToNotebook` → `MathNotebookIntegration` → `PacletDocumentation`.
+The notebook items are investigations that should inform each other.
 
 | Item | Next task |
 |---|---|
-| [MarketplaceReadme](Active/MarketplaceReadme.md) | T1 — Pull the marketplace clone, draft the README, commit and push on approval |
 | [EvaluateMarkdownToNotebook](Active/EvaluateMarkdownToNotebook.md) | T1 — Clone MarkdownToNotebook, inventory it, classify the Wolfram side |
 | [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T1 — Clone MathNotebook, verify installability, enumerate real styles |
 | [PacletDocumentation](Active/PacletDocumentation.md) | T1 — Study PureMath's doc layout, catalogue the doc-authoring MCP tools |
