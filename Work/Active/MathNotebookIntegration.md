@@ -53,7 +53,6 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — Implement marker → environment-cell post-processing; verify rendering and numbering via the MCP.
 - [ ] T4 — Reconcile the displayed-math convention with the stylesheet; verify typeset output.
 - [ ] T5 — Implement the citation → References path, tied to `cite` and `references.bib`.
 - [ ] T6 — End-to-end build of one real research notebook; update `research-notebook/SKILL.md` to verified reality.
@@ -62,6 +61,7 @@ One unchecked box ≈ one focused session.
 
 - [x] T1 — Clone and inspect MathNotebook; verify installability; enumerate the real stylesheet and cell-style names; write the correction list against `research-notebook/SKILL.md`. *(Session 1)*
 - [x] T2 — Test the `CloudDeploy` styling risk first: deploy a throwaway notebook using the stylesheet and confirm environments render for a reader without the paclet. Decide referenced vs. embedded `StyleDefinitions`. *(Session 2)*
+- [x] T3 — Implement marker → environment-cell post-processing; verify rendering and numbering via the MCP. *(Session 3)*
 
 ## Progress
 
@@ -160,6 +160,34 @@ One unchecked box ≈ one focused session.
   Also worth carrying to T3: numbering is dynamic, not baked.
   The numbers are `CounterBox`es evaluated by the reader's front end, so they are correct in the deployed notebook *provided* the definitions travel with it — the two findings are the same finding.
 - **Next:** T3 — marker → environment-cell post-processing.
+
+### Session 3 — 2026-07-27 — T3
+
+- **Did:** implemented the post-processing as `scripts/mathnotebook_post.wl` — a plain `.wl` file the skill `Get`s through the MCP kernel, matching the plugin's MCP-first pattern (registered in `CLAUDE.md`, script count 26 → 27).
+
+  It exports `$MathNotebookEnvironmentStyles` (all 12), `$MathNotebookStyleSheetName`, `ConvertEnvironmentCells` (the pure core, operating on a cell list or a whole `Notebook`), `MathNotebookStyleSheet[]` (reads the sheet out of the installed paclet layer), and `MathNotebookDocument[cells]` which wraps the converted cells with the **embedded** sheet per T2's decision.
+
+  Both marker spellings are handled, because the new-notebook pipeline can produce either: a parsed bold run `TextData[{StyleBox["Definition.", FontWeight -> Bold], " …"}]`, and an unparsed literal `"**Definition.** …"`.
+  The marker is deleted and the leading space trimmed; a marker naming no environment is left alone.
+
+  **Verified through the MCP against a 10-cell probe** spanning two sections, both marker spellings, plain prose and a bogus `**Nonsense.**` marker.
+  Styles came out `Title, Section, Definition, Theorem, Conjecture, Remark, Section, Question, Text, Text` — every intended conversion, no false positives, and the bogus marker preserved verbatim as `Text`.
+
+  **Numbering verified by rendering the whole notebook to a raster and reading it.**
+  `CurrentValue[cell, {CounterValue, "Theorem"}]` answers `$Failed`, so a counter cannot be read as a value; and per the paclet's `CLAUDE.md` a single-cell `Rasterize` reads every `CounterBox` as 0.
+  `Export[png, notebookObject]` inside `UsingFrontEnd` is what works.
+  The render shows:
+  `Definition 1.1.`, `Theorem 1.2.`, `Conjecture 1.3.`, `Remark 1.4.`, then under section 2, `Question 2.1.` —
+  so the shared counter increments across environment kinds and `Section` resets it, both confirmed visually rather than inferred from the style options.
+
+  Two rendering facts worth carrying forward:
+  the Plain-class environments (`Theorem`, `Conjecture`, …) set their **body** in italic, amsthm-style, while the Definition- and Remark-class bodies are roman — so prose written for a `Theorem` cell will be italicised whether the author expects it or not;
+  and the exported raster came out **dark** even though the sheet declares `LightDark -> Light` and `Background -> GrayLevel[1]` on `Notebook`, meaning a headless raster follows the front end's own appearance rather than the sheet.
+  That matters for T6: a light/dark check on the published artifact cannot be done from the raster alone.
+- **Learned:** the verification method is the deliverable as much as the code is.
+  Numbering in this stylesheet is unreadable by every obvious kernel-side route — it is not a cell option, not a counter value, and invisible to a single-cell rasterize — and the only honest assertion is a whole-notebook render.
+  Any future test of numbering has to go through `Export[file, notebookObject]`, and any future *regression* test should assert on the rendered image, not on style names, because correct style names with a missing stylesheet look identical in the cell expression and blank on the page.
+- **Next:** T4 — reconcile the displayed-math convention with the stylesheet.
 
 ## Decisions
 

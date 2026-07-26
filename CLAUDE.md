@@ -70,7 +70,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `build-paclet` | paclet | Build .paclet archive and install locally |
 | `publish-paclet` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
 
-### Scripts (26)
+### Scripts (27)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -95,6 +95,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
 | `build_demo_notebook.wls` | wolframscript | demo-notebook skill (template copied into Scripts/build_<name>_notebook.wls) |
+| `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
