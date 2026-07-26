@@ -50,11 +50,13 @@ Do not spawn `wolframscript` for it unless `$MaxLicenseProcesses - $LicenseProce
 
 One unchecked box ≈ one focused session.
 
-- [ ] T4 — Write the recommendation (depend / vendor / ignore) with an integration plan, and present it for approval.
 
 ### Done
 
 - [x] T1 — Clone to the gitignored path, inventory the repo, and classify the Wolfram side (resource function / paclet / loose code); record license, publication status, and recency. *(Session 1)*
+- [x] T2 — Evaluate the Claude side: is it a plugin? Catalogue its skills and commands, check name collisions against our 21, and determine how it is meant to be installed. *(Session 2)*
+- [x] T3 — Smoke-test the Markdown → notebook conversion on an existing source via the Wolfram MCP; feature-diff against our pipeline. *(Session 3)*
+- [x] T4 — Write the recommendation (depend / vendor / ignore) with an integration plan, and present it for approval. *(Session 4)*
 
 ## Progress
 
@@ -179,8 +181,82 @@ One unchecked box ≈ one focused session.
   Separately, `docs/gaps.md` is an honest, maintained self-assessment listing what the Markdown side still cannot express (tooltips, reviewer comments, table cell spanning, guide-listing layout choice) — worth reading before building anything in this space, because it is a map of a design area we have not explored.
 - **Next:** T4 — write the recommendation and integration plan.
 
+### Session 4 — 2026-07-27 — T4
+
+- **Did:** wrote the recommendation below (`## Recommendation`) and the integration plan.
+  Not presented for approval — see the Decisions entry; the session was unattended.
+- **Learned:** the three questions in the Spec turned out to be less decisive than a fourth nobody asked: *who maintains this?*
+  One author, zero stars, no license, no tagged release, and a commit yesterday.
+  That profile is what pushes the answer to "depend at arm's length" rather than either adopt-wholesale or ignore.
+- **Next:** none — item complete.
+
+## Recommendation
+
+### Verdict, one line per question
+
+1. **What is the Wolfram side?**
+   A publicly cloud-deployed resource function — `ResourceFunction["https://www.wolframcloud.com/obj/nikm/DeployedResources/Function/MarkdownToNotebook"]` — with Function Repository publication still pending review, backed by two loose `.wl` files and no paclet; and yes, it is decisively more capable than what we do through the MCP.
+2. **Depend, vendor, or ignore?**
+   **Depend, at arm's length, as an optional enhancement** — vendoring is blocked by the missing license, and ignoring would discard the only working answer to a limitation our own `CLAUDE.md` documents as unsolvable.
+3. **What is the Claude side?**
+   Not a plugin — 12 personal skills symlink-installed by `install-skills.sh`, zero name collisions with our 21; do not install them, but treat four of them as the design reference for the `PacletDocumentation` item.
+
+### Why not the other two
+
+**Not vendor.** No `LICENSE`, `license: null` from the API — all rights reserved, so copying is off the table before capability even enters the argument.
+Even with a permissive license it would be a poor fit: `MarkdownToNotebook.wl` is one 5273-line file of interdependent private definitions with no package boundary, so the unit of reuse is the entire file, and we would inherit a 6800-line maintenance burden in a language the plugin otherwise only orchestrates.
+
+**Not ignore.** The T3 diff is not a marginal win.
+Inline and display math, tables, hyperlinks, bold/italic, and styled callouts are exactly what a mathematical research notebook needs, and each is on our documented "does not render" list.
+Refusing the dependency means either accepting that ceiling permanently or reimplementing a LaTeX→boxes pipeline ourselves.
+
+### Integration plan
+
+**Phase 0 — unblock, before any code (external, cheap).**
+Ask Nikolay Murzin for three things: a `LICENSE` file (MIT would match ours), the status of the Function Repository review, and a tag or pinnable commit.
+The license unblocks the vendor option as a fallback; the review status determines whether we can eventually depend on the short name `ResourceFunction["MarkdownToNotebook"]` instead of a personal cloud URL; the tag is what makes the dependency reproducible.
+Nothing in Phase 1 strictly requires these, but all three change how much weight the dependency can carry.
+
+**Phase 1 — one opt-in escape hatch in `new-notebook`. The MCP path stays the default.**
+Add a "rich" mode used only when a source needs a construct the MCP transport cannot carry (math, tables, hyperlinks, callouts).
+Resolution order, most local first: a configured local clone → the public cloud `ResourceFunction` → fall back to the existing MCP path, stating in the response which constructs were degraded.
+Always pass `"Evaluate" -> False`: this plugin evaluates through the MCP and embeds outputs itself (`research-notebook`, `demo-notebook`), and handing the evaluation policy to a third-party converter would fork that behaviour.
+No changes to `demo-notebook` or `research-notebook` in this phase.
+
+**Phase 2 — hold off on `NotebookToMarkdown`.**
+It is the more tempting half, since `research-notebook` hand-rolls md↔nb sync, but it reflows soft line breaks into single lines, which breaks `Semantic line breaks: on` and would put a whole-file diff into every sync.
+Blocked until either an upstream option preserves line breaks or we add a re-wrap post-step.
+Worth its own work item; not worth blocking Phase 1 on.
+
+**Phase 3 — fold this into `PacletDocumentation` before that item starts.**
+Its scope was "build a doc-authoring pipeline"; four of these skills (`wolfram-symbol-page`, `wolfram-guide-page`, `wolfram-tech-note`, `wolfram-overview-page`) already author precisely the `ref/`, `guide/`, `tutorial/`, and Overview pages it targets, and `docs/gaps.md` plus `docs/palette.md` are a ready-made map of the design space.
+That item should be rewritten as "evaluate driving theirs" rather than "build ours".
+
+**Do not run `install-skills.sh`, then or later.**
+Symlinked personal skills track their `main` — a live feed from a repo that moved yesterday — and their trigger descriptions ("whenever the user wants to document a Wolfram paclet or project") would compete with `build-paclet` and `publish-paclet` with nothing to arbitrate.
+If we want those genres, reimplement them as `computational-research:` skills that call the converter, keeping one plugin in charge of triggering.
+
+### Risks to carry into any adoption
+
+Single maintainer, zero stars, no license, no release tags, and daily commits — the most fragile dependency profile this plugin would have.
+The cloud URL is a personal `obj/nikm/` path that can disappear without notice, which is the main argument for Phase 0's third ask.
+`ensureParser[]` installs the `Wolfram/Parser` paclet at call time if it is not present, so the first rich-mode conversion on a fresh machine does network I/O and a paclet install; it degrades to `ImportString[…, "TeX"]` rather than failing, but with worse math fidelity.
+And with no package boundary there is no way to patch a bug locally short of a fork.
+
+### Abandon condition
+
+If the license request is declined and the Function Repository review stalls, cap the relationship at reading `docs/` for design ideas and keep our own pipeline.
+
+### Follow-ups (not this item)
+
+- `add-resource` for this repo, with recovery info — note that this project has no `Wiki/` at all yet, so `init-wiki` comes first.
+- A work item for Phase 1 (`new-notebook` rich mode).
+- A work item for Phase 2 (`NotebookToMarkdown` + line-break preservation).
+- Rewriting `PacletDocumentation`'s Spec per Phase 3.
+
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-07-27 | Recommendation recorded without the approval step T4 asks for. | The session was unattended by the user's instruction. The deliverable is a written recommendation, so nothing was acted on: no code changed, no dependency added, no skills installed. Approval is still required before any phase of the integration plan begins. |
 | 2026-07-27 | Treat "vendor" as blocked pending a license, not as a live option to be costed. | No `LICENSE` file and `license: null` from the API means all rights reserved. The Spec makes license incompatibility a hard stop before reading code with intent to copy, so the remaining comparison is cloud-resource vs. ignore. |

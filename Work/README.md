@@ -24,11 +24,10 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-Suggested order: `EvaluateMarkdownToNotebook` → `MathNotebookIntegration` → `PacletDocumentation`.
-The notebook items are investigations that should inform each other.
+Suggested order: `MathNotebookIntegration` → `PacletDocumentation`.
+Both are investigations; `PacletDocumentation` should be re-scoped first — see the Recommendation in `Done/2026-07-27-EvaluateMarkdownToNotebook.md`.
 
 | Item | Next task |
 |---|---|
-| [EvaluateMarkdownToNotebook](Active/EvaluateMarkdownToNotebook.md) | T4 — Write the recommendation (depend / vendor / ignore) and integration plan |
 | [MathNotebookIntegration](Active/MathNotebookIntegration.md) | T1 — Clone MathNotebook, verify installability, enumerate real styles |
 | [PacletDocumentation](Active/PacletDocumentation.md) | T1 — Study PureMath's doc layout, catalogue the doc-authoring MCP tools |
