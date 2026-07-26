@@ -67,10 +67,14 @@ author: Pavel Hajek, Claude <model name>
 `author:` becomes an `Author` cell (an AMSArticle style) directly under the
 Title; credit the human first and the model by name. The notebook opens with
 
-1. `[LLM Generated]` as a `Subtitle` — the **very first cell, above the Title**,
+1. `[LLM Generated]` — the **very first cell, above the Title**,
 2. the `Title`,
 3. the `Author`,
 4. the `Abstract`.
+
+AMSArticle declares no `Subtitle` style, so a `Subtitle` cell falls through to
+`Default.nb` and loses the sheet's typography. Use the `Author` style for the
+`[LLM Generated]` line.
 
 ## No inline TeX in the sources — Critical
 
@@ -87,23 +91,66 @@ which makes the failure easy to miss.
 
 ## MathNotebook environments and Lean-translatability
 
-Load the MathNotebook paclet in Initialization; install it if missing:
+**Install.** The paclet is **not** on the Paclet Repository — its source repo is
+private, so `PacletInstall[ "WolframInstitute/MathNotebook" ]` resolves to
+nothing. Install from the cloud build:
 
 ```wolfram
-Quiet @ Check[ Needs[ "WolframInstitute`MathNotebook`" ],
-  PacletInstall[ "WolframInstitute/MathNotebook" ]; Needs[ "WolframInstitute`MathNotebook`" ] ]
+PacletInstall[ "https://www.wolframcloud.com/obj/hajek_pavel/MathNotebook.paclet",
+  ForceVersionInstall -> True ]
+Needs[ "WolframInstitute`MathNotebook`" ]
 ```
 
-Set the notebook's `StyleDefinitions` to the paclet stylesheet
-(`FrontEnd`FileName[ { "MathNotebook" }, "AMSArticle.nb" ]`) so the theorem
-environments render and number themselves.
+Once a copy is installed, `UpdateMathNotebook[ ]` upgrades it in place. The
+paclet is MIT, needs Wolfram 14.3+, and its `PrimaryContext` is
+`WolframInstitute`MathNotebook``.
 
-**Source convention → environment cells.** In the `.md` source, open a
-paragraph with a bold marker: `**Definition.**`, `**Conjecture.**`,
-`**Question.**`, `**Observation.**`, `**Remark.**`. Post-processing (after the
-new-notebook pipeline, before `ExportString`) converts each such Text cell to
-the matching MathNotebook style cell with the marker stripped — the stylesheet
-supplies numbering.
+**Embed the stylesheet — never reference it by name.** A notebook deployed with
+`StyleDefinitions -> FrontEnd`FileName[ { "MathNotebook" }, "AMSArticle.nb" ]`
+travels with **zero** style definitions: the option is only a path into a paclet
+layer on the author's disk, so a cloud reader falls back to `Default.nb`, where
+the environments lose both their numbers and their labels. Embed instead — the
+cost is about 47 kB:
+
+```wolfram
+Get[ "${CLAUDE_PLUGIN_ROOT}/scripts/mathnotebook_post.wl" ]
+MathNotebookDocument[ cells, bibTags ]
+```
+
+`MathNotebookDocument` runs the whole post-processing pipeline in the one order
+that works — environments, then equation numbering, then citations — and wraps
+the result with the embedded sheet. Citations must come last, because a
+reference to an equation has to see the cell as `DisplayFormulaNumbered`.
+
+**Source convention → environment cells.** In the `.md` source, open a paragraph
+with a bold marker. All **12** environments are available, sharing one counter:
+
+| Class | Markers | Rendered |
+|---|---|---|
+| Plain | `**Theorem.**` `**Lemma.**` `**Proposition.**` `**Corollary.**` `**Conjecture.**` `**Claim.**` | bold label, **italic body** |
+| Definition | `**Definition.**` `**Example.**` `**Construction.**` | bold label, roman body |
+| Remark | `**Remark.**` `**Question.**` `**Observation.**` | italic label, roman body |
+
+`ConvertEnvironmentCells` strips the marker and applies the style; a bold marker
+naming no environment is left as a `Text` cell. Both spellings are handled — a
+parsed bold run and a literal `**Definition.**` string.
+
+Numbering comes from the stylesheet as a `CellDingbat` of `CounterBox`es, so it
+is the front end's to compute and **never yours to write**: do not put a number
+in the source. Two counter facts to write against:
+
+- **Theorem numbers are per-section**, `⟨section⟩.⟨n⟩`, shared across all 12
+  environments — a Definition then a Theorem in section 1 are 1.1 and 1.2.
+- **Equation numbers are document-global**, `(n)`; `Section` does not reset them.
+
+Note that the Plain class italicises the body, which is the amsthm convention but
+surprises authors who write a long `Theorem` cell.
+
+**Displayed math.** A `wolfram` fence starting with `FormBox[…]` becomes a
+`DisplayFormula` cell, as before; MathNotebook defines no separate equation
+environment. Give the cell `CellTags` and `NumberTaggedFormulas` promotes it to
+`DisplayFormulaNumbered`, which draws `(n)` flush right — an equation is numbered
+exactly when something can cite it.
 
 **Write every Definition and Conjecture so it translates directly to a Lean
 statement**: explicit hypotheses, explicit quantifiers, quantification over
@@ -143,7 +190,34 @@ proved conjectures feed the [lean](../lean/SKILL.md) skill for formalization.
 9. **Literature** — every claim that isn't ours gets a citation tag `[tag]`
    (MathNotebook `Citation` style); the final References section lists the
    entries, produced by the [cite](../cite/SKILL.md) skill and kept in sync
-   with `Paper/references.bib` when the project has one.
+   with `Paper/references.bib` when the project has one. See *Citations and
+   References* below for the mechanism.
+
+## Citations and References
+
+MathNotebook has cross-reference machinery but **no bibliography engine** —
+nothing collects, sorts, or numbers entries, so the References section is the
+generator's to build. `scripts/mathnotebook_post.wl` does it:
+
+- `BibTeXReferences[ file ]` parses a `.bib` into `<| tag -> formatted string |>`.
+  There is no `Import[ …, "BibTeX" ]` in Wolfram, so this is a small hand parser;
+  it handles the shapes `cite` emits — braced fields, quoted fields, and the bare
+  numeric `year = 2011` that Crossref returns — and links `doi` → `doi.org`,
+  else `eprint` → `arxiv.org`, else `url`.
+- `ReferenceCells[ entries ]` emits `Reference` cells tagged with the key and
+  labelled `[tag]` in the margin.
+- `ConvertCitations[ cells, bibTags ]` turns a literal `[tag]` in prose into a
+  `Citation` button. A citation whose target is a numbered cell renders as **its
+  number** — `(1)` for an equation, `Definition 2.3` for an environment,
+  `Section 4` for a section — resolved by the front end, so it follows the target
+  when cells move. A bibliography citation stays `[tag]`.
+
+Only tags that actually exist are converted: the tags of cells in the notebook,
+plus the bibliography keys passed in. Ordinary bracketed prose and Markdown links
+are left alone.
+
+Keep bib keys **short** — a long key overflows the `Reference` style's left
+margin and runs off the page.
 
 ## Prose style — Critical
 
@@ -315,9 +389,9 @@ outputs must record those channels too.
 
 - [ ] `.md` source in `NotebooksLLM/`; user `.nb` edits folded back before regeneration.
 - [ ] Frontmatter stripped before import; `author:` rendered as an Author cell.
-- [ ] `[LLM Generated]` Subtitle is the first cell, above Title / Author / Abstract.
+- [ ] `[LLM Generated]` line above Title / Author / Abstract — note AMSArticle declares no `Subtitle` style, so that line falls through to `Default.nb`; use `Author` to keep the sheet's typography.
 - [ ] No `$…$` inline TeX anywhere; plain Unicode in Text, `FormBox` fences for display math.
-- [ ] MathNotebook stylesheet + environments; markers converted to Definition/Conjecture/Question cells.
+- [x] MathNotebook stylesheet **embedded** (not referenced) + environments; markers converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
 - [ ] Definitions and conjectures Lean-translatable (explicit hypotheses and quantifiers).
 - [ ] Section order: Initialization, Functions, Definitions, Classification, then the results.
 - [ ] Functions section lists every symbol used, grouped by role, one line each.
@@ -326,7 +400,7 @@ outputs must record those channels too.
 - [ ] Every conjecture has an `Example` subsection rendered as a graphic, and a status marker; failures demoted to Questions with counterexample pictures.
 - [ ] Demonstration sections titled by literal function/option code; no code in Text cells.
 - [ ] Enumerated further research questions referencing conjectures by number.
-- [ ] Literature section with citation tags, synced with `Paper/references.bib`.
+- [ ] Literature section built with `BibTeXReferences` + `ReferenceCells` from `Paper/references.bib`; bib keys short.
 - [ ] Initialization folded: seeds, reproducibility line, ExampleGraphs constructions.
 - [ ] Prose in thesis voice; abstract a section-by-section roadmap, written last; no selling adjectives.
 - [ ] Zero-message evaluation; Output cells embedded (graphics live, not rasterized); `ExportString` result checked with `StringQ` and the file re-imported.

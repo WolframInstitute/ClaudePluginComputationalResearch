@@ -53,7 +53,6 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T6 — End-to-end build of one real research notebook; update `research-notebook/SKILL.md` to verified reality.
 
 ### Done
 
@@ -62,6 +61,7 @@ One unchecked box ≈ one focused session.
 - [x] T3 — Implement marker → environment-cell post-processing; verify rendering and numbering via the MCP. *(Session 3)*
 - [x] T4 — Reconcile the displayed-math convention with the stylesheet; verify typeset output. *(Session 4)*
 - [x] T5 — Implement the citation → References path, tied to `cite` and `references.bib`. *(Session 5)*
+- [x] T6 — End-to-end build of one real research notebook; update `research-notebook/SKILL.md` to verified reality. *(Session 6)*
 
 ## Progress
 
@@ -244,9 +244,49 @@ One unchecked box ≈ one focused session.
   Separately, a long citation key overflows the `Reference` style's left margin — `[ollivier2009]` ran to the very edge of the page while `[lin2011]` sat comfortably — so bib keys should be kept short, or the References section needs its own margin override.
 - **Next:** T6 — end-to-end build and the skill rewrite.
 
+### Session 6 — 2026-07-27 — T6
+
+- **Did:** built one real research notebook end to end, then rewrote the skill.
+
+  **The notebook.** *Algebraic connectivity of trees* — a topic chosen so that every claim in it is exactly computable and independently checkable, since the point was to exercise the pipeline, not to advance mathematics.
+  All trees on 4–8 vertices are generated from Prüfer sequences and reduced up to isomorphism by `CanonicalGraph`; the counts come out 2, 3, 6, 11, 23, which is OEIS A000055 restricted to that range, so the enumeration is self-validating.
+  For each of the 45 trees the second-smallest Laplacian eigenvalue is computed, and in every case the minimiser is isomorphic to the path and the maximiser to the star.
+  Both extreme values are then stated in closed form and checked against the census: `a(Pₙ) = 2(1 − cos(π/n))` gives 0.152241 at n = 8, matching the computed minimum, and `a(K₁,ₙ₋₁) = 1` is attained exactly.
+  The statement is Fiedler's theorem, and the notebook says so rather than presenting it as new.
+
+  It exercises every piece built in T2–T5: Title/Author/Date/Abstract, two `Definition` cells, a `Conjecture` with a status marker, a folded `Example` subsection with evaluated code and an embedded plot, an unnumbered `DisplayFormula` and two tagged numbered ones, three `ItemNumbered` research questions, and a Literature section generated from a `.bib`.
+  Style tally of the built notebook: `Title` 1, `Author` 1, `Date` 1, `Abstract` 1, `Section` 5, `Subsection` 1, `Definition` 2, `Conjecture` 1, `Text` 5, `Input` 3, `Output` 3, `DisplayFormula` 1, `DisplayFormulaNumbered` 2, `ItemNumbered` 3, `Reference` 2.
+
+  The two documented failure modes were checked rather than assumed: `ExportString` returned a real string and not the 7-character `"$Failed"`, and the 46 kB file re-imports with head `Notebook`.
+  Deployed public, and the deployed file carries all 57 `StyleData` cells:
+  `https://www.wolframcloud.com/obj/hajek_pavel/ResearchNotebooks/AlgebraicConnectivityOfTrees.nb`
+  The **browser confirmation the Requirements ask for is the one step left to a human** — everything above is a headless render plus a `CloudGet` of the deployed object.
+
+  **The end-to-end test caught a real gap in T5, which is what it was for.**
+  The first build rendered `[eq:path]` and `[eq:star]` as literal text, because `ConvertCitations` was given only the bibliography keys — equation tags are a different namespace, and a citation to a numbered equation should read as its *number*, not as its tag.
+  Fixed by reproducing the paclet's own `$referenceLabelSpec` and making citations style-aware: `CitationTargets` derives tag → style from the cells themselves, and a target listed in the spec renders as `CounterBox`es — `(1)` for an equation, `Definition 2.3` for an environment, `Section 4` for a section — while a `Reference` target keeps the bare `[tag]`.
+  Confirmed in the re-render: the sentence now reads "Equation (1) gives 0.152241 …, and (2) is attained exactly", with both numbers resolved by the front end.
+  `MathNotebookDocument` now runs the full pipeline itself in the only correct order — environments, equation numbering, citations — since citations must see an equation cell after it has become `DisplayFormulaNumbered`.
+
+  **Skill rewritten** (`skills/research-notebook/SKILL.md`, 333 → 407 lines):
+  the broken `PacletInstall` snippet replaced with the cloud `.paclet` URL plus the `UpdateMathNotebook[]` path;
+  a new *embed, never reference* section explaining the zero-`StyleData` measurement;
+  the marker list expanded from 5 to all 12 environments in a table by class, flagging that the Plain class italicises the body;
+  the two counter facts stated explicitly, with "the number is never yours to write";
+  the `CellTags` → `DisplayFormulaNumbered` rule;
+  a new *Citations and References* section documenting `BibTeXReferences` / `ReferenceCells` / `ConvertCitations`, the absence of any bibliography engine, the absence of `Import[…, "BibTeX"]`, and the short-keys warning;
+  the `Subtitle` correction in two places, since AMSArticle declares no such style;
+  and the line-320 checklist item ticked, now that it is true.
+- **Learned:** the ordering constraint is the subtlest thing in this item and it only surfaces end to end — each of T3, T4 and T5 passed its own test in isolation while the composition was wrong, because the citation pass silently found no target for a tag whose cell had not yet been promoted.
+  Nothing warned; the citation just stayed literal text, which reads as an authoring mistake rather than a pipeline one.
+  That is the argument for `MathNotebookDocument` owning the order rather than documenting it.
+- **Next:** none — item complete.
+
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-07-27 | `MathNotebookDocument` owns the pass order (environments → equation numbering → citations) rather than the skill documenting it. | Each pass passed its own test while the composition was wrong: the citation pass found no target for an equation tag whose cell had not yet become `DisplayFormulaNumbered`, and failed silently by leaving the citation as literal text. An order that fails silently should not be the caller's responsibility. |
+| 2026-07-27 | Built the end-to-end notebook on a known theorem (Fiedler) rather than a new claim. | The task verifies the pipeline, so every statement in the artifact had to be independently checkable. The tree census self-validates against OEIS A000055 and both closed forms were checked against the computed extremes, which would not be possible with an open question. |
 | 2026-07-27 | Embed the stylesheet in every generated notebook (`StyleDefinitions -> Get[<absolute path>]`), never reference it by name. | A deployed notebook using the `FrontEnd`FileName` form carries 0 `StyleData` cells, measured by reading it back with `CloudGet`; its styling is a property of the reader's machine, not of the document. Embedding costs ~47 kB and makes the notebook self-contained. |
 | 2026-07-27 | Proceed despite the repo being private, rather than stopping as the Spec's edge case directs. | That edge case exists to prevent inferring an API from a name. Access is real here — an SSH clone succeeds with the authenticated account — so nothing is being guessed; every claim above is read off the source or measured in the kernel. |

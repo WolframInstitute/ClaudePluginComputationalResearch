@@ -6,9 +6,18 @@ $MathNotebookEnvironmentStyles = {
 
 $MathNotebookStyleSheetName = "AMSArticle.nb";
 
-MathNotebookDocument[ cells_List, opts : OptionsPattern[ Notebook ] ] :=
-  Notebook[ NumberTaggedFormulas @ ConvertEnvironmentCells @ cells, opts,
-    StyleDefinitions -> MathNotebookStyleSheet[ ] ]
+$MathNotebookReferenceLabelSpec = Join[
+  <| "DisplayFormulaNumbered" -> { "(", { "DisplayFormulaNumbered" }, ")" },
+     "Section" -> { "Section ", { "Section" }, "" },
+     "Subsection" -> { "Section ", { "Section", "Subsection" }, "" },
+     "Subsubsection" -> { "Section ", { "Section", "Subsection", "Subsubsection" }, "" },
+     "ItemNumbered" -> { "Item ", { "ItemNumbered" }, "" } |>,
+  AssociationMap[ { # <> " ", { "Section", "Theorem" }, "" } &, $MathNotebookEnvironmentStyles ] ];
+
+MathNotebookDocument[ cells_List, bibTags_List : { }, opts : OptionsPattern[ Notebook ] ] :=
+  Notebook[
+    ConvertCitations[ NumberTaggedFormulas @ ConvertEnvironmentCells @ cells, bibTags ],
+    opts, StyleDefinitions -> MathNotebookStyleSheet[ ] ]
 
 NumberTaggedFormulas[ cells_List ] :=
   Replace[ cells,
@@ -27,11 +36,18 @@ MathNotebookStyleSheet[ ] :=
     PacletObject[ "WolframInstitute/MathNotebook" ][ "Location" ],
     "FrontEnd", "StyleSheets", "MathNotebook", $MathNotebookStyleSheetName }
 
-ConvertCitations[ cells_List, tags_List ] :=
-  Replace[ cells,
-    Cell[ TextData[ content_ ], style_String, opts___ ] :>
-      Cell[ TextData @ Flatten[ citationSplit[ #, tags ] & /@ Flatten @ { content } ], style, opts ],
-    { 1 } ]
+ConvertCitations[ cells_List, bibTags_List ] :=
+  With[ { targets = CitationTargets @ cells },
+    Replace[ cells,
+      Cell[ TextData[ content_ ], style_String, opts___ ] :>
+        Cell[ TextData @ Flatten[ citationSplit[ #, targets, bibTags ] & /@ Flatten @ { content } ],
+          style, opts ],
+      { 1 } ] ]
+
+CitationTargets[ cells_List ] :=
+  Association @ Cases[ cells,
+    Cell[ _, style_String, opts___ ] /; ! FreeQ[ { opts }, CellTags ] :>
+      First @ Flatten @ { CellTags /. { opts } } -> style ]
 
 ReferenceCells[ entries_Association ] :=
   KeyValueMap[
@@ -79,14 +95,25 @@ trimLeading[ { first_String, rest___ } ] :=
 trimLeading[ content_List ] :=
   content
 
-citationSplit[ text_String, tags_List ] :=
-  StringSplit[ text, "[" ~~ tag : ( Alternatives @@ tags ) ~~ "]" :> citationButton @ tag ]
+citationSplit[ text_String, targets_Association, bibTags_List ] :=
+  StringSplit[ text,
+    "[" ~~ tag : ( Alternatives @@ Join[ Keys @ targets, bibTags ] ) ~~ "]" :>
+      citationButton[ tag, Lookup[ targets, tag, None ] ] ]
 
-citationSplit[ content_, tags_List ] :=
+citationSplit[ content_, targets_Association, bibTags_List ] :=
   content
 
 citationButton[ tag_String ] :=
   ButtonBox[ referenceLabel @ tag, BaseStyle -> "Citation", ButtonData -> tag ]
+
+citationButton[ tag_String, style_ ] :=
+  Replace[ Lookup[ $MathNotebookReferenceLabelSpec, style, None ],
+    { { prefix_, counters_, suffix_ } :>
+        ButtonBox[
+          RowBox @ DeleteCases[
+            Flatten @ { prefix, Riffle[ CounterBox[ #, tag ] & /@ counters, "." ], suffix }, "" ],
+          BaseStyle -> "Citation", ButtonData -> tag ],
+      _ :> citationButton @ tag } ]
 
 referenceLabel[ tag_String ] :=
   "[" <> tag <> "]"
@@ -114,4 +141,5 @@ referenceLink[ fields_Association ] :=
   Which[
     KeyExistsQ[ fields, "doi" ], ", https://doi.org/" <> fields[ "doi" ],
     KeyExistsQ[ fields, "eprint" ], ", https://arxiv.org/abs/" <> fields[ "eprint" ],
+    KeyExistsQ[ fields, "url" ], ", " <> fields[ "url" ],
     True, "" ]
