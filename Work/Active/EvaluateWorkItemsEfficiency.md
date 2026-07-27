@@ -44,12 +44,12 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T8 — Trial the pipeline supervised on one real item before anything runs unattended; confirm the stop conditions fire as specified. *Added by S4.*
 - [ ] T9 — Apply T6's must-be-resident test to the `CLAUDE.md` this plugin *generates*: `claude_template.md` + `code_style_template.md` is 10.5 kB (12.6 kB for math-research) auto-loaded into every session of every scaffolded project, two thirds of it the code-style block. *Added by S5; measured but not audited in T6. Delete if downstream projects are out of scope for this item.*
 - [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Unblocked by T3: the format is decided, harvested blocks are not pruned, and a claim that is false today gets a one-line `> Superseded:` marker.*
 
 ### Done
 
+- [x] T8 — Trial the pipeline supervised on one real item; confirm the stop conditions fire as specified. (S7)
 - [x] T7 — Implement the autonomous pipeline: driver, command, `revise` mode, markers. (S6)
 - [x] T6 — Audit the auto-loaded preamble and decide what a session needs resident. (S5)
 - [x] T4 — Specify the autonomous pipeline: item selection, stop conditions, failure handling, the `revise`-protocol question, the per-run digest, and the harness mechanism. (S4)
@@ -59,13 +59,17 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T8 is next: the pipeline exists but has never met a real session.
-Run `scripts/auto-run.sh --dry-run` first, then a live `--max-tasks 1` and watch it.
+The pipeline has now met real sessions and works: two live tasks on the throwaway item `AutoRunTrial`, three defects found and fixed, both fixes re-verified live.
+Everything measured is in [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed); nothing about it needs carrying by hand.
 
-Three things T8 has to settle, none of them predictable from the stub tests.
-The allowlist in the driver is a guess — it covers `next-session`'s `git` invocations and nothing else, so expect the first live runs to halt on `permission-denied` and grow it via `--allow`; that is designed behaviour, not a bug, but the working set has to be found empirically and then written into the default.
-Nothing carries `> Autonomous: allowed` yet, and **this item should not be the one that does** — a driver bug would work the item that owns the driver. Mark a small throwaway item instead.
-The cold-task re-measurement the previous hand-off asked for is **done** — 31,187 tokens against 31,479, so T6's cut moved it ~1 % and MCP schemas dominate; T8 does not need to repeat it.
+Two consequences for whatever runs next.
+The allowlist prediction was **wrong in a useful direction** — zero denials on the defaults across both runs — but that only clears prose tasks; no MCP tool is allowlisted, so the first Wolfram task still halts on its first call.
+The trial deliberately never made the pipeline fail, so `needs-human`, the liveness pair, and `permission-denied` are still stub-tested only; the cheapest way to close that is a throwaway item with a task designed to trip each one.
+
+`AutoRunTrial` is still active with its gated T2 outstanding — do that interactively, or drop the item; it exists only for the trial.
+
+Of the two remaining tasks, both are optional and each is marked with the condition under which to delete it.
+T9 is the stronger: the generated `CLAUDE.md` is paid by every session of every scaffolded project, and the trial just showed that per-task cost is set by turn count rather than preamble, which is an argument for closing T9 as *measured, not worth acting on* rather than for doing it.
 
 This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
 
@@ -92,6 +96,9 @@ This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progr
 | 2026-07-28 (S6) | The driver excludes `Work/Runs/` from its own dirty-tree check rather than relying on a `.gitignore` entry. | Writing the digest dirties the tree, so condition 4 would halt the second task of every run in any repo that has not ignored the path — and the plugin scaffolds repos whose `.gitignore` it does not control. The entry is still added, for the human's `git status`. |
 | 2026-07-28 (S6) | The driver passes the prompt **before** its flags and treats `terminal_reason: completed` as success. | Both were found by running `claude -p` rather than reading the help: `--allowedTools` is variadic and eats a trailing prompt (fatal), and a clean run reports `completed` where `stop_reason` reports `end_turn` — checking both against `end_turn` would have halted every successful task. |
 | 2026-07-28 (S6) | T7 verified the stop conditions against a stub `claude` in a fixture repo and left the live run to T8. | Every condition needs a specific failure to fire, and only a stub can produce them on demand — a live run exercises one path per ~31.5 k tokens. The stub cannot fail the way a session does, which is exactly what T8 is for. |
+| 2026-07-28 (S7) | The trial ran against a new throwaway item, `AutoRunTrial`, whose tasks are wiki prose. | The hand-off forbade trialling on the item that owns the driver; wiki prose is the one deliverable class `revise` exempts from sign-off, so a first unattended run could not land anything a human had not agreed to see generated. |
+| 2026-07-28 (S7) | The driver **tells** the session it is autonomous (`--append-system-prompt`) instead of `revise` asking it to infer it. | The first live run did its task correctly and still recorded that it had run interactively: a session with no user is indistinguishable from one whose user has not spoken. Any "behave differently when unobserved" rule has to be told. |
+| 2026-07-28 (S7) | Backstop caps are checked before the `(human)` gate, reversing T7's order. | Both fired on the same iteration, and gate-first reported `task-gated` — exit 1, *you are needed* — for a run that had merely finished its allotment. |
 | 2026-07-28 (S5) | The 1.5 kB Wolfram kernel policy stays resident, though most sessions never spawn a kernel. | It is the largest surviving block and the obvious next cut, but a license error is unfindable after the fact and the section is what tells a session the MCP-first rule exists at all — the test is "must be known before you know to look", and this passes it. |
 
 ## Progress
@@ -99,6 +106,7 @@ This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progr
 Append-only, one line per session; nothing reads it.
 S1 and S2 predate the format and keep their blocks.
 
+- **S7** 2026-07-28 T8 — trialled the pipeline live on the throwaway `AutoRunTrial`: two real tasks landed, three defects found and fixed in `05cdc45`, both fixes re-verified, and all eight fail-closed paths checked against this repo. → [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed), [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md)
 - **S6** 2026-07-28 T7 — built the autonomous pipeline: `scripts/auto-run.sh`, `/auto-run`, `revise` § *Autonomous mode*, the two eligibility markers, and the `ARCHITECTURE.md` / `README.md` rows; every stop condition fired against a stub, and the cold start re-measured at 31,187 tokens. → [AutonomousPipeline § Implementation](../../Wiki/Concepts/AutonomousPipeline.md#implementation)
 - **S5** 2026-07-28 T6 — split `CLAUDE.md` 16.9 → 5.3 kB, taking the fixed preamble to 16.3 kB; inventory and reference moved to a new root `ARCHITECTURE.md`. → [PreambleAudit](../../Wiki/Concepts/PreambleAudit.md), `Wiki/Concepts/measure_preamble.py`
 - **S4** 2026-07-27 T4 — specified the autonomous pipeline against measured harness behaviour; added T7/T8 and moved T6 ahead of them. → [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)

@@ -35,7 +35,10 @@ One headless `claude -p` per task is the only mechanism that starts genuinely co
 `revise`'s human gate is deferred rather than dropped: autonomous work lands on `auto/<Item>`, a gitignored per-run digest is the "present" step, and the human's merge is the "approve".
 Eligibility is opt-in and fail-closed, and the driver verifies each run by new commit plus newly checked box — because an unprefixed plugin slash command headless is a zero-cost no-op that reports success.
 That loop is now built: `scripts/auto-run.sh` behind `/auto-run`, with the deferred gate in `revise` § *Autonomous mode* and the `> Autonomous: allowed` / `(human)` markers in `work`.
-Every stop condition fires as specified against a stub `claude` in a fixture repo, and on 2026-07-28 the loop worked its first real task — `AutoRunTrial` T1, a wiki-prose task, 26 turns and $1.54 — then halted cleanly on the `(human)` gate.
+Every stop condition fires as specified against a stub `claude` in a fixture repo, and on 2026-07-28 the loop was trialled live on the throwaway item `AutoRunTrial`: two real wiki-prose tasks landed unattended, at $1.54 and $2.60, with zero permission denials on the default allowlist.
+That trial found three defects a stub could not — a session cannot tell it is headless and has to be told, the caps had to move ahead of the `(human)` gate, and the digest was reporting a 1.01 M-token task as 30 tokens — all fixed and re-verified live.
+It also priced the loop: per-task cost tracks turn count, not cold start, so the 31.5 k-token preamble is ~3 % of a real task and the `$5.00` default cost cap, not `--max-tasks 3`, is what actually bounds a run.
+What remains untested is failure — `needs-human`, the liveness pair, and `permission-denied` have still only ever fired against a stub.
 That run also exposed the one thing a stub could not: a headless session cannot observe that it is headless, and recorded in `## Hand-off` that it had run interactively.
 The driver now states its own autonomy in `--append-system-prompt`, because absence of a user is not inferable from inside a session.
 The trial's real input was ~1.01 M tokens, almost all cache reads, which puts the 31 k cold start in proportion: it is a small term inside a real task, not the dominant one.
@@ -54,6 +57,7 @@ Inventory and reference moved to a read-on-demand `ARCHITECTURE.md`; `CLAUDE.md`
 
 - 2026-07-28 — Reconciled [the pipeline specification](Concepts/AutonomousPipeline.md) with `scripts/auto-run.sh` on all five divergences the runbook found, and recorded what the first real autonomous run established — including that a headless session cannot detect its own headlessness.
 - 2026-07-28 — Wrote the `/auto-run` operator runbook against the script as built, recording five places it departs from its specification; see [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md).
+- 2026-07-28 — Trialled the autonomous pipeline live (T8) on the throwaway `AutoRunTrial`; two tasks landed, three defects fixed, and the loop's real per-task price measured for the first time.
 - 2026-07-28 — Built the autonomous pipeline: `scripts/auto-run.sh`, `/auto-run`, `revise`'s autonomous mode, and the two eligibility markers; stop conditions verified against a stub, not yet against a real item.
 - 2026-07-28 — Audited the auto-loaded preamble and split `CLAUDE.md` (−69 %) into policy plus a read-on-demand `ARCHITECTURE.md`; see [Preamble audit](Concepts/PreambleAudit.md).
 - 2026-07-27 — Specified the autonomous pipeline in [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md); rejected all three harness schedulers as drivers and deferred the `revise` gate to a branch plus digest.

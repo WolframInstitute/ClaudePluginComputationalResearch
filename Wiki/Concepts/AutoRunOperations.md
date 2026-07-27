@@ -106,6 +106,11 @@ git checkout main && git merge --no-ff auto/MyItem
 git branch -d auto/MyItem
 ```
 
+A repo with a `commit-msg` hook adds a wrinkle at both ends.
+This one enforces Conventional Commits with a 72-character subject, so `git merge --no-ff`'s default `Merge branch 'auto/MyItem'` is **rejected** and the merge stops half-done — finish it with `git commit -m 'chore(work): merge …'`.
+The same hook is a live hazard inside a run: a session whose commit the hook rejects has written its files but committed nothing, which the driver sees as `no-commit`.
+So `no-commit` in a hooked repo means "read the hook's output", not "the session did nothing" — and the files are still in the working tree.
+
 Review the diff, not the digest: the digest reports what the driver observed, while the diff is what the sessions actually wrote.
 Nothing from `Work/Runs/` comes along — it is gitignored.
 

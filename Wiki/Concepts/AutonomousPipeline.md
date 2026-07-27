@@ -191,9 +191,30 @@ The first live run did its task correctly but recorded in `## Hand-off` that it 
 So the driver states it, in `--append-system-prompt` rather than in the prompt, where it cannot be mistaken for an argument to the slash command; `revise` now says the notice is the only admissible evidence.
 This is a general hazard for unattended work, not a bug in one skill: any instruction of the form *behave differently when nobody is watching* has to be told, never inferred.
 
+### The supervised trial — what two real runs cost and changed
+
+`EvaluateWorkItemsEfficiency` T8, 2026-07-28, against the throwaway item `AutoRunTrial`.
+The parent item's hand-off forbade trialling on the item that owns the driver, since a driver bug would then work its own source.
+
+| | run 1 (T1) | run 2 (T3) |
+|---|---|---|
+| stop reason | `task-gated` → after the fix, `cap-tasks` | `cap-tasks`, exit 0 |
+| turns / wall clock | 26 / 4 min | 42 / 5.5 min |
+| cost | $1.54 | $2.60 |
+| input tokens | 1.01 M (30 uncached) | 2.68 M (68 uncached) |
+| `permission_denials` | 0 | 0 |
+
+Both runs closed their task, committed, and were verified by the liveness check; neither needed an `--allow` addition.
+Run 1 exposed three defects — the autonomy signal, the cap/gate ordering, and the token line — all fixed in `05cdc45`, and run 2 confirmed each fix live.
+The eight fail-closed and preflight paths were re-checked directly against this repo rather than a fixture: no eligible item, an item without the marker, an absent item, a modified tracked file, an untracked file, a written digest (correctly *not* dirty), the gate after the reordering, and both cap exits.
+
+Two things the trial priced that the specification had guessed at.
+**The per-task cost is set by turn count, not by cold start**: 26 turns cost $1.54 against a 31.5 k-token preamble, so the preamble is roughly 3 % of a real task's input and optimising it — T6's work — cannot move the pipeline's economics.
+**The default caps are mismatched**: at $1.5–2.6 per task, `--max-cost 5.00` stops a run after two or three tasks, so the cost cap and not `--max-tasks 3` is the binding constraint on a default run.
+
 ## What this does not settle
 
-- **One real task has run, and only one.** On 2026-07-28 the driver worked `AutoRunTrial` T1 — a wiki-prose task — in 26 turns for $1.54, then halted cleanly on `task-gated`. That exercised the happy path, the author gate, the digest, and the liveness check against a live session. Every other stop condition is still stub-tested only, and a stub cannot fail the way a session does.
+- **Two real tasks have run, both of them prose.** The trial above exercised the happy path, the author gate, the caps, the digest, the liveness check, and every fail-closed path, twice. What it did not exercise is failure: `needs-human`, `no-commit`, `no-box`, `permission-denied`, `unparseable-output`, and the three `condition 3` reasons remain stub-tested only. A stub halts on demand; a real session fails in ways nobody has yet seen, and the load-bearing liveness condition has never fired against one.
 - **Nothing but wiki prose has run unattended.** The trial item was chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `revise` does not exempt from sign-off.
 - **The `(human)` marker and `> Autonomous: allowed` both work.** `AutoRunTrial` carries them; selection accepted the item and the gate halted on the marked task, as specified.
 - **The allowlist is a guess that happens to cover wiki prose.** The first real task ran with zero `permission_denials` on the defaults, so nothing has yet forced an `--allow` addition. That says only that a prose task stays inside `Read`/`Write`/`Edit`/`Grep`/`Skill` plus the `git` forms `next-session` makes; no MCP tool is allowlisted at all, so the first task that touches the Wolfram MCP still halts on its first call. That is the designed behaviour — the loop reports what to add rather than being handed everything.
