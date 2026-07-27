@@ -29,4 +29,4 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
-| [AdoptMarkdownToNotebook](Active/AdoptMarkdownToNotebook.md) | T2 — re-measure the repo against the 2026-07-27 evaluation; note what changed. |
+| [AdoptMarkdownToNotebook](Active/AdoptMarkdownToNotebook.md) | T3 — cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption. |

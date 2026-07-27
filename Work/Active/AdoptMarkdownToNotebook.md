@@ -18,14 +18,19 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 - ~~**The official tools have no guide-page tool.**~~ **This argument is void as of 2026-07-27.** It was the strongest technical case for MarkdownToNotebook, and it died when the user removed guide pages from scope entirely: "You dont have to do guide pages then. This is anyway better for humans." A guide page is now a human deliverable, so the gap in the official set costs nothing. Do not re-open this item on the guide-page argument.
 - ~~**It still has no licence and no pinnable release.**~~ **Partly resolved as of 2026-07-27 (T1).** The licence objection is cleared — the user confirmed the licence is fine, so vendoring stays available as a fallback and the abandon condition below cannot fire on licence grounds.
   What remains is cosmetic rather than blocking: the repo still carries no `LICENSE` file (`license: null`), and there are still no tags or releases — but pinning by SHA works today, so "no pinnable release" was never really a blocker either.
-  Commits still land near-daily, though no longer from a single author (96 of the last 100 by Nikolay Murzin, 4 by Mads Bahrami).
+  Re-confirmed unchanged at T2 (2026-07-27).
+- **It does not, in fact, move daily** (corrected at T2). The Spec previously called this a daily-moving target on the strength of June's cadence.
+  Over the 66 days since the first commit (2026-05-22, 277 commits total) there are 39 active days, but July is bursty rather than daily: 12 active days in 26, with 4- and 5-day gaps (07-16 → 07-20, 07-21 → 07-26).
+  Authorship is no longer single-author (96 of the last 100 commits by Nikolay Murzin, 4 by Mads Bahrami).
 
 ### Requirements
 
 - ~~**Phase 0 first, and it is external.**~~ **Done 2026-07-27 (T1).** The licence question — the one that gated everything else — is answered: fine.
   A standing, non-blocking ask remains open with Nikolay Murzin for an in-tree `LICENSE` (MIT would match ours), so a vendored copy has something to point at.
   The Function Repository review is still pending and no tag exists; neither blocks adoption, since the current tip pins by SHA.
-- Re-measure before trusting the earlier evaluation: the repo moves daily, so the feature diff, the deployed-resource URL, and the shim list below may all have changed.
+- ~~Re-measure before trusting the earlier evaluation: the repo moves daily, so the feature diff, the deployed-resource URL, and the shim list below may all have changed.~~ **Done 2026-07-27 (T2). Nothing changed.**
+  `origin/main` is still `204db7c` (0 ahead / 0 behind the local clone), and every measured quantity is identical to the evaluation's: 5273 + 1505 lines, 12 skills, 12.7 MB, 0 stars, 0 forks, 0 tags, 0 releases, `license: null`, README still saying Function Repository publication "is pending review".
+  The T3 feature diff therefore stands verbatim and needs no re-run.
 - Cost the **shim tax** honestly. `PureMath/scripts/build_notebooks.wls` carries roughly ten documented workarounds for MarkdownToNotebook's behaviour — the frontmatter parser mangling `Links: [...]`, eight bare scaffolded `Subsection`s from the Paclet template, tutorials still categorised as legacy "Tech Note" instead of the modern `Tutorial` entity, and `guideNotebook` having no code path for `RelatedTutorials`. Any adoption inherits these.
 - Decide whether adoption is **per-skill or plugin-wide**. The remaining candidates are `new-notebook`'s rich mode (Phase 1 of the original recommendation — the constructs the MCP append-cell transport cannot carry) and `research-notebook`'s md↔nb sync (Phase 2, still blocked on line-break preservation). The guide page is no longer a candidate.
 - If anything is adopted, register the repo in `Wiki/` via `add-resource` with recovery info — noting that this project has no `Wiki/` yet, so `init-wiki` comes first.
@@ -34,6 +39,8 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 
 - **The line-break problem is a hard blocker for the sync direction.** `NotebookToMarkdown` reflows soft line breaks into single lines, which breaks this project's `Semantic line breaks: on` rule and would put a whole-file diff into every `research-notebook` sync. It needs either an upstream option that preserves line breaks or a re-wrap post-step on our side.
 - The deployed resource lives at a personal `obj/nikm/` cloud path that can disappear without notice. Phase 0 is closed without securing a tag, so this risk stands: any adoption should call the local `MarkdownToNotebook.wl` at a pinned SHA rather than the deployed resource URL.
+  T2 verified the cloud resource **does** resolve and convert correctly today (first time it was exercised — T3 only tested the local file via `Get`), which makes the arm's-length option real rather than assumed.
+  But it is **unversioned**: `ResourceObject[url]["Version"]` is `None` and there is no `"LatestUpdate"` property, so there is no way to tell which SHA it was deployed from, or to detect that it has drifted. That is a second, independent reason to prefer the pinned local file.
 - `ensureParser[]` installs the `Wolfram/Parser` paclet at call time when absent, so a first conversion on a fresh machine does network I/O; it degrades to `ImportString[…, "TeX"]` rather than failing, with worse math fidelity.
 - No package boundary: `MarkdownToNotebook.wl` is one 5273-line file of interdependent private definitions, so there is no way to patch a bug locally short of a fork.
 
@@ -48,13 +55,13 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 
 One unchecked box ≈ one focused session.
 
-- [ ] T2 — Re-measure the repo against the 2026-07-27 evaluation; note what changed.
 - [ ] T3 — Cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption.
 - [ ] T4 — If adopting: implement the chosen surface and register the resource in `Wiki/`.
 
 ### Done
 
 - [x] T1 — Phase 0: ask upstream for a licence, the FR review status, and a pinnable tag; record the answers. Blocks the rest. *(Session 1)*
+- [x] T2 — Re-measure the repo against the 2026-07-27 evaluation; note what changed. *(Session 2)*
 
 ## Progress
 
@@ -76,6 +83,33 @@ One unchecked box ≈ one focused session.
   Authorship is also no longer single-author (96 of the last 100 commits Nikolay Murzin, 4 Mads Bahrami), which mildly softens the bus-factor risk the Spec records.
 - **Next:** T2 — re-measure the repo against the 2026-07-27 evaluation; note what changed.
 
+### Session 2 — 2026-07-27 — T2
+
+- **Prompt:** `/next-session AdoptMarkdownToNotebook`.
+- **Did:** re-measured `WolframInstitute/MarkdownToNotebook` against the 2026-07-27 evaluation.
+  **Nothing changed.**
+  `git ls-remote` puts `origin/main` at `204db7c` — byte-identical to the evaluated clone, 0 ahead and 0 behind — and every quantity the evaluation recorded reproduces exactly: `MarkdownToNotebook.wl` 5273 lines, `NotebookToMarkdown.wl` 1505, 12 skills under the same names, 12.7 MB, 0 stars, 0 forks, 0 tags, 0 releases, `license: null` with no `LICENSE` file, README line 29 still saying Function Repository publication "is pending review".
+  One open issue upstream (#43, captured kernel messages render as plain text rather than the styled banner).
+  Revised the Spec: the re-measure requirement is struck as done, the cadence claim corrected, and the deployed-resource risk sharpened with what the probe found.
+- **Learned:** three things worth carrying.
+
+  **T1's staleness warning was wrong, and the correction matters.**
+  T1 read `afd7c1e` ("fill paclet/guide/tutorial template slots natively so build shims can drop") as upstream movement postdating the evaluation and told T2 to expect a materially stale measurement.
+  It is not new: `afd7c1e` landed 2026-07-26 17:36, two commits *below* the evaluated tip `204db7c` (17:50).
+  The same holds for the fidelity fixes T1 flagged — `74cbfe2` (#59), `9efde62` (#62), `55f13a3` (#61), `6350620` (#127, #64), `fe4abc2` (#63) — all shipped 2026-07-26 before the clone.
+  So T3's smoke test already ran against the tree with native template slots, and T3's shim-tax costing must not assume the shims are about to become unnecessary — that change is already in the measured baseline.
+
+  **The cloud resource works, and is unversioned.**
+  T3 only ever exercised the local file via `Get`; T2 called the deployed resource itself through the MCP for the first time.
+  `ResourceFunction["https://www.wolframcloud.com/obj/nikm/DeployedResources/Function/MarkdownToNotebook"]` resolved and converted a probe with inline math and a hyperlink into a 2-cell `Notebook` — `Title` + `Text` with a nested `InlineFormula`, one `SuperscriptBox`, one `ButtonBox`.
+  So "depend at arm's length on the cloud URL" is a live option, not a theoretical one.
+  But `ResourceObject[url]["Version"]` returns `None` and `"LatestUpdate"` is not a known property, so the deployed artifact carries no version marker at all: you cannot tell which SHA it came from, nor detect drift after the fact.
+
+  **"Moves daily" was an artefact of June.**
+  277 commits since 2026-05-22 across 39 active days, but July runs 12 active days in 26 with 4- and 5-day gaps.
+  The tip's only change to executable behaviour since the earlier fixes is a `wolfr.am` short-link swap in `ensureParser[]` (`1ECIxdqhB` → `1ENEqrOlP`), the last-resort branch of the parser install chain — confirming that the `ensureParser[]` risk the Spec records sits on a code path the author is still touching.
+- **Next:** T3 — cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption.
+
 ## Decisions
 
 | Date | Decision | Rationale |
@@ -83,4 +117,6 @@ One unchecked box ≈ one focused session.
 | 2026-07-27 | Deferred out of `PacletDocumentation` rather than dropped. | The evaluation's recommendation was to depend, and PureMath proves the approach works at 1,480 pages, but the missing licence makes it a bad dependency to take on today. The official MCP tools are good enough for symbol pages. |
 | 2026-07-27 (S1) | The licence blocker is cleared; keep a standing, non-blocking ask for an in-tree `LICENSE`. | The user confirmed the licence is fine, which is what Phase 0 needed — vendoring survives as a fallback and adoption is no longer gated on permission. The file itself is still worth having so a vendored copy has something to point at, but waiting on it would block nothing. |
 | 2026-07-27 (S1) | "No pinnable release" is dropped as a risk. | The absence of tags was conflated with the absence of a pin. Pinning by SHA works today (`204db7c`, 2026-07-26), and the local clone is already on it. |
+| 2026-07-27 (S2) | The 2026-07-27 evaluation is current, not stale; T3 and T4 may rely on it without re-measuring. | Upstream has not moved a byte since the clone (`origin/main` = `204db7c`, 0/0), and every recorded metric reproduces. The commits T1 read as new movement all predate the evaluated tip. |
+| 2026-07-27 (S2) | Prefer the pinned local file over the deployed cloud resource, for a second reason. | The cloud resource works today, but is unversioned — no `"Version"`, no `"LatestUpdate"` — so drift is undetectable, on top of the personal-path disappearance risk already recorded. |
 | 2026-07-27 | The guide-page gap is no longer a reason to adopt. | Guide pages left scope the same day. What remains in favour is `new-notebook`'s rich mode (Phase 1) — the constructs the MCP append-cell transport cannot carry — and nothing else urgent. This item is now genuinely low priority. |
