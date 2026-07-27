@@ -93,6 +93,8 @@ Measured inertness at the final session (everything but preamble, Spec, Tasks, D
 | `DeclutterReadme` | 5.8 kB | 5.7 kB | 0 % |
 
 Quantifying which of those inert bytes are durable facts that belong in `Wiki/` is T2's job; T1 only establishes that the majority of a mature item file is inert at the moment it is read.
+T2 has since done that in [Progress vs Wiki](ProgressWikiSplit.md): ~65 % of Progress prose is durable content that belongs in `Wiki/`, and ~30 kB of it sits below the tail read at the items' final sessions.
+It also corrects one framing above — `## Did`, not `## Learned`, is where most of the durable content lives, at 69 % of Progress bytes.
 
 ## Item files are edited by sessions belonging to other items
 
