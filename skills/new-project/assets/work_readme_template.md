@@ -1,7 +1,7 @@
 # Work
 
 Execution state for {{PROJECT_NAME}} — what's being built now.
-Each file is one **work item**: a Spec (what to build), Tasks (one ≈ one session), and a Progress log.
+Each file is one **work item**: a Spec, Tasks (one ≈ one session), a Hand-off for the next session, and a one-line Progress log.
 Durable knowledge lives in `Wiki/`.
 
 An item's **status is its folder** — there is no status field:

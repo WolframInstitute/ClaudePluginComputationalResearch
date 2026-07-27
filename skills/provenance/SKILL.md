@@ -142,10 +142,11 @@ A `## Provenance` section at the bottom of the article, mirroring `## Recover`:
 
 ### Work items (`Work/<bucket>/<Name>.md`)
 
-Capture the originating request in the Spec and each session's prompt in Progress:
+Capture the originating request in the Spec; each session's prompt goes to the ledger, not the item file:
 
 - In `## Spec`: an `Origin:` line with the verbatim request that prompted the item.
-- In each `## Progress` block: a `**Prompt:**` line with the session's request.
+- In `Wiki/Prompts.md`: one ledger entry per session, which the item's `## Progress` line links.
+  The item file carries no `Prompt:` field — one fact, one destination (see `work`, *The item file format*).
 
 ## Turning it on
 
@@ -170,6 +171,6 @@ These skills check the toggle and, when on, record provenance in this format:
 - **new-notebook** — writes the leading HTML comment into the notebook source and appends a ledger entry.
   The script propagates the comment to `TaggingRules`.
 - **update-wiki** — appends a `## Provenance` section to newly generated articles and a ledger entry.
-- **work** / **next-session** — record `Origin:` in the Spec and `**Prompt:**` in each Progress block; mirror to the ledger when on.
+- **work** / **next-session** — record `Origin:` in the Spec; each session's prompt goes to the ledger, and the `## Progress` line links it.
 
 This skill is the single source of truth for the format — the others reference it rather than redefining it.

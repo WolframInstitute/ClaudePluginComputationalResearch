@@ -15,7 +15,7 @@ description: >
 # Work Items
 
 `Work/` is the project's execution state — what we're building right now.
-Each file is one **work item**: a Spec (what to build), Tasks (one ≈ one session), and a Progress log.
+Each file is one **work item**: a Spec, Tasks (one ≈ one session), a Hand-off for the next session, and a one-line Progress log.
 Durable knowledge goes in `Wiki/`; planning and progress go here.
 
 Work items follow the `revise` protocol — the LLM drafts the Spec, presents it, and waits for approval before work begins.
@@ -82,10 +82,43 @@ Update an active item's line when its next task changes; drop the line when the 
 
 After any move, fix `Work/README.md` (it tracks only `Active/`).
 
+## The item file format
+
+Five sections, and they are the whole file: `## Spec`, `## Tasks`, `## Hand-off`, `## Decisions`, `## Progress`.
+Do not add a sixth — measured, invented sections are always a destination violation (an item's conclusions belong in `Wiki/`, a blocker in `## Hand-off`, draft content in the artifact).
+Rationale and measurements: [Wiki/Concepts/ItemFileFormat.md](../../Wiki/Concepts/ItemFileFormat.md) in this repo.
+
+**One fact, one destination — nothing is written twice.**
+
+| the fact is… | it lives in | and it is |
+|---|---|---|
+| durable — about a tool, an artifact, this project | a `Wiki/` article | corrected in place when it changes |
+| a choice between real alternatives | one `## Decisions` row | edited when reversed |
+| the Spec being wrong | the Spec sentence | replaced |
+| what the next session needs and is not yet true anywhere else | `## Hand-off` | overwritten each session |
+| that a session happened | one `## Progress` line | left alone |
+
+Only `## Progress` grows with session count, at one line, so the read a session pays is flat.
+`## Hand-off` and `## Decisions` are the sections that make that possible: they give every corrigible thing a mutable home, so the append-only log never has to carry a correction.
+
+- **`## Spec`** — the contract. Corrected in place; never appended to. Findings are not Spec material. Past ~1 screen it is a signal the item should have been split.
+- **`## Hand-off`** — one block, rewritten (or emptied) every session. Half-finished state, a blocker, an open branch. Not a diary.
+- **`## Decisions`** — a row is earned by a choice between real alternatives that a later session could otherwise re-litigate. One sentence for the decision, one for the rationale, a link for the evidence. A reversal **edits** the row it reverses; the table never holds a row and its contradiction.
+- **`## Progress`** — append-only, one line per session, and nothing reads it. It is the audit trail for a human and for git.
+
+Closed items are **not** rewritten or pruned — git already holds every version, and a closed item is read at most once more.
+When a later pass finds a claim in an archived Progress block that is false today, append one line under that block rather than deleting the claim:
+
+```
+> Superseded: <what is true now> — see [Article](../../Wiki/...).
+```
+
+Items written before this format keep their old Progress blocks; the next session on one adds a `## Hand-off` and writes its own line in the new shape.
+
 ## Updating the spec later
 
-The Spec is the contract.
-If the user edited it, it is protected content: describe the proposed change, wait for approval, edit, then add a row to `## Decisions`.
+The Spec is the contract, and it is **edited in place** — a session that finds it wrong replaces the sentence rather than appending an amendment.
+If the user edited it, it is protected content: describe the proposed change, wait for approval, edit, then add one `## Decisions` row.
 If it is LLM-drafted and unapproved, edit directly.
 
 ## Relationship to other skills

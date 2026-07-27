@@ -60,12 +60,18 @@ Anything beyond this gets flagged by `lean_verify` and must be justified here.
 - [ ] No `sorryAx` in final proof
 - [ ] No unexpected axioms beyond classical defaults
 
+## Hand-off
+
+Overwritten each session: the current goal state and what the next session must know that is not yet in `Wiki/`.
+
+(nothing yet)
+
 ## Progress
 
-Append one bullet per session:
+Append-only, one bullet per session; nothing reads it.
+Which lemma closed a goal is durable — it goes to the `Wiki/` theorem article, and the bullet links it.
 
-- YYYY-MM-DD — closed sub-goal Lk via `<tactic / lemma>`; remaining: ...
-- ...
+- **S1** YYYY-MM-DD — closed sub-goal L1. → [Theorem](../../Wiki/Theorems/...)
 
 ## Cross-references
 

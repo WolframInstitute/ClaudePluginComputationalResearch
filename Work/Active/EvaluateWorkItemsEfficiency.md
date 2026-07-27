@@ -44,16 +44,44 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — Decide and document the target format for Spec / Progress / Decisions given T1 and T2 — including whether Progress should be pruned or archived once its facts are in the Wiki — and revise `work` + `next-session` to match.
 - [ ] T4 — Specify the autonomous pipeline: item selection, stop conditions, failure handling, the `revise`-protocol question (autonomous mode vs sign-off-free tasks only), the per-run digest, and what harness mechanism drives it. Present it for approval before implementing anything.
-- [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Sequence after T3, since T3 decides whether a harvested block then gets pruned.*
+- [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Unblocked by T3: the format is decided, harvested blocks are not pruned, and a claim that is false today gets a one-line `> Superseded:` marker.*
+- [ ] T6 — Reduce the unconditional preamble, T1's largest term: audit this repo's 16.6 kB `CLAUDE.md` against `README.md` for the duplicated skill/script/command/template tables and decide what a session actually needs auto-loaded. *Added by S3; T3 cut the skill-file share of that term but left `CLAUDE.md`, which is 60 % of it.*
 
 ### Done
 
+- [x] T3 — Decide and document the target format for Spec / Progress / Decisions, including the pruning question, and revise `work` + `next-session` to match. (S3)
 - [x] T2 — Audit the Progress-vs-Wiki split: classify the "Learned" notes as durable or session-local and price the misplacement. (S2)
 - [x] T1 — Measure the real per-session information budget from git history across the closed items. (S1)
 
+## Hand-off
+
+T4 is next: specify the autonomous pipeline.
+It now has a fixed place to read an item's state — this section — and a format whose read is flat in session count, which is what the Spec made the loop conditional on.
+Two things T3 did not touch and T4 must resolve: the `revise` protocol still requires a human for anything that is not wiki prose, and there is no per-run digest.
+This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
+
+## Decisions
+
+| Date | Decision | Rationale |
+|---|---|---|
+| 2026-07-27 | Filed as `investigation`, in `Backlog/`, with measurement before redesign. | The efficiency claim is currently unmeasured in both directions, and an autonomous loop multiplies whatever the per-task overhead is — so measuring first is what makes the second question answerable. |
+| 2026-07-27 | T1's findings go in `Wiki/`, and Progress carries only a pointer plus the notes the next session needs. | The item's own measurement says Progress is the least-read section, so writing the findings there would have reproduced the defect being measured. This item follows the split it is proposing. |
+| 2026-07-27 | The measurement script ships at `Wiki/Concepts/measure_session_budget.py`, not in `scripts/`. | `scripts/` is skill-invoked plugin surface with a table in `CLAUDE.md` to keep current; a one-off analysis instrument for T2/T3 re-measurement belongs next to the article it regenerates. |
+| 2026-07-27 | T2 widened its own scope from `Learned` to `Learned` + a sampled `Did`. | `Learned` is 23 % of Progress and `Did` 69 %, at the same durable density — the literal scope would have priced a quarter of the misplacement and produced a confidently wrong answer for T3. |
+| 2026-07-27 | The classification is hand-encoded in the script and asserted against the live corpus, rather than described in prose. | It is a judgement call per line, so it has to be contestable and re-runnable; the assertion means an edit to any item file fails the script instead of silently misaligning the table. |
+| 2026-07-27 | Harvesting the pre-`Wiki/` backlog is a separate task (T5), sequenced after T3, not folded into T2. | T3 decides whether a harvested Progress block is then pruned; harvesting first would mean writing articles against a format that is about to change. |
+| 2026-07-27 (S3) | Five sections and no others, with `## Progress` cut to one line per session and carry-forward moved to an overwritten `## Hand-off`. | T2 showed the `Did`/`Learned` axis does not track durability and that "write pointers" was already available and ignored, so the line limit is the enforcement — a one-line entry cannot be a précis; a hand-off is live for one session and needs a mutable home. See [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md). |
+| 2026-07-27 (S3) | `## Spec` and `## Decisions` are bounded too — Spec corrected in place, a reversal editing the row it reverses. | Measured: once Progress leaves the read path those two are 70–95 % of what a session opens, and 20.4 kB of `AdoptMarkdownToNotebook`'s 21.4 kB — the item the Spec cited as the example of Progress bloat. |
+| 2026-07-27 (S3) | Closed items are not pruned or rewritten; a false archived claim gets a one-line `> Superseded:` marker. | Answers T2's open question. git already holds every version and a closed item is read at most once more, so rewriting the audit trail costs the human record and saves no read. |
+| 2026-07-27 (S3) | `next-session`'s paclet branch/worktree/PR procedure moved to a read-on-demand sibling file. | It was 38 % of a file read unconditionally every session and serves only paclet-dev repos changing a submodule — the same pay-for-what-you-read rule the format applies to Progress. |
+
 ## Progress
+
+Append-only, one line per session; nothing reads it.
+S1 and S2 predate the format and keep their blocks.
+
+- **S3** 2026-07-27 T3 — decided the item file format and revised `work`, `next-session` (−613 B), both item templates, `provenance`, `CLAUDE.md`, and this file to match. → [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md), `Wiki/Concepts/measure_item_sections.py`
 
 ### Session 1 — 2026-07-27 — T1
 - **Did:** Measured the bookkeeping budget across all six closed items from git history and wrote the result to [Wiki/Concepts/SessionInformationBudget.md](../../Wiki/Concepts/SessionInformationBudget.md), with `Wiki/Concepts/measure_session_budget.py` to regenerate every number.
@@ -75,14 +103,3 @@ One unchecked box ≈ one focused session.
   Carry forward: date the destination before blaming the mechanism.
 - **Next:** T3 — decide the target format for Spec / Progress / Decisions and revise `work` + `next-session`.
   T2 constrains it to one question: what makes a Progress entry a pointer rather than a précis.
-
-## Decisions
-
-| Date | Decision | Rationale |
-|---|---|---|
-| 2026-07-27 | Filed as `investigation`, in `Backlog/`, with measurement before redesign. | The efficiency claim is currently unmeasured in both directions, and an autonomous loop multiplies whatever the per-task overhead is — so measuring first is what makes the second question answerable. |
-| 2026-07-27 | T1's findings go in `Wiki/`, and Progress carries only a pointer plus the notes the next session needs. | The item's own measurement says Progress is the least-read section, so writing the findings there would have reproduced the defect being measured. This item follows the split it is proposing. |
-| 2026-07-27 | The measurement script ships at `Wiki/Concepts/measure_session_budget.py`, not in `scripts/`. | `scripts/` is skill-invoked plugin surface with a table in `CLAUDE.md` to keep current; a one-off analysis instrument for T2/T3 re-measurement belongs next to the article it regenerates. |
-| 2026-07-27 | T2 widened its own scope from `Learned` to `Learned` + a sampled `Did`. | `Learned` is 23 % of Progress and `Did` 69 %, at the same durable density — the literal scope would have priced a quarter of the misplacement and produced a confidently wrong answer for T3. |
-| 2026-07-27 | The classification is hand-encoded in the script and asserted against the live corpus, rather than described in prose. | It is a judgement call per line, so it has to be contestable and re-runnable; the assertion means an edit to any item file fails the script instead of silently misaligning the table. |
-| 2026-07-27 | Harvesting the pre-`Wiki/` backlog is a separate task (T5), sequenced after T3, not folded into T2. | T3 decides whether a harvested Progress block is then pruned; harvesting first would mean writing articles against a format that is about to change. |

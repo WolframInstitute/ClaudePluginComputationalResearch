@@ -4,6 +4,7 @@
 
 > Type: research    <!-- research | formalization | refactor | investigation -->
 <!-- Status is the folder: Active/ Backlog/ Done/ Dropped/. Move the file to change it. -->
+<!-- These five sections are the whole file. Format: Wiki/Concepts/ItemFileFormat.md -->
 
 ## Spec
 
@@ -11,6 +12,7 @@ Origin: <!-- the originating request that prompted this item (provenance) -->
 
 One-paragraph goal: what this work item delivers and why.
 A quick item may stop here; a heavy one fills the subsections below.
+This is the contract — corrected in place when it turns out wrong, never appended to.
 
 ### Requirements
 
@@ -35,22 +37,25 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 
 (completed tasks move here with the session that closed them)
 
-## Progress
+## Hand-off
 
-Per-session reports, append-only, newest at the bottom.
-`/next-session` adds one block per session in this shape:
+Overwritten each session, not appended to: what the next session must know that is not yet true anywhere else — half-finished state, a blocker, a branch left open.
+Empty is the right answer when the next task needs nothing but the Spec.
 
-```
-### Session N — YYYY-MM-DD — Tk
-- **Prompt:** ...   (optional; kept when prompt tracking is on)
-- **Did:** ...
-- **Learned:** ...
-- **Next:** ...
-```
-
-(no sessions yet)
+(nothing yet)
 
 ## Decisions
 
+One row per choice between real alternatives; one sentence each.
+A reversal **edits** the row it reverses — the table never carries a row and its contradiction.
+Link the evidence rather than restating it.
+
 | Date | Decision | Rationale |
 |---|---|---|
+
+## Progress
+
+Append-only audit trail, **one line per session**, newest at the bottom.
+Nothing reads this: durable facts are in `Wiki/`, choices in `## Decisions`, carry-forward in `## Hand-off`.
+
+- **S1** YYYY-MM-DD T1 — one clause naming what changed. → [what was filed](...)

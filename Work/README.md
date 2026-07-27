@@ -1,7 +1,7 @@
 # Work
 
 Execution state for ComputationalResearch — what's being built now.
-Each file is one **work item**: a Spec (what to build), Tasks (one ≈ one session), and a Progress log.
+Each file is one **work item**: a Spec, Tasks (one ≈ one session), a Hand-off for the next session, and a one-line Progress log.
 Durable knowledge lives in `Wiki/`.
 
 An item's **status is its folder** — there is no status field:
@@ -24,9 +24,8 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-- **EvaluateWorkItemsEfficiency** — next: T3, decide the target format for Spec / Progress / Decisions and revise `work` + `next-session` to match.
-  T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md), T2's in [Wiki/Concepts/ProgressWikiSplit.md](../Wiki/Concepts/ProgressWikiSplit.md).
-  T2 narrows T3 to one question: what makes a Progress entry a pointer rather than a précis.
+- **EvaluateWorkItemsEfficiency** — next: T4, specify the autonomous pipeline (item selection, stop conditions, failure handling, the `revise`-protocol question, the per-run digest, the harness mechanism) and present it for approval before implementing anything.
+  T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md), T2's in [Wiki/Concepts/ProgressWikiSplit.md](../Wiki/Concepts/ProgressWikiSplit.md), and T3's format decision — now in force — in [Wiki/Concepts/ItemFileFormat.md](../Wiki/Concepts/ItemFileFormat.md).
 
 `AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.
 `PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.

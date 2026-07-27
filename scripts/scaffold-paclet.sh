@@ -104,7 +104,7 @@ $PACLET_NAME/              <- repo root
 ## Work
 
 \`Work/\` holds execution state — what's being built now. Each file is one work
-item: a Spec, Tasks (one ≈ one session), and a Progress log. An item's status is
+item: a Spec, Tasks (one ≈ one session), a Hand-off, and a Progress log. An item's status is
 its folder (\`Active/Backlog/Done/Dropped\`), changed by \`git mv\`; \`Work/README.md\`
 indexes the active ones. Use \`/work <goal>\` to create one and \`/next-session\`
 to do one task per fresh session.

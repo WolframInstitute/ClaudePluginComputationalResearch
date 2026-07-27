@@ -38,12 +38,14 @@ The per-skill "Kernel execution (license-aware)" blocks are the short reminders 
 ```
 .claude-plugin/plugin.json     — plugin metadata and version
 skills/*/SKILL.md              — skill definitions (auto-discovered)
+skills/*/<topic>.md            — read-on-demand sibling docs, kept out of the unconditional read
+                                 (e.g. next-session/paclet-worktree.md, paclet-dev only)
 scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
 hooks/                         — PreToolUse hooks (e.g., block .nb reads)
 skills/new-project/assets/    — templates for scaffolding
 Wiki/                          — knowledge base: external dependencies, concepts
-Work/                          — execution state (spec/tasks/progress per item)
+Work/                          — execution state (spec/tasks/hand-off/decisions/progress per item)
 ```
 
 ### Skills (20)
@@ -143,7 +145,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by new-notebook) |
 | `formal_definition_template.md` | Wiki/Definitions/ article template |
 | `formalization_checklist_template.md` | Work/Backlog/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
-| `work_item_template.md` | Work item skeleton: Spec / Tasks / Progress / Decisions (used by work, next-session); status is the folder (Active/Backlog/Done/Dropped) |
+| `work_item_template.md` | Work item skeleton: Spec / Tasks / Hand-off / Decisions / Progress (used by work, next-session); the five sections are the whole file, status is the folder (Active/Backlog/Done/Dropped) |
 | `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |

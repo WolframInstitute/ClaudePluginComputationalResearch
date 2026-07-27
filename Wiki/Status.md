@@ -22,10 +22,16 @@ Where that budget goes is also measured — see [Progress vs Wiki](Concepts/Prog
 About 65 % of `## Progress` prose is durable content that belongs in `Wiki/`, ~53 kB of it across the seven items, against 6.6 kB actually harvested; ~30 kB sits below the tail read at the items' final sessions.
 Most of that is a backlog rather than a broken skill — `Wiki/` postdates 21 of the 24 Progress blocks, and all three blocks that could harvest did.
 The live defect is that filing to `Wiki/` does not stop the fact being re-narrated in Progress.
-No format changes have been made yet — `EvaluateWorkItemsEfficiency` T3 decides that.
+
+The item file format that follows from those two measurements is now decided and in force — see [The work item file format](Concepts/ItemFileFormat.md).
+Five sections and no others: `## Spec`, `## Tasks`, a new overwritten `## Hand-off`, `## Decisions`, and a `## Progress` that is one line per session and read by nobody.
+One fact, one destination — filing to `Wiki/` discharges the obligation to narrate the fact in Progress.
+With Progress out of the read path, `## Spec` and `## Decisions` turn out to be 70–95 % of what a session opens, so both are now bounded: the Spec is corrected in place rather than amended, and a reversal edits the `Decisions` row it reverses.
+`next-session` lost its partial-read rule (the format makes the read flat) and its 2.3 kB paclet-worktree procedure, which moved to a read-on-demand sibling — the file is 613 B smaller than before despite gaining the rules.
 
 ## Recent changes
 
+- 2026-07-27 — Decided the work item file format in [The work item file format](Concepts/ItemFileFormat.md) and revised `work`, `next-session`, and the templates to match.
 - 2026-07-27 — Audited where the durable knowledge in `Work/` actually belongs; classified all 127 `Learned` claim-lines plus an 18 % sample of `Did`, in [Progress vs Wiki](Concepts/ProgressWikiSplit.md).
 - 2026-07-27 — Measured the session information budget across all six closed work items; findings and the regeneration script live under `Wiki/Concepts/`.
 - 2026-07-27 — Registered [MarkdownToNotebook](Resources/MarkdownToNotebook.md) as a resource and documented `new-notebook`'s rich mode.

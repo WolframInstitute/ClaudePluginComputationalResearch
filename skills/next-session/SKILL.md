@@ -23,10 +23,11 @@ Read `revise` first; it governs the deliverable.
   An archived item (`Work/Done/` or `Work/Dropped/`) has no next task — surface that instead.
 - Else read `Work/README.md` (it lists active items); if exactly one is active, use it; if several, ask which.
 
-## 2. Load minimal context
+## 2. Load context
 
-Read the full `## Spec` and `## Tasks`, but only the **tail** of `## Progress` (the last one or two sessions).
-Do not re-read the whole history — that partial read is what keeps this cheap.
+Read the item file — `## Spec`, `## Tasks`, `## Hand-off`, `## Decisions`.
+The format holds that read flat in session count, so there is no partial-read rule: `## Progress` is one line per session and nothing in it is needed (see `Wiki/Concepts/ItemFileFormat.md`).
+An item that predates the format carries multi-paragraph Progress blocks — read only the last one or two of those, and give the item a `## Hand-off` in step 5.
 
 ## 3. Pick the task
 
@@ -37,25 +38,32 @@ State it back to the user.
 
 Implement that single task — code, notebook, proof, whatever it calls for — following the `revise` loop for the deliverable.
 Do not start the next task.
-If the task changes a paclet submodule (paclet-dev), make the edits in that paclet's worktree on the item's branch — see *Paclet changes* below.
+If the task changes a paclet submodule (paclet-dev), make the edits in that paclet's worktree on the item's branch — procedure in [paclet-worktree.md](paclet-worktree.md), read only in that case.
 
-## 5. Append a Progress report
+## 5. File what the session produced
 
-Add a block to `## Progress`:
+**One fact, one destination — nothing is written twice** (rationale: `Wiki/Concepts/ItemFileFormat.md`).
+
+| the fact is… | write it to |
+|---|---|
+| durable — about a tool, an artifact, or this plugin | a `Wiki/` article, created or **corrected in place** (step 7) |
+| a choice between real alternatives | one `## Decisions` row, one sentence each; a reversal **edits** the row it reverses |
+| the Spec being wrong | the Spec sentence itself — replace it, do not append an amendment |
+| what the next session must know, and not yet true anywhere else | `## Hand-off` — **overwrite** it, including to empty |
+| that the session happened | one `## Progress` line |
+
+The Progress line, appended at the bottom:
 
 ```
-### Session N — YYYY-MM-DD — Tk
-- **Prompt:** the request that drove this session (optional)
-- **Did:** what was completed
-- **Learned:** facts/gotchas worth carrying forward
-- **Next:** the next task
+- **SN** YYYY-MM-DD Tk — one clause naming what changed. → [links to what was filed](...)
 ```
 
-If the project has prompt tracking on (see the [provenance](../provenance/SKILL.md) skill), keep the `**Prompt:**` line and mirror an entry to `Wiki/Prompts.md` for any artifact generated this session.
-When tracking is off, the `**Prompt:**` line is optional.
+Filing a fact in `Wiki/` **discharges** the obligation to state it in Progress — the line links it rather than summarising it.
+Do not add sections to the item file: conclusions go to `Wiki/`, blockers to `## Hand-off`.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the Progress prose one sentence per source line.
-The deliverable from step 4 follows the same rule for any prose source it produces.
+If the project has prompt tracking on (see the [provenance](../provenance/SKILL.md) skill), the session's prompt goes to the `Wiki/Prompts.md` ledger, not into the item file.
+
+When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write prose one sentence per source line, here and in the step-4 deliverable.
 
 ## 6. Close the task
 
@@ -66,10 +74,10 @@ The folder is now its status — there is no field to flip.
 
 ## 7. Sync durable knowledge
 
-Invoke `update-wiki` for anything that became durable knowledge this session — a new function, a result, a definition, a decision.
+Invoke `update-wiki` for the durable facts from step 5 — a new function, a result, a definition, a gotcha about an external tool.
 It updates `Wiki/` articles and `Status.md`.
+When a fact contradicts what an article says, **edit the article**; `Wiki/` is the one surface where a fact can be corrected instead of contradicted, which is why durable content goes there rather than into an append-only log.
 `Work/` (the folders + the index, already updated above) owns active items and blockers.
-There is no activity log; git and `## Progress` are the record.
 
 If the project's scientific journal is on (see the [journal](../journal/SKILL.md) skill), append a concise dated def/thm/rem/claim entry for what was established this session, citing resources used.
 When off, skip.
@@ -77,7 +85,7 @@ When off, skip.
 ## 8. Commit
 
 If the user commits, use the `commit` skill. git history is now the project's audit trail, so write a message that names the item and task.
-In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` and the dev-repo tracking (`Work/`, `Wiki/`, `Code/`) on `main` — see *Paclet changes*.
+In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` and the dev-repo tracking (`Work/`, `Wiki/`, `Code/`) on `main` — see [paclet-worktree.md](paclet-worktree.md).
 
 ## 9. Stop
 
@@ -85,32 +93,7 @@ Say: "Session N complete (Tk).
 Start a fresh session and run /next-session for the next task."
 Do not continue.
 
-## Paclet changes — branch, worktree, PR (paclet-dev)
-
-The dev repo stays linear on `main` — `Wiki/`, `Work/`, `Code/` commit there.
-Finished **paclet** code instead goes through a branch and a PR **in the paclet's own submodule repo**; the dev repo's `main` only moves its submodule pointer once that PR merges.
-This keeps the shared Wiki/Work index conflict-free.
-When a task changes a paclet `<Paclet>`:
-
-1. **Worktree + branch (once per item).** If the sibling `<Paclet>--<item>/` does not exist, create it as a submodule worktree on a fresh branch — the dev repo gitignores `*--*/`:
-   ```bash
-   git -C <Paclet> worktree add ../<Paclet>--<item> -b work/<item>
-   ```
-   Edit the paclet's code there, not in the submodule's primary checkout.
-2. **Commit split, each session.** Commit paclet code in the worktree to `work/<item>` (the submodule's own `.githooks/commit-msg` applies).
-   Commit the dev-repo tracking — `Work/` Progress, `Wiki/`, `Code/` — to the dev repo's `main`.
-   Do **not** bump the dev repo's submodule pointer to the unmerged branch; the Progress log references the branch until the PR merges.
-3. **On the last task (item → `Done/`).** Push and open the PR in the paclet repo:
-   ```bash
-   git -C <Paclet>--<item> push -u origin work/<item>
-   gh pr create -R <Org>/<Paclet> -H work/<item> -B main --title "<item>" --body "<Spec>"
-   ```
-   Completing the dev-repo item does not wait on review.
-4. **After the PR merges** (possibly a later session).
-   On dev `main`, bump the submodule pointer to the merged commit and commit it, then prune: `git -C <Paclet> worktree remove ../<Paclet>--<item>` and delete `work/<item>`.
-
-Items touching only the dev repo (Wiki, `Code/`, notebooks, research) skip all of this — commit to `main` as usual.
-
 ## Type-aware execution
 
-For a `Type: formalization` item, "do one task" (step 4) means close one Lean sub-goal via the `lean` core loop, and the Progress "Learned" note records which Mathlib lemma or tactic closed it.
+For a `Type: formalization` item, "do one task" (step 4) means close one Lean sub-goal via the `lean` core loop.
+Which Mathlib lemma or tactic closed it is a durable fact — it goes to the `Wiki/` theorem article, not into the item file.
