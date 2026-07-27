@@ -23,7 +23,6 @@ exploration log:
 | Skill | Produces |
 |-------|----------|
 | `new-notebook` | generic Markdown → `.nb` pipeline (this skill builds on it) |
-| `demo-notebook` | paclet demo: function reference card + worked examples |
 | `research-notebook` | definitions → conjectures + evidence → demonstrations → open questions → literature |
 
 **Style: lightweight and precise.** Every sentence either defines, states, or

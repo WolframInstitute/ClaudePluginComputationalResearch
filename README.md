@@ -73,7 +73,6 @@ Each skill is invoked by the slash command of the same name, `/computational-res
 | **add-resource** | Add a paper, repo, or page with recovery info |
 | **cite** | BibTeX from an arXiv ID or DOI |
 | **new-notebook** | Build Wolfram notebooks from Markdown |
-| **demo-notebook** | Build a cloud-deployed paclet demo notebook, linked from the README |
 | **research-notebook** | Research document notebook: definitions, conjectures with evidence, open questions, literature |
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **build-paclet** | Build a paclet and install it locally |

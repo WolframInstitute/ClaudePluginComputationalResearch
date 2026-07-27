@@ -24,8 +24,10 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-`PacletDocumentation` is the only item left. T1 and T2 are done; T3–T6 are blocked on decisions that are the user's — read its Blocked section first.
+`PacletDocumentation` is the only active item. T1, T2 and T6 are done — `demo-notebook` is retired and the engine is the official MCP doc tools.
+T4 still needs a human at a front end for the F1 lookup, and T5 owes the deployed docs URL that the README lost.
+`Backlog/AdoptMarkdownToNotebook.md` holds the deferred MarkdownToNotebook question.
 
 | Item | Next task |
 |---|---|
-| [PacletDocumentation](Active/PacletDocumentation.md) | T3 — Draft the `paclet-docs` skill — **blocked**, see the item's Blocked section |
+| [PacletDocumentation](Active/PacletDocumentation.md) | T3 — Draft the `paclet-docs` skill against the official MCP doc tools |

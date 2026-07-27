@@ -57,12 +57,12 @@ One unchecked box ≈ one focused session.
 - [ ] T3 — Draft the `paclet-docs` skill and its slash command.
 - [ ] T4 — Generate docs end-to-end for one real paclet; verify with `CheckPaclet` and a live `?Symbol` / F1 lookup after install.
 - [ ] T5 — Wire docs into `build-paclet` and `publish-paclet`.
-- [ ] T6 — Execute the T2 decision; update `README.md`, `CLAUDE.md`, `plugin.json`, `marketplace.json`; present the blog-post edit for review.
 
 ### Done
 
 - [x] T1 — Study PureMath's documentation layout and build; catalogue the doc-authoring MCP tools against it; write the target page structure (guide + symbol pages, function list first). *(Session 1)*
 - [x] T2 — Decide `demo-notebook`'s fate (retire / reshape / fold in); present the recommendation with the reach-vs-legitimacy tradeoff, and record it in `## Decisions`. *(Session 2)*
+- [x] T6 — Execute the T2 decision; update `README.md`, `CLAUDE.md`, `plugin.json`, `marketplace.json`; present the blog-post edit for review. *(Session 3, out of order at the user's instruction)*
 
 ## Progress
 
@@ -143,22 +143,38 @@ One unchecked box ≈ one focused session.
   **This is recorded as a recommendation, not executed.** It removes a shipped, documented feature (a skill, a command, a script, README and CLAUDE.md entries) and the Spec puts execution in T6 behind the doc tree actually working. Nothing was deleted.
 - **Learned:** the deployed-docs-site path is the piece that makes retirement safe, and it was not in the Spec's option list at all — the Spec framed the choice as notebook-or-docs when PureMath's answer is "docs, published twice".
   T5's scope should grow to include deploying the built docs, since that is now load-bearing for T6.
-- **Next:** T3 — draft the `paclet-docs` skill. **Blocked, deliberately** — see the note below.
+- **Next:** T3 — draft the `paclet-docs` skill.
+
+### Session 3 — 2026-07-27 — T6 (out of order)
+
+- **Prompt:** "keep the official tools then for the time being, but the evaluation for later task" / "okey, retire that" / retire now, in this session.
+- **Did:** two decisions taken by the user, then executed the retirement half of T6 ahead of T3–T5 at their instruction.
+
+  **Engine: the official MCP doc tools.** `CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`, verified with `CheckPaclet`.
+  MarkdownToNotebook adoption is deferred to its own item, `Backlog/AdoptMarkdownToNotebook.md`, which carries the guide-page gap forward as the open problem: the official set has no guide-page tool, and the function-list-first guide is the Origin's headline requirement.
+  T3 must therefore solve the guide page some other way — most likely by assembling the guide notebook directly, since `EditSymbolDoc`'s `setRelatedGuides` can only link to a guide it cannot create.
+
+  **`demo-notebook` retired, now.** Removed `skills/demo-notebook/SKILL.md`, `commands/demo-notebook.md`, and `scripts/build_demo_notebook.wls`.
+  Downstream references updated: the `README.md` Skills & Commands row; the `CLAUDE.md` skills, scripts, and commands tables with their counts (20 → 19 skills, 27 → 26 scripts, 21 → 20 commands); the comparison table at the top of `research-notebook/SKILL.md`; and the `description` in both `plugin.json` and `marketplace.json`, which claimed "cloud-deployed paclet demo notebooks".
+  Version bumped **3.16.0 → 4.0.0** in both — removing a shipped skill and command is a breaking change, not a feature.
+  The blog post needed no edit: it never mentioned `demo-notebook`, so there is nothing to present for review.
+  A grep over the shipped files confirms no reference survives.
+- **Learned:** the retirement was cheaper than the Spec anticipated because the feature had almost no surface area outside its own three files — four table rows and one description clause.
+  The Spec's worry about "every downstream reference" was warranted in form but small in fact.
+  What the retirement does leave owed is the deployed docs URL: the README no longer points anywhere for a zero-install reader, which is the cost the user accepted in choosing immediate removal over the sequenced plan, and T5 is where it gets repaid.
+- **Next:** T3 — draft the `paclet-docs` skill against the official MCP doc tools.
 
 ## Blocked
 
-T3–T6 are not started, and should not be started unattended:
-
-- **T3 needs a decision that is the user's**: whether `paclet-docs` drives the official MCP doc tools or MarkdownToNotebook.
-  T1 makes the case for MTN (it is what PureMath uses, at 1,480 pages, and it is the only one of the two that can build the function-list-first guide page the Origin asks for), but MTN currently has **no licence** and no pinnable release — see `Done/2026-07-27-EvaluateMarkdownToNotebook.md`, whose Phase 0 asks upstream for exactly those.
-  Drafting a skill against an unlicensed, unpinned dependency risks work that gets discarded.
 - **T4 needs a human at a front end.** `CheckPaclet` runs headless, but "resolves in-product via `?Symbol` / F1" is the acceptance criterion the Spec calls decisive, and F1 in the Documentation Center is not verifiable from here.
-- **T5 should be re-scoped first** to include deploying the built docs, per T2's finding.
-- **T6 is destructive and outward-facing**: it deletes a shipped skill, command, and script, bumps the plugin version, pushes to the marketplace repo, and touches the public blog post. It also depends on the T2 recommendation being confirmed.
+- **T5 should be re-scoped** to include deploying the built docs, per T2's finding — that deployment is what made the retirement safe in principle, and it is now owed.
+
+T3 is unblocked: the engine is the official MCP doc tools (see Decisions).
 
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
-| 2026-07-27 | Retire `demo-notebook` (Option 1), but only in T6 and only once `paclet-docs` produces in-product-resolving pages **and** a deployed docs-site URL replaces the README demo link. — *recommendation, awaiting confirmation* | PureMath publishes its documentation to a public URL as well as shipping it in the paclet, so once docs are deployed the same way there is no reader left that only a demo notebook serves. Sequencing matters: retiring first would leave the README pointing at nothing. Options 2 and 3 both mean maintaining two generators for one product. |
-| 2026-07-27 | Do not draft `paclet-docs` yet. | The engine choice — official MCP doc tools vs MarkdownToNotebook — is a real trade-off (guide-page gap and a 1,480-page precedent on one side; no licence, no pinnable release, and a documented shim tax on the other) and it determines the skill's whole shape. |
+| 2026-07-27 | **Confirmed and executed:** `demo-notebook` retired immediately, not sequenced. The user chose immediate removal over the recommended sequencing. | The retirement itself was accepted on the reasoning below. On timing the user overrode the recommendation, accepting that the README loses its zero-install demo link until T5 deploys a docs URL. Executed in Session 3. |
+| 2026-07-27 | Retire `demo-notebook` (Option 1) rather than reshape or fold in. | PureMath publishes its documentation to a public URL as well as shipping it in the paclet, so once docs are deployed the same way there is no reader left that only a demo notebook serves. Sequencing matters: retiring first would leave the README pointing at nothing. Options 2 and 3 both mean maintaining two generators for one product. |
+| 2026-07-27 | `paclet-docs` drives the **official MCP doc tools** (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`, `CheckPaclet`) for the time being. MarkdownToNotebook adoption deferred to `Backlog/AdoptMarkdownToNotebook.md`. | The user's call. It avoids depending on a repo with no licence and no pinnable release. The cost is the guide-page gap: the official set has no guide-page tool, so T3 must build the guide notebook another way. |
