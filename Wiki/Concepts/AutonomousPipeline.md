@@ -181,6 +181,7 @@ The run JSON also carries `modelUsage`, which repeats the same counts keyed by m
 
 ## See also
 
+- [The `/auto-run` operator runbook](AutoRunOperations.md) — the operating half of this article: what to do when a run halts, and the five places the script departs from what is specified here
 - [The work item file format](ItemFileFormat.md) — T3: the five sections, and why `## Hand-off` is where this loop reads an item's state
 - [Session Information Budget](SessionInformationBudget.md) — T1: the fixed preamble term this loop pays per task
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: the one-destination rule the digest obeys

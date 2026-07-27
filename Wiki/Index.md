@@ -21,6 +21,7 @@ See [Work/README.md](../Work/README.md).
 - [Progress vs Wiki](Concepts/ProgressWikiSplit.md) — where the durable knowledge actually is: ~53 kB in `## Progress`, 6.6 kB harvested, and what the misplacement costs to read
 - [The work item file format](Concepts/ItemFileFormat.md) — the five sections, the one-fact-one-destination rule, and why `## Progress` is one line per session and read by nobody
 - [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md) — why the harness schedulers cannot drive it, how the `revise` gate is deferred to a branch and a digest, the stop conditions, and where `scripts/auto-run.sh` implements each
+- [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md) — what to do for each stop reason, how to read a digest, how to grow the allowlist, and how `auto/<Item>` reaches `main`
 - [Preamble audit](Concepts/PreambleAudit.md) — what belongs in an auto-loaded `CLAUDE.md`: 47 % of this repo's was inventory already in context by two other routes
 
 ## Resources

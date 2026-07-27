@@ -24,7 +24,7 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-- **AutoRunTrial** — next: T1, write the `/auto-run` operator runbook. Marked `> Autonomous: allowed`; it exists to give the driver a real session to work under `EvaluateWorkItemsEfficiency` T8's supervision, and is disposable once that trial is over.
+- **AutoRunTrial** — next: T2, decide whether `/auto-run` belongs in `README.md`'s command list `(human)`. T1's runbook is in [Wiki/Concepts/AutoRunOperations.md](../Wiki/Concepts/AutoRunOperations.md) but ran interactively, so the only task left for the driver is a gated one — see the item's Hand-off.
 - **EvaluateWorkItemsEfficiency** — next: T8, trial the pipeline supervised on one real item and confirm the stop conditions fire.
   T7 built it — `scripts/auto-run.sh` behind `/auto-run` — and verified every stop condition against a stub; no item is marked `> Autonomous: allowed` yet, and T8 should mark a throwaway rather than this one.
   T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md), T2's in [Wiki/Concepts/ProgressWikiSplit.md](../Wiki/Concepts/ProgressWikiSplit.md), T3's format decision — now in force — in [Wiki/Concepts/ItemFileFormat.md](../Wiki/Concepts/ItemFileFormat.md), T4's spec and T7's implementation map in [Wiki/Concepts/AutonomousPipeline.md](../Wiki/Concepts/AutonomousPipeline.md), and T6's audit in [Wiki/Concepts/PreambleAudit.md](../Wiki/Concepts/PreambleAudit.md).
