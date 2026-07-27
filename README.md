@@ -1,8 +1,8 @@
+> **⚠️ Disclaimer.** This repo grows on the fly out of my own thoughts and needs around AI assistance in computational research. It is a working draft, in need of human revision and selective improvement. **Helpers and testers welcome!**
+
 # 🤖 Computational Research
 
 A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computational research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html).
-
-> **⚠️ Disclaimer.** This repo grows on the fly out of my own thoughts and needs around AI assistance in computational research. It is a working draft, in need of human revision and selective improvement. **Helpers and testers welcome!**
 
 * 📁 Turns a folder of resources — code, PDFs, Markdown, notebooks — into an organized git repo, and maintains it.
 * 🐺 Imports and exports Wolfram notebooks via Markdown.
