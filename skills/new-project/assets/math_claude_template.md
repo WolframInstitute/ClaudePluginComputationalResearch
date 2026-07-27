@@ -26,13 +26,9 @@ Computation is used to test conjectures, generate examples, and visualise struct
 
 ## Work
 
-`Work/` holds execution state — what's being built now, separate from the Wiki (durable knowledge).
-Each file is one **work item**: a Spec, Tasks (one ≈ one session), a Hand-off for the next session, and a one-line Progress log.
-An item's status is its **folder** — `Active/`, `Backlog/`, `Done/`, `Dropped/` — changed by `git mv`, not a field; `Work/README.md` indexes the active ones.
-Lean formalizations live here too as `Type: formalization` work items.
-
-- `/work <goal>` — create a work item (drafts a Spec for approval, then tasks)
-- `/next-session [Name]` — in a FRESH session, do exactly one task, log progress, stop
+Durable knowledge goes in `Wiki/`; plans, todos, and progress go in `Work/`.
+`Work/README.md` carries the conventions and indexes the active items — `/work` and `/next-session` open it by name.
+Lean formalizations live there too, as `Type: formalization` work items.
 
 ## Provenance
 
@@ -53,17 +49,9 @@ Toggle with /journal; see the `journal` skill. -->
   Copy `Wiki/Definitions/_template.md` for the right structure.
 - **Compute to explore.** Use Wolfram code (in `{{CODE_DIR}}/`) for examples, counterexamples, plotting structure, testing conjectures.
   LLM notebooks live under `NotebooksLLM/*.md` → `NotebooksLLM/*.nb` (co-located two-layer pipeline); `Notebooks/` is reserved for your hand-authored files and is never touched.
+  `new-notebook` has a `theorem-proof` template type for Statement/Proof/Corollaries/Examples notebooks.
 - **Reference precisely.** When a fact comes from MathWorld, nLab, DLMF, OEIS, Wikipedia, or a paper, link it from the relevant `Wiki/Definitions/` or `Wiki/Theorems/` article.
   Use the `search-math` skill to discover the right links and `add-resource` / `cite` to record them.
-
-## Skills tuned for this project type
-
-- `search-math` — search MathWorld, nLab, OEIS, DLMF, Wikipedia math
-- `cite` — turn an arXiv ID or DOI into a BibTeX entry
-- `lean` — drive a Lean/Mathlib session (only if `Lean/` exists)
-- `new-notebook` — supports a `theorem-proof` template type for Statement/Proof/Corollaries/Examples notebooks
-- `add-resource`, `update-wiki` — standard wiki workflow
-- `work`, `next-session` — multi-session work tracking (spec / tasks / progress)
 
 ## MCP usage
 

@@ -26,13 +26,8 @@ Notebooks: LLM-generated notebooks go in `NotebooksLLM/` (`<Topic>1.nb` per topi
 
 ## Work
 
-`Work/` holds execution state — what's being built now.
-Each file is one **work item**: a Spec, Tasks (one ≈ one session), a Hand-off for the next session, and a one-line Progress log.
-An item's status is its **folder** — `Active/`, `Backlog/`, `Done/`, `Dropped/` — changed by `git mv`, not a field; `Work/README.md` indexes the active ones.
-Durable knowledge goes in the Wiki; plans, todos, and progress go in Work.
-
-- `/work <goal>` — create a work item (drafts a Spec for approval, then tasks)
-- `/next-session [Name]` — in a FRESH session, do exactly one task, log progress, stop
+Durable knowledge goes in `Wiki/`; plans, todos, and progress go in `Work/`.
+`Work/README.md` carries the conventions and indexes the active items — `/work` and `/next-session` open it by name.
 
 ## Provenance
 

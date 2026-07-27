@@ -53,8 +53,15 @@ That preamble has now been cut — see [Preamble audit](Concepts/PreambleAudit.m
 Of this repo's 16.9 kB `CLAUDE.md`, 47 % was inventory: the Skills table was a third copy of content the harness already injects as 9.6 kB of skill descriptions, and the tables had drifted anyway (headings claimed 20 skills and 21 commands against 21 and 22 on disk) while consuming 18 of the file's 26 commits.
 Inventory and reference moved to a read-on-demand `ARCHITECTURE.md`; `CLAUDE.md` is 5.3 kB and keeps only policy, taking the fixed preamble from 27.9 kB to 16.3 kB.
 
+The `CLAUDE.md` the plugin *generates* has now had the same test — see [Generated preamble audit](Concepts/GeneratedPreambleAudit.md).
+It came out 82 % policy before any cut, and the 7.2 kB code-style block that T6 flagged as the obvious suspect on size is fully justified by the test: nothing prompts a session to look up a style guide, and a violation is invisible afterwards.
+The defects were in the small sections instead — `## Work` was a third copy of the `Work/README.md` every scaffold also writes, and the math template reproduced the deleted Skills table in miniature.
+The finding worth the task is a **contradiction**: the user's global `~/.claude/CLAUDE.md` forbids comments unless asked while the template mandates a one-line summary per exported symbol, both auto-loaded, with no precedence stated. The template now states it.
+Cutting the two duplicates saved only 230 B / 582 B, and the pipeline's ~1 %-per-11.6 kB result says a saving that size is not measurable — so the generated preamble is closed as audited, with the cuts justified as correctness rather than cost.
+
 ## Recent changes
 
+- 2026-07-28 — Audited the *generated* project `CLAUDE.md` (T9): 82 % policy already, the code-style block exonerated, and a contradiction between two auto-loaded files fixed; see [Generated preamble audit](Concepts/GeneratedPreambleAudit.md).
 - 2026-07-28 — Closed the throwaway trial item `AutoRunTrial` by doing its gated task interactively: `/auto-run` stays in `README.md`'s user-facing command list, with the row now naming the human review and merge that the deferred `revise` gate depends on.
 - 2026-07-28 — Reconciled [the pipeline specification](Concepts/AutonomousPipeline.md) with `scripts/auto-run.sh` on all five divergences the runbook found, and recorded what the first real autonomous run established — including that a headless session cannot detect its own headlessness.
 - 2026-07-28 — Wrote the `/auto-run` operator runbook against the script as built, recording five places it departs from its specification; see [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md).

@@ -81,10 +81,10 @@ Bytes removed from `CLAUDE.md` convert to tokens at roughly 4:1, so the ~11.7 kB
 `ARCHITECTURE.md` costs 9,896 B to any session that opens it, more than the tables cost before, since it now also carries the reference sections.
 The bet is that the sessions needing it — `new-project`, the paclet skills, adding a skill — are a minority. If that turns out false, the tables should be split per-consumer rather than pulled back into `CLAUDE.md`.
 
-**Scaffolded projects were not audited, and are not obviously fine.**
+**Scaffolded projects were not audited here.**
 `new-project` generates a project `CLAUDE.md` by appending `code_style_template.md` (7,247 B) to `claude_template.md` (3,280 B) or `math_claude_template.md` (5,323 B) — **10.5 kB or 12.6 kB auto-loaded into every session of every downstream project**, two thirds of it the code-style block.
-It carries no inventory tables, so it does not have *this* defect, but it has never been put to the must-be-resident test.
-That is left as a separate task.
+That audit has since been done in T9: [Generated preamble audit](GeneratedPreambleAudit.md).
+It found the generated file already 82 % policy and the code-style block — the suspect, on size — fully justified by this test; the real defects were two duplicate sections and a contradiction between two auto-loaded files.
 
 ## Reproduce
 

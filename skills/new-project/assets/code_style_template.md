@@ -37,7 +37,7 @@ Code should read like a mathematician at a blackboard, not production software.
 ### Comments
 
 - **One-line mathematical summary per exported symbol** — what the object *is*, mathematically (e.g. `(* midpoint of a, b: vertex m with d(a, m) == d(m, b) *)`).
-  That is the only comment most functions need.
+  That is the only comment most functions need, and it **overrides** any global "no comments unless asked" default — the mathematical summary is wanted; the narration forbidden below is what that default is aimed at.
 - Structural section dividers like `(* ===================== Points ===================== *)` are fine.
 - **No** multi-paragraph block comments.
 - **No** comments narrating what the next lines do, what a variable holds, or how the algorithm proceeds step-by-step.

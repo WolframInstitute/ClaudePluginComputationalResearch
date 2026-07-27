@@ -44,11 +44,11 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T9 — Apply T6's must-be-resident test to the `CLAUDE.md` this plugin *generates*: `claude_template.md` + `code_style_template.md` is 10.5 kB (12.6 kB for math-research) auto-loaded into every session of every scaffolded project, two thirds of it the code-style block. *Added by S5; measured but not audited in T6. Delete if downstream projects are out of scope for this item.*
 - [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Unblocked by T3: the format is decided, harvested blocks are not pruned, and a claim that is false today gets a one-line `> Superseded:` marker.*
 
 ### Done
 
+- [x] T9 — Apply T6's must-be-resident test to the `CLAUDE.md` this plugin generates. (S8)
 - [x] T8 — Trial the pipeline supervised on one real item; confirm the stop conditions fire as specified. (S7)
 - [x] T7 — Implement the autonomous pipeline: driver, command, `revise` mode, markers. (S6)
 - [x] T6 — Audit the auto-loaded preamble and decide what a session needs resident. (S5)
@@ -59,17 +59,12 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-The pipeline has now met real sessions and works: two live tasks on the throwaway item `AutoRunTrial`, three defects found and fixed, both fixes re-verified live.
-Everything measured is in [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed); nothing about it needs carrying by hand.
+T9 is done and the preamble line of enquiry is **closed** — both `CLAUDE.md` files this project controls have now had the must-be-resident test, and [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md) records why no further byte-trimming is worth a session.
+T5 is the only task left.
 
-Two consequences for whatever runs next.
-The allowlist prediction was **wrong in a useful direction** — zero denials on the defaults across both runs — but that only clears prose tasks; no MCP tool is allowlisted, so the first Wolfram task still halts on its first call.
-The trial deliberately never made the pipeline fail, so `needs-human`, the liveness pair, and `permission-denied` are still stub-tested only; the cheapest way to close that is a throwaway item with a task designed to trip each one.
-
-`AutoRunTrial` closed on 2026-07-28: its gated T2 was done interactively, so no trial item is active and this item is the only one left.
-
-Of the two remaining tasks, both are optional and each is marked with the condition under which to delete it.
-T9 is the stronger: the generated `CLAUDE.md` is paid by every session of every scaffolded project, and the trial just showed that per-task cost is set by turn count rather than preamble, which is an argument for closing T9 as *measured, not worth acting on* rather than for doing it.
+Two things about the pipeline are still open and are not T5's business, so they need a home if this item closes.
+No MCP tool is on the default allowlist, so the first autonomous task that touches Wolfram halts on its first call — zero denials were observed across the trial, but only prose tasks ran.
+And `needs-human`, the liveness pair, and `permission-denied` have still only ever fired against a stub; the cheapest way to close that is a throwaway item with a task designed to trip each one.
 
 This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
 
@@ -100,12 +95,16 @@ This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progr
 | 2026-07-28 (S7) | The driver **tells** the session it is autonomous (`--append-system-prompt`) instead of `revise` asking it to infer it. | The first live run did its task correctly and still recorded that it had run interactively: a session with no user is indistinguishable from one whose user has not spoken. Any "behave differently when unobserved" rule has to be told. |
 | 2026-07-28 (S7) | Backstop caps are checked before the `(human)` gate, reversing T7's order. | Both fired on the same iteration, and gate-first reported `task-gated` — exit 1, *you are needed* — for a run that had merely finished its allotment. |
 | 2026-07-28 (S5) | The 1.5 kB Wolfram kernel policy stays resident, though most sessions never spawn a kernel. | It is the largest surviving block and the obvious next cut, but a license error is unfindable after the fact and the section is what tells a session the MCP-first rule exists at all — the test is "must be known before you know to look", and this passes it. |
+| 2026-07-28 (S8) | The 7.2 kB `code_style_template.md` stays whole in the generated `CLAUDE.md`, despite being two thirds of it. | It classifies as policy end to end by the same test that kept the kernel policy: nothing prompts a session to look up a style guide, and a violation is invisible afterwards because the code works. Size made it the suspect; the test exonerates it. See [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md). |
+| 2026-07-28 (S8) | The four code-style bullets that duplicate the user's global `~/.claude/CLAUDE.md` are **kept**, while the one that contradicts it is fixed. | The plugin cannot read a user's global file or assume one exists, so deleting the overlap is correct on this machine and lossy on every other. A contradiction is a bug regardless of who has a global file; duplication is only a cost. |
+| 2026-07-28 (S8) | T9 closes as *audited, cuts justified as correctness not cost* — no further byte-trimming of the generated preamble. | The two duplicate sections were worth 230 B / 582 B, and T7 measured an 11.6 kB cut moving cold start ~1 %; a saving this size is below the noise of an MCP-schema-dominated floor. |
 
 ## Progress
 
 Append-only, one line per session; nothing reads it.
 S1 and S2 predate the format and keep their blocks.
 
+- **S8** 2026-07-28 T9 — audited the generated project `CLAUDE.md` against T6's test: 82 % policy before any cut, the code-style block exonerated, and a contradiction between two auto-loaded files found and fixed; `## Work` and the math template's skills listing cut as third copies. → [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md), `Wiki/Concepts/measure_generated_preamble.py`
 - **S7** 2026-07-28 T8 — trialled the pipeline live on the throwaway `AutoRunTrial`: two real tasks landed, three defects found and fixed in `05cdc45`, both fixes re-verified, and all eight fail-closed paths checked against this repo. → [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed), [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md)
 - **S6** 2026-07-28 T7 — built the autonomous pipeline: `scripts/auto-run.sh`, `/auto-run`, `revise` § *Autonomous mode*, the two eligibility markers, and the `ARCHITECTURE.md` / `README.md` rows; every stop condition fired against a stub, and the cold start re-measured at 31,187 tokens. → [AutonomousPipeline § Implementation](../../Wiki/Concepts/AutonomousPipeline.md#implementation)
 - **S5** 2026-07-28 T6 — split `CLAUDE.md` 16.9 → 5.3 kB, taking the fixed preamble to 16.3 kB; inventory and reference moved to a new root `ARCHITECTURE.md`. → [PreambleAudit](../../Wiki/Concepts/PreambleAudit.md), `Wiki/Concepts/measure_preamble.py`
