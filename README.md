@@ -15,7 +15,7 @@ Available in the [WolframInstitute marketplace](https://github.com/WolframInstit
 * 🧬 Optionally records the prompt and intent behind every generated artifact.
 * 📔 Optionally keeps a running scientific journal in LaTeX or Typst.
 * 🧭 Offers a guided tour through the project, and a revision protocol for deliverables.
-* ✅ Tracks plans, todos, and state.
+* ✅ Tracks plans, todos, and state, and can work an opted-in item unattended onto a branch for review.
 
 ## 📥 Installation
 
@@ -87,7 +87,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **revise** | Human revision protocol for deliverables — skill only, no command |
 | `check-env` | Check kernel and MCP availability — command only, no skill |
 | `load-project` | Summarize project status — command only, no skill |
-| `auto-run` | Work an opted-in item unattended, one cold session per task, onto `auto/<Item>` — command only, no skill |
+| `auto-run` | Work an opted-in item unattended, one cold session per task, onto `auto/<Item>` for a human to review and merge — command only, no skill |
 
 ## 📄 License
 

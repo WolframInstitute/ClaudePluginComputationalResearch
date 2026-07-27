@@ -212,6 +212,10 @@ Two things the trial priced that the specification had guessed at.
 **The per-task cost is set by turn count, not by cold start**: 26 turns cost $1.54 against a 31.5 k-token preamble, so the preamble is roughly 3 % of a real task's input and optimising it — T6's work — cannot move the pipeline's economics.
 **The default caps are mismatched**: at $1.5–2.6 per task, `--max-cost 5.00` stops a run after two or three tasks, so the cost cap and not `--max-tasks 3` is the binding constraint on a default run.
 
+The trial item closed on 2026-07-28 with its `(human)` task done interactively — the gate's designed exit, and the reason the item's terminal state under the driver is an immediate `task-gated` halt that spends nothing.
+That last task also showed how a trial item can be drafted stale: it asked whether `/auto-run` belonged in `README.md`'s command list, and the task that built the driver had added the row sixteen minutes before the trial item existed.
+A throwaway written to exercise the driver will tend to overlap the driver's own documentation, so its tasks are worth re-reading against `HEAD` at the start of the session rather than trusted as drafted.
+
 ## What this does not settle
 
 - **Two real tasks have run, both of them prose.** The trial above exercised the happy path, the author gate, the caps, the digest, the liveness check, and every fail-closed path, twice. What it did not exercise is failure: `needs-human`, `no-commit`, `no-box`, `permission-denied`, `unparseable-output`, and the three `condition 3` reasons remain stub-tested only. A stub halts on demand; a real session fails in ways nobody has yet seen, and the load-bearing liveness condition has never fired against one.

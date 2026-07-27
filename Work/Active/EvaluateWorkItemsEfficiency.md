@@ -66,7 +66,7 @@ Two consequences for whatever runs next.
 The allowlist prediction was **wrong in a useful direction** — zero denials on the defaults across both runs — but that only clears prose tasks; no MCP tool is allowlisted, so the first Wolfram task still halts on its first call.
 The trial deliberately never made the pipeline fail, so `needs-human`, the liveness pair, and `permission-denied` are still stub-tested only; the cheapest way to close that is a throwaway item with a task designed to trip each one.
 
-`AutoRunTrial` is still active with its gated T2 outstanding — do that interactively, or drop the item; it exists only for the trial.
+`AutoRunTrial` closed on 2026-07-28: its gated T2 was done interactively, so no trial item is active and this item is the only one left.
 
 Of the two remaining tasks, both are optional and each is marked with the condition under which to delete it.
 T9 is the stronger: the generated `CLAUDE.md` is paid by every session of every scaffolded project, and the trial just showed that per-task cost is set by turn count rather than preamble, which is an argument for closing T9 as *measured, not worth acting on* rather than for doing it.

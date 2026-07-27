@@ -55,6 +55,7 @@ Inventory and reference moved to a read-on-demand `ARCHITECTURE.md`; `CLAUDE.md`
 
 ## Recent changes
 
+- 2026-07-28 — Closed the throwaway trial item `AutoRunTrial` by doing its gated task interactively: `/auto-run` stays in `README.md`'s user-facing command list, with the row now naming the human review and merge that the deferred `revise` gate depends on.
 - 2026-07-28 — Reconciled [the pipeline specification](Concepts/AutonomousPipeline.md) with `scripts/auto-run.sh` on all five divergences the runbook found, and recorded what the first real autonomous run established — including that a headless session cannot detect its own headlessness.
 - 2026-07-28 — Wrote the `/auto-run` operator runbook against the script as built, recording five places it departs from its specification; see [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md).
 - 2026-07-28 — Trialled the autonomous pipeline live (T8) on the throwaway `AutoRunTrial`; two tasks landed, three defects fixed, and the loop's real per-task price measured for the first time.

@@ -35,20 +35,18 @@ The item's value is the trial itself; its tasks are deliberately small, textual,
 
 One unchecked box ≈ one focused session.
 
-- [ ] T2 — Decide whether `/auto-run` should appear in the user-facing command list in `README.md`, and add it if so. (human)
+*None — every task is done and the item is complete.*
 
 ### Done
 
+- [x] S3 T2 — Decide whether `/auto-run` should appear in the user-facing command list in `README.md`, and add it if so. (human)
 - [x] S2 T3 — Reconcile `Wiki/Concepts/AutonomousPipeline.md` with `scripts/auto-run.sh` where T1's runbook found the two disagreeing: add the stop reasons its table omits (`item-vanished`, `interrupted`), correct the claim that the driver exits only `0` or `1`, and correct the claim that selection reads `Work/README.md`. Read the script; do not edit it. *Added by T8's second run.*
 - [x] S1 T1 — Write `Wiki/Concepts/AutoRunOperations.md`: an operator's runbook for `/auto-run` — what to do for each stop reason in the driver's table, how to grow the allowlist from a `permission-denied` halt, how to read a digest, and how `auto/<Item>` reaches `main`. Link it from `Wiki/Index.md`.
 
 ## Hand-off
 
-Only T2 remains, and it is `(human)`.
-So an autonomous run of this item now halts immediately on `task-gated` without spending a task — that is the item's expected terminal state under the driver, not a fault, and the trial has nothing further to exercise unattended.
-The operator does T2 in an interactive `/next-session`, which completes the item.
-
-The two runs the driver has now done are the whole of T8's evidence; both are recorded in [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md), so nothing here needs to be carried forward by hand.
+Complete — nothing carries forward.
+The trial's evidence is in [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed), and what it left untested is that article's *What this does not settle*, owned by `EvaluateWorkItemsEfficiency`.
 
 ## Decisions
 
@@ -56,6 +54,7 @@ The two runs the driver has now done are the whole of T8's evidence; both are re
 |---|---|---|
 | 2026-07-28 | The trial item is new and disposable rather than an existing backlog item. | T8 needs a real session, but an autonomous mistake on real project work is exactly the silent drift the parent Spec is trying to avoid; a throwaway makes the blast radius the cost of one wiki article. |
 | 2026-07-28 | Marked `> Autonomous: allowed` by the drafting session, against `work`'s rule that the marker is the user's call. | The user's instruction was T8 itself, which directs marking a throwaway item; the marker is that instruction applied, not a session's own judgement. |
+| 2026-07-28 (S3) | `/auto-run` stays in `README.md`'s user-facing command list, and the row gains the human review and merge; the feature bullet list gains unattended runs. | A human types the command — only the sessions it spawns are unattended — so it is user-facing exactly as `check-env` and `load-project` are, and omitting it would leave an opt-in, fail-closed feature undiscoverable. The row read as though the work simply lands, which hides the merge the deferred `revise` gate rests on. |
 
 ## Progress
 
@@ -63,3 +62,4 @@ Append-only, one line per session; nothing reads it.
 
 - **S1** 2026-07-28 T1 — wrote the `/auto-run` operator runbook and linked it from the index, the pipeline article, and Status. → [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md)
 - **S2** 2026-07-28 T3 — corrected the pipeline spec against the script on all five divergences, and recorded what the first real run measured. → [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md), [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md), [Status](../../Wiki/Status.md)
+- **S3** 2026-07-28 T2 — kept `/auto-run` in `README.md`'s command list and gave the row the review-and-merge it omitted, plus a feature bullet; the item is complete. → [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed), [Status](../../Wiki/Status.md)
