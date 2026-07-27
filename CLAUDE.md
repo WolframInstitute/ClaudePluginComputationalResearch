@@ -44,7 +44,7 @@ hooks/                         — PreToolUse hooks (e.g., block .nb reads)
 skills/new-project/assets/    — templates for scaffolding
 ```
 
-### Skills (19)
+### Skills (20)
 
 | Skill | Type | Purpose |
 |-------|------|---------|
@@ -66,6 +66,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `research-notebook` | content | Research document notebook (definitions, conjectures + evidence, open questions, literature); md↔nb two-way sync; cloud-published, linked from README |
 | `lean` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
 | `start-tour` | presentation | Interactive guided walkthrough with code |
+| `paclet-docs` | paclet | Generate one symbol reference page per exported function via the official MCP doc tools; guide pages left to the author |
 | `build-paclet` | paclet | Build .paclet archive and install locally |
 | `publish-paclet` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
 
@@ -100,7 +101,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-### Commands (20)
+### Commands (21)
 
 | Command | Invokes |
 |---------|---------|
@@ -117,6 +118,7 @@ skills/new-project/assets/    — templates for scaffolding
 | `new-notebook` | new-notebook |
 | `research-notebook` | research-notebook |
 | `lean` | lean |
+| `paclet-docs` | paclet-docs |
 | `build-paclet` | build-paclet |
 | `publish-paclet` | publish-paclet |
 | `work` | work |

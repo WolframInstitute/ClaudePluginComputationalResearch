@@ -23,8 +23,8 @@ Notably, the doc-authoring tools are already available and **no skill in this pl
 - Study PureMath's documentation layout and build: the `Documentation/English/{Guides,ReferencePages/Symbols}` tree, how pages are authored and built, and whether it relies on `DocumentationBuild` or CI.
 - Catalogue the doc-authoring MCP tools above against that layout — which tool produces which page type.
 - Add a new skill (working name `paclet-docs`) plus its slash command, which generates:
-  - **one guide page** — every exported symbol, grouped by role, function list first;
   - **one symbol reference page per exported function** — Usage, Details, Examples (Basic Examples at minimum), following the plugin's existing example house style.
+  - ~~**one guide page** — every exported symbol, grouped by role, function list first~~ — **removed from scope 2026-07-27** at the user's call: "You dont have to do guide pages then. This is anyway better for humans." The guide page is a human deliverable.
 - Verify with `CheckPaclet` and by resolving `?Symbol` / F1 for a real paclet after install — a doc page that doesn't resolve in-product has failed, regardless of how it looks.
 - Wire docs into `build-paclet` and `publish-paclet` so a published paclet ships them.
 - **Decide the fate of `demo-notebook`** and record it in `## Decisions`. Three live options:
@@ -54,7 +54,6 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — Draft the `paclet-docs` skill and its slash command.
 - [ ] T4 — Generate docs end-to-end for one real paclet; verify with `CheckPaclet` and a live `?Symbol` / F1 lookup after install.
 - [ ] T5 — Wire docs into `build-paclet` and `publish-paclet`.
 
@@ -62,6 +61,7 @@ One unchecked box ≈ one focused session.
 
 - [x] T1 — Study PureMath's documentation layout and build; catalogue the doc-authoring MCP tools against it; write the target page structure (guide + symbol pages, function list first). *(Session 1)*
 - [x] T2 — Decide `demo-notebook`'s fate (retire / reshape / fold in); present the recommendation with the reach-vs-legitimacy tradeoff, and record it in `## Decisions`. *(Session 2)*
+- [x] T3 — Draft the `paclet-docs` skill and its slash command. *(Session 4)*
 - [x] T6 — Execute the T2 decision; update `README.md`, `CLAUDE.md`, `plugin.json`, `marketplace.json`; present the blog-post edit for review. *(Session 3, out of order at the user's instruction)*
 
 ## Progress
@@ -164,12 +164,33 @@ One unchecked box ≈ one focused session.
   What the retirement does leave owed is the deployed docs URL: the README no longer points anywhere for a zero-install reader, which is the cost the user accepted in choosing immediate removal over the sequenced plan, and T5 is where it gets repaid.
 - **Next:** T3 — draft the `paclet-docs` skill against the official MCP doc tools.
 
+### Session 4 — 2026-07-27 — T3
+
+- **Prompt:** "You dont have to do guide pages then. This is anyway better for humans"
+- **Did:** took the scope reduction, then drafted the skill.
+
+  **Guide pages are out of scope.** The user's reasoning is the better one: grouping a paclet's functions by role, naming the groups, and writing the abstract is editorial judgement about what the paclet *is*.
+  That removes T3's only real obstacle — the official MCP set has no guide-page tool, which was the last thing blocking a draft — and it narrows the Origin, which had asked for "guides and symbol pages".
+
+  Added `skills/paclet-docs/SKILL.md` and `commands/paclet-docs.md`; registered in `README.md` and the `CLAUDE.md` skills and commands tables (19 → 20 skills, 20 → 21 commands).
+
+  The skill: detect the paclet directory as `build-paclet` does; take the public API from the `"Symbols"` list in `PacletInfo.wl` in preference to `Names[context <> "*"]`, since that list is the author's own statement of what is public, and say which source was used; agree the symbol list before generating anything; generate **one page first** and get its shape approved before the rest, per `revise`, because page shape is wrong in the same way thirty times; then `CreateSymbolDoc` per symbol with Markdown `usage` / `notes` / `basicExamples`, extended by `EditSymbolDocExamples` for `Scope` / `Options` / `PossibleIssues` and `EditSymbolDoc` for metadata; `CheckPaclet` with errors blocking; then install with docs bundled and assert `Information[symbol]` shows the usage.
+
+  Two things written in deliberately.
+  `EditSymbolDocExamples` returns its generated content as Markdown, so the skill reads it back and checks the examples produced what was expected — an example that errored still writes a page.
+  And the skill states plainly that F1 and Documentation Center search **need a human**, and that the step is outstanding until the author does it, rather than letting a headless `Information` check pass for the real acceptance criterion.
+
+  On guides the skill does two permitted things: link symbol pages to a guide the author has already written (`relatedGuides`, or `setRelatedGuides`), and offer a draft function list as plain text on request — offer it, never write the guide.
+- **Learned:** dropping the guide page also removes the strongest technical argument for MarkdownToNotebook, which was that its `Template: Guide` could build the function-list-first guide and the official tools could not.
+  The MTN case is now much weaker for this plugin's purposes, and `Backlog/AdoptMarkdownToNotebook.md` has been amended so a later session does not re-open it on an argument that no longer applies.
+- **Next:** T4 — generate docs for one real paclet and verify; needs a human for the F1 step.
+
 ## Blocked
 
 - **T4 needs a human at a front end.** `CheckPaclet` runs headless, but "resolves in-product via `?Symbol` / F1" is the acceptance criterion the Spec calls decisive, and F1 in the Documentation Center is not verifiable from here.
 - **T5 should be re-scoped** to include deploying the built docs, per T2's finding — that deployment is what made the retirement safe in principle, and it is now owed.
 
-T3 is unblocked: the engine is the official MCP doc tools (see Decisions).
+T3 is done. Guide pages are out of scope, so the official MCP set's guide-page gap no longer matters.
 
 ## Decisions
 
@@ -177,4 +198,5 @@ T3 is unblocked: the engine is the official MCP doc tools (see Decisions).
 |---|---|---|
 | 2026-07-27 | **Confirmed and executed:** `demo-notebook` retired immediately, not sequenced. The user chose immediate removal over the recommended sequencing. | The retirement itself was accepted on the reasoning below. On timing the user overrode the recommendation, accepting that the README loses its zero-install demo link until T5 deploys a docs URL. Executed in Session 3. |
 | 2026-07-27 | Retire `demo-notebook` (Option 1) rather than reshape or fold in. | PureMath publishes its documentation to a public URL as well as shipping it in the paclet, so once docs are deployed the same way there is no reader left that only a demo notebook serves. Sequencing matters: retiring first would leave the README pointing at nothing. Options 2 and 3 both mean maintaining two generators for one product. |
+| 2026-07-27 | Guide pages are **not generated** — a human deliverable. | The user's call, and the better argument: grouping functions by role and writing the abstract is editorial judgement about what the paclet is. It also disposes of the official set's guide-page gap. `paclet-docs` may link to an author-written guide and offer a draft function list, but not write the guide. |
 | 2026-07-27 | `paclet-docs` drives the **official MCP doc tools** (`CreateSymbolDoc`, `EditSymbolDoc`, `EditSymbolDocExamples`, `CheckPaclet`) for the time being. MarkdownToNotebook adoption deferred to `Backlog/AdoptMarkdownToNotebook.md`. | The user's call. It avoids depending on a repo with no licence and no pinnable release. The cost is the guide-page gap: the official set has no guide-page tool, so T3 must build the guide notebook another way. |

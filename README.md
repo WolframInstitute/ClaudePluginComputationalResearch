@@ -75,6 +75,7 @@ Each skill is invoked by the slash command of the same name, `/computational-res
 | **new-notebook** | Build Wolfram notebooks from Markdown |
 | **research-notebook** | Research document notebook: definitions, conjectures with evidence, open questions, literature |
 | **lean** | Drive a Lean/Mathlib formalization session |
+| **paclet-docs** | Generate a symbol reference page per exported paclet function |
 | **build-paclet** | Build a paclet and install it locally |
 | **publish-paclet** | Build, install, and publish a paclet to the Cloud |
 | **work** | Manage multi-session work items (spec, tasks, progress) |

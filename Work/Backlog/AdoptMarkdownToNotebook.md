@@ -15,7 +15,7 @@ This item carries it.
 Two things happened after that evaluation that strengthen the case, and one that still blocks it:
 
 - **PureMath is the existence proof.** `WolframInstitute/PureMath` authors 1,480 Markdown doc pages — 100 guides, 1,380 symbol pages — and converts them with the deployed MarkdownToNotebook resource function before running `DocumentationBuild`. It ships forks of the `wolfram-guide-page` and `wolfram-symbol-page` skills to do it.
-- **The official tools have no guide-page tool.** `CreateSymbolDoc` is symbol-only and `EditSymbolDoc`'s `setRelatedGuides` can only link to a guide it cannot create, whereas MarkdownToNotebook's `Template: Guide` builds exactly the function-list-first guide the `PacletDocumentation` Origin asked for.
+- ~~**The official tools have no guide-page tool.**~~ **This argument is void as of 2026-07-27.** It was the strongest technical case for MarkdownToNotebook, and it died when the user removed guide pages from scope entirely: "You dont have to do guide pages then. This is anyway better for humans." A guide page is now a human deliverable, so the gap in the official set costs nothing. Do not re-open this item on the guide-page argument.
 - **It still has no licence and no pinnable release.** `license: null`, no `LICENSE` file, no tags, and commits landing daily from a single author.
 
 ### Requirements
@@ -23,7 +23,7 @@ Two things happened after that evaluation that strengthen the case, and one that
 - **Phase 0 first, and it is external.** Ask Nikolay Murzin for a `LICENSE` (MIT would match ours), the status of the pending Function Repository review, and a tag or pinnable commit. Nothing else in this item is worth doing until at least the licence question is answered, because it decides whether vendoring is even available as a fallback.
 - Re-measure before trusting the earlier evaluation: the repo moves daily, so the feature diff, the deployed-resource URL, and the shim list below may all have changed.
 - Cost the **shim tax** honestly. `PureMath/scripts/build_notebooks.wls` carries roughly ten documented workarounds for MarkdownToNotebook's behaviour — the frontmatter parser mangling `Links: [...]`, eight bare scaffolded `Subsection`s from the Paclet template, tutorials still categorised as legacy "Tech Note" instead of the modern `Tutorial` entity, and `guideNotebook` having no code path for `RelatedTutorials`. Any adoption inherits these.
-- Decide whether adoption is **per-skill or plugin-wide**: the guide page (where the official tools cannot compete), `new-notebook`'s rich mode (Phase 1 of the original recommendation), or `research-notebook`'s md↔nb sync (Phase 2, still blocked on line-break preservation).
+- Decide whether adoption is **per-skill or plugin-wide**. The remaining candidates are `new-notebook`'s rich mode (Phase 1 of the original recommendation — the constructs the MCP append-cell transport cannot carry) and `research-notebook`'s md↔nb sync (Phase 2, still blocked on line-break preservation). The guide page is no longer a candidate.
 - If anything is adopted, register the repo in `Wiki/` via `add-resource` with recovery info — noting that this project has no `Wiki/` yet, so `init-wiki` comes first.
 
 ### Design / risks
@@ -60,4 +60,5 @@ One unchecked box ≈ one focused session.
 
 | Date | Decision | Rationale |
 |---|---|---|
-| 2026-07-27 | Deferred out of `PacletDocumentation` rather than dropped. | The evaluation's recommendation was to depend, and PureMath proves the approach works at 1,480 pages, but the missing licence makes it a bad dependency to take on today. The official MCP tools are good enough for symbol pages now; the guide-page gap is what will eventually force this question. |
+| 2026-07-27 | Deferred out of `PacletDocumentation` rather than dropped. | The evaluation's recommendation was to depend, and PureMath proves the approach works at 1,480 pages, but the missing licence makes it a bad dependency to take on today. The official MCP tools are good enough for symbol pages. |
+| 2026-07-27 | The guide-page gap is no longer a reason to adopt. | Guide pages left scope the same day. What remains in favour is `new-notebook`'s rich mode (Phase 1) — the constructs the MCP append-cell transport cannot carry — and nothing else urgent. This item is now genuinely low priority. |
