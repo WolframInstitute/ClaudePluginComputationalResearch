@@ -44,21 +44,30 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T1 — Measure the real per-session information budget from git history across the closed items (`AdoptMarkdownToNotebook`, `PacletDocumentation`, and the other four in `Work/Done/`): bytes read vs durable bytes produced, Progress growth per session, and how much of each item file was still load-bearing at its last session.
 - [ ] T2 — Audit the Progress-vs-Wiki split on those items: classify each "Learned" note as durable (belongs in `Wiki/`) or session-local, and quantify how much of the read cost the misplacement causes.
 - [ ] T3 — Decide and document the target format for Spec / Progress / Decisions given T1 and T2 — including whether Progress should be pruned or archived once its facts are in the Wiki — and revise `work` + `next-session` to match.
 - [ ] T4 — Specify the autonomous pipeline: item selection, stop conditions, failure handling, the `revise`-protocol question (autonomous mode vs sign-off-free tasks only), the per-run digest, and what harness mechanism drives it. Present it for approval before implementing anything.
 
 ### Done
 
-(none yet)
+- [x] T1 — Measure the real per-session information budget from git history across the closed items. (S1)
 
 ## Progress
 
-(no sessions yet)
+### Session 1 — 2026-07-27 — T1
+- **Did:** Measured the bookkeeping budget across all six closed items from git history and wrote the result to [Wiki/Concepts/SessionInformationBudget.md](../../Wiki/Concepts/SessionInformationBudget.md), with `Wiki/Concepts/measure_session_budget.py` to regenerate every number.
+  Promoted this item from `Backlog/` to `Active/`.
+- **Learned:** The findings live in the wiki article, deliberately — see below.
+  Three things that only matter to the next session:
+  `git log --follow --reverse` silently collapses to a single commit, so walk without `--reverse` and reverse in Python.
+  Commits do not map 1:1 to sessions — `14c8981` created four items at once and two `PacletDocumentation` sessions also amended `AdoptMarkdownToNotebook`, so T2 must attribute "Learned" notes by Progress block, not by commit.
+  The headline: the largest term is the unconditional 27.7 kB of `CLAUDE.md` + skill preamble, not the item file, which was smaller than that in 21 of 22 measured session starts — so T3 must not confine itself to the item format.
+- **Next:** T2 — audit the Progress-vs-Wiki split: classify each "Learned" note as durable or session-local and quantify the read cost of the misplacement.
 
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
 | 2026-07-27 | Filed as `investigation`, in `Backlog/`, with measurement before redesign. | The efficiency claim is currently unmeasured in both directions, and an autonomous loop multiplies whatever the per-task overhead is — so measuring first is what makes the second question answerable. |
+| 2026-07-27 | T1's findings go in `Wiki/`, and Progress carries only a pointer plus the notes the next session needs. | The item's own measurement says Progress is the least-read section, so writing the findings there would have reproduced the defect being measured. This item follows the split it is proposing. |
+| 2026-07-27 | The measurement script ships at `Wiki/Concepts/measure_session_budget.py`, not in `scripts/`. | `scripts/` is skill-invoked plugin surface with a table in `CLAUDE.md` to keep current; a one-off analysis instrument for T2/T3 re-measurement belongs next to the article it regenerates. |

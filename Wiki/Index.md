@@ -17,7 +17,7 @@ See [Work/README.md](../Work/README.md).
 
 ## Concepts
 
-(none yet)
+- [Session Information Budget](Concepts/SessionInformationBudget.md) — what a `next-session` run must read before it can work, measured from git history
 
 ## Resources
 

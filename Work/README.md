@@ -24,8 +24,8 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-Nothing is active.
-`EvaluateWorkItemsEfficiency` sits in `Backlog/` — measure the information budget of this very system, then decide whether it can run autonomously.
+- **EvaluateWorkItemsEfficiency** — next: T2, audit the Progress-vs-Wiki split on the closed items and quantify what the misplacement costs to read.
+  T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md).
 
 `AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.
 `PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.
