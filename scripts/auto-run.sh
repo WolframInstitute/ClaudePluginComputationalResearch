@@ -139,6 +139,15 @@ git show-ref --verify --quiet "refs/heads/$BRANCH" \
 
 mkdir -p Work/Runs
 ALLOWLIST=$(IFS=,; echo "${ALLOWED[*]}")
+
+# A headless session cannot observe that it is headless: the first live run
+# (T8, 2026-07-28) did the task correctly but recorded in `## Hand-off` that it
+# had "run as an interactive /next-session", which was false. `revise` asks the
+# session to detect autonomous mode from the absence of a user, and absence is
+# exactly what is not observable from inside. So the driver states it, in the
+# system prompt rather than in the prompt, where it cannot be mistaken for part
+# of the slash command's arguments.
+AUTONOMY_NOTICE="You are an autonomous run driven by scripts/auto-run.sh: a headless \`claude -p\` process on branch $BRANCH, working Work/Active/$ITEM.md, which is marked '> Autonomous: allowed'. There is no interactive user; nothing you write to the transcript is read by anyone. Follow the \`revise\` skill's section 'Autonomous mode — the gate is deferred, not dropped'. In particular: do not stop to present, commit unconditionally before finishing, and if the task turns on a decision you would otherwise have asked about, write the question into '## Hand-off' on a line containing 'needs-human:', commit that, and stop."
 STDERR_FILE=$(mktemp -t auto-run-stderr)
 trap 'rm -f "$STDERR_FILE"' EXIT
 TASKS_RUN=0
@@ -172,7 +181,11 @@ write_digest() {
     echo "| Tasks run | $TASKS_RUN (cap $MAX_TASKS) |"
     echo "| Stop reason | **$STOP_REASON** |"
     echo "| Cost | \$$(printf '%.4f' "$TOTAL_COST") (cap \$$MAX_COST) |"
-    echo "| Tokens | in $TOTAL_IN, out $TOTAL_OUT, cache create $TOTAL_CACHE_CREATE, cache read $TOTAL_CACHE_READ |"
+    # `.usage.input_tokens` counts only the uncached remainder — 30 on a real
+    # task whose true input was a million. Report the sum first, or the digest
+    # understates the pipeline's own price by four orders of magnitude.
+    echo "| Tokens in | $((TOTAL_IN + TOTAL_CACHE_CREATE + TOTAL_CACHE_READ)) total = $TOTAL_IN uncached + $TOTAL_CACHE_CREATE cache create + $TOTAL_CACHE_READ cache read |"
+    echo "| Tokens out | $TOTAL_OUT |"
     echo
     echo "## Per-task verdict"
     echo
@@ -221,15 +234,18 @@ while :; do
   TASK=$(next_task "$ITEM_FILE")
   [ -n "$TASK" ] || halt "item-complete" 0
 
+  # 6 — backstop caps, checked BEFORE the author gate. Both can be true at once,
+  # and then the cap is the reason the loop stopped: the gated task was never
+  # going to run. Gate-first reported `task-gated` (exit 1, "you are needed") for
+  # a run that had simply finished its allotment.
+  [ "$TASKS_RUN" -lt "$MAX_TASKS" ] || halt "cap-tasks" 0
+  [ "$(date +%s)" -lt "$DEADLINE" ] || halt "cap-wallclock" 0
+  awk -v c="$TOTAL_COST" -v m="$MAX_COST" 'BEGIN{exit !(c<m)}' || halt "cap-cost" 0
+
   # per-task author gate
   case "$TASK" in
     *"(human)"*) emit "- **halt** \`${TASK:0:80}\` — task is marked \`(human)\`"; halt "task-gated" ;;
   esac
-
-  # 6 — backstop caps.
-  [ "$TASKS_RUN" -lt "$MAX_TASKS" ] || halt "cap-tasks" 0
-  [ "$(date +%s)" -lt "$DEADLINE" ] || halt "cap-wallclock" 0
-  awk -v c="$TOTAL_COST" -v m="$MAX_COST" 'BEGIN{exit !(c<m)}' || halt "cap-cost" 0
 
   TASK_ID=$(echo "$TASK" | sed -n 's/^- \[ \] *\(T[0-9]*\).*/\1/p')
   TASK_ID=${TASK_ID:-T?}
@@ -246,6 +262,7 @@ while :; do
   OUT=$(claude -p "/computational-research:next-session $ITEM" \
         --output-format json \
         --permission-mode acceptEdits \
+        --append-system-prompt "$AUTONOMY_NOTICE" \
         --allowedTools "$ALLOWLIST" 2>"$STDERR_FILE")
   RC=$?
   TASKS_RUN=$((TASKS_RUN + 1))

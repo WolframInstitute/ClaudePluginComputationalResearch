@@ -35,6 +35,7 @@ The item's value is the trial itself; its tasks are deliberately small, textual,
 
 One unchecked box ≈ one focused session.
 
+- [ ] T3 — Reconcile `Wiki/Concepts/AutonomousPipeline.md` with `scripts/auto-run.sh` where T1's runbook found the two disagreeing: add the stop reasons its table omits (`item-vanished`, `interrupted`), correct the claim that the driver exits only `0` or `1`, and correct the claim that selection reads `Work/README.md`. Read the script; do not edit it. *Added by T8's second run.*
 - [ ] T2 — Decide whether `/auto-run` should appear in the user-facing command list in `README.md`, and add it if so. (human)
 
 ### Done
@@ -43,9 +44,11 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T1 ran as an **interactive** `/next-session`, not through `scripts/auto-run.sh`, so the item has not yet given the driver a real session — which was its whole purpose.
-The only remaining task, T2, is `(human)`, so `/auto-run AutoRunTrial` will now halt on `task-gated` before spawning anything.
-`EvaluateWorkItemsEfficiency` T8 therefore has a choice to make and this item cannot make it: gate-only is a real but thin trial, so T8 either accepts it, adds a fresh sign-off-free task here, or points the driver at another throwaway.
+T1 **did** run through `scripts/auto-run.sh` — the run that wrote the previous hand-off believing otherwise was itself the driver's first live session, and its false belief is T8's main finding.
+The driver now states the fact in the system prompt, so a session no longer has to infer it.
+
+T3 exists to re-run the fixed driver; it is otherwise ordinary wiki prose.
+T2 stays gated and is the item's last task.
 
 ## Decisions
 

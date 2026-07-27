@@ -60,7 +60,10 @@ The LLM should mention wiki updates in passing ("I updated the wiki article for 
 ## Autonomous mode — the gate is deferred, not dropped
 
 A session driven by `scripts/auto-run.sh` has no human to wait for.
-You are in it when there is no interactive user: a headless `claude -p` run, on an `auto/<Item>` branch, against an item marked `> Autonomous: allowed`.
+
+**You are in it when your system prompt says you are** — the driver appends a notice naming itself, the branch, and the item.
+Do not try to infer it from the absence of a user: absence is not observable from inside a session, and the first live run proved it, recording in `## Hand-off` that it had "run as an interactive `/next-session`" while it was in fact being driven.
+No notice means you are interactive, whatever the branch is called.
 
 The protocol's purpose is that **nothing lands unreviewed** — not that a human is present when it is generated.
 Those come apart, so in autonomous mode the loop above becomes:
