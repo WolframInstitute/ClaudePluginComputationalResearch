@@ -24,8 +24,8 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-`PacletDocumentation` should be re-scoped before it is started — see the Recommendation in `Done/2026-07-27-EvaluateMarkdownToNotebook.md`.
+`PacletDocumentation` is the only item left. T1 and T2 are done; T3–T6 are blocked on decisions that are the user's — read its Blocked section first.
 
 | Item | Next task |
 |---|---|
-| [PacletDocumentation](Active/PacletDocumentation.md) | T1 — Study PureMath's doc layout, catalogue the doc-authoring MCP tools |
+| [PacletDocumentation](Active/PacletDocumentation.md) | T3 — Draft the `paclet-docs` skill — **blocked**, see the item's Blocked section |
