@@ -24,9 +24,9 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-- **AutoRunTrial** — next: T2, decide whether `/auto-run` belongs in `README.md`'s command list `(human)`. T1's runbook is in [Wiki/Concepts/AutoRunOperations.md](../Wiki/Concepts/AutoRunOperations.md) but ran interactively, so the only task left for the driver is a gated one — see the item's Hand-off.
+- **AutoRunTrial** — next: T2, decide whether `/auto-run` belongs in `README.md`'s command list `(human)`, so it must be done interactively and it completes the item. T1's runbook is in [Wiki/Concepts/AutoRunOperations.md](../Wiki/Concepts/AutoRunOperations.md) and T3's reconciliation of the spec against the script is in [Wiki/Concepts/AutonomousPipeline.md](../Wiki/Concepts/AutonomousPipeline.md); both ran through the driver, which is T8's evidence.
 - **EvaluateWorkItemsEfficiency** — next: T8, trial the pipeline supervised on one real item and confirm the stop conditions fire.
-  T7 built it — `scripts/auto-run.sh` behind `/auto-run` — and verified every stop condition against a stub; no item is marked `> Autonomous: allowed` yet, and T8 should mark a throwaway rather than this one.
+  T7 built it — `scripts/auto-run.sh` behind `/auto-run` — and verified every stop condition against a stub; the throwaway `AutoRunTrial` carries the marker and has taken two real tasks through the driver, so T8's remaining job is to judge the evidence rather than to gather it.
   T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md), T2's in [Wiki/Concepts/ProgressWikiSplit.md](../Wiki/Concepts/ProgressWikiSplit.md), T3's format decision — now in force — in [Wiki/Concepts/ItemFileFormat.md](../Wiki/Concepts/ItemFileFormat.md), T4's spec and T7's implementation map in [Wiki/Concepts/AutonomousPipeline.md](../Wiki/Concepts/AutonomousPipeline.md), and T6's audit in [Wiki/Concepts/PreambleAudit.md](../Wiki/Concepts/PreambleAudit.md).
 
 `AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.

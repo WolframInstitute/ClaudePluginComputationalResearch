@@ -5,7 +5,8 @@
 The specification for running `Work/` items unattended: what drives the loop, how an item is selected with no human present, when the loop stops, and what happens to the `revise` gate.
 Decided 2026-07-27 for `EvaluateWorkItemsEfficiency` T4, against [T3's item format](ItemFileFormat.md) and [T1's budget](SessionInformationBudget.md).
 Built 2026-07-28 by T7 — see [Implementation](#implementation) for where each part lives.
-It has never run against a real item; T8 is the supervised trial.
+First run against a real item on 2026-07-28 under T8's supervised trial; [what this does not settle](#what-this-does-not-settle) records what that run did and did not establish.
+Where this article and `scripts/auto-run.sh` disagree the script is the fact, and this article is corrected to match it — last reconciled 2026-07-28 against the script as of `05cdc45`.
 
 ## The harness cannot schedule this, and the reason is structural
 
@@ -88,9 +89,11 @@ It writes the question into `## Hand-off` and halts the whole loop with reason `
 
 ### Selection — fail closed
 
-Read `Work/README.md` for active items.
+Glob `Work/Active/*.md` — the folder, not `Work/README.md`.
+The folder is the item's status, so it is also the only thing selection may trust: the index is a human's reading surface and is allowed to lag, and an item absent from it is still eligible.
 An item is eligible only if it carries `> Autonomous: allowed` as a header line beside `> Type:`; absent means no.
-A task line ending in `(human)` is a hard stop, so an author can gate individual tasks — T4 itself, which had to be presented for approval, is exactly that case.
+A task line containing `(human)` anywhere is a hard stop, so an author can gate individual tasks — T4 itself, which had to be presented for approval, is exactly that case.
+The marker is matched as a substring rather than at end of line, so it still gates a task whose line ends in a trailing note.
 If zero or more than one eligible active item exists, the driver stops and reports.
 It never picks a favourite, because an unattended wrong choice is not observable until the digest.
 
@@ -113,6 +116,10 @@ Condition 5 is the load-bearing one.
 The `Unknown command` finding shows the failure mode it catches is real and reports success while producing nothing.
 Condition 6 is deliberately intolerant: the Spec's stated failure mode is silent drift, where a wrong call at task 2 acquires four tasks built on top of it before anyone looks.
 
+The caps of condition 6 are checked **before** the `(human)` gate, and the order is load-bearing rather than arbitrary.
+Both can hold at once, and then the cap is the honest reason the loop stopped: the gated task was never going to run this time.
+Gate-first reported `task-gated` — exit `1`, meaning *you are needed* — for a run that had merely finished its allotment.
+
 ### Failure mid-task — the driver never cleans up
 
 It records `HEAD` before each task and, on failure, leaves the tree exactly as it stands and stops.
@@ -127,7 +134,8 @@ The loop therefore tells you what to allowlist instead of being handed everythin
 
 ### The digest — the review surface
 
-One gitignored `Work/Runs/<timestamp>-<Item>.md` per run: per-task verdict, the `main..auto/<Item>` log, files touched, the `## Hand-off` delta, and accumulated tokens and cost.
+One gitignored `Work/Runs/<timestamp>-<Item>.md` per run: per-task verdict, the commit log, files touched, the `## Hand-off` delta, and accumulated tokens and cost.
+The log range is `HEAD`-at-launch to `HEAD`, not `main..auto/<Item>`, so launching from `main` against a branch that already carries unmerged commits lists all of them rather than this run's.
 
 Gitignored deliberately.
 It is a human review surface read once, so under the one-destination rule it must not sit on any session's read path — the same reasoning that moved rationale out of `next-session/SKILL.md` and into articles like this one.
@@ -144,10 +152,13 @@ Built by T7, 2026-07-28.
 | the deferred gate | `revise` § *Autonomous mode*, which `next-session` already reads every session |
 | eligibility markers | documented in `work` § *The autonomy markers*, seeded as comments in `work_item_template.md` |
 | unconditional commit | one clause in `next-session` step 8 — the liveness check is only sound if an autonomous run always commits |
+| the autonomy signal | `--append-system-prompt`, naming the driver, the branch, and the item — see the third fact below |
 
 ### Stop reasons
 
-The driver exits `0` for the top group and `1` for the rest, and names the reason in the digest and on stderr.
+The driver names the reason in the digest and on stderr, and its exit status is four-valued, not two:
+`0` for a clean stop, `1` for any other halt, `130` for an interrupt, and `2` for a preflight failure.
+The preflight group — a missing `claude` or `jq`, no git repository, no `Work/`, a tree already dirty at launch, an unknown option, or a named item that is not active or not marked eligible — is the one group that writes **no digest**, because it fails before the branch and the digest exist.
 
 | reason | meaning |
 |---|---|
@@ -158,30 +169,41 @@ The driver exits `0` for the top group and `1` for the rest, and names the reaso
 | `dirty-tree` | condition 4 — someone is mid-edit |
 | `no-commit` / `no-box` | condition 5, liveness — the run reported success and closed nothing |
 | `nonzero-exit` / `is-error` / `stop-reason` / `terminal-reason` / `permission-denied` | condition 3 |
-| `unparseable-output` | the run's stdout was not JSON; the digest quotes the first 2 kB of it |
+| `unparseable-output` | the run's stdout was not JSON; the digest quotes the first 1 kB of stdout and the first 1 kB of stderr |
+| `item-vanished` | the item file is in neither `Work/Active/<Item>.md` nor `Work/Done/*-<Item>.md` — a session moved or renamed it, and the loop can no longer read its state |
+| `interrupted` | `SIGINT` or `SIGTERM`; the digest is still written and the tree is left exactly as it stands |
 
-Two implementation facts the specification did not anticipate:
+Three implementation facts the specification did not anticipate:
 
 **The digest and the dirty-tree condition collide.**
 Writing `Work/Runs/<run>.md` makes the tree dirty, so the *second* task of every run would halt on condition 4 in any repo that has not gitignored the digest.
 The driver excludes the path from its own check (`git status --porcelain -- . ':(exclude)Work/Runs/'`) rather than depending on a `.gitignore` it does not control, so it is correct in a scaffolded project too.
 The rule is still in this repo's `.gitignore` and in `gitignore_dev.template`, because a digest that shows up in `git status` is noise for the human.
 
-**Token accounting must read `.usage` alone.**
+**Token accounting must read `.usage` alone, and must sum its four fields.**
 The run JSON also carries `modelUsage`, which repeats the same counts keyed by model, so a recursive sum double-counts every figure the pipeline reports about itself.
+And `.usage.input_tokens` is only the *uncached remainder*: the first real task reported 30 there against a true input of about 1.01 M, essentially all of it cache reads.
+A digest that prints that field alone understates the pipeline's own price by four orders of magnitude, so the driver reports the total first and the breakdown after.
+
+**A headless session cannot observe that it is headless.**
+The first live run did its task correctly but recorded in `## Hand-off` that it had run as an interactive `/next-session`.
+`revise` had asked the session to infer autonomous mode from the absence of a user, and absence is exactly what is not observable from inside a session — a session with no user looks identical to one whose user has not spoken yet.
+So the driver states it, in `--append-system-prompt` rather than in the prompt, where it cannot be mistaken for an argument to the slash command; `revise` now says the notice is the only admissible evidence.
+This is a general hazard for unattended work, not a bug in one skill: any instruction of the form *behave differently when nobody is watching* has to be told, never inferred.
 
 ## What this does not settle
 
-- **None of it has run against a real item.** The stop conditions were exercised against a stub `claude` in a fixture repo — every one fires as specified — but a stub cannot fail the way a session does. T8's supervised trial is where the specification meets an actual item.
-- **The `(human)` marker and `> Autonomous: allowed` are untested format additions.** Both are hand-writable and diff-friendly, as the Spec required, but no item carries either yet.
-- **The allowlist is a guess.** It covers the `git` invocations `next-session` makes and nothing else; a task that needs a Wolfram MCP call or a `Bash` form outside it halts on `permission-denied`. That is the designed behaviour — the loop reports what to add rather than being handed everything — but the first real runs will be a sequence of `--allow` additions before they are useful work.
+- **One real task has run, and only one.** On 2026-07-28 the driver worked `AutoRunTrial` T1 — a wiki-prose task — in 26 turns for $1.54, then halted cleanly on `task-gated`. That exercised the happy path, the author gate, the digest, and the liveness check against a live session. Every other stop condition is still stub-tested only, and a stub cannot fail the way a session does.
+- **Nothing but wiki prose has run unattended.** The trial item was chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `revise` does not exempt from sign-off.
+- **The `(human)` marker and `> Autonomous: allowed` both work.** `AutoRunTrial` carries them; selection accepted the item and the gate halted on the marked task, as specified.
+- **The allowlist is a guess that happens to cover wiki prose.** The first real task ran with zero `permission_denials` on the defaults, so nothing has yet forced an `--allow` addition. That says only that a prose task stays inside `Read`/`Write`/`Edit`/`Grep`/`Skill` plus the `git` forms `next-session` makes; no MCP tool is allowlisted at all, so the first task that touches the Wolfram MCP still halts on its first call. That is the designed behaviour — the loop reports what to add rather than being handed everything.
 - **Item selection is deliberately weak.** Requiring exactly one eligible item means the pipeline cannot work a queue. Priority ordering was rejected rather than solved, because a wrong autonomous ordering is invisible until the digest and the cost of the restriction is a human typing one item name.
 - **The 31,479-token figure is environment-specific.** It includes the MCP tool schemas for every server configured on this machine. A scaffolded research project with a 3.3 kB `CLAUDE.md` and fewer servers pays materially less, so the number bounds this repo, not the plugin.
-- **Whether cold start is worth its price is still open.** The pipeline pays ~31.5k tokens per task to avoid context rot. That trade has been costed on one side only; what a warm session loses to rot remains unmeasured, and T1's open question about un-instrumented reading time applies here too.
+- **Whether cold start is worth its price is still open, and the price is larger than the floor suggests.** The ~31.5k figure is the preamble paid once per task; the first real task's *total* input was about 1.01 M tokens over 26 turns — almost entirely cache reads — for $1.54. Cold start is a small term inside a real session, not the dominant one, which weakens the case for optimising it and leaves the actual comparison untouched: what a warm session loses to rot remains unmeasured, and T1's open question about un-instrumented reading time applies here too.
 
 ## See also
 
-- [The `/auto-run` operator runbook](AutoRunOperations.md) — the operating half of this article: what to do when a run halts, and the five places the script departs from what is specified here
+- [The `/auto-run` operator runbook](AutoRunOperations.md) — the operating half of this article: what to do when a run halts, how to read a digest, and how a branch reaches `main`
 - [The work item file format](ItemFileFormat.md) — T3: the five sections, and why `## Hand-off` is where this loop reads an item's state
 - [Session Information Budget](SessionInformationBudget.md) — T1: the fixed preamble term this loop pays per task
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: the one-destination rule the digest obeys
