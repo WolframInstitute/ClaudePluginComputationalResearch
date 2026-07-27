@@ -24,9 +24,9 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-Nothing is active. `PacletDocumentation` completed on 2026-07-27 — paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.
-`Backlog/AdoptMarkdownToNotebook.md` holds the deferred MarkdownToNotebook question.
+`AdoptMarkdownToNotebook` went active on 2026-07-27 when its blocking Phase 0 question — the licence — was answered.
+`PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.
 
 | Item | Next task |
 |---|---|
-| — | — |
+| [AdoptMarkdownToNotebook](Active/AdoptMarkdownToNotebook.md) | T2 — re-measure the repo against the 2026-07-27 evaluation; note what changed. |
