@@ -91,6 +91,19 @@ paclet doc tree. Its content arguments are **Markdown**, and code blocks in
 
 Pass `pacletDirectory`, `symbolName`, `pacletName`, `publisherID`, and `context`
 explicitly rather than relying on defaults.
+**`pacletName` must not repeat the publisher.** `"WolframInstitute/MathNotebook"`
+together with `publisherID -> "WolframInstitute"` yields the URI
+`WolframInstitute/WolframInstitute/MathNotebook/ref/…`, which resolves to nothing.
+Pass the bare name.
+
+Two authoring rules that are wrong silently:
+
+- **One statement per ` ```wl ` block.** Two statements are wrapped in a
+  `Defer[a, b]` that is *visible* in the input cell. `a; b` on one line is one
+  statement and is fine.
+- **Backticks auto-link built-ins only.** A backticked symbol from the paclet
+  itself renders as literal backticks; write it as
+  `[Symbol](paclet:<Pub>/<Paclet>/ref/<Symbol>)`.
 
 For richer pages, add sections afterwards with `mcp__Wolfram__EditSymbolDocExamples`
 (`Scope`, `Options`, `Applications`, `PropertiesRelations`, `PossibleIssues`,
@@ -102,32 +115,53 @@ For richer pages, add sections afterwards with `mcp__Wolfram__EditSymbolDocExamp
 and check the examples actually produced what you expected. An example that
 errored still writes a page.
 
-### 3. Check the paclet
+**Every code block is force-evaluated; there is no way to show unevaluated
+input.** A ` ```wl-input ` fence is evaluated like any other, and its output cell
+is written into the page. For a symbol that acts on the front end selection, an
+open notebook, or the network, that output is an error or an internal
+`PackageScope` expression dressed up as a result — worse than no example.
 
-```
-mcp__Wolfram__CheckPaclet  path -> <pacletDir>
-```
+So for such symbols, **ship the page with no Basic Examples**. Usage plus
+`Details & Options` stating what the symbol acts on is an honest page; a
+fabricated or failed example is not. Say in the report which symbols got no
+examples and why.
 
-Report findings by severity. **Errors block** — fix them before going on.
-Treat warnings about missing doc metadata as errors here, since that metadata is
-what search indexes.
+### 3. Declare the `Documentation` extension — the page is inert without it
+
+`CreateSymbolDoc` writes the page but does **not** touch `PacletInfo.wl`. Unless
+the paclet declares the extension, every page is dead weight: the file exists,
+it opens, and the `paclet:` URI resolves to nothing. Add it if absent:
+
+```wolfram
+{ "Documentation", "Root" -> "Documentation", "Language" -> "English" }
+```
 
 ### 4. Verify it resolves in-product — the only test that counts
 
-A malformed page fails **silently**: the file exists, the page opens, and search
-never finds it. So verify, do not assume.
+A malformed or undeclared page fails **silently**. So verify, do not assume.
 
-Build and install with docs bundled (`build-paclet`, with the `Documentation/`
-copy enabled), then through the evaluator:
+Build and install with docs bundled — `CreatePacletArchive` then
+`PacletInstall[ archive, ForceVersionInstall -> True ]` — and resolve every URI:
 
 ```wolfram
-Needs[ "<Org>`<Paclet>`" ]
-Information[ <Org>`<Paclet>`<Symbol> ]
+Documentation`ResolveLink[ "paclet:<Pub>/<Paclet>/ref/<Symbol>" ]
 ```
 
-`Information` (or `?Symbol`) must show the usage from the page, not a bare symbol
-name. If it does not, the page is not wired to the symbol — check the `context`
-and the URI, not the page's prose.
+It must return the path of an existing file **under the installed paclet**, not
+under your source tree. `Null` means the page is not wired: check the
+`Documentation` extension, then `pacletName` / `publisherID`, then the URI.
+
+**Do not use `Information` or `?Symbol` as the test.** They print the `::usage`
+string from the kernel, which a paclet with a `Usage.wl` has whether or not any
+documentation exists — on MathNotebook, `ConvertMathCells` showed a full usage
+line while having no page at all. It is a test that cannot fail.
+
+`mcp__Wolfram__CheckPaclet` is **not** a paclet linter and does not belong here.
+It wraps `Wolfram`PacletCICD`CheckPaclet`, which requires a Paclet *Repository*
+definition notebook; against a plain paclet directory it returns
+`CheckPaclet::invfile` and the MCP wrapper dies with an unhandled-downvalues
+internal error. Use it only for a paclet being submitted to the Paclet
+Repository.
 
 **F1 and Documentation Center search need a human.** They are the acceptance
 criterion and they are not verifiable headlessly. Ask the author to press F1 on
@@ -136,6 +170,10 @@ step is outstanding until they do.
 
 ## Report
 
-Say which symbols got pages, which sections each carries, the `CheckPaclet`
-verdict, the `Information` result for at least one symbol, and that F1 /
+Say which symbols got pages, which sections each carries, which symbols got no
+examples and why, how many URIs resolved out of how many symbols, and that F1 /
 Documentation Center confirmation is still owed to the author.
+
+Also check how the paclet is **published**. A hand-written publish script that
+stages a fixed list of directories will silently drop `Documentation/`; flag it
+rather than assuming the docs ship.

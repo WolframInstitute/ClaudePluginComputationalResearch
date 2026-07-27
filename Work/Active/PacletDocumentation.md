@@ -54,10 +54,11 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T4 — Generate docs end-to-end for one real paclet; verify with `CheckPaclet` and a live `?Symbol` / F1 lookup after install.
-- [ ] T5 — Wire docs into `build-paclet` and `publish-paclet`.
+- [ ] T5 — Wire docs into `build-paclet` and `publish-paclet`, including deploying the built docs to a public URL (re-scoped per T2) and staging `Documentation/` in publish scripts that copy a fixed directory list.
 
 ### Done
+
+- [x] T4 — Generate docs end-to-end for one real paclet; verify by resolving every doc URI after a real install. *(Session 5)*
 
 - [x] T1 — Study PureMath's documentation layout and build; catalogue the doc-authoring MCP tools against it; write the target page structure (guide + symbol pages, function list first). *(Session 1)*
 - [x] T2 — Decide `demo-notebook`'s fate (retire / reshape / fold in); present the recommendation with the reach-vs-legitimacy tradeoff, and record it in `## Decisions`. *(Session 2)*
@@ -185,12 +186,40 @@ One unchecked box ≈ one focused session.
   The MTN case is now much weaker for this plugin's purposes, and `Backlog/AdoptMarkdownToNotebook.md` has been amended so a later session does not re-open it on an argument that no longer applies.
 - **Next:** T4 — generate docs for one real paclet and verify; needs a human for the F1 step.
 
+### Session 5 — 2026-07-27 — T4
+
+- **Prompt:** `/next-session` — and, on the one question this session asked, "All 21, examples only where honest".
+- **Did:** ran `paclet-docs` end to end against `WolframInstitute/MathNotebook` — 21 exported symbols, a real paclet with a clean tree and no `Documentation/`.
+  Dry-ran the tools on a scratchpad copy first, which is where every defect below surfaced; only then wrote into the real repo.
+
+  **All 21 pages exist and all 21 resolve.**
+  `Documentation`ResolveLink` returns an existing file under `…/Paclets/Repository/WolframInstitute__MathNotebook-0.1.11/Documentation/…` for every symbol, after `CreatePacletArchive` + `PacletInstall` — a real install, not a `PacletDirectoryLoad`.
+  The symbol list and the page list match exactly in both directions.
+  `ImportLaTeXDocument` and `ExportLaTeXDocument` carry evaluated Basic Examples; the round-trip example genuinely returns `True`.
+  MathNotebook's own suite stays green: 130 passed, 0 failed across nine `.wlt` files.
+  Committed in the MathNotebook repo as `3735912` (not pushed).
+
+  **Five defects in the T3 skill, all of which would have shipped broken docs.** All five are now fixed in `skills/paclet-docs/SKILL.md`.
+
+  1. **`CheckPaclet` is not a paclet linter, and step 3 was built on it.** It wraps `Wolfram`PacletCICD`CheckPaclet`, whose first definition is `CheckPaclet[dir_File?DirectoryQ] := CheckPaclet[findDefinitionNotebook@dir]` — it wants a Paclet *Repository* definition notebook. Against a plain paclet it answers `CheckPaclet::invfile` and the MCP wrapper dies with `AgentTools::Internal::UnhandledDownValues::formatCheckResult`. The skill's only verification gate could never have run.
+  2. **`CreateSymbolDoc` does not declare the `Documentation` extension.** It writes the page and leaves `PacletInfo.wl` alone, so the URI resolves to `Null` — the exact silent failure the Spec predicted, reproduced and then fixed by adding `{"Documentation", "Root" -> "Documentation", "Language" -> "English"}`.
+  3. **`Information` cannot verify a doc page.** It prints `::usage` from the kernel. `ConvertMathCells` printed a full usage line while having no page at all, so the check the Spec and the skill both named is one that cannot fail. `Documentation`ResolveLink` replaced it.
+  4. **`pacletName` must not repeat the publisher.** `"WolframInstitute/MathNotebook"` plus `publisherID` produced `WolframInstitute/WolframInstitute/MathNotebook/ref/…`.
+  5. **One statement per code block.** Two become a `Defer[a, b]` that is visible in the rendered input cell. `a; b` on one line is fine.
+
+  **The finding that shaped the deliverable: there is no unevaluated code block.**
+  A ` ```wl-input ` fence is evaluated like any other and its output is written into the page — on `NotebookPut[ImportLaTeXDocument["paper.tex"]]` it wrote `NotebookPut[WolframInstitute`MathNotebook`PackageScope`latexToNotebook[$Failed]]`, an internal symbol presented as a result.
+  19 of MathNotebook's 21 symbols act on the front end selection, an open notebook, or the network, so they cannot have an evaluated example that means anything.
+  Those pages ship with Usage and `Details & Options` and an empty Basic Examples section, which was the user's call when asked.
+- **Learned:** the Spec's decisive acceptance criterion — "resolves in-product via `?Symbol`" — was the weakest of the three checks available, and `CheckPaclet`, the one the skill leaned hardest on, does not apply to this class of paclet at all. Both were settled from tool contracts in T1 rather than by running them, which is exactly the reading T1 flagged as untested.
+  The general lesson for the plugin: a paclet's public API shape decides whether generated reference docs can carry examples, and a front-end-driven paclet cannot. Worth asking before promising examples.
+  Also owed: `MathNotebook/Scripts/PublishPaclet.wls:26` stages a fixed `{"Kernel", "FrontEnd", "Assets", "Tests"}` and would drop `Documentation/` from anything published — T5's problem, recorded in Blocked.
+- **Next:** T5 — wire docs into `build-paclet` and `publish-paclet`, deploy them, and fix fixed-list publish scripts.
+
 ## Blocked
 
-- **T4 needs a human at a front end.** `CheckPaclet` runs headless, but "resolves in-product via `?Symbol` / F1" is the acceptance criterion the Spec calls decisive, and F1 in the Documentation Center is not verifiable from here.
-- **T5 should be re-scoped** to include deploying the built docs, per T2's finding — that deployment is what made the retirement safe in principle, and it is now owed.
-
-T3 is done. Guide pages are out of scope, so the official MCP set's guide-page gap no longer matters.
+- **The F1 step is still owed by a human.** Every doc URI now resolves headlessly from a real install, which is a strictly stronger check than the `Information` one the Spec proposed, but pressing F1 in the Documentation Center is not verifiable from here. Outstanding on `WolframInstitute/MathNotebook` 0.1.11, currently installed with docs.
+- **T5 is re-scoped** to include deploying the built docs, per T2's finding, and to stage `Documentation/` in publish scripts that copy a fixed directory list — `MathNotebook/Scripts/PublishPaclet.wls:26` is one such, staging only `{"Kernel", "FrontEnd", "Assets", "Tests"}`.
 
 ## Decisions
 
