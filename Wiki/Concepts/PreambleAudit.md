@@ -2,6 +2,8 @@
 
 *[ LLM Generated ]*
 
+> The cut measured here is real in bytes, but it moved the **cold-start token** cost by only ~1 % (31,479 → 31,187) — that figure is dominated by MCP tool schemas. Measured in T7: [AutonomousPipeline § T6's cut barely moved this number](AutonomousPipeline.md#t6s-cut-barely-moved-this-number).
+
 What belongs in an auto-loaded `CLAUDE.md` and what does not.
 Measured 2026-07-28 against this repo's 16.9 kB `CLAUDE.md`, for `EvaluateWorkItemsEfficiency` T6.
 

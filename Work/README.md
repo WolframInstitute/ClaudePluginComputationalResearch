@@ -24,9 +24,9 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-- **EvaluateWorkItemsEfficiency** — next: T7, implement the autonomous pipeline (driver script, `/auto-run`, `revise`'s autonomous mode, the eligibility markers), then T8 to trial it supervised.
-  T6 cut the fixed preamble from 27.9 kB to 16.3 kB first, so the pipeline is now worth building.
-  T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md), T2's in [Wiki/Concepts/ProgressWikiSplit.md](../Wiki/Concepts/ProgressWikiSplit.md), T3's format decision — now in force — in [Wiki/Concepts/ItemFileFormat.md](../Wiki/Concepts/ItemFileFormat.md), T4's pipeline spec in [Wiki/Concepts/AutonomousPipeline.md](../Wiki/Concepts/AutonomousPipeline.md), and T6's audit in [Wiki/Concepts/PreambleAudit.md](../Wiki/Concepts/PreambleAudit.md).
+- **EvaluateWorkItemsEfficiency** — next: T8, trial the pipeline supervised on one real item and confirm the stop conditions fire.
+  T7 built it — `scripts/auto-run.sh` behind `/auto-run` — and verified every stop condition against a stub; no item is marked `> Autonomous: allowed` yet, and T8 should mark a throwaway rather than this one.
+  T1's measurement is in [Wiki/Concepts/SessionInformationBudget.md](../Wiki/Concepts/SessionInformationBudget.md), T2's in [Wiki/Concepts/ProgressWikiSplit.md](../Wiki/Concepts/ProgressWikiSplit.md), T3's format decision — now in force — in [Wiki/Concepts/ItemFileFormat.md](../Wiki/Concepts/ItemFileFormat.md), T4's spec and T7's implementation map in [Wiki/Concepts/AutonomousPipeline.md](../Wiki/Concepts/AutonomousPipeline.md), and T6's audit in [Wiki/Concepts/PreambleAudit.md](../Wiki/Concepts/PreambleAudit.md).
 
 `AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.
 `PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.

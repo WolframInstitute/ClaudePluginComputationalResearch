@@ -87,6 +87,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **revise** | Human revision protocol for deliverables — skill only, no command |
 | `check-env` | Check kernel and MCP availability — command only, no skill |
 | `load-project` | Summarize project status — command only, no skill |
+| `auto-run` | Work an opted-in item unattended, one cold session per task, onto `auto/<Item>` — command only, no skill |
 
 ## 📄 License
 

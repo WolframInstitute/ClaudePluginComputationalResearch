@@ -26,7 +26,7 @@ ARCHITECTURE.md                — this file
 The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (27)
+## Scripts (28)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -54,19 +54,23 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
+| `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>` |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (22)
+## Commands (23)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
-Two commands have no skill behind them:
+Three commands have no skill behind them:
 
 | Command | Runs |
 |---------|------|
 | `check-env` | `scripts/check-env.sh` + an MCP ping; reports live license headroom |
 | `load-project` | reads `Wiki/` + `Work/` status |
+| `auto-run` | `scripts/auto-run.sh`; then reads the digest it names and reports the stop reason |
+
+The `plugin:` prefix is **mandatory** headless — `claude -p "/next-session"` is a zero-cost no-op that reports `is_error: false`, while `/computational-research:next-session` expands. This is why `auto-run` verifies each run rather than trusting its exit status.
 
 ## Templates (in skills/new-project/assets/)
 

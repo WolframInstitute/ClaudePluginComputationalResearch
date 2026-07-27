@@ -20,3 +20,6 @@ p135246.github.io/
 
 # Tooling
 .serena/
+
+# Autonomous run digests — a human review surface, read once, off every read path
+Work/Runs/

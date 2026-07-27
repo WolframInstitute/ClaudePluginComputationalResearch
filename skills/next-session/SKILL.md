@@ -85,6 +85,7 @@ When off, skip.
 ## 8. Commit
 
 If the user commits, use the `commit` skill. git history is now the project's audit trail, so write a message that names the item and task.
+In an autonomous run (see `revise` § *Autonomous mode*) there is no user to ask: commit unconditionally, on the `auto/<Item>` branch you were started on. The driver reads the new commit and the newly checked box as proof the task ran.
 In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` and the dev-repo tracking (`Work/`, `Wiki/`, `Code/`) on `main` — see [paclet-worktree.md](paclet-worktree.md).
 
 ## 9. Stop

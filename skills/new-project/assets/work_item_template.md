@@ -3,6 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: research    <!-- research | formalization | refactor | investigation -->
+<!-- Add `> Autonomous: allowed` here to let /auto-run work this item unattended; absent means no. -->
 <!-- Status is the folder: Active/ Backlog/ Done/ Dropped/. Move the file to change it. -->
 <!-- These five sections are the whole file. Format: Wiki/Concepts/ItemFileFormat.md -->
 
@@ -31,7 +32,8 @@ Function signatures, data shapes, theorem statements — the contract to build a
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
 - [ ] T1 — ...
-- [ ] T2 — ...
+- [ ] T2 — ...    <!-- append `(human)` to a task /auto-run must not run unattended -->
+
 
 ### Done
 

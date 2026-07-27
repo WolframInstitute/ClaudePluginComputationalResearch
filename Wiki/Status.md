@@ -34,6 +34,9 @@ None of the harness schedulers can drive it: `CronCreate`, `/loop`, and backgrou
 One headless `claude -p` per task is the only mechanism that starts genuinely cold, and it costs a measured 31,479 input tokens of preamble each time — which puts T6's `CLAUDE.md` audit ahead of implementation rather than after it.
 `revise`'s human gate is deferred rather than dropped: autonomous work lands on `auto/<Item>`, a gitignored per-run digest is the "present" step, and the human's merge is the "approve".
 Eligibility is opt-in and fail-closed, and the driver verifies each run by new commit plus newly checked box — because an unprefixed plugin slash command headless is a zero-cost no-op that reports success.
+That loop is now built: `scripts/auto-run.sh` behind `/auto-run`, with the deferred gate in `revise` § *Autonomous mode* and the `> Autonomous: allowed` / `(human)` markers in `work`.
+Every stop condition fires as specified against a stub `claude` in a fixture repo; none has yet met a real session, which is T8.
+Building it also re-measured the cold start at 31,187 input tokens against 31,479 before the preamble split — T6's 11.6 kB cut moved it ~1 %, so the pipeline's per-task floor is set by the configured MCP tool schemas, not by `CLAUDE.md`.
 
 That preamble has now been cut — see [Preamble audit](Concepts/PreambleAudit.md).
 Of this repo's 16.9 kB `CLAUDE.md`, 47 % was inventory: the Skills table was a third copy of content the harness already injects as 9.6 kB of skill descriptions, and the tables had drifted anyway (headings claimed 20 skills and 21 commands against 21 and 22 on disk) while consuming 18 of the file's 26 commits.
@@ -41,6 +44,7 @@ Inventory and reference moved to a read-on-demand `ARCHITECTURE.md`; `CLAUDE.md`
 
 ## Recent changes
 
+- 2026-07-28 — Built the autonomous pipeline: `scripts/auto-run.sh`, `/auto-run`, `revise`'s autonomous mode, and the two eligibility markers; stop conditions verified against a stub, not yet against a real item.
 - 2026-07-28 — Audited the auto-loaded preamble and split `CLAUDE.md` (−69 %) into policy plus a read-on-demand `ARCHITECTURE.md`; see [Preamble audit](Concepts/PreambleAudit.md).
 - 2026-07-27 — Specified the autonomous pipeline in [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md); rejected all three harness schedulers as drivers and deferred the `revise` gate to a branch plus digest.
 - 2026-07-27 — Decided the work item file format in [The work item file format](Concepts/ItemFileFormat.md) and revised `work`, `next-session`, and the templates to match.

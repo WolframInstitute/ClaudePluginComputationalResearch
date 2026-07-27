@@ -57,6 +57,30 @@ If an article becomes wrong because code changed, just fix it.
 
 The LLM should mention wiki updates in passing ("I updated the wiki article for X") but not present article text for review unless the user asks to see it.
 
+## Autonomous mode — the gate is deferred, not dropped
+
+A session driven by `scripts/auto-run.sh` has no human to wait for.
+You are in it when there is no interactive user: a headless `claude -p` run, on an `auto/<Item>` branch, against an item marked `> Autonomous: allowed`.
+
+The protocol's purpose is that **nothing lands unreviewed** — not that a human is present when it is generated.
+Those come apart, so in autonomous mode the loop above becomes:
+
+```
+LLM generates → commits to auto/<Item> → the run digest presents → the human's merge approves
+```
+
+The blocking wait is removed; the gate is not.
+Work never reaches `main` without a human merging it, which is the same shape as the paclet-worktree rule.
+
+What changes:
+
+- **Do not stop to present.** Finish the task, commit, and let the digest be the presentation.
+- **Do not guess at a real decision.** When the task turns on a choice you would otherwise have asked about, write the question into `## Hand-off` on a line containing `needs-human:`, commit that, and stop. The driver halts the whole run on it. A wrong autonomous call is invisible until the digest and acquires later tasks on top of it, so halting is cheap and guessing is not.
+- **Protected content stays protected.** User-written Specs, code, and prose are not editable without approval — describe the change in `## Hand-off` as a `needs-human:` question instead.
+- **A `(human)` task is not yours.** A task line marked `(human)` halts the driver before the run; if you find yourself in one anyway, stop and say so.
+
+Everything else is unchanged: wiki prose still needs no sign-off, and the deliverable is held to the same standard — the review is later, not lighter.
+
 ## Protected content
 
 When the user has **explicitly edited or written** something, the LLM must not silently overwrite it.

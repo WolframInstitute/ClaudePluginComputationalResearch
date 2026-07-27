@@ -4,7 +4,8 @@
 
 The specification for running `Work/` items unattended: what drives the loop, how an item is selected with no human present, when the loop stops, and what happens to the `revise` gate.
 Decided 2026-07-27 for `EvaluateWorkItemsEfficiency` T4, against [T3's item format](ItemFileFormat.md) and [T1's budget](SessionInformationBudget.md).
-Specification only — nothing here is implemented; T7 builds it and T8 trials it.
+Built 2026-07-28 by T7 — see [Implementation](#implementation) for where each part lives.
+It has never run against a real item; T8 is the supervised trial.
 
 ## The harness cannot schedule this, and the reason is structural
 
@@ -41,6 +42,18 @@ This is why stop condition 5 below checks for work actually done rather than tru
 **Cold start costs 31,479 input tokens in this repo** — 14,519 cache-creation plus 16,960 cache-read, measured against a 10-token prompt.
 That is T1's headline re-measured in tokens instead of bytes, and it is the price of clearing context, paid once per task.
 A three-task run spends ~94k tokens of preamble before it opens an item file.
+
+**Two argument-shape traps that break the driver silently or fatally** (found in T7, by running it):
+
+- `--allowedTools` is **variadic**, so it consumes every positional after it — including the prompt, even when the tool list is passed as one comma-separated argument. The run then dies with `Input must be provided either through stdin or as a prompt argument`. The prompt must come **before** the flags: `claude -p "<prompt>" --output-format json …`.
+- A clean run reports `terminal_reason: "completed"`, not `"end_turn"` (`stop_reason` *is* `end_turn`). A driver that checks both fields against the same value halts on every success.
+
+### T6's cut barely moved this number
+
+Re-measured after the preamble split, on the same shape of trivial prompt: **31,187 input tokens** — 13,882 cache-creation plus 17,305 cache-read, against 31,479 before.
+Removing 11.6 kB of `CLAUDE.md` moved the cold-start cost by about 1 %.
+That confirms the caveat this article already carried: the figure is dominated by the MCP tool schemas for every server configured on this machine, not by the plugin's own preamble.
+It does not retract [T6](PreambleAudit.md), which measured bytes on a real read path and was right on its own terms — but it does settle where the pipeline's per-task floor actually comes from, and the lever is the MCP server set, not `CLAUDE.md`.
 
 ### The consequence for sequencing
 
@@ -120,10 +133,48 @@ Gitignored deliberately.
 It is a human review surface read once, so under the one-destination rule it must not sit on any session's read path — the same reasoning that moved rationale out of `next-session/SKILL.md` and into articles like this one.
 Because it accumulates the per-task usage figures, the pipeline re-measures T1's budget on itself on every run, which is the only proposed mechanism that keeps that measurement from going stale.
 
+## Implementation
+
+Built by T7, 2026-07-28.
+
+| the spec's | is |
+|---|---|
+| driver | `scripts/auto-run.sh` — bash, needs `claude` and `jq` |
+| its command | `commands/auto-run.md` — passes arguments through, then reads the digest and reports the stop reason |
+| the deferred gate | `revise` § *Autonomous mode*, which `next-session` already reads every session |
+| eligibility markers | documented in `work` § *The autonomy markers*, seeded as comments in `work_item_template.md` |
+| unconditional commit | one clause in `next-session` step 8 — the liveness check is only sound if an autonomous run always commits |
+
+### Stop reasons
+
+The driver exits `0` for the top group and `1` for the rest, and names the reason in the digest and on stderr.
+
+| reason | meaning |
+|---|---|
+| `item-complete` | no unchecked task remains — condition 1, the success exit |
+| `cap-tasks` / `cap-wallclock` / `cap-cost` | a backstop from condition 6 |
+| `needs-human` | condition 2 — the run wrote a question into `## Hand-off` rather than guessing |
+| `task-gated` | the next task line carries `(human)` |
+| `dirty-tree` | condition 4 — someone is mid-edit |
+| `no-commit` / `no-box` | condition 5, liveness — the run reported success and closed nothing |
+| `nonzero-exit` / `is-error` / `stop-reason` / `terminal-reason` / `permission-denied` | condition 3 |
+| `unparseable-output` | the run's stdout was not JSON; the digest quotes the first 2 kB of it |
+
+Two implementation facts the specification did not anticipate:
+
+**The digest and the dirty-tree condition collide.**
+Writing `Work/Runs/<run>.md` makes the tree dirty, so the *second* task of every run would halt on condition 4 in any repo that has not gitignored the digest.
+The driver excludes the path from its own check (`git status --porcelain -- . ':(exclude)Work/Runs/'`) rather than depending on a `.gitignore` it does not control, so it is correct in a scaffolded project too.
+The rule is still in this repo's `.gitignore` and in `gitignore_dev.template`, because a digest that shows up in `git status` is noise for the human.
+
+**Token accounting must read `.usage` alone.**
+The run JSON also carries `modelUsage`, which repeats the same counts keyed by model, so a recursive sum double-counts every figure the pipeline reports about itself.
+
 ## What this does not settle
 
-- **Nothing is implemented, and none of it has run.** The loop is specified against measured harness behaviour, but the stop conditions have never fired in anger. T8's supervised trial is where the specification meets an actual item.
+- **None of it has run against a real item.** The stop conditions were exercised against a stub `claude` in a fixture repo — every one fires as specified — but a stub cannot fail the way a session does. T8's supervised trial is where the specification meets an actual item.
 - **The `(human)` marker and `> Autonomous: allowed` are untested format additions.** Both are hand-writable and diff-friendly, as the Spec required, but no item carries either yet.
+- **The allowlist is a guess.** It covers the `git` invocations `next-session` makes and nothing else; a task that needs a Wolfram MCP call or a `Bash` form outside it halts on `permission-denied`. That is the designed behaviour — the loop reports what to add rather than being handed everything — but the first real runs will be a sequence of `--allow` additions before they are useful work.
 - **Item selection is deliberately weak.** Requiring exactly one eligible item means the pipeline cannot work a queue. Priority ordering was rejected rather than solved, because a wrong autonomous ordering is invisible until the digest and the cost of the restriction is a human typing one item name.
 - **The 31,479-token figure is environment-specific.** It includes the MCP tool schemas for every server configured on this machine. A scaffolded research project with a 3.3 kB `CLAUDE.md` and fewer servers pays materially less, so the number bounds this repo, not the plugin.
 - **Whether cold start is worth its price is still open.** The pipeline pays ~31.5k tokens per task to avoid context rot. That trade has been costed on one side only; what a warm session loses to rot remains unmeasured, and T1's open question about un-instrumented reading time applies here too.

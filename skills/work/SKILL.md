@@ -115,6 +115,17 @@ When a later pass finds a claim in an archived Progress block that is false toda
 
 Items written before this format keep their old Progress blocks; the next session on one adds a `## Hand-off` and writes its own line in the new shape.
 
+### The autonomy markers
+
+Two optional, hand-written markers control whether `/auto-run` may work the item unattended.
+Both are opt-in and fail closed — an unmarked item is never picked.
+
+- **`> Autonomous: allowed`** — one more `>` header line beside `> Type:`, above `## Spec`. It makes the whole item eligible. Add it only when the user asks for it; it is their decision, not the drafting session's.
+- **`(human)`** — appended to a single task line. The driver halts before running that task, so an author can gate one step of an otherwise autonomous item — a spec that must be presented, a deliverable the user wants to see generated.
+
+Neither adds a section, so the five-section rule holds.
+The driver, the stop conditions, and why the `revise` gate survives this: [Wiki/Concepts/AutonomousPipeline.md](../../Wiki/Concepts/AutonomousPipeline.md).
+
 ## Updating the spec later
 
 The Spec is the contract, and it is **edited in place** — a session that finds it wrong replaces the sentence rather than appending an amendment.
