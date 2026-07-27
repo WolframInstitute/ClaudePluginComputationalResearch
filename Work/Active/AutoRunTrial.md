@@ -35,16 +35,17 @@ The item's value is the trial itself; its tasks are deliberately small, textual,
 
 One unchecked box ≈ one focused session.
 
-- [ ] T1 — Write `Wiki/Concepts/AutoRunOperations.md`: an operator's runbook for `/auto-run` — what to do for each stop reason in the driver's table, how to grow the allowlist from a `permission-denied` halt, how to read a digest, and how `auto/<Item>` reaches `main`. Link it from `Wiki/Index.md`.
 - [ ] T2 — Decide whether `/auto-run` should appear in the user-facing command list in `README.md`, and add it if so. (human)
 
 ### Done
 
+- [x] S1 T1 — Write `Wiki/Concepts/AutoRunOperations.md`: an operator's runbook for `/auto-run` — what to do for each stop reason in the driver's table, how to grow the allowlist from a `permission-denied` halt, how to read a digest, and how `auto/<Item>` reaches `main`. Link it from `Wiki/Index.md`.
+
 ## Hand-off
 
-T1 is the first task any autonomous run will pick, and it is being run under supervision — `EvaluateWorkItemsEfficiency` T8 is watching the driver, not this article.
-
-Write the runbook against `scripts/auto-run.sh` as it actually is, not against the specification; where the two disagree, the script is the fact and the disagreement is worth a sentence.
+T1 ran as an **interactive** `/next-session`, not through `scripts/auto-run.sh`, so the item has not yet given the driver a real session — which was its whole purpose.
+The only remaining task, T2, is `(human)`, so `/auto-run AutoRunTrial` will now halt on `task-gated` before spawning anything.
+`EvaluateWorkItemsEfficiency` T8 therefore has a choice to make and this item cannot make it: gate-only is a real but thin trial, so T8 either accepts it, adds a fresh sign-off-free task here, or points the driver at another throwaway.
 
 ## Decisions
 
@@ -56,3 +57,5 @@ Write the runbook against `scripts/auto-run.sh` as it actually is, not against t
 ## Progress
 
 Append-only, one line per session; nothing reads it.
+
+- **S1** 2026-07-28 T1 — wrote the `/auto-run` operator runbook and linked it from the index, the pipeline article, and Status. → [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md)

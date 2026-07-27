@@ -38,12 +38,17 @@ That loop is now built: `scripts/auto-run.sh` behind `/auto-run`, with the defer
 Every stop condition fires as specified against a stub `claude` in a fixture repo; none has yet met a real session, which is T8.
 Building it also re-measured the cold start at 31,187 input tokens against 31,479 before the preamble split — T6's 11.6 kB cut moved it ~1 %, so the pipeline's per-task floor is set by the configured MCP tool schemas, not by `CLAUDE.md`.
 
+Operating that loop is now written down — see [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md).
+It is the practical half of the pipeline article: the stop-reason table read as instructions, how to grow the allowlist from a `permission-denied` halt, and why an `auto/<Item>` branch must be reviewed before the next run rather than after several.
+Writing it against the script rather than the specification surfaced five small divergences — selection globs `Work/Active/` instead of reading the index, the `(human)` marker matches anywhere in a task line, `unparseable-output` quotes 1 kB of stdout plus 1 kB of stderr rather than 2 kB, `item-vanished` and `interrupted` are missing from the documented stop reasons, and exit codes are three-valued (`2` for preflight, which writes no digest, and `130` for an interrupt).
+
 That preamble has now been cut — see [Preamble audit](Concepts/PreambleAudit.md).
 Of this repo's 16.9 kB `CLAUDE.md`, 47 % was inventory: the Skills table was a third copy of content the harness already injects as 9.6 kB of skill descriptions, and the tables had drifted anyway (headings claimed 20 skills and 21 commands against 21 and 22 on disk) while consuming 18 of the file's 26 commits.
 Inventory and reference moved to a read-on-demand `ARCHITECTURE.md`; `CLAUDE.md` is 5.3 kB and keeps only policy, taking the fixed preamble from 27.9 kB to 16.3 kB.
 
 ## Recent changes
 
+- 2026-07-28 — Wrote the `/auto-run` operator runbook against the script as built, recording five places it departs from its specification; see [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md).
 - 2026-07-28 — Built the autonomous pipeline: `scripts/auto-run.sh`, `/auto-run`, `revise`'s autonomous mode, and the two eligibility markers; stop conditions verified against a stub, not yet against a real item.
 - 2026-07-28 — Audited the auto-loaded preamble and split `CLAUDE.md` (−69 %) into policy plus a read-on-demand `ARCHITECTURE.md`; see [Preamble audit](Concepts/PreambleAudit.md).
 - 2026-07-27 — Specified the autonomous pipeline in [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md); rejected all three harness schedulers as drivers and deferred the `revise` gate to a branch plus digest.
