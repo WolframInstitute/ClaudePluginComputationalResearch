@@ -44,13 +44,14 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T6 — Reduce the unconditional preamble, T1's largest term: audit this repo's 16.6 kB `CLAUDE.md` against `README.md` for the duplicated skill/script/command/template tables and decide what a session actually needs auto-loaded. *Added by S3; T3 cut the skill-file share of that term but left `CLAUDE.md`, which is 60 % of it. Resequenced ahead of T7 by S4: at 31.5 k tokens of preamble per cold task, this is the pipeline's dominant cost line, not a cleanup.*
-- [ ] T7 — Implement the pipeline specified in [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md): the driver script, its `/auto-run` command, `revise`'s autonomous-mode section, and the `> Autonomous: allowed` / `(human)` markers. Obliges a `CLAUDE.md` table update. *Added by S4.*
+- [ ] T7 — Implement the pipeline specified in [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md): the driver script, its `/auto-run` command, `revise`'s autonomous-mode section, and the `> Autonomous: allowed` / `(human)` markers. Obliges an `ARCHITECTURE.md` table update. *Added by S4.*
 - [ ] T8 — Trial the pipeline supervised on one real item before anything runs unattended; confirm the stop conditions fire as specified. *Added by S4.*
+- [ ] T9 — Apply T6's must-be-resident test to the `CLAUDE.md` this plugin *generates*: `claude_template.md` + `code_style_template.md` is 10.5 kB (12.6 kB for math-research) auto-loaded into every session of every scaffolded project, two thirds of it the code-style block. *Added by S5; measured but not audited in T6. Delete if downstream projects are out of scope for this item.*
 - [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Unblocked by T3: the format is decided, harvested blocks are not pruned, and a claim that is false today gets a one-line `> Superseded:` marker.*
 
 ### Done
 
+- [x] T6 — Audit the auto-loaded preamble and decide what a session needs resident. (S5)
 - [x] T4 — Specify the autonomous pipeline: item selection, stop conditions, failure handling, the `revise`-protocol question, the per-run digest, and the harness mechanism. (S4)
 - [x] T3 — Decide and document the target format for Spec / Progress / Decisions, including the pruning question, and revise `work` + `next-session` to match. (S3)
 - [x] T2 — Audit the Progress-vs-Wiki split: classify the "Learned" notes as durable or session-local and price the misplacement. (S2)
@@ -58,10 +59,11 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T6 is next, and it moved ahead of implementation on purpose: the pipeline pays 31.5 k tokens of fixed preamble per cold task, so `CLAUDE.md` is what decides whether T7 is worth building.
-The pipeline itself is specified and approved — [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md) — with T7 to implement and T8 to trial it supervised.
-Both of the gaps T3 left are closed there: the `revise` gate is deferred to a branch-plus-digest rather than dropped, and the digest is a gitignored per-run file.
+T7 is next — implement the pipeline, now that T6 has cut the preamble it pays: the fixed term is 16.3 kB, down from 27.9 kB, with the inventory in a read-on-demand `ARCHITECTURE.md`.
+T7's own table update therefore lands in `ARCHITECTURE.md`, not `CLAUDE.md`, and the `/auto-run` command needs a `README.md` row too.
+The pipeline spec is approved and unchanged — [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md).
 One thing to watch in T7: an unprefixed plugin slash command headless is a zero-cost no-op that reports success, so the driver's liveness check is not optional.
+Worth re-measuring the cold-task token figure once the driver runs, since T6's cut is a byte measurement and the 31.5 k baseline was tokens including MCP schemas.
 This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
 
 ## Decisions
@@ -83,12 +85,15 @@ This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progr
 | 2026-07-27 (S4) | Eligibility is opt-in and fail-closed — `> Autonomous: allowed` per item, `(human)` per task, and a hard stop unless exactly one eligible item is active. | An unattended wrong pick is invisible until the digest; the cost of the restriction is a human typing one item name. Priority ordering was rejected, not solved. |
 | 2026-07-27 (S4) | The driver verifies each run (new commit + a newly checked box) rather than trusting its exit status, and never cleans up after a failure. | Measured: an unprefixed plugin slash command headless is a zero-cost no-op reporting `is_error: false`, so exit status alone cannot detect a run that did nothing. An unattended `git reset --hard` can destroy work no human has seen. |
 | 2026-07-27 (S4) | T6 resequenced ahead of T7/T8. | The cold start measured at 31.5 k input tokens in this repo, so the fixed preamble — 60 % of it `CLAUDE.md` — is the pipeline's dominant cost line and decides whether implementing it is worthwhile. |
+| 2026-07-28 (S5) | Inventory and reference leave the auto-loaded `CLAUDE.md` for a read-on-demand `ARCHITECTURE.md`, and the Skills table is **deleted** rather than moved. | Inventory was 47 % of the file, and the harness already injects 9.6 kB of skill descriptions unconditionally with `README.md` carrying a second copy — a third was lossy and paid every turn. The tables also drifted (headings said 20 skills / 21 commands against 21 / 22) while taking 18 of the file's 26 commits. |
+| 2026-07-28 (S5) | The 1.5 kB Wolfram kernel policy stays resident, though most sessions never spawn a kernel. | It is the largest surviving block and the obvious next cut, but a license error is unfindable after the fact and the section is what tells a session the MCP-first rule exists at all — the test is "must be known before you know to look", and this passes it. |
 
 ## Progress
 
 Append-only, one line per session; nothing reads it.
 S1 and S2 predate the format and keep their blocks.
 
+- **S5** 2026-07-28 T6 — split `CLAUDE.md` 16.9 → 5.3 kB, taking the fixed preamble to 16.3 kB; inventory and reference moved to a new root `ARCHITECTURE.md`. → [PreambleAudit](../../Wiki/Concepts/PreambleAudit.md), `Wiki/Concepts/measure_preamble.py`
 - **S4** 2026-07-27 T4 — specified the autonomous pipeline against measured harness behaviour; added T7/T8 and moved T6 ahead of them. → [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)
 - **S3** 2026-07-27 T3 — decided the item file format and revised `work`, `next-session` (−613 B), both item templates, `provenance`, `CLAUDE.md`, and this file to match. → [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md), `Wiki/Concepts/measure_item_sections.py`
 

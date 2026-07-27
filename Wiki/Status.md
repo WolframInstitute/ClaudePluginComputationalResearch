@@ -4,7 +4,7 @@
 
 Wiki initialized 2026-07-27, during `AdoptMarkdownToNotebook` T4.
 Scope is deliberately narrow: external dependencies and cross-cutting concepts.
-Plugin architecture stays in `CLAUDE.md` / `README.md` so there is only one copy to keep current.
+Plugin architecture stays in `ARCHITECTURE.md` / `README.md` so there is only one copy to keep current.
 
 `new-notebook` has two conversion engines.
 The built-in WL Markdown importer handles plain sources; the rich engine — [MarkdownToNotebook](Resources/MarkdownToNotebook.md) at a pinned SHA — handles sources with YAML frontmatter or LaTeX math.
@@ -35,8 +35,13 @@ One headless `claude -p` per task is the only mechanism that starts genuinely co
 `revise`'s human gate is deferred rather than dropped: autonomous work lands on `auto/<Item>`, a gitignored per-run digest is the "present" step, and the human's merge is the "approve".
 Eligibility is opt-in and fail-closed, and the driver verifies each run by new commit plus newly checked box — because an unprefixed plugin slash command headless is a zero-cost no-op that reports success.
 
+That preamble has now been cut — see [Preamble audit](Concepts/PreambleAudit.md).
+Of this repo's 16.9 kB `CLAUDE.md`, 47 % was inventory: the Skills table was a third copy of content the harness already injects as 9.6 kB of skill descriptions, and the tables had drifted anyway (headings claimed 20 skills and 21 commands against 21 and 22 on disk) while consuming 18 of the file's 26 commits.
+Inventory and reference moved to a read-on-demand `ARCHITECTURE.md`; `CLAUDE.md` is 5.3 kB and keeps only policy, taking the fixed preamble from 27.9 kB to 16.3 kB.
+
 ## Recent changes
 
+- 2026-07-28 — Audited the auto-loaded preamble and split `CLAUDE.md` (−69 %) into policy plus a read-on-demand `ARCHITECTURE.md`; see [Preamble audit](Concepts/PreambleAudit.md).
 - 2026-07-27 — Specified the autonomous pipeline in [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md); rejected all three harness schedulers as drivers and deferred the `revise` gate to a branch plus digest.
 - 2026-07-27 — Decided the work item file format in [The work item file format](Concepts/ItemFileFormat.md) and revised `work`, `next-session`, and the templates to match.
 - 2026-07-27 — Audited where the durable knowledge in `Work/` actually belongs; classified all 127 `Learned` claim-lines plus an 18 % sample of `Did`, in [Progress vs Wiki](Concepts/ProgressWikiSplit.md).

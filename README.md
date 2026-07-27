@@ -60,6 +60,7 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 ## 🧩 Skills & Commands
 
 Each skill is invoked by the slash command of the same name, `/computational-research:<skill>`.
+Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 | Skill / Command | Description |
 |-------|-------------|

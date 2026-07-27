@@ -47,6 +47,8 @@ A three-task run spends ~94k tokens of preamble before it opens an item file.
 The pipeline's dominant cost line is the fixed preamble, not the item file.
 So T6 — auditing this repo's 16.6 kB `CLAUDE.md` against `README.md` for duplicated tables — is not a cleanup item that can follow the pipeline.
 It is the term that decides whether the pipeline is affordable, and it belongs **before** T7.
+That audit has since run — [Preamble audit](PreambleAudit.md) — and cut the bookkeeping half of the preamble from 27.9 kB to 16.3 kB, with the inventory moved to a read-on-demand `ARCHITECTURE.md`.
+The 31,479-token figure above predates it and is not re-measured; the caveat below still applies, since most of that number is MCP tool schemas rather than `CLAUDE.md`.
 
 ## The `revise` gate is deferred, not deleted
 

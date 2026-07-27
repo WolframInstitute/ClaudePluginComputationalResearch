@@ -2,6 +2,10 @@
 
 A Claude plugin for AI-assisted computational research with a wiki-based knowledge management system, human revision workflow, guided tours, Wolfram paclet development, LaTeX/Typst paper scaffolding, an optional cited scientific journal, notebook generation, and session-based work tracking (spec/tasks/progress).
 
+Inventory — layout, scripts, commands, templates, project types, notebook conversion engines, how to add a skill — is in [ARCHITECTURE.md](ARCHITECTURE.md), read on demand.
+The skills themselves need no lookup: each one's `description:` frontmatter is already in context.
+This file carries only what a session must know *before* it knows to look something up.
+
 ## Source formatting
 
 Semantic line breaks: **on**
@@ -33,203 +37,21 @@ If `free <= 0`, the skill does **not** spawn `wolframscript`; it routes the work
 This policy is **detect + warn** — it never hard-blocks.
 The per-skill "Kernel execution (license-aware)" blocks are the short reminders of this rule; this section is authoritative.
 
-## Plugin Architecture
-
-```
-.claude-plugin/plugin.json     — plugin metadata and version
-skills/*/SKILL.md              — skill definitions (auto-discovered)
-skills/*/<topic>.md            — read-on-demand sibling docs, kept out of the unconditional read
-                                 (e.g. next-session/paclet-worktree.md, paclet-dev only)
-scripts/                       — bash and wolframscript utilities
-commands/                      — slash command definitions
-hooks/                         — PreToolUse hooks (e.g., block .nb reads)
-skills/new-project/assets/    — templates for scaffolding
-Wiki/                          — knowledge base: external dependencies, concepts
-Work/                          — execution state (spec/tasks/hand-off/decisions/progress per item)
-```
-
-### Skills (20)
-
-| Skill | Type | Purpose |
-|-------|------|---------|
-| `new-project` | scaffolding | Scaffold new projects (research, math-research, paclet-dev, paclet) |
-| `scaffold-paper` | scaffolding | Scaffold Paper/ with LaTeX (amsart, biblatex) or Typst templates; then edit the user-owned doc |
-| `journal` | scaffolding | Optional cited LaTeX/Typst journal (one day-file per day under entries/, dated def/thm/rem/claim); per-project toggle |
-| `search-wolfram` | content | Search Wolfram docs, Function Repository, Community, writings |
-| `search-math` | content | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
-| `init-wiki` | wiki | Create Wiki/ knowledge base from scratch |
-| `update-wiki` | wiki | Update articles, index, status, log after changes |
-| `check-wiki` | wiki | Audit wiki for staleness, gaps, broken links |
-| `provenance` | workflow | Optionally track prompts/intent behind generated artifacts (ledger + embedded back-pointers); per-project toggle |
-| `work` | workflow | Create/manage work items in Work/ (spec, tasks, per-session progress) |
-| `next-session` | workflow | Run one task per fresh session against a work item, then stop |
-| `revise` | protocol | Human revision loop — not invoked directly, other skills follow it |
-| `add-resource` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
-| `cite` | content | Generate BibTeX from arXiv ID or DOI |
-| `new-notebook` | content | Markdown-to-notebook pipeline via Wolfram MCP (research, computation, paper-analysis, theorem-proof templates) |
-| `research-notebook` | content | Research document notebook (definitions, conjectures + evidence, open questions, literature); rich-engine parser + MathNotebook post-processing, one-way from a readable `.md` with fingerprint-based edit detection; cloud-published, linked from README |
-| `lean` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
-| `start-tour` | presentation | Interactive guided walkthrough with code |
-| `paclet-docs` | paclet | Generate one symbol reference page per exported function via the official MCP doc tools; guide pages left to the author |
-| `build-paclet` | paclet | Build .paclet archive (every top-level item, docs off by default) and install locally |
-| `publish-paclet` | paclet | Build with docs, verify they resolve, publish to Wolfram Cloud, deploy the doc pages publicly, produce install + docs URLs |
-
-### Scripts (27)
-
-| Script | Language | Called by |
-|--------|----------|----------|
-| `scaffold-project.sh` | bash | new-project (research type) |
-| `scaffold-math-project.sh` | bash | new-project (math-research type) |
-| `scaffold-paclet-dev.sh` | bash | new-project (paclet-dev type) |
-| `scaffold-paclet.sh` | bash | new-project (paclet type) |
-| `scaffold-paper.sh` | bash | scaffold-paper skill (`--typst` for Typst) |
-| `scaffold-journal.sh` | bash | journal skill (`--typst` for Typst) |
-| `build_paclet.wls` | wolframscript | build-paclet skill |
-| `publish_paclet.wls` | wolframscript | publish-paclet skill |
-| `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls); stages every top-level paclet item |
-| `deploy_paclet_docs.wl` | wolframscript | publish-paclet skill (Get through the MCP); deploys Documentation/ pages as public cloud notebooks + HTML index, rewriting `paclet:` links |
-| `search_wolfram_docs.wls` | wolframscript | search-wolfram skill |
-| `search_function_repo.wls` | wolframscript | search-wolfram skill |
-| `search_wolfram_community.wls` | wolframscript | search-wolfram skill (URL constructor) |
-| `search_wolfram_writings.wls` | wolframscript | search-wolfram skill |
-| `search_wolfram_physics.wls` | wolframscript | search-wolfram skill |
-| `search_mathworld.wls` | wolframscript | search-math skill |
-| `search_nlab.wls` | wolframscript | search-math skill |
-| `search_oeis.wls` | wolframscript | search-math skill |
-| `search_dlmf.wls` | wolframscript | search-math skill |
-| `search_wikipedia_math.wls` | wolframscript | search-math skill |
-| `cite_from_id.wls` | wolframscript | cite skill |
-| `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet) |
-| `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
-| `check-env.sh` | bash | check-env command |
-| `recover_resources.sh` | bash | copied into projects, also add-resource |
-| `generate_notebooks.wls` | wolframscript | copied into projects |
-| `publish_notebooks.wls` | wolframscript | copied into projects |
-
-### Commands (21)
-
-| Command | Invokes |
-|---------|---------|
-| `new-project` | new-project |
-| `scaffold-paper` | scaffold-paper |
-| `journal` | journal |
-| `init-wiki` | init-wiki |
-| `update-wiki` | update-wiki |
-| `check-wiki` | check-wiki |
-| `search-wolfram` | search-wolfram |
-| `search-math` | search-math |
-| `add-resource` | add-resource |
-| `cite` | cite |
-| `new-notebook` | new-notebook |
-| `research-notebook` | research-notebook |
-| `lean` | lean |
-| `paclet-docs` | paclet-docs |
-| `build-paclet` | build-paclet |
-| `publish-paclet` | publish-paclet |
-| `work` | work |
-| `next-session` | next-session |
-| `provenance` | provenance |
-| `start-tour` | start-tour |
-| `check-env` | check-env.sh + MCP ping |
-| `load-project` | reads Wiki/ + Work/ status |
-
-### Templates (in skills/new-project/assets/)
-
-Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
-
-| Template | Purpose |
-|----------|---------|
-| `claude_template.md` | CLAUDE.md for research projects |
-| `math_claude_template.md` | CLAUDE.md for math-research projects |
-| `math_categories_template.md` | Math-domain taxonomy seed (adapted from PureMath) |
-| `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by new-notebook) |
-| `formal_definition_template.md` | Wiki/Definitions/ article template |
-| `formalization_checklist_template.md` | Work/Backlog/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
-| `work_item_template.md` | Work item skeleton: Spec / Tasks / Hand-off / Decisions / Progress (used by work, next-session); the five sections are the whole file, status is the folder (Active/Backlog/Done/Dropped) |
-| `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
-| `code_style_template.md` | Code-style rules + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
-| `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
-| `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |
-| `main_template.typ` | Typst article (imports macros.typ, native bibliography) |
-| `macros_template.typ` | Shared Typst preamble: style, math shorthand, theorem blocks |
-| `journal_template.tex` | LaTeX master journal doc (article + macros.sty, \input day-files, \printbibliography) |
-| `journal_template.typ` | Typst master journal doc (imports macros.typ, #include day-files, #bibliography) |
-| `latexmkrc_template` | latexmk config |
-| `tools_starter.wl` | Starter Wolfram code file |
-| `pacletinfo_template.wl` | PacletInfo.wl |
-| `kernel_main_template.wl` | Paclet main loader (Package + PackageExport + ClearAll) |
-| `usage_template.wl` | Usage.wl stub |
-| `run_tests_template.wls` | wolframscript test runner (submodule root) |
-| `run_all_tests_template.wl` | RunAllTests.wl (Tests/ directory) |
-| `readme_paclet_template.md` | Paclet README |
-| `gitignore_dev.template` | Dev repo .gitignore |
-| `gitignore_submodule.template` | Paclet submodule .gitignore |
-
-Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`, `{{GOALS}}`, `{{PACLET_NAME}}`, `{{ORG_NAME}}`, `{{AUTHOR}}`, `{{EMAIL}}`, `{{TITLE}}`, `{{ABSTRACT}}`, `{{CODE_DIR}}`, `{{ITEM_NAME}}`.
-
-## Project Types (scaffolding)
-
-The `new-project` skill asks users which type of project to create:
-
-- **research** (default) — Code/, Wiki/, Work/, Resources/, optional Paper/.
-  Open-ended exploration of a topic.
-- **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created, math-domain taxonomy seeded, optional Lean/ subdirectory.
-  Organised around precise theorems and definitions rather than open-ended exploration.
-  Pairs with `search-math`, `cite`, `lean`, and the `theorem-proof` notebook template.
-- **paclet-dev** — WolframInstitute-style dev repo with paclet submodules (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental work, Wiki/, .gitmodules.
-  Optional Paper/ (gitignored).
-  Work items that change paclet code land as PRs on the paclet submodules — developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree — while the dev repo's Wiki and Work stay linear on `main` (see the `next-session` skill).
-- **paclet** — standalone Wolfram paclet (double nesting), clean repo structure.
-  Optional Wiki/.
-
-All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not BeginPackage/EndPackage) for paclet code.
-
 ## Knowledge Base (Wiki)
 
 `Wiki/` is a plain-markdown knowledge base maintained by the LLM, initialized 2026-07-27.
 Its scope in **this** repo is deliberately narrow — external dependencies (with recovery info) and cross-cutting concepts.
-Plugin architecture stays in this file and `README.md`; do not mirror the skill/script/command tables into `Wiki/`, or there will be two copies to keep current.
+Plugin architecture stays in `ARCHITECTURE.md` and `README.md`; do not mirror the skill/script/command tables into `Wiki/`, or there will be two copies to keep current.
 
 No human sign-off is needed for wiki prose.
 Every article carries a `[ LLM Generated ]` marker under its `# Title`.
 Execution state — active items, next tasks — lives in `Work/README.md`, not `Wiki/Status.md`.
 
-### Notebook conversion engines
-
-`new-notebook` has two Markdown→cells engines and picks between them **by inspecting the source**, not by configuration:
-
-- **Built-in** — `ImportString[md, {"Markdown", "Notebook"}]`. The default.
-- **Rich** — `WolframInstitute/MarkdownToNotebook`, called as the local clone at pinned SHA `204db7c`, with `Template: Default` and `"Evaluate" -> False`.
-  Selected when the source has YAML frontmatter or LaTeX math, and only if `MarkdownToNotebook/` is present; otherwise it falls back to the built-in engine and says so.
-  Never clone it silently.
-
-See `Wiki/Resources/MarkdownToNotebook.md` for the pin, the recovery command, and why the reverse direction (`NotebookToMarkdown`) is used nowhere.
-`paclet-docs` does **not** use the rich engine — it uses the official MCP doc tools.
-
-`research-notebook` uses the rich engine as the **parser half of a two-half pipeline**: MarkdownToNotebook produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, equation numbering, and citations.
-The split is forced, not stylistic — the converter's `::: theorem` / `::: proof` divs exist only under `Template: Chapter` (which swaps in the WolframBookTools stylesheet, absent from a stock install), are **silently dropped** under `Default`, and even under `Chapter` give one `Theorem` style for every label, colliding section-derived numbers, no anchors, no cross-references, and no citations.
-That skill generates **one-way**: the `.md` is the source of truth and the user edits it while reading the `.nb`, with a per-cell `CellID` fingerprint stored in `TaggingRules` to detect `.nb` edits and stop a regeneration rather than overwrite them.
-
-## How to Add a New Skill
-
-1. Create `skills/<skill-name>/SKILL.md` with frontmatter (`name`, `description`)
-2. Write the procedural instructions in the body
-3. The plugin system auto-discovers skills from the `skills/` directory
-4. If the skill needs a script, add it to `scripts/` and reference it via `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
-5. If the skill should have a slash command, create `commands/<name>.md`
-6. Update README.md skills table and this file's tables
-
 ## Plugin Maintenance
 
-After any changes to plugin files:
-1. Commit and push this repo
-2. If the version was bumped, also update `ClaudePluginMarketplace/`:
-   - Edit `ClaudePluginMarketplace/.claude-plugin/marketplace.json`
-   - Bump `version`, update `description` and `keywords` to match plugin.json
-   - `cd ClaudePluginMarketplace && git add -A && git commit -m "..." && git push`
+Version bumping and marketplace sync follow the global `~/.claude/CLAUDE.md` § *Versioning & Marketplace*: bump `.claude-plugin/plugin.json`, mirror `version` / `description` / `keywords` into `ClaudePluginMarketplace/.claude-plugin/marketplace.json`, commit and push both repos.
+The marketplace clone is gitignored at `ClaudePluginMarketplace/`; if missing, re-clone:
 
-The marketplace repo (`WolframInstitute/ClaudePluginMarketplace`) is cloned locally at `ClaudePluginMarketplace/` (gitignored).
-If missing, re-clone:
 ```bash
 git clone git@github.com:WolframInstitute/ClaudePluginMarketplace.git ClaudePluginMarketplace
 ```
@@ -244,7 +66,8 @@ When skills, commands, or features change, update the post there.
 This is an active, **public** repo that carries the author's own commits and may be ahead of / behind its remote — edit the post and present changes for review, but do **not** commit or push it as part of plugin changes; the author syncs and publishes it.
 The in-project `ComputationalResearch/p135246.github.io/` clone is stale and **not** canonical.
 
-### Keeping CLAUDE.md current
+### Keeping the docs current
 
-When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in this file to match.
-Do not update CLAUDE.md in response to CLAUDE.md-only changes (that would cycle).
+When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in `ARCHITECTURE.md` and the skills table in `README.md`.
+Inventory does not belong in this file: it is auto-loaded into every session, and a session does not need it resident — measured in [Wiki/Concepts/PreambleAudit.md](Wiki/Concepts/PreambleAudit.md).
+Do not update `CLAUDE.md` in response to `CLAUDE.md`-only changes (that would cycle).
