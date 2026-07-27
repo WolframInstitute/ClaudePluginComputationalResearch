@@ -35,8 +35,12 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
   `PureMath/scripts/build_notebooks.wls` is 55% workaround by line, but the workarounds are not general converter defects: 160 lines repair the **DocumentationTools template** code paths (`Paclet`/`Symbol`/`Guide`/`TechNote`) and 37 lines buy reliability for a 1,480-page batch driven through the *cloud* resource on 16 parallel subkernels.
   Measured against the `Default` template on the pinned local clone, every template shim is inert and the batch shims have nothing to protect.
 - ~~Decide whether adoption is **per-skill or plugin-wide**.~~ **Decided 2026-07-27 (T3): per-skill, and exactly one skill — `new-notebook`.**
-  `research-notebook` is dropped as a candidate; plugin-wide was never coherent, since there is no shared conversion layer to swap.
-- If anything is adopted, register the repo in `Wiki/` via `add-resource` with recovery info — noting that this project has no `Wiki/` yet, so `init-wiki` comes first.
+  Plugin-wide was never coherent, since there is no shared conversion layer to swap — that part stands.
+  The "exactly one skill" part is **superseded as of 2026-07-27 (after T4)**: the user reopened `research-notebook` as a generation surface, so the adopted set is `new-notebook` (done, T4) plus `research-notebook` pending T5.
+  See *Design / risks → `research-notebook`, reopened*.
+- ~~If anything is adopted, register the repo in `Wiki/` via `add-resource` with recovery info — noting that this project has no `Wiki/` yet, so `init-wiki` comes first.~~ **Done 2026-07-27 (T4).**
+  `Wiki/` initialized at minimal scope — `Index.md`, `Status.md`, `Concepts/`, `Resources/` — and the repo registered at `Wiki/Resources/MarkdownToNotebook.md` with a `Clone:` / `Target:` / `Commit:` Recover section.
+  The clone stays at the project root rather than under `Resources/`, matching the gitignored siblings `MathNotebook/` and `PureMath/`.
 
 ### Design / risks
 
@@ -50,6 +54,37 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 - `ensureParser[]` installs the `Wolfram/Parser` paclet at call time when absent, so a first conversion on a fresh machine does network I/O; it degrades to `ImportString[…, "TeX"]` rather than failing, with worse math fidelity.
 - No package boundary: `MarkdownToNotebook.wl` is one 5273-line file of interdependent private definitions, so there is no way to patch a bug locally short of a fork.
 
+### `research-notebook`, reopened (user direction, 2026-07-27, after T4)
+
+S3 dropped `research-notebook` permanently; the user reversed that: *"If MarkdownToNotebook is so good then use this preferably… Perhaps research-notebook is a good candidate to generate using that. It has to be nice. Research notebook does not have to be MathNotebook. But I like the Definition, Proposition, … and the referencing. But it could have the default style."*
+
+So MathNotebook is **not** a requirement — the requirements are the theorem-like environments, the referencing, and that it look good.
+Probed at `204db7c` during T4, three facts constrain the options:
+
+- The converter **does** have theorem environments, via Pandoc-style fenced divs — `::: theorem` / `::: proof`, with `numbered: true`.
+  Cell styles produced: `Theorem`, `TheoremStatement`, `Proof`, `ProofContent`, `ProofTheoremEndCap`.
+- **The label is free text, the style is not.** `theoremCells` takes the head cell's text from the div's first prose block, defaulting to `"Theorem"`.
+  So `Definition`, `Proposition`, `Lemma`, `Corollary` are all expressible as labels — but every one carries cell style `"Theorem"`.
+  There are no `Proposition` / `Lemma` / `Corollary` styles in the converter at all.
+  Authoring detail: the title and the statement must be separated by a **blank line**, or the whole thing collapses into the head cell and no `TheoremStatement` is emitted.
+  Numbering is `CounterBox["Section"].CounterBox["Subsection"]` — section-derived, not a per-environment counter.
+- **The environments and the default style are mutually exclusive off the shelf.**
+  Under `Template: Default` the divs are **silently dropped entirely** — a probe with two `::: theorem` divs and one `::: proof` returned only the `Title` cell, 3 divs → 0 cells, no message.
+  That is silent content loss, the worst failure mode, and it must be guarded against however T5 goes.
+  `Default.nb` defines none of `Theorem` / `TheoremStatement` / `Proof` anyway.
+  Under `Template: Chapter` all six cells appear correctly, but `StyleDefinitions` becomes `FrontEnd`FileName[{"Wolfram"}, "BookToolsStyles.nb"]` — the WolframBookTools stylesheet, not Default.
+
+The four routes, for T5 to choose between:
+
+1. **`Template: Chapter`, accept BookTools styling.** Environments and numbering work as shipped, nothing to maintain. Not the Default look the user floated, and it adds a WolframBookTools dependency for the stylesheet to resolve.
+2. **Chapter cells, `StyleDefinitions -> "Default.nb"`.** Gets the requested combination on paper, but the styles are undefined in `Default.nb`, so the cells render unstyled. Cheap to test, likely ugly — test before arguing about it.
+3. **`Default` plus a small local stylesheet** defining `Definition` / `Proposition` / `Lemma` / `Corollary` / `Proof`. The only route that gives genuinely distinct environments and per-environment counters, and the only one that satisfies the request literally. Costs a stylesheet to own.
+4. **Keep MathNotebook for this skill.** The status quo; already satisfies environments and referencing.
+
+Open, unmeasured: **referencing.** The user named it as a requirement and T4 did not probe it. Establish what the converter supports (cross-references to numbered environments, a bibliography) before choosing a route — route 3 in particular would have to reimplement whatever is missing.
+
+Also unresolved and independent of the route: `research-notebook` is specced for **two-way md↔nb sync**, and its sync uses `ExportString[Import[path], "Markdown"]`, not `NotebookToMarkdown`. Whether that still round-trips once the notebook carries `Theorem` / `2ColumnTableMod` / boxed-math cells is unmeasured, and S3's finding that the reverse direction loses frontmatter and table headers is a warning, not an answer. Measure the sync before committing.
+
 ### Edge cases & out of scope
 
 - Do **not** run `install-skills.sh`. Symlinked personal skills track the repo's `main` — a live feed — and their trigger descriptions compete with `build-paclet` / `publish-paclet` with nothing to arbitrate. If those genres are wanted, reimplement them as `computational-research:` skills.
@@ -61,9 +96,11 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 
 One unchecked box ≈ one focused session.
 
-- [ ] T4 — Implement `new-notebook`'s opt-in rich mode against the pinned local clone (`Default` template, `"Evaluate" -> False`, MCP fallback) and register the resource in `Wiki/` — which means `init-wiki` first.
+- [ ] T5 — Reopen `research-notebook` as a generation surface (user direction, 2026-07-27). Decide the stylesheet/environment route from the four options in *Design / risks → research-notebook, reopened*, then implement it. Measure the md↔nb sync direction before committing to anything.
 
 ### Done
+
+- [x] T4 — Implement `new-notebook`'s rich mode against the pinned local clone (`Default` template, `"Evaluate" -> False`, built-in fallback) and register the resource in `Wiki/`. *(Session 4)*
 
 - [x] T1 — Phase 0: ask upstream for a licence, the FR review status, and a pinnable tag; record the answers. Blocks the rest. *(Session 1)*
 - [x] T2 — Re-measure the repo against the 2026-07-27 evaluation; note what changed. *(Session 2)*
@@ -156,6 +193,55 @@ One unchecked box ≈ one focused session.
   And a `wolfram` fence becomes `BoxData` that preserves the source formatting verbatim, spaces-inside-brackets and the newline after `:=` included, so the house code style survives conversion.
 - **Next:** T4 — implement `new-notebook`'s opt-in rich mode against the pinned local clone and register the resource in `Wiki/` (`init-wiki` first).
 
+### Session 4 — 2026-07-27 — T4
+
+- **Prompt:** `/next-session`, then "research notebook skill we need, do not delete" and "explain the rich mode what is the difference".
+- **Did:** implemented `new-notebook`'s rich mode, initialized `Wiki/`, and registered the resource.
+
+  **Measured the engine difference at `204db7c` before writing anything.**
+  Converted a representative source — frontmatter, `**[LLM Generated]**`, inline and display math, a `## Setup` fence, a `GraphPlot` fence, a pipe table — and read the cell expressions rather than trusting the evaluation's summary.
+  Six differences from the built-in importer turned out to be load-bearing, and two of them are traps: `##` is already `"Section"` so the existing heading down-shift must **not** run, and `ExportString[Notebook[cells], "NB"]` silently drops the converter's `CreateCellID` / `StyleDefinitions` options, so the pipeline has to rebuild via `ReplacePart[nb, 1 -> cells]`.
+  Also found an unrecorded wart: the converter stamps `CellLabel -> "In[n]:= "` on cells even under `"Evaluate" -> False`, so rich mode strips it.
+
+  **Wrote two sections into `skills/new-notebook/SKILL.md`.**
+  *Conversion engine — built-in vs rich* gives the three-step selection rule, the difference table, the fixed settings, and the `PacletFind["Wolfram/Parser"]` probe that surfaces the silent `ImportString[…, "TeX"]` degradation.
+  *The rich-mode Wolfram MCP call* gives the full pipeline, annotated with the five deltas from the built-in call.
+
+  **Smoke-tested the documented block verbatim.**
+  9 cells, `Title / Subtitle / Text / Section / Input / Section / DisplayFormula / Input / 2ColumnTableMod`; frontmatter not leaked, 0 `CellLabel`, `InitializationCell` on the `## Setup` input only, notebook options kept, `FractionBox` in the `DisplayFormula`, no `Defer` anywhere.
+
+  **`Wiki/` initialized at minimal scope** and `Wiki/Resources/MarkdownToNotebook.md` written with the pin, the recovery command, and the reasons the reverse direction and `install-skills.sh` are out.
+  Added a *Knowledge Base (Wiki)* section to `CLAUDE.md` recording the two-engine design and the wiki's narrow scope.
+- **Learned:** four things.
+
+  **Rich mode removes a workaround rather than adding a feature.**
+  The built-in pipeline's `boxifyInputCells` exists only because the importer returns `BoxData["raw string"]`, and its `vizCellQ` blocklist exists only because the `ToBoxes[ToExpression[…, Defer]]` fix strands graphics cells.
+  The rich parser emits the structural tree directly, so **both** the workaround and its exception disappear — and the cells the blocklist used to give up on are the ones that improve most.
+  Verified on `GraphPlot[ CycleGraph[ 6 ] ]`: fully structural `RowBox`, with the house style's spaces-inside-brackets preserved as `" "` leaves.
+
+  **The user changed the opt-in mechanism, and it is a real narrowing.**
+  The Spec said "opt-in rich mode"; the chosen design is auto-detection from the source (frontmatter or LaTeX math) with no toggle.
+  That means a plain prose-plus-code source keeps the built-in engine and therefore keeps needing the boxify workaround — the code-fidelity gain above does **not** reach sources without math.
+  If that turns out to matter, the fix is to widen the predicate to "has a `wolfram` fence", not to add a toggle.
+
+  **`research-notebook` stays — the user said so explicitly, and T3's wording invited the misreading.**
+  T3 "dropped `research-notebook` as a candidate", which means dropped as an *adoption surface*, not deleted as a skill.
+  Nothing in T4 touches it; the wiki article and `CLAUDE.md` both now say in prose why it does not use this engine, so the distinction survives the next fresh session.
+
+  **A nested `.gitignore` cost a wrong read.** `cd`-ing into `MarkdownToNotebook/` persists across Bash calls, so a later bare `cat .gitignore` read the *clone's* ignore file, not the project's.
+  The project root already gitignores `MarkdownToNotebook/`, so no ignore change was needed at all.
+- **Next:** T5 — the user reopened `research-notebook` mid-session, so the item stays Active rather than moving to `Work/Done/`.
+
+  **The reversal, and what it costs.** After T4's implementation was written, the user directed: use MarkdownToNotebook preferentially, and generate `research-notebook` with it — MathNotebook is not required, but the Definition/Proposition environments and the referencing are, and the Default style would be acceptable.
+  That reverses S3's "drop `research-notebook` — both directions, permanently".
+  S3's *forward* argument was that `Default` emits no `Author`/`Abstract` cells and none of the theorem environments; the first half stands but the second half was **incomplete** — I had only measured the `Default` template, and the converter does have theorem environments on the `Chapter` path.
+  S3's *reverse* argument (round-trip content loss) is untouched and still applies to the sync direction.
+  So the reopening is legitimate on the forward direction and not on the reverse.
+
+  **Probed far enough to make T5 sound, no further.** Recorded in *Design / risks → `research-notebook`, reopened*: the `::: theorem` / `::: proof` div syntax, that the environment label is free text over a single `Theorem` style, and the blocking constraint — the environments exist only under `Chapter`, which forces the BookTools stylesheet, while under `Default` the divs are **silently dropped**, 3 divs → 0 cells with no message.
+  "Definition/Proposition with the Default style" is therefore the one combination that does not exist off the shelf, which is a decision for the user rather than something to pick unilaterally.
+  Referencing — explicitly named as a requirement — is **not** probed; T5 does that first.
+
 ## Decisions
 
 | Date | Decision | Rationale |
@@ -168,4 +254,8 @@ One unchecked box ≈ one focused session.
 | 2026-07-27 (S3) | Adopt per-skill, in `new-notebook` only. Plugin-wide is off the table. | The shim tax is 197/356 lines in PureMath but empirically 0 on the `Default` template — 160 lines repair DocumentationTools slots that `defaultNotebook` never creates, and 37 protect a 1,480-page parallel cloud batch we do not run. There is also no shared conversion layer to swap plugin-wide: `new-notebook` owns the MCP append-cell pipeline and `research-notebook` layers on it. |
 | 2026-07-27 (S3) | Drop `research-notebook` as a candidate — both directions, permanently. | Forward: the `Default` template emits no `Author`/`Abstract` cells and none of the MathNotebook environments, and the skill file already says it "does not replace the research generator". Reverse: a measured round-trip at `204db7c` drops the frontmatter entirely and returns an empty table header, which is content loss, not formatting drift. Phase 2 is abandoned rather than deferred. |
 | 2026-07-27 (S3) | The residual cost to carry into T4 is `ensureParser[]` and the SHA pin, nothing else. | A warm local conversion is 0.05 s with zero variance; the only first-call cost is the `Wolfram/Parser` install, which degrades silently to `ImportString[…, "TeX"]`. Rich mode must surface that degradation in its response rather than swallow it. |
+| 2026-07-27 (S4) | Engine choice in `new-notebook` is auto-detected from the source, not toggled. | User decision, overriding the Spec's "opt-in" wording. Rich mode fires when the source has YAML frontmatter or LaTeX math — the constructs the built-in importer demonstrably gets wrong — and only when the clone is present. Accepted cost: a plain prose-plus-code source keeps the built-in engine and so keeps needing the `boxifyInputCells` workaround, even though the code-fidelity gain would apply to it. If that bites, widen the predicate to "has a `wolfram` fence"; do not add a toggle. |
+| 2026-07-27 (S4) | Never clone MarkdownToNotebook silently; fall back to the built-in engine and say so. | Cloning is unrequested network I/O. The fallback keeps `new-notebook` working on a machine that has never seen the dependency, which is the normal case for a plugin user. |
+| 2026-07-27 (S4) | S3's "drop `research-notebook` permanently" is **reversed** for the forward direction; the reverse direction stays dropped. | User direction. S3's forward argument was incomplete — it measured only the `Default` template and concluded the converter has no theorem environments, but they exist on the `Chapter` path (`::: theorem` / `::: proof`). The reverse-direction argument (round-trip drops frontmatter and empties table headers) is unaffected and still disqualifies the sync direction. |
+| 2026-07-27 (S4) | The environment/stylesheet route for `research-notebook` is the user's call, deferred to T5, not picked in S4. | The request — theorem environments *and* the Default style — is not satisfiable off the shelf: environments exist only under `Chapter`, which forces `BookToolsStyles.nb`, and under `Default` the divs are silently dropped (3 → 0 cells, no message). The four routes and their costs are recorded in the Spec; referencing is still unmeasured and gates the choice. |
 | 2026-07-27 | The guide-page gap is no longer a reason to adopt. | Guide pages left scope the same day. What remains in favour is `new-notebook`'s rich mode (Phase 1) — the constructs the MCP append-cell transport cannot carry — and nothing else urgent. This item is now genuinely low priority. |

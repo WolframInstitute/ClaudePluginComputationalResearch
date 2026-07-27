@@ -73,7 +73,7 @@ Each skill is invoked by the slash command of the same name, `/computational-res
 | **search-math** | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
 | **add-resource** | Add a paper, repo, or page with recovery info |
 | **cite** | BibTeX from an arXiv ID or DOI |
-| **new-notebook** | Build Wolfram notebooks from Markdown |
+| **new-notebook** | Build Wolfram notebooks from Markdown (dual-engine: auto-detects a richer converter for frontmatter/LaTeX-math sources) |
 | **research-notebook** | Research document notebook: definitions, conjectures with evidence, open questions, literature |
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **paclet-docs** | Generate a symbol reference page per exported paclet function |

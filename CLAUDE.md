@@ -42,6 +42,8 @@ scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
 hooks/                         — PreToolUse hooks (e.g., block .nb reads)
 skills/new-project/assets/    — templates for scaffolding
+Wiki/                          — knowledge base: external dependencies, concepts
+Work/                          — execution state (spec/tasks/progress per item)
 ```
 
 ### Skills (20)
@@ -179,6 +181,30 @@ The `new-project` skill asks users which type of project to create:
   Optional Wiki/.
 
 All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not BeginPackage/EndPackage) for paclet code.
+
+## Knowledge Base (Wiki)
+
+`Wiki/` is a plain-markdown knowledge base maintained by the LLM, initialized 2026-07-27.
+Its scope in **this** repo is deliberately narrow — external dependencies (with recovery info) and cross-cutting concepts.
+Plugin architecture stays in this file and `README.md`; do not mirror the skill/script/command tables into `Wiki/`, or there will be two copies to keep current.
+
+No human sign-off is needed for wiki prose.
+Every article carries a `[ LLM Generated ]` marker under its `# Title`.
+Execution state — active items, next tasks — lives in `Work/README.md`, not `Wiki/Status.md`.
+
+### Notebook conversion engines
+
+`new-notebook` has two Markdown→cells engines and picks between them **by inspecting the source**, not by configuration:
+
+- **Built-in** — `ImportString[md, {"Markdown", "Notebook"}]`. The default.
+- **Rich** — `WolframInstitute/MarkdownToNotebook`, called as the local clone at pinned SHA `204db7c`, with `Template: Default` and `"Evaluate" -> False`.
+  Selected when the source has YAML frontmatter or LaTeX math, and only if `MarkdownToNotebook/` is present; otherwise it falls back to the built-in engine and says so.
+  Never clone it silently.
+
+See `Wiki/Resources/MarkdownToNotebook.md` for the pin, the recovery command, and why the reverse direction (`NotebookToMarkdown`) is used nowhere.
+`paclet-docs` does **not** use the rich engine — it uses the official MCP doc tools.
+`research-notebook` does not use it *yet*: it is under active evaluation as a second surface (see `Work/Active/AdoptMarkdownToNotebook.md`, T5).
+The blocker there is that the converter's `::: theorem` / `::: proof` environments exist only under `Template: Chapter`, which forces the WolframBookTools stylesheet, and under `Template: Default` those divs are **silently dropped**.
 
 ## How to Add a New Skill
 

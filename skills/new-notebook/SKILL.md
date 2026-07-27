@@ -150,6 +150,67 @@ Warn the user.
 
 To check availability: evaluate `1+1` with the official MCP.
 
+## Conversion engine — built-in vs rich
+
+Two engines convert Markdown to cells.
+The built-in one is `ImportString[md, {"Markdown", "Notebook"}]`, documented throughout this skill.
+The **rich** one is [`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook), used at a pinned SHA from a local clone — see [Wiki/Resources/MarkdownToNotebook.md](../../Wiki/Resources/MarkdownToNotebook.md).
+It carries constructs the built-in importer mangles or drops.
+
+### Which engine runs
+
+Engine choice is **auto-detected from the source**, not configured.
+Decide in this order:
+
+1. **Is the clone present?**
+   Rich mode needs `MarkdownToNotebook/MarkdownToNotebook.wl` at the project root.
+   If it is absent, use the built-in engine and tell the user rich mode was skipped, with the clone command from the wiki article.
+   Never clone it silently — that is unrequested network I/O.
+2. **Does the source need it?**
+   Use the rich engine when the source has **YAML frontmatter** (a `---` first line) or **LaTeX math** (`$$…$$` or `$…$`).
+   Those are exactly the constructs the built-in engine gets wrong: frontmatter leaks in as a literal `Text` cell, and math comes back as flat `InlineMath` rather than real boxes.
+3. **Otherwise** use the built-in engine.
+
+A source with neither frontmatter nor math gains little from rich mode, so plain sources keep the cheaper path and the smaller dependency surface.
+
+### What rich mode changes
+
+| | Built-in | Rich |
+|---|---|---|
+| `## Heading` | `"Chapter"` — the down-shift fixes it | `"Section"` already — **do not shift** |
+| `wolfram` fence | `BoxData["raw string"]` — needs `boxifyInputCells` and its visualization guard | structural `RowBox`, source spacing verbatim — **no boxify, no guard** |
+| YAML frontmatter | leaks in as a `Text` cell | consumed as metadata |
+| `$…$` / `$$…$$` | flat `InlineMath` | `InlineFormula` / `DisplayFormula` with real `FractionBox`, `SubscriptBox` |
+| Markdown table | Tabular/TableView | `2ColumnTableMod` with `TableText` cells |
+| Notebook options | none | `CreateCellID -> True`, `StyleDefinitions -> "Default.nb"` |
+| `CellLabel` | none | stale `In[n]:=` stamped even under `"Evaluate" -> False` |
+
+Two consequences are easy to get wrong:
+
+- **Keep the notebook options.** `ExportString[Notebook[cells], "NB"]` silently drops them; rich mode must rebuild the original expression instead — `ReplacePart[nb, 1 -> cells]`.
+- **Drop the boxify step, keep the rest.** The parser already emits the structural box tree, so `boxifyInputCells` is dead weight, and its visualization guard is unnecessary: the guard existed only because `ToBoxes[ToExpression[…, Defer]]` strands graphics cells, and rich mode never calls it.
+  `markInitCells` and the `[LLM Generated]` marker normalization still apply unchanged.
+
+### Fixed conversion settings
+
+- **`"Evaluate" -> False`** always.
+  Cells ship unevaluated; the front end evaluates them.
+- **`Template: Default`** — the default when frontmatter omits it, and the only template this skill uses.
+  The documentation templates (`Symbol`, `Guide`, `TechNote`, `Paclet`) belong to [paclet-docs](../paclet-docs/SKILL.md), which uses the official MCP doc tools instead.
+- **Pin by SHA, call the local file.** Load the clone with `Get`, never the deployed cloud resource: that resource lives on a personal `obj/nikm/` path and reports no `"Version"`, so drift is undetectable.
+
+### Surface the parser degradation
+
+The converter's `ensureParser[]` installs the `Wolfram/Parser` paclet on first use.
+On a fresh machine that is network I/O, and if it fails the converter **silently** degrades to `ImportString[…, "TeX"]` with worse math fidelity.
+Probe before converting and report the result — do not swallow it:
+
+```wolfram
+PacletFind["Wolfram/Parser"] =!= {}
+```
+
+If it returns `False`, say the first conversion will install a paclet, and that math fidelity degrades silently if the install fails.
+
 ## Backtick escaping — Critical
 
 The Wolfram MCP interprets raw backtick characters as Wolfram context marks.
@@ -523,6 +584,66 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
   ExportString[Notebook[cells], "NB"]
 ]
 ```
+
+## The rich-mode Wolfram MCP call
+
+Used when *Conversion engine* selects rich mode.
+Same shape as the built-in call, minus the heading shift and the boxify step, plus `CellLabel` stripping and option preservation.
+Build `md` with the same `tick` / `fence` rules.
+
+```wolfram
+Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle},
+
+  wl = "MarkdownToNotebook/MarkdownToNotebook.wl";   (* pinned clone, project root *)
+
+  markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
+    Do[Which[
+      MatchQ[c, Cell[t_String, "Section"|"Subsection"|"Subsubsection", ___] /;
+        StringMatchQ[t, ("*Setup*"|"*Initialization*"|"*Preamble*"|"*Dependencies*"),
+          IgnoreCase -> True]],
+        inSetup = True; AppendTo[result, c],
+      MatchQ[c, Cell[_, "Title"|"Section"|"Subsection"|"Subsubsection", ___]],
+        inSetup = False; AppendTo[result, c],
+      inSetup && MatchQ[c, Cell[_, "Input", ___]],
+        AppendTo[result, Append[c, InitializationCell -> True]],
+      True, AppendTo[result, c]
+    ], {c, cellList}];
+    result
+  ];
+
+  addLLMSubtitle[cellList_List] := Module[
+    {cs = DeleteCases[cellList, Cell["[LLM Generated]", "Subtitle", ___]], pos},
+    pos = FirstPosition[cs, Cell[_, "Title", ___], Missing[], {1}];
+    If[MissingQ[pos],
+      Prepend[cs, Cell["[LLM Generated]", "Subtitle"]],
+      Insert[cs, Cell["[LLM Generated]", "Subtitle"], pos[[1]] + 1]]
+  ];
+
+  md = StringJoin["# My Notebook Title\n\n", "**[LLM Generated]**\n\n", "..."];
+
+  Get[wl];
+  nb = MarkdownToNotebook[md, "Evaluate" -> False];
+  cells = First[nb];
+  cells = cells /. {
+    Cell[TextData[{StyleBox["[LLM Generated]", ___]}], _String, o___] :> Cell["[LLM Generated]", "Subtitle"],
+    Cell[TextData[StyleBox["[LLM Generated]", ___]], _String, o___] :> Cell["[LLM Generated]", "Subtitle"],
+    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[LLM Generated]", "Subtitle"]
+  };
+  cells = cells /. Cell[c_, s_String, o___] :>
+    Cell[c, s, Sequence @@ DeleteCases[{o}, CellLabel -> _]];
+  cells = markInitCells[cells];
+  cells = addLLMSubtitle[cells];
+  ExportString[ReplacePart[nb, 1 -> cells], "NB"]
+]
+```
+
+Note the differences from the built-in call, each load-bearing:
+
+- **No heading shift** — `##` is already `"Section"`, so shifting would demote every heading one level too far.
+- **No `boxifyInputCells`, no `vizCellQ`** — the boxes arrive structural.
+- **`markInitCells` matches `"Section"` first**, not `"Chapter"`.
+- **`ReplacePart[nb, 1 -> cells]`**, not `Notebook[cells]` — keeps `CreateCellID` and `StyleDefinitions`.
+- **`CellLabel` stripped** — the converter stamps `In[n]:=` on cells it did not evaluate.
 
 ## After the MCP call
 
