@@ -20,6 +20,7 @@ See [Work/README.md](../Work/README.md).
 - [Session Information Budget](Concepts/SessionInformationBudget.md) — what a `next-session` run must read before it can work, measured from git history
 - [Progress vs Wiki](Concepts/ProgressWikiSplit.md) — where the durable knowledge actually is: ~53 kB in `## Progress`, 6.6 kB harvested, and what the misplacement costs to read
 - [The work item file format](Concepts/ItemFileFormat.md) — the five sections, the one-fact-one-destination rule, and why `## Progress` is one line per session and read by nobody
+- [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md) — why the harness schedulers cannot drive it, how the `revise` gate is deferred to a branch and a digest, and the stop conditions
 
 ## Resources
 

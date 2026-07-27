@@ -44,21 +44,24 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T4 — Specify the autonomous pipeline: item selection, stop conditions, failure handling, the `revise`-protocol question (autonomous mode vs sign-off-free tasks only), the per-run digest, and what harness mechanism drives it. Present it for approval before implementing anything.
+- [ ] T6 — Reduce the unconditional preamble, T1's largest term: audit this repo's 16.6 kB `CLAUDE.md` against `README.md` for the duplicated skill/script/command/template tables and decide what a session actually needs auto-loaded. *Added by S3; T3 cut the skill-file share of that term but left `CLAUDE.md`, which is 60 % of it. Resequenced ahead of T7 by S4: at 31.5 k tokens of preamble per cold task, this is the pipeline's dominant cost line, not a cleanup.*
+- [ ] T7 — Implement the pipeline specified in [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md): the driver script, its `/auto-run` command, `revise`'s autonomous-mode section, and the `> Autonomous: allowed` / `(human)` markers. Obliges a `CLAUDE.md` table update. *Added by S4.*
+- [ ] T8 — Trial the pipeline supervised on one real item before anything runs unattended; confirm the stop conditions fire as specified. *Added by S4.*
 - [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Unblocked by T3: the format is decided, harvested blocks are not pruned, and a claim that is false today gets a one-line `> Superseded:` marker.*
-- [ ] T6 — Reduce the unconditional preamble, T1's largest term: audit this repo's 16.6 kB `CLAUDE.md` against `README.md` for the duplicated skill/script/command/template tables and decide what a session actually needs auto-loaded. *Added by S3; T3 cut the skill-file share of that term but left `CLAUDE.md`, which is 60 % of it.*
 
 ### Done
 
+- [x] T4 — Specify the autonomous pipeline: item selection, stop conditions, failure handling, the `revise`-protocol question, the per-run digest, and the harness mechanism. (S4)
 - [x] T3 — Decide and document the target format for Spec / Progress / Decisions, including the pruning question, and revise `work` + `next-session` to match. (S3)
 - [x] T2 — Audit the Progress-vs-Wiki split: classify the "Learned" notes as durable or session-local and price the misplacement. (S2)
 - [x] T1 — Measure the real per-session information budget from git history across the closed items. (S1)
 
 ## Hand-off
 
-T4 is next: specify the autonomous pipeline.
-It now has a fixed place to read an item's state — this section — and a format whose read is flat in session count, which is what the Spec made the loop conditional on.
-Two things T3 did not touch and T4 must resolve: the `revise` protocol still requires a human for anything that is not wiki prose, and there is no per-run digest.
+T6 is next, and it moved ahead of implementation on purpose: the pipeline pays 31.5 k tokens of fixed preamble per cold task, so `CLAUDE.md` is what decides whether T7 is worth building.
+The pipeline itself is specified and approved — [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md) — with T7 to implement and T8 to trial it supervised.
+Both of the gaps T3 left are closed there: the `revise` gate is deferred to a branch-plus-digest rather than dropped, and the digest is a gitignored per-run file.
+One thing to watch in T7: an unprefixed plugin slash command headless is a zero-cost no-op that reports success, so the driver's liveness check is not optional.
 This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
 
 ## Decisions
@@ -75,12 +78,18 @@ This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progr
 | 2026-07-27 (S3) | `## Spec` and `## Decisions` are bounded too — Spec corrected in place, a reversal editing the row it reverses. | Measured: once Progress leaves the read path those two are 70–95 % of what a session opens, and 20.4 kB of `AdoptMarkdownToNotebook`'s 21.4 kB — the item the Spec cited as the example of Progress bloat. |
 | 2026-07-27 (S3) | Closed items are not pruned or rewritten; a false archived claim gets a one-line `> Superseded:` marker. | Answers T2's open question. git already holds every version and a closed item is read at most once more, so rewriting the audit trail costs the human record and saves no read. |
 | 2026-07-27 (S3) | `next-session`'s paclet branch/worktree/PR procedure moved to a read-on-demand sibling file. | It was 38 % of a file read unconditionally every session and serves only paclet-dev repos changing a submodule — the same pay-for-what-you-read rule the format applies to Progress. |
+| 2026-07-27 (S4) | The loop is driven by headless `claude -p`, one process per task; `CronCreate`, `/loop`, and background tasks are rejected as drivers. | All three enqueue into the running session, so context accumulates — the Spec's "compaction is not clearing" risk. Cron may still trigger a run without being the loop. |
+| 2026-07-27 (S4) | `revise`'s human gate is **deferred**, not dropped: work lands on `auto/<Item>`, the per-run digest is the "present" step, and the merge is the "approve". | The protocol's purpose is that nothing lands unreviewed, not that a human is present at generation time. Restricting the loop to sign-off-free tasks was the alternative and leaves it almost nothing to run. |
+| 2026-07-27 (S4) | Eligibility is opt-in and fail-closed — `> Autonomous: allowed` per item, `(human)` per task, and a hard stop unless exactly one eligible item is active. | An unattended wrong pick is invisible until the digest; the cost of the restriction is a human typing one item name. Priority ordering was rejected, not solved. |
+| 2026-07-27 (S4) | The driver verifies each run (new commit + a newly checked box) rather than trusting its exit status, and never cleans up after a failure. | Measured: an unprefixed plugin slash command headless is a zero-cost no-op reporting `is_error: false`, so exit status alone cannot detect a run that did nothing. An unattended `git reset --hard` can destroy work no human has seen. |
+| 2026-07-27 (S4) | T6 resequenced ahead of T7/T8. | The cold start measured at 31.5 k input tokens in this repo, so the fixed preamble — 60 % of it `CLAUDE.md` — is the pipeline's dominant cost line and decides whether implementing it is worthwhile. |
 
 ## Progress
 
 Append-only, one line per session; nothing reads it.
 S1 and S2 predate the format and keep their blocks.
 
+- **S4** 2026-07-27 T4 — specified the autonomous pipeline against measured harness behaviour; added T7/T8 and moved T6 ahead of them. → [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)
 - **S3** 2026-07-27 T3 — decided the item file format and revised `work`, `next-session` (−613 B), both item templates, `provenance`, `CLAUDE.md`, and this file to match. → [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md), `Wiki/Concepts/measure_item_sections.py`
 
 ### Session 1 — 2026-07-27 — T1

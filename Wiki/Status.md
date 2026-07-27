@@ -29,8 +29,15 @@ One fact, one destination — filing to `Wiki/` discharges the obligation to nar
 With Progress out of the read path, `## Spec` and `## Decisions` turn out to be 70–95 % of what a session opens, so both are now bounded: the Spec is corrected in place rather than amended, and a reversal edits the `Decisions` row it reverses.
 `next-session` lost its partial-read rule (the format makes the read flat) and its 2.3 kB paclet-worktree procedure, which moved to a read-on-demand sibling — the file is 613 B smaller than before despite gaining the rules.
 
+The unattended loop over that format is now specified — see [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md).
+None of the harness schedulers can drive it: `CronCreate`, `/loop`, and background tasks all enqueue into the running session, so context accumulates rather than clearing.
+One headless `claude -p` per task is the only mechanism that starts genuinely cold, and it costs a measured 31,479 input tokens of preamble each time — which puts T6's `CLAUDE.md` audit ahead of implementation rather than after it.
+`revise`'s human gate is deferred rather than dropped: autonomous work lands on `auto/<Item>`, a gitignored per-run digest is the "present" step, and the human's merge is the "approve".
+Eligibility is opt-in and fail-closed, and the driver verifies each run by new commit plus newly checked box — because an unprefixed plugin slash command headless is a zero-cost no-op that reports success.
+
 ## Recent changes
 
+- 2026-07-27 — Specified the autonomous pipeline in [The autonomous next-session pipeline](Concepts/AutonomousPipeline.md); rejected all three harness schedulers as drivers and deferred the `revise` gate to a branch plus digest.
 - 2026-07-27 — Decided the work item file format in [The work item file format](Concepts/ItemFileFormat.md) and revised `work`, `next-session`, and the templates to match.
 - 2026-07-27 — Audited where the durable knowledge in `Work/` actually belongs; classified all 127 `Learned` claim-lines plus an 18 % sample of `Did`, in [Progress vs Wiki](Concepts/ProgressWikiSplit.md).
 - 2026-07-27 — Measured the session information budget across all six closed work items; findings and the regeneration script live under `Wiki/Concepts/`.
