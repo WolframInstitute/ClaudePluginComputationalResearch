@@ -54,9 +54,11 @@ Check `$MaxLicenseProcesses - $LicenseProcesses > 0` before any `wolframscript`.
 
 One unchecked box ≈ one focused session.
 
-- [ ] T5 — Wire docs into `build-paclet` and `publish-paclet`, including deploying the built docs to a public URL (re-scoped per T2) and staging `Documentation/` in publish scripts that copy a fixed directory list.
+All tasks are done.
 
 ### Done
+
+- [x] T5 — Wire docs into `build-paclet` and `publish-paclet`, including deploying the built docs to a public URL (re-scoped per T2) and staging `Documentation/` in publish scripts that copy a fixed directory list. *(Session 6)*
 
 - [x] T4 — Generate docs end-to-end for one real paclet; verify by resolving every doc URI after a real install. *(Session 5)*
 
@@ -216,10 +218,38 @@ One unchecked box ≈ one focused session.
   Also owed: `MathNotebook/Scripts/PublishPaclet.wls:26` stages a fixed `{"Kernel", "FrontEnd", "Assets", "Tests"}` and would drop `Documentation/` from anything published — T5's problem, recorded in Blocked.
 - **Next:** T5 — wire docs into `build-paclet` and `publish-paclet`, deploy them, and fix fixed-list publish scripts.
 
+### Session 6 — 2026-07-27 — T5
+
+- **Prompt:** `/next-session`, and on the two questions this session asked: "Public and keep it" for the docs deploy, "publish on, build off" for the docs default.
+- **Did:** wired docs through build and publish, deployed them, and fixed a staging bug that was bigger than the one T5 was scoped for.
+
+  **The fixed staging list was the real defect, and `Documentation/` was only its latest victim.**
+  `paclet_common.wl` copied `PacletInfo.wl` + `Kernel/` + `Tests/` and nothing else, so building `MathNotebook` through the plugin installed it with no `FrontEnd/` and no `Assets/` — no palette, no stylesheets, a paclet that loads and is missing most of what it is for.
+  MathNotebook's own `CLAUDE.md` had already written this up as "do not use the generic recipe here", which is the shape of a bug that has been worked around rather than found.
+  Staging is now every top-level item except dotfiles and `build/`, with `Documentation/` the one conditional entry, so a paclet that adds a directory tomorrow ships it.
+  Verified: staging reports `{Assets, Documentation, FrontEnd, Kernel, PacletInfo.wl, Tests}` with docs on and the same minus `Documentation` with docs off; a real build+install of MathNotebook 0.1.11 now installs all six, and 21/21 doc URIs still resolve from `$UserBasePacletsDirectory` afterwards.
+
+  **Docs default: on for publish, off for build**, the user's call. `publish_paclet.wls` takes `--no-docs` to opt out; `build_paclet.wls` keeps `--with-docs` to opt in.
+
+  **The deployed docs URL is live and is the debt T6 left open:** `https://www.wolframcloud.com/obj/hajek_pavel/MathNotebook/Documentation/index.html` — 21 cloud notebooks under `Documentation/ref/` plus an HTML index, all serving 200 to an unauthenticated reader (checked page by page, not sampled). Linked from MathNotebook's README next to the install line.
+  New script `scripts/deploy_paclet_docs.wl` (Get through the MCP, wolframscript fallback), called automatically by `publish_paclet.wls` when docs were bundled, which prints `=== DOCS_URL: … ===` beside the existing `=== PACLET_URL: … ===`.
+
+  **Two findings that shaped the script.**
+  A generated page's own cross-links carry a web URL of `reference.wolfram.com/language/WolframInstitute/MathNotebook/ref/<Sym>.html` — a page that only exists for paclets shipped with the Wolfram Language — so re-hosting without rewriting publishes broken links to a Wolfram-branded 404. Links come in two forms, `TemplateBox[{label, "paclet:…", url}, "TextRefLink"]` in prose and `ButtonBox[…, ButtonData -> "paclet:…"]` in Usage and See Also; a rule for one silently leaves the other, and after both rules no `paclet:` string survives in a rewritten page.
+  And `ExportString[nb, "HTML"]` is not an option for static pages: it rasterizes the cells into a 10 KB image map and drops every link, which is why the pages deploy as cloud notebooks.
+
+  Also fixed `MathNotebook/Scripts/PublishPaclet.wls` to stage `Documentation/` (guarded by `DirectoryQ`, so the list tolerates a missing directory), and corrected that repo's `CLAUDE.md` note about the generic recipe, which is no longer true.
+- **Learned:** the plugin had shipped a build recipe that quietly produced incomplete paclets, and the evidence was sitting in a downstream repo's CLAUDE.md as a workaround rather than reaching back as a bug report. Worth reading a paclet's own notes about the plugin, not just its code.
+  On verification: `URLRead[url, "StatusCode"]` over every deployed page costs seconds and catches a permissions miss that a sampled check would not; the parts that genuinely need a human (F1, click-through) are now named as outstanding in the skills rather than implied to be done.
+  Untested by design: `publish_paclet.wls`'s upload path was not run, since that would re-publish someone's paclet — the flag parsing and usage line were exercised, and the deploy function it calls was verified end to end through the MCP.
+- **Next:** none — final task. The item is complete.
+
 ## Blocked
 
-- **The F1 step is still owed by a human.** Every doc URI now resolves headlessly from a real install, which is a strictly stronger check than the `Information` one the Spec proposed, but pressing F1 in the Documentation Center is not verifiable from here. Outstanding on `WolframInstitute/MathNotebook` 0.1.11, currently installed with docs.
-- **T5 is re-scoped** to include deploying the built docs, per T2's finding, and to stage `Documentation/` in publish scripts that copy a fixed directory list — `MathNotebook/Scripts/PublishPaclet.wls:26` is one such, staging only `{"Kernel", "FrontEnd", "Assets", "Tests"}`.
+Nothing blocks the item; what is left is two human confirmations, neither of which is verifiable headlessly and both of which are recorded in the skills as outstanding:
+
+- **The F1 step.** Every doc URI resolves from a real install (21/21, re-checked in Session 6 after the staging change), but pressing F1 in the Documentation Center and searching for a symbol needs a person. Outstanding on `WolframInstitute/MathNotebook` 0.1.11, installed with docs.
+- **Click-through on the deployed pages.** The 21 pages and the index serve 200 to an anonymous reader and every `paclet:` link is rewritten to an absolute URL, but whether the cloud notebook viewer turns those into working links is a browser question.
 
 ## Decisions
 

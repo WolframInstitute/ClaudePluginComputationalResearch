@@ -77,7 +77,7 @@ Each skill is invoked by the slash command of the same name, `/computational-res
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **paclet-docs** | Generate a symbol reference page per exported paclet function |
 | **build-paclet** | Build a paclet and install it locally |
-| **publish-paclet** | Build, install, and publish a paclet to the Cloud |
+| **publish-paclet** | Build with docs, install, publish to the Cloud, deploy the doc pages publicly |
 | **work** | Manage multi-session work items (spec, tasks, progress) |
 | **next-session** | Run the next task in a fresh session, then stop |
 | **provenance** | Track the prompt behind each generated artifact |

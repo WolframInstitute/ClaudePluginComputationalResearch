@@ -67,10 +67,10 @@ skills/new-project/assets/    — templates for scaffolding
 | `lean` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
 | `start-tour` | presentation | Interactive guided walkthrough with code |
 | `paclet-docs` | paclet | Generate one symbol reference page per exported function via the official MCP doc tools; guide pages left to the author |
-| `build-paclet` | paclet | Build .paclet archive and install locally |
-| `publish-paclet` | paclet | Build, install, publish to Wolfram Cloud, produce install URL |
+| `build-paclet` | paclet | Build .paclet archive (every top-level item, docs off by default) and install locally |
+| `publish-paclet` | paclet | Build with docs, verify they resolve, publish to Wolfram Cloud, deploy the doc pages publicly, produce install + docs URLs |
 
-### Scripts (26)
+### Scripts (27)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -82,7 +82,8 @@ skills/new-project/assets/    — templates for scaffolding
 | `scaffold-journal.sh` | bash | journal skill (`--typst` for Typst) |
 | `build_paclet.wls` | wolframscript | build-paclet skill |
 | `publish_paclet.wls` | wolframscript | publish-paclet skill |
-| `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls) |
+| `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls); stages every top-level paclet item |
+| `deploy_paclet_docs.wl` | wolframscript | publish-paclet skill (Get through the MCP); deploys Documentation/ pages as public cloud notebooks + HTML index, rewriting `paclet:` links |
 | `search_wolfram_docs.wls` | wolframscript | search-wolfram skill |
 | `search_function_repo.wls` | wolframscript | search-wolfram skill |
 | `search_wolfram_community.wls` | wolframscript | search-wolfram skill (URL constructor) |

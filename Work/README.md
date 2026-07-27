@@ -24,11 +24,9 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-`PacletDocumentation` is the only active item. T1, T2, T3, T4 and T6 are done — `demo-notebook` is retired, `paclet-docs` is drafted against the official MCP doc tools and corrected against a real run, and guide pages are out of scope.
-T4 shipped 21 reference pages for `WolframInstitute/MathNotebook`, all resolving from a real install; only the F1 confirmation is still owed by a human.
-T5 owes the deployed docs URL that the README lost, plus staging `Documentation/` in publish scripts that copy a fixed directory list.
+Nothing is active. `PacletDocumentation` completed on 2026-07-27 — paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.
 `Backlog/AdoptMarkdownToNotebook.md` holds the deferred MarkdownToNotebook question.
 
 | Item | Next task |
 |---|---|
-| [PacletDocumentation](Active/PacletDocumentation.md) | T5 — Wire docs into `build-paclet` / `publish-paclet`, deploy them |
+| — | — |

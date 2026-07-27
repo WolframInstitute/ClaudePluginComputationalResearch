@@ -3,7 +3,7 @@
    DirectoryName[ ExpandFileName[ $ScriptCommandLine[[ 1 ]] ] ]. *)
 
 buildAndInstallPaclet[ pacletArg_String, withDocs_ ] :=
-    Module[ { found, pacletDir, pacletName, tmpDir, docDir, pacletFile, paclet },
+    Module[ { found, pacletDir, pacletName, tmpDir, staged, pacletFile, paclet },
         found = findPacletDir[ pacletArg ];
         If[ found === None,
             Print[ "Error: cannot find PacletInfo.wl for ", pacletArg ];
@@ -17,18 +17,10 @@ buildAndInstallPaclet[ pacletArg_String, withDocs_ ] :=
         If[ DirectoryQ[ tmpDir ], DeleteDirectory[ tmpDir, DeleteContents -> True ] ];
         CreateDirectory[ tmpDir ];
 
-        CopyFile[ FileNameJoin[ { pacletDir, "PacletInfo.wl" } ], FileNameJoin[ { tmpDir, "PacletInfo.wl" } ] ];
-        CopyDirectory[ FileNameJoin[ { pacletDir, "Kernel" } ], FileNameJoin[ { tmpDir, "Kernel" } ] ];
-        docDir = FileNameJoin[ { pacletDir, "Documentation" } ];
-        Which[
-            withDocs && DirectoryQ[ docDir ],
-                CopyDirectory[ docDir, FileNameJoin[ { tmpDir, "Documentation" } ] ];
-                Print[ "  Included Documentation/" ],
-            DirectoryQ[ docDir ],
-                Print[ "  Skipped Documentation/ (pass --with-docs to include)" ]
-        ];
-        If[ DirectoryQ[ FileNameJoin[ { pacletDir, "Tests" } ] ],
-            CopyDirectory[ FileNameJoin[ { pacletDir, "Tests" } ], FileNameJoin[ { tmpDir, "Tests" } ] ] ];
+        staged = stagePacletFiles[ pacletDir, tmpDir, withDocs ];
+        Print[ "  Staged: ", StringRiffle[ staged, ", " ] ];
+        If[ ! withDocs && DirectoryQ[ FileNameJoin[ { pacletDir, "Documentation" } ] ],
+            Print[ "  Skipped Documentation/ (pass --with-docs to include)" ] ];
 
         Print[ "Building paclet archive..." ];
         pacletFile = CreatePacletArchive[ tmpDir ];
@@ -41,6 +33,26 @@ buildAndInstallPaclet[ pacletArg_String, withDocs_ ] :=
         Print[ "  Installed: ", paclet[ "Name" ], " v", paclet[ "Version" ] ];
 
         <| "PacletFile" -> pacletFile, "Paclet" -> paclet, "PacletName" -> pacletName, "PacletDir" -> pacletDir |>
+    ];
+
+(* Stage every top-level item of the paclet, not a fixed list: a paclet may ship
+   FrontEnd/ (palettes, stylesheets), Assets/, Documentation/ or anything else its
+   PacletInfo declares, and a fixed {Kernel, Tests} copy silently ships a paclet
+   with those missing. Dotfiles and build/ are repo artifacts, not paclet content. *)
+stagePacletFiles[ pacletDir_, tmpDir_, withDocs_ ] :=
+    Module[ { items },
+        items = Select[ FileNameTake /@ FileNames[ "*", pacletDir ],
+            ! StringStartsQ[ #, "." ] && ! MemberQ[ { "build" }, # ] &
+        ];
+        If[ ! withDocs, items = DeleteCases[ items, "Documentation" ] ];
+        Scan[
+            { item } |-> With[ { src = FileNameJoin[ { pacletDir, item } ], dest = FileNameJoin[ { tmpDir, item } ] },
+                If[ DirectoryQ[ src ], CopyDirectory[ src, dest ], CopyFile[ src, dest ] ]
+            ],
+            items
+        ];
+        Scan[ DeleteFile, FileNames[ ".DS_Store", tmpDir, Infinity ] ];
+        Sort[ items ]
     ];
 
 findPacletDir[ name_String ] :=

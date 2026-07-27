@@ -42,15 +42,29 @@ Before publishing, verify:
    - Preferred: `mcp__Wolfram__TestReport` (if available via MCP)
    - Fallback: `wolframscript -f <PacletName>/run_tests.wls`
 4. **No uncommitted changes** — warn if there are uncommitted changes in the paclet's kernel files.
-5. **Generate documentation** — if `mcp__Wolfram__CreateSymbolDoc` is available, offer to generate or update documentation notebooks for exported symbols before publishing.
-   Documentation is **not bundled by default** — pass `--with-docs` (see below) to include it in the published paclet.
+5. **Documentation** — `Documentation/` is bundled **by default** when it exists: a published paclet ships its docs.
+   Pass `--no-docs` only when the user asks for a code-only release.
+   If the paclet has no `Documentation/` yet, offer the [paclet-docs](../paclet-docs/SKILL.md) skill before publishing — a paclet with no reference pages is discoverable only by reading its source.
+6. **Fixed staging lists in a project's own publish script** — if the paclet has its own `Scripts/Publish*.wls`, read what it stages.
+   A hand-written script that copies a fixed directory list drops `Documentation/` (and anything else added since it was written) without a word.
+   Fix the list, or say plainly that the docs will not ship.
 
 ## Step-by-step (preferred: MCP)
 
-### 1. Build + install
+### 1. Build + install, with docs
 
-Build and install locally via the evaluator exactly as in the [build-paclet](../build-paclet/SKILL.md) skill (`CreatePacletArchive` + `PacletInstall[..., ForceVersionInstall -> True]` in the persistent kernel).
+Build and install locally via the evaluator exactly as in the [build-paclet](../build-paclet/SKILL.md) skill (`CreatePacletArchive` + `PacletInstall[..., ForceVersionInstall -> True]` in the persistent kernel), staging **every** top-level item — including `Documentation/`, which that skill's snippet leaves out by default (`withDocs = True` here).
 Keep the resulting archive path.
+
+Then verify the docs actually resolve from the install, before anything is uploaded — `PacletDataRebuild[]`, then for every documented symbol:
+
+```wolfram
+Documentation`ResolveLink["paclet:<Pub>/<Paclet>/ref/<Symbol>"]
+```
+
+Each must return an existing file under `$UserBasePacletsDirectory`.
+A page that resolves to `Null` is dead weight in the archive; stop and fix it (usually a missing `Documentation` extension in `PacletInfo.wl`) rather than publishing it.
+Do **not** substitute `Information` or `?Symbol` — they print the kernel's `::usage` string whether or not a page exists.
 
 ### 2. Upload to Wolfram Cloud via the evaluator
 
@@ -67,10 +81,38 @@ The returned string is the **public cloud URL** — stable across versions, sinc
 
 > **Fallback (MCP unavailable, and a seat is free per the headroom check):** run
 > `wolframscript -f "${CLAUDE_PLUGIN_ROOT}/scripts/publish_paclet.wls" "<PacletName>"`
-> (or `Scripts/publish_paclet.wls`; add `--with-docs` to bundle `Documentation/`).
-> The script prints `=== PACLET_URL: <url> ===` — extract the URL from that line.
+> (or `Scripts/publish_paclet.wls`; add `--no-docs` to exclude `Documentation/`).
+> The script prints `=== PACLET_URL: <url> ===` and, when docs were bundled, `=== DOCS_URL: <url> ===` — extract the URLs from those lines.
 
-### 3. Report to the user
+### 3. Deploy the documentation pages
+
+A published `.paclet` serves the reader who installs it.
+The reader who was just sent a link has nothing to open — which is why the retired `demo-notebook` existed at all.
+So deploy the doc pages as public cloud notebooks with an HTML index, via [deploy_paclet_docs.wl](../../scripts/deploy_paclet_docs.wl):
+
+```wolfram
+Get["${CLAUDE_PLUGIN_ROOT}/scripts/deploy_paclet_docs.wl"];
+deployPacletDocs["<pacletDir>", "<PacletName>/Documentation"]
+```
+
+It returns `<|"IndexURL" -> …, "Pages" -> <|symbol -> url, …|>, "Failed" -> {…}|>`.
+The second argument is a path under the connected cloud account; keep it stable across releases so the URL does not move.
+
+Two things it does that matter:
+
+- **Rewrites every `paclet:` link.** A page's own cross-links are `paclet:<Pub>/<Paclet>/ref/<Sym>` plus a web URL of `reference.wolfram.com/language/<Pub>/<Paclet>/ref/<Sym>.html` — a page that exists only for paclets shipped with the Wolfram Language. Both slots are repointed at the deployed sibling; links to built-in symbols keep their real `reference.wolfram.com` URL.
+- **Deploys notebooks, not HTML.** `ExportString[nb, "HTML"]` rasterizes the cells into an image map and loses the links, so it is not an option.
+
+Then check anonymously — the pages are for people who are not logged in:
+
+```wolfram
+URLRead[url, "StatusCode"]
+```
+
+200 for the index and for every page.
+Whether the cloud notebook viewer makes the rewritten links clickable is a browser question; say that it is unverified rather than claiming it works.
+
+### 4. Report to the user
 
 After successful publish, report:
 
@@ -80,12 +122,17 @@ After successful publish, report:
   ```wolfram
   PacletInstall["<cloud-url>"]
   ```
-- **README update** — suggest updating the paclet's README.md with the install URL if it differs from the current one.
+- **Documentation URL** — the deployed index, and how many pages resolved in-product out of how many symbols
+- **What still needs a human** — F1 and Documentation Center search after install, and click-through on the deployed pages
 
-### 4. Update README (if applicable)
+### 5. Update README (if applicable)
 
-If the paclet has a `README.md`, check whether the install URL in the Installation section matches the new cloud URL.
-If not, offer to update it.
+If the paclet has a `README.md`, check two links, not one:
+
+- the install URL in the Installation section, against the new cloud URL
+- a link to the deployed documentation index — this is the link to hand to someone who has not installed anything
+
+Offer both edits; the README is the author's.
 
 ## Error handling
 

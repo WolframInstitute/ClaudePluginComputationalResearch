@@ -177,3 +177,12 @@ Documentation Center confirmation is still owed to the author.
 Also check how the paclet is **published**. A hand-written publish script that
 stages a fixed list of directories will silently drop `Documentation/`; flag it
 rather than assuming the docs ship.
+
+## Shipping the pages
+
+[publish-paclet](../publish-paclet/SKILL.md) bundles `Documentation/` by default,
+verifies every URI resolves from the install, and then deploys the pages as public
+cloud notebooks with an HTML index
+([deploy_paclet_docs.wl](../../scripts/deploy_paclet_docs.wl)) so a reader who has
+installed nothing can still read them. That deployed index is the link to put in
+the README — it is what replaced the retired demo notebook.

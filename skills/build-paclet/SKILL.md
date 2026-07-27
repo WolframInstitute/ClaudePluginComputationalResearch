@@ -46,25 +46,30 @@ Use `mcp__Wolfram__CodeInspector` on each kernel file to catch syntax/style issu
 Run the build in the persistent kernel with `mcp__Wolfram__WolframLanguageEvaluator` — same logic as [paclet_common.wl](../../scripts/paclet_common.wl), no new process:
 
 ```wolfram
-Module[{src = "<pacletDir>", tmp, archive},
+Module[{src = "<pacletDir>", withDocs = False, tmp, items, archive},
   tmp = FileNameJoin[{$TemporaryDirectory, FileBaseName[src] <> "-build"}];
   If[DirectoryQ[tmp], DeleteDirectory[tmp, DeleteContents -> True]];
   CreateDirectory[tmp];
-  CopyFile[FileNameJoin[{src, "PacletInfo.wl"}], FileNameJoin[{tmp, "PacletInfo.wl"}]];
-  CopyDirectory[FileNameJoin[{src, "Kernel"}], FileNameJoin[{tmp, "Kernel"}]];
-  If[DirectoryQ[FileNameJoin[{src, "Tests"}]],
-     CopyDirectory[FileNameJoin[{src, "Tests"}], FileNameJoin[{tmp, "Tests"}]]];
-  (* Add Documentation/ only when the user asked to bundle docs: *)
-  (* CopyDirectory[FileNameJoin[{src,"Documentation"}], FileNameJoin[{tmp,"Documentation"}]]; *)
+  items = Select[FileNameTake /@ FileNames["*", src],
+    ! StringStartsQ[#, "."] && # =!= "build" &];
+  If[! withDocs, items = DeleteCases[items, "Documentation"]];
+  Scan[{item} |-> With[{from = FileNameJoin[{src, item}], to = FileNameJoin[{tmp, item}]},
+      If[DirectoryQ[from], CopyDirectory[from, to], CopyFile[from, to]]], items];
+  Scan[DeleteFile, FileNames[".DS_Store", tmp, Infinity]];
   archive = CreatePacletArchive[tmp];
   DeleteDirectory[tmp, DeleteContents -> True];
   PacletInstall[archive, ForceVersionInstall -> True]]
 ```
 
-`PacletInstall` returns the installed paclet object — report its `"Name"`, `"Version"`, and `"Location"`, plus the archive path.
+`PacletInstall` returns the installed paclet object — report its `"Name"`, `"Version"`, and `"Location"`, plus the archive path, and say which top-level items were staged.
 
-**Documentation is excluded by default** for fast iterative builds.
-When the user wants docs bundled, uncomment the `Documentation/` copy line.
+**Stage every top-level item, not a fixed list.**
+A paclet may ship `FrontEnd/` (palettes, stylesheets), `Assets/`, `Documentation/` or anything else its `PacletInfo.wl` declares.
+An earlier version of this recipe copied only `Kernel/` and `Tests/`, which silently installed MathNotebook with no palette and no stylesheets — the paclet loaded, so nothing looked wrong.
+Dotfiles and `build/` are repo artifacts and stay out.
+
+**Documentation is excluded by default here** for fast iterative builds — set `withDocs = True` (or pass `--with-docs` to the script) to include it.
+`publish-paclet` is the opposite: it bundles docs by default, since a published paclet should ship them.
 
 ### 3. Test (optional)
 
@@ -78,6 +83,15 @@ Needs["<OrgName>`<PacletName>`"]
 
 via the evaluator.
 If it errors, check `PacletInfo.wl` validity, that `Kernel/` has the main loader, and kernel-file syntax (`mcp__Wolfram__CodeInspector`).
+
+If docs were bundled, also check one page resolves — `PacletDataRebuild[]`, then
+
+```wolfram
+Documentation`ResolveLink["paclet:<Pub>/<Paclet>/ref/<Symbol>"]
+```
+
+must return a file **under the installed paclet**.
+`Null` means the `Documentation` extension is missing from `PacletInfo.wl` (see the [paclet-docs](../paclet-docs/SKILL.md) skill).
 
 ## Fallback: wolframscript (MCP unavailable)
 
