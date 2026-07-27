@@ -35,20 +35,20 @@ The item's value is the trial itself; its tasks are deliberately small, textual,
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — Reconcile `Wiki/Concepts/AutonomousPipeline.md` with `scripts/auto-run.sh` where T1's runbook found the two disagreeing: add the stop reasons its table omits (`item-vanished`, `interrupted`), correct the claim that the driver exits only `0` or `1`, and correct the claim that selection reads `Work/README.md`. Read the script; do not edit it. *Added by T8's second run.*
 - [ ] T2 — Decide whether `/auto-run` should appear in the user-facing command list in `README.md`, and add it if so. (human)
 
 ### Done
 
+- [x] S2 T3 — Reconcile `Wiki/Concepts/AutonomousPipeline.md` with `scripts/auto-run.sh` where T1's runbook found the two disagreeing: add the stop reasons its table omits (`item-vanished`, `interrupted`), correct the claim that the driver exits only `0` or `1`, and correct the claim that selection reads `Work/README.md`. Read the script; do not edit it. *Added by T8's second run.*
 - [x] S1 T1 — Write `Wiki/Concepts/AutoRunOperations.md`: an operator's runbook for `/auto-run` — what to do for each stop reason in the driver's table, how to grow the allowlist from a `permission-denied` halt, how to read a digest, and how `auto/<Item>` reaches `main`. Link it from `Wiki/Index.md`.
 
 ## Hand-off
 
-T1 **did** run through `scripts/auto-run.sh` — the run that wrote the previous hand-off believing otherwise was itself the driver's first live session, and its false belief is T8's main finding.
-The driver now states the fact in the system prompt, so a session no longer has to infer it.
+Only T2 remains, and it is `(human)`.
+So an autonomous run of this item now halts immediately on `task-gated` without spending a task — that is the item's expected terminal state under the driver, not a fault, and the trial has nothing further to exercise unattended.
+The operator does T2 in an interactive `/next-session`, which completes the item.
 
-T3 exists to re-run the fixed driver; it is otherwise ordinary wiki prose.
-T2 stays gated and is the item's last task.
+The two runs the driver has now done are the whole of T8's evidence; both are recorded in [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md), so nothing here needs to be carried forward by hand.
 
 ## Decisions
 
@@ -62,3 +62,4 @@ T2 stays gated and is the item's last task.
 Append-only, one line per session; nothing reads it.
 
 - **S1** 2026-07-28 T1 — wrote the `/auto-run` operator runbook and linked it from the index, the pipeline article, and Status. → [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md)
+- **S2** 2026-07-28 T3 — corrected the pipeline spec against the script on all five divergences, and recorded what the first real run measured. → [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md), [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md), [Status](../../Wiki/Status.md)

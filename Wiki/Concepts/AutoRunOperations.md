@@ -6,7 +6,8 @@ What an operator does when an unattended run halts: how to read the digest, what
 
 This is the runbook.
 The design record — why the harness schedulers cannot drive the loop, why the `revise` gate survives as a branch plus a digest, what each stop condition is *for* — is [The autonomous next-session pipeline](AutonomousPipeline.md), and is not restated here.
-Written against `scripts/auto-run.sh` as it stands on 2026-07-28; where the script and the specification disagree, the script is the fact, and the disagreements are listed [at the end](#where-the-script-and-the-specification-disagree).
+Written against `scripts/auto-run.sh` as it stands on 2026-07-28.
+Where the script and the specification disagree the script is the fact — see [the end](#where-the-script-and-the-specification-disagree) for how that is handled and why nothing is outstanding.
 
 ## Before a run
 
@@ -116,13 +117,11 @@ An unmerged branch means the next run stacks new tasks on top of work nobody has
 
 ## Where the script and the specification disagree
 
-Five places, all minor, all resolved in the script's favour.
+Nowhere, as of 2026-07-28.
+This runbook found five divergences when it was written; [the specification](AutonomousPipeline.md) has since been corrected to match the script on all five — selection globbing `Work/Active/` rather than reading the index, the `(human)` gate matching as a substring, `unparseable-output` quoting 1 kB of stdout plus 1 kB of stderr, `item-vanished` and `interrupted` as stop reasons, and the four-valued exit status.
 
-- **Selection ignores `Work/README.md`.** The specification says the driver reads the index for active items; it globs `Work/Active/*.md` directly. An item missing from the index is still eligible.
-- **The `(human)` gate matches anywhere in the line.** The specification says a task line *ending* in `(human)`; the script tests the substring, so the marker gates the task wherever it appears.
-- **`unparseable-output` quotes 1 kB, not 2 kB.** And it quotes stderr as a second 1 kB block, which the specification does not mention.
-- **The stop-reason table omits `item-vanished` and `interrupted`.** Both are reachable; both are in the table above.
-- **Exit codes are three-valued, not two.** Beyond the documented `0` and `1` there is `2` for every preflight failure — the group that writes no digest — and `130` for an interrupt.
+The precedence rule stands for the next divergence: the script is the fact, and the article is what gets corrected.
+When you find one, fix the article rather than recording it here — a standing list of known-wrong documentation is a second thing to keep current.
 
 ## See also
 
