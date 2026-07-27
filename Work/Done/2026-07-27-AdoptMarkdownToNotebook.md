@@ -74,6 +74,10 @@ Probed at `204db7c` during T4, three facts constrain the options:
   `Default.nb` defines none of `Theorem` / `TheoremStatement` / `Proof` anyway.
   Under `Template: Chapter` all six cells appear correctly, but `StyleDefinitions` becomes `FrontEnd`FileName[{"Wolfram"}, "BookToolsStyles.nb"]` — the WolframBookTools stylesheet, not Default.
 
+**Resolved at T5 (2026-07-27): none of the four was chosen — a fifth route was found, and the user picked it.**
+Route 5 splits the job: MarkdownToNotebook is the **parser** (`Template: Default`), and `scripts/mathnotebook_post.wl` is the **post-processor** supplying environments, numbering, cross-references, and citations.
+The four routes below are kept as the measurement record.
+
 The four routes, for T5 to choose between:
 
 1. **`Template: Chapter`, accept BookTools styling.** Environments and numbering work as shipped, nothing to maintain. Not the Default look the user floated, and it adds a WolframBookTools dependency for the stylesheet to resolve.
@@ -81,9 +85,14 @@ The four routes, for T5 to choose between:
 3. **`Default` plus a small local stylesheet** defining `Definition` / `Proposition` / `Lemma` / `Corollary` / `Proof`. The only route that gives genuinely distinct environments and per-environment counters, and the only one that satisfies the request literally. Costs a stylesheet to own.
 4. **Keep MathNotebook for this skill.** The status quo; already satisfies environments and referencing.
 
-Open, unmeasured: **referencing.** The user named it as a requirement and T4 did not probe it. Establish what the converter supports (cross-references to numbered environments, a bibliography) before choosing a route — route 3 in particular would have to reimplement whatever is missing.
+~~Open, unmeasured: **referencing.**~~ **Measured at T5 (2026-07-27): the converter has none of it, and that is what decided the route.**
+`[text](#anchor)` becomes a dead `URL` fragment button; theorem head cells carry no `CellTags`, so there is nothing to anchor to; `[@key]` passes through as literal text; there is no bibliography engine; and numbering is `CounterBox["Section"].CounterBox["Subsection"]` with no per-environment counter, so a Proposition and a Lemma in the same subsection print the **same** number.
+Two further silent-failure modes turned up: `BookToolsStyles.nb` is **absent from a stock installation** (route 1 needs a `WolframBookTools` paclet install), and an **unrecognised div kind degrades silently to plain cells** — the numbered spelling is `::: theorem-numbered`, and `::: theorem numbered` produces prose with no message.
 
-Also unresolved and independent of the route: `research-notebook` is specced for **two-way md↔nb sync**, and its sync uses `ExportString[Import[path], "Markdown"]`, not `NotebookToMarkdown`. Whether that still round-trips once the notebook carries `Theorem` / `2ColumnTableMod` / boxed-math cells is unmeasured, and S3's finding that the reverse direction loses frontmatter and table headers is a warning, not an answer. Measure the sync before committing.
+~~Also unresolved and independent of the route: `research-notebook` is specced for **two-way md↔nb sync**…~~ **Measured at T5, and the sync is gone.**
+`ExportString[Import[path], "Markdown"]` on a generated research notebook (639-char source → 955-char export) rasterises every formula, citation button and table into references to nonexistent PNGs, drops the environment markers, mojibakes non-ASCII characters, and returns `wolfram` fences as broken literal source containing `$Failed`.
+It cannot even serve its specced purpose of diffing to locate user edits.
+Per user direction mid-session, generation is now **one-way** and edits are detected instead — see the S5 Progress entry.
 
 ### Edge cases & out of scope
 
@@ -96,9 +105,11 @@ Also unresolved and independent of the route: `research-notebook` is specced for
 
 One unchecked box ≈ one focused session.
 
-- [ ] T5 — Reopen `research-notebook` as a generation surface (user direction, 2026-07-27). Decide the stylesheet/environment route from the four options in *Design / risks → research-notebook, reopened*, then implement it. Measure the md↔nb sync direction before committing to anything.
+*(none — all tasks done; the item is complete.)*
 
 ### Done
+
+- [x] T5 — Reopen `research-notebook` as a generation surface. Measured the referencing support (absent), found and implemented a fifth route — rich parser + MathNotebook post-processing — and replaced the two-way sync with one-way generation plus fingerprint edit detection. *(Session 5)*
 
 - [x] T4 — Implement `new-notebook`'s rich mode against the pinned local clone (`Default` template, `"Evaluate" -> False`, built-in fallback) and register the resource in `Wiki/`. *(Session 4)*
 
@@ -242,6 +253,52 @@ One unchecked box ≈ one focused session.
   "Definition/Proposition with the Default style" is therefore the one combination that does not exist off the shelf, which is a decision for the user rather than something to pick unilaterally.
   Referencing — explicitly named as a requirement — is **not** probed; T5 does that first.
 
+### Session 5 — 2026-07-27 — T5
+
+- **Prompt:** `/next-session`, then two mid-session directions: the route choice (`Route 5 — hybrid`) and *"the transfer md ↔ nb does not have to be bidirectional. There should just be some revision protocol where also the user can change nb and you recognize. But maybe telling the user to change the md instead while watching at the nb could be better. If the md is readable."*
+- **Did:** measured the referencing support that gated the route, found a fifth route, and implemented it.
+
+  **Measured referencing first, and it decided everything.**
+  The converter has no referencing at all: `[Definition 1.1](#def-curvature)` becomes `ButtonBox[…, BaseStyle -> "Hyperlink", ButtonData -> {URL["#def-curvature"], None}]` — a dead fragment, because theorem head cells carry no `CellTags` to anchor to; `[@ollivier2009]` passes through as literal text; there is no bibliography engine.
+  Numbering is worse than recorded: `CounterBox["Section"].CounterBox["Subsection"]` with no per-environment counter, so a rendered probe printed **Proposition 0.2 and Lemma 0.2** — the same number for different environments.
+  Route 1 also costs more than the Spec said: `BookToolsStyles.nb` is **absent from a stock installation** and needs `PacletInstall["WolframBookTools"]` from the Wolfram server.
+  Route 2 was rendered rather than argued about: undefined styles collapse to tiny serif body text with no labels, no boxes, no indentation.
+
+  **Found a fifth route and verified it before proposing it.**
+  MarkdownToNotebook emits a Markdown bold run as `StyleBox["Definition.", FontWeight -> "Bold"]` at the head of the cell's `TextData` — exactly the shape `markerSplit` in `scripts/mathnotebook_post.wl` already matched.
+  So the converter can be the parser and MathNotebook the post-processor, with no glue code: `**Definition.**` / `**Remark.**` / `**Conjecture.**` came out as `Definition 1.1` / `Remark 1.2` / `Conjecture 2.1` with correct label and body styling, `[ollivier2009]` as a live `Citation` button, and the math and code fully typeset.
+  Presented the measurements and the four-versus-five comparison; the user chose route 5.
+
+  **Rewrote `skills/research-notebook/SKILL.md`** — six sections: the two-half pipeline, the one-way revision protocol, engine-dependent TeX rules, the bold-marker join, the concrete conversion call, and the reverse-direction record.
+  Smoke-tested the documented pipeline verbatim on a realistic source: 15 cells, `Author×2 / Title / Text / Section×3 / InlineFormula×7 / Definition / Remark / Conjecture / DisplayFormulaNumbered / Subsection / Input / ItemNumbered×2`, 0 `CellLabel`, the equation tagged `eqsum` and numbered `(1)` flush right, one `Citation` button — and rendered it to confirm it looks like a paper.
+
+  **Replaced the two-way sync with a detector, per the mid-session direction.**
+  Built and verified a per-cell fingerprint — `<|CellID -> Hash[{content, style}]|>` stored in `TaggingRules` — that reports zero drift on an untouched notebook and exactly 1 added / 1 deleted / 1 edited on a simulated user edit.
+  Synced `Wiki/Resources/MarkdownToNotebook.md`, `Wiki/Status.md`, and `CLAUDE.md` (engine section + skills table).
+- **Learned:** five things.
+
+  **The requirement the user named is the one the candidate could not meet.**
+  "I like the Definition, Proposition, … and the referencing" — environments the converter has (thinly), referencing it has *none* of.
+  Costing the environments without measuring the referencing, as S4 nearly did, would have picked route 1 or 3 and then discovered the gap during implementation.
+  The lesson generalises: probe the requirement that was named last, because it is the one nobody has measured.
+
+  **Two silent-failure modes beyond the one S4 recorded.**
+  S4 found that `Default` drops `:::` divs silently.
+  T5 adds: an **unrecognised div kind** degrades silently to plain cells — the numbered spelling is `::: theorem-numbered`, and `::: theorem numbered` (the natural guess, and what S4's Spec wrote) yields prose with no message; and `{#id}` attributes are not parsed at all, so appending one makes the whole div unrecognised.
+  This is why the skill now forbids `:::` divs in these sources outright.
+
+  **Rich mode fixes the built-in importer's `=` defect but keeps two TeX losses.**
+  `$X + Y = Y + X$` survives intact, which is why the skill can now recommend readable `$…$` in the source instead of plain Unicode.
+  But `\to` and `\mapsto` still become an **empty string** — `\rightarrow`, `\longrightarrow`, `\hookrightarrow` and pasted Unicode all work — and `\tag{…}` renders literally as `(tag)`.
+  Also: a `wolfram` fence starting with `FormBox[…]` stays an `Input` cell under rich mode, so the old display-math convention is built-in-only and equation `CellTags` must be attached after conversion.
+
+  **`CreateCellID -> True` is a front-end instruction, not a stamp.** It does **not** put `CellID`s on programmatically built cells, so the first version of the fingerprint was silently vacuous — it recorded an empty association and every check passed.
+  Assign the `CellID`s yourself.
+
+  **Fingerprint after the round-trip, never in memory.** `Export` normalises cell content, so hashing the in-memory cells and comparing against the re-imported file reported 6 of 15 cells as edited when one had changed.
+  Exporting, re-importing, fingerprinting *that*, and writing the stamp back gives exact detection with no false positives.
+- **Next:** none — T5 was the last task. Item complete, moved to `Work/Done/2026-07-27-AdoptMarkdownToNotebook.md`.
+
 ## Decisions
 
 | Date | Decision | Rationale |
@@ -258,4 +315,8 @@ One unchecked box ≈ one focused session.
 | 2026-07-27 (S4) | Never clone MarkdownToNotebook silently; fall back to the built-in engine and say so. | Cloning is unrequested network I/O. The fallback keeps `new-notebook` working on a machine that has never seen the dependency, which is the normal case for a plugin user. |
 | 2026-07-27 (S4) | S3's "drop `research-notebook` permanently" is **reversed** for the forward direction; the reverse direction stays dropped. | User direction. S3's forward argument was incomplete — it measured only the `Default` template and concluded the converter has no theorem environments, but they exist on the `Chapter` path (`::: theorem` / `::: proof`). The reverse-direction argument (round-trip drops frontmatter and empties table headers) is unaffected and still disqualifies the sync direction. |
 | 2026-07-27 (S4) | The environment/stylesheet route for `research-notebook` is the user's call, deferred to T5, not picked in S4. | The request — theorem environments *and* the Default style — is not satisfiable off the shelf: environments exist only under `Chapter`, which forces `BookToolsStyles.nb`, and under `Default` the divs are silently dropped (3 → 0 cells, no message). The four routes and their costs are recorded in the Spec; referencing is still unmeasured and gates the choice. |
+| 2026-07-27 (S5) | `research-notebook` adopts the rich engine as the **parser half** of a two-half pipeline, not as a replacement generator (route 5, none of the four). | User decision from the measured comparison. The converter has no referencing whatsoever — dead `URL` fragment buttons, no `CellTags` anchors, no citations, no bibliography — and its numbering collides (`Proposition 0.2` and `Lemma 0.2` in one probe), while `mathnotebook_post.wl` already supplies all of it. The join needs no glue: the converter emits a bold run as `StyleBox["Definition.", FontWeight -> "Bold"]`, exactly what `markerSplit` matches. Accepted cost: the MathNotebook dependency stays, and the style is AMSArticle rather than `Default`. |
+| 2026-07-27 (S5) | Routes 1–3 rejected on measurement, not preference. | Route 1 needs a `WolframBookTools` paclet install (`BookToolsStyles.nb` is absent from a stock installation) and still gives one `Theorem` style for every label. Route 2 was rendered and is genuinely unstyled — tiny serif body text, no labels or indentation. Route 3 would have to reimplement anchors, cross-references and a bibliography engine that MathNotebook already has. |
+| 2026-07-27 (S5) | Generation is **one-way**; the two-way md↔nb sync is removed and replaced by a per-cell fingerprint. | User direction mid-session: the transfer need not be bidirectional, and telling the user to edit the `.md` while reading the `.nb` is better *if the `.md` is readable* — which rich mode's `$…$` math makes true. The measured export is unusable even for diffing (formulas, citations and tables become references to nonexistent PNGs; fences come back containing `$Failed`). A `<\|CellID -> Hash[{content, style}]\|>` stamp in `TaggingRules` detects added / deleted / edited cells exactly, and a regeneration stops on drift rather than overwriting. |
+| 2026-07-27 (S5) | Forbid `:::` fenced divs in `research-notebook` sources outright. | Three silent-loss modes, no messages on any: under `Default` the divs vanish entirely; an unrecognised kind degrades to plain prose (and `::: theorem numbered` — the natural spelling, and the one this Spec used — *is* unrecognised, the real one being `::: theorem-numbered`); and a `{#id}` attribute makes any div unrecognised. The bold markers have none of these failure modes. |
 | 2026-07-27 | The guide-page gap is no longer a reason to adopt. | Guide pages left scope the same day. What remains in favour is `new-notebook`'s rich mode (Phase 1) — the constructs the MCP append-cell transport cannot carry — and nothing else urgent. This item is now genuinely low priority. |

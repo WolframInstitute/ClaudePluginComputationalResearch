@@ -6,11 +6,13 @@ description: >
   document — definitions first, then the conjectures the computations support
   (each with computed evidence), function demonstrations named by the literal
   code, an enumerated list of further research questions, and a literature
-  section. Uses the MathNotebook paclet environments (Definition, Conjecture,
+  section. Converts the Markdown source with the rich MarkdownToNotebook parser,
+  then applies the MathNotebook paclet environments (Definition, Conjecture,
   Question, ...) so statements translate directly to Lean. Visual-first: mostly
-  pictures and plots, not numeric dumps. Kept in two-way sync with a Markdown
-  source — user edits in the .nb are folded back into the .md, never
-  overwritten. Use when the user says "research notebook", "notebook with
+  pictures and plots, not numeric dumps. Generated one-way from a readable
+  Markdown source the user edits directly; a per-cell fingerprint detects any
+  edit made in the .nb instead, and regeneration stops rather than overwrite it.
+  Use when the user says "research notebook", "notebook with
   conjectures", "research document on X", "write up the research on X", or the
   /research-notebook command.
 ---
@@ -29,31 +31,109 @@ exploration log:
 points at code. No filler prose, no over-explanation, no code inside Text
 cells. If a paragraph doesn't add a mathematical fact, delete it.
 
-## Pipeline and two-way sync — Critical
+## Pipeline and the revision protocol — Critical
 
-The source of truth is `NotebooksLLM/<Topic>.md`, converted via the
-[new-notebook](../new-notebook/SKILL.md) pipeline (backtick escaping, boxify,
-init-cell marking, `[LLM Generated]` subtitle — all of it applies). The
-generated `.nb` sits beside it, gitignored, dated on first creation.
+The source of truth is `NotebooksLLM/<Topic>.md`.
+Conversion is a **two-half pipeline**, and both halves are load-bearing:
+`WolframInstitute/MarkdownToNotebook` parses the Markdown, then
+`scripts/mathnotebook_post.wl` applies the environments, the numbering, and the
+citations.
+The generated `.nb` sits beside the source, gitignored, dated on first creation.
 
-**Never overwrite user edits in the `.nb`.** Before every regeneration:
+The parser half is the **rich engine** documented in
+[new-notebook](../new-notebook/SKILL.md) *Conversion engine — built-in vs rich*:
+the pinned local clone, `Template: Default`, `"Evaluate" -> False`.
+A research source always carries frontmatter and LaTeX math, so that skill's
+selection rule always picks rich mode here — but the built-in importer remains
+the fallback when the clone is absent, and the fallback **changes what you may
+write in the source** (see *No inline TeX in the sources*).
+The backtick-escaping and init-cell-marking rules from `new-notebook` still
+apply; `boxifyInputCells` and the heading shift do **not** — rich mode drops
+both.
 
-1. Export the existing `.nb` to Markdown via the MCP
-   (`ExportString[ Import[ path ], "Markdown" ]`).
-2. Diff against the source `.md`. Any cell the user added or changed is
-   **incorporated into the `.md` first** (ask if a conflict is ambiguous —
-   user content wins by default).
-3. Only then regenerate the `.nb` from the updated source.
+The post-processing half is unchanged and still mandatory: MarkdownToNotebook
+supplies **no** environments on the `Default` path, no anchors, no
+cross-references, and no bibliography.
+See *MathNotebook environments and Lean-translatability* and *Citations and
+References*.
 
-So the notebook is never "only LLM generated": it is a shared document where
-the `.md` accumulates both LLM and user contributions.
+**Never write `::: theorem` or `::: proof` divs in these sources.** The
+converter's fenced-div environments exist only under `Template: Chapter`, which
+would force the WolframBookTools stylesheet; under `Default` the divs are
+**silently dropped entirely** — no cells, no message. Use the bold environment
+markers instead.
+
+### Generation is one-way; revision is a protocol, not a sync
+
+**The `.md` → `.nb` direction is the only transfer.** There is no `.nb` → `.md`
+transfer at all, in either engine — see *Why there is no reverse direction*.
+
+So the working arrangement is: **the user reads the `.nb` and edits the `.md`.**
+That is only honest if the `.md` is genuinely readable, which is a live
+constraint on how you write it and a further reason rich mode matters — readable
+`$…$` LaTeX in the source instead of the built-in path's plain-Unicode and
+`FormBox` fences. Tell the user this explicitly the first time a notebook is
+generated: point at the `.md` as the file to edit, and say the `.nb` is a build
+product.
+
+**But never assume the user obeyed that.** The build stamps a per-cell
+fingerprint, and every regeneration checks it first:
+
+1. **At build**, after writing the `.nb`, re-import it, fingerprint the
+   round-tripped cells, and store the result in a notebook option:
+   ```wolfram
+   TaggingRules -> { "ResearchNotebook" -> { "Cells" -> fingerprint } }
+   ```
+   The fingerprint is `<| CellID -> Hash[ { content, style } ] |>` over level
+   `{1}`. Two details are load-bearing: **assign the `CellID`s yourself** —
+   `CreateCellID -> True` is an instruction to the front end and does **not**
+   stamp programmatically built cells — and **fingerprint after the round-trip**,
+   never the in-memory expression, because `Export` normalises cell content and
+   an in-memory fingerprint reports every cell as edited.
+2. **Before regenerating**, re-import and compare. A cell with no `CellID` is
+   **user-added**; a recorded `CellID` that is gone is **user-deleted**; a
+   recorded `CellID` whose hash moved is **user-edited**.
+3. **If anything drifted, stop.** Present the drift and let the user decide —
+   transcribe it into the `.md`, or discard it. Do not regenerate over it and do
+   not guess. If nothing drifted, regenerate freely.
+
+Verified: an untouched notebook reports zero drift (no false positives), and a
+notebook with one cell rewritten, one added and one deleted reports exactly those
+three.
+
+### Why there is no reverse direction
+
+Both candidates lose content, measured at the pinned SHA.
+
+`ExportString[ Import[ path ], "Markdown" ]` on a generated research notebook
+turned a 639-character source into 955 characters of unusable output:
+
+- Every typeset construct became a reference to a PNG that does not exist —
+  `![…](img/….png)` — including each subscripted inline formula, each
+  `DisplayFormula`, every `Citation` button, and the whole table.
+- The environment markers were gone: a `Definition` cell exports as bare prose,
+  so a round-trip would silently demote it to `Text`.
+- A `wolfram` fence came back as broken literal source containing `$Failed` and
+  `MarkdownTools\`Private\`` symbols.
+- Non-ASCII characters mojibaked (`κ` → `Îº`), headings shifted down a level, and
+  the frontmatter was dropped.
+
+`NotebookToMarkdown.wl` is not a way out either — it loses frontmatter and
+empties table headers (see `Wiki/Resources/MarkdownToNotebook.md`).
+
+The fingerprint above replaces both: it detects *that* and *where* the user
+edited without needing to read the notebook back as Markdown.
 
 ## Source frontmatter and the notebook head
 
-The `.md` carries YAML frontmatter, which the Markdown importer does **not**
-understand — left in place it renders as a literal Text cell reading
-`notebook: X title: Y` above the Title. **Strip it before `ImportString`** and
-read its keys as metadata instead:
+The `.md` carries YAML frontmatter.
+**Rich mode consumes it as metadata**, so there is nothing to strip — that is one
+of the reasons this skill uses the rich engine.
+The built-in importer does **not** understand it: on the fallback path, left in
+place it renders as a literal Text cell reading `notebook: X title: Y` above the
+Title, so strip it before `ImportString` there.
+Either way the keys are metadata, not content — the `Default` template emits no
+`Author` cell, so the generator inserts it from the frontmatter itself:
 
 ```markdown
 ---
@@ -75,7 +155,37 @@ AMSArticle declares no `Subtitle` style, so a `Subtitle` cell falls through to
 `Default.nb` and loses the sheet's typography. Use the `Author` style for the
 `[LLM Generated]` line.
 
-## No inline TeX in the sources — Critical
+## TeX in the sources — engine-dependent — Critical
+
+**Which rule applies depends on which parser ran.** This is the one place where
+the fallback changes what you may write, so settle the engine first.
+
+### Rich mode (the normal path)
+
+`$…$` and `$$…$$` are the **preferred** form: the TeX parser produces real
+typeset boxes, `$…$` becomes a nested `InlineFormula` cell, and `$$…$$` becomes a
+`DisplayFormula`. `=` survives, which is the built-in importer's worst defect.
+
+Three losses remain, all measured at the pinned SHA:
+
+- **`\to` and `\mapsto` are silently dropped** — they become an empty string, so
+  `$f : V(G) \to \mathbb{R}^3$` typesets with nothing between `V(G)` and `ℝ³`.
+  Write `\rightarrow` / `\longrightarrow` / `\hookrightarrow`, or paste the
+  Unicode character straight into the math (`$a ↦ b$` works). `\Rightarrow`,
+  `\circ`, `\times`, `\subset`, `\in`, `\leq`, `\neq` are all fine.
+- **`\tag{…}` is not understood** — it renders literally as `(tag)` inside the
+  formula. Numbering comes from `CellTags`, never from the TeX.
+- **A `wolfram` fence starting with `FormBox[…]` stays an `Input` cell** showing
+  the literal `FormBox` source. That convention is built-in-only; in rich mode
+  use `$$…$$`.
+
+Since `$$…$$` arrives with no `CellTags`, **the generator attaches them after
+conversion**: keep an ordered list of tags while authoring, one entry per `$$`
+block (`None` for an equation nothing cites), then apply it to the
+`DisplayFormula` cells at level `{1}` in document order before calling
+`MathNotebookDocument`. `NumberTaggedFormulas` promotes exactly the tagged ones.
+
+### Built-in fallback (no clone present)
 
 The Markdown importer **silently drops `=` and `\to`** inside inline `$…$` math
 (`$X + Y = Y + X$` imports as "X + Y Y + X"). Relations like ≤ ≥ ∼ ⊂ ∈ survive,
@@ -86,7 +196,7 @@ which makes the failure easy to miss.
 - For displayed equations use a `wolfram` fence whose content starts with
   `FormBox[…]`; post-processing turns it into a `DisplayFormula` cell with native
   typeset boxes.
-- Never use `$…$` or `$$…$$` in these sources.
+- Never use `$…$` or `$$…$$` on this path.
 
 ## MathNotebook environments and Lean-translatability
 
@@ -145,11 +255,26 @@ in the source. Two counter facts to write against:
 Note that the Plain class italicises the body, which is the amsthm convention but
 surprises authors who write a long `Theorem` cell.
 
-**Displayed math.** A `wolfram` fence starting with `FormBox[…]` becomes a
-`DisplayFormula` cell, as before; MathNotebook defines no separate equation
-environment. Give the cell `CellTags` and `NumberTaggedFormulas` promotes it to
+**The bold markers survive rich-mode conversion unchanged**, and that is what
+makes the two-half pipeline work: MarkdownToNotebook emits a bold run as
+`StyleBox[ "Definition.", FontWeight -> "Bold" ]` as the first element of the
+cell's `TextData`, which is exactly the shape `markerSplit` matches. Verified end
+to end — `**Definition.**` / `**Remark.**` / `**Conjecture.**` came out as
+`Definition 1.1` / `Remark 1.2` / `Conjecture 2.1` with the correct label and
+body styling.
+
+**Displayed math.** In rich mode `$$…$$` becomes the `DisplayFormula` cell
+(see *TeX in the sources*); on the built-in fallback a `wolfram` fence starting
+with `FormBox[…]` does. MathNotebook defines no separate equation environment.
+Give the cell `CellTags` and `NumberTaggedFormulas` promotes it to
 `DisplayFormulaNumbered`, which draws `(n)` flush right — an equation is numbered
 exactly when something can cite it.
+
+**Tables are the one cosmetic loss.** The converter's `2ColumnTableMod` /
+`TableText` / `ModInfo` styles are defined in neither `Default.nb` nor
+`AMSArticle.nb`, so a Markdown pipe table renders as plain monospace text with no
+rules and no header emphasis. Prefer a `Grid` in a `wolfram` fence when a table
+carries weight; keep pipe tables for throwaway comparisons.
 
 **Write every Definition and Conjecture so it translates directly to a Lean
 statement**: explicit hypotheses, explicit quantifiers, quantification over
@@ -350,31 +475,61 @@ Two traps, both real:
   `StringQ` on its result and that the written notebook re-imports with head
   `Notebook`; file size alone will not tell you.
 
-## Reusing MarkdownToNotebook
+## The conversion call
 
-Do **not** vendor the repo — it is ~7 MB and this skill's generator has no code
-dependency on it. Two ways to reach it when needed:
-
-- The forward converter is a deployed resource function, no install required:
-
-```wolfram
-ResourceFunction[ "https://www.wolframcloud.com/obj/nikm/DeployedResources/Function/MarkdownToNotebook" ][ "doc.md" ]
-```
-
-  It drives its layout from a `Template:` frontmatter key
-  (`Symbol` / `Guide` / `TechNote` / `FunctionResource` / `Paclet` / `Chapter` /
-  `Default`) and is the right tool for **documentation and resource-submission**
-  notebooks. It does not produce the AMSArticle + theorem-environment research
-  layout this skill specifies, so it does not replace the research generator.
-- `NotebookToMarkdown.wl` — the `.nb` → `.md` direction the two-way sync needs —
-  is **not** deployed as a resource function. Fetch the single file when wanted:
+Call the **pinned local clone**, never the deployed resource function: the
+deployed copy lives on a personal `obj/nikm/` cloud path and is unversioned
+(`ResourceObject[ url ][ "Version" ]` is `None`), so drift is undetectable. Do
+**not** vendor the repo either — it is ~13 MB — and **never clone it silently**;
+if it is absent, take the built-in fallback and say so.
+See `Wiki/Resources/MarkdownToNotebook.md` for the pin and the recovery command.
 
 ```wolfram
-Get[ "https://raw.githubusercontent.com/WolframInstitute/MarkdownToNotebook/main/NotebookToMarkdown.wl" ]
+Module[ { wl, nb, cells },
+
+  wl = "MarkdownToNotebook/MarkdownToNotebook.wl";   (* pinned clone, project root *)
+
+  Get[ wl ];
+  nb    = MarkdownToNotebook[ "NotebooksLLM/<Topic>.md", "Evaluate" -> False ];
+  cells = First[ nb ];
+
+  (* the converter stamps In[n]:= even under "Evaluate" -> False *)
+  cells = cells /. Cell[ c_, s_String, o___ ] :>
+    Cell[ c, s, Sequence @@ DeleteCases[ { o }, CellLabel -> _ ] ];
+
+  (* Author cell from the frontmatter, [LLM Generated] line, equation CellTags *)
+  cells = researchHead[ cells ];
+  cells = tagFormulas[ cells, eqTags ];
+  cells = withCellIDs[ cells ];   (* CreateCellID does not stamp built cells *)
+
+  MathNotebookDocument[ cells, bibTags, CreateCellID -> True ]
+]
 ```
 
-Its message / `Print` / `CellPrint` capture is worth reading if the notebook's
-outputs must record those channels too.
+Then write the notebook, re-import it, and stamp the fingerprint — see
+*Generation is one-way* for why the fingerprint must come from the round-tripped
+cells rather than from `cells` above.
+
+Four things this shape gets right, each learned the hard way:
+
+- **No heading shift and no `boxifyInputCells`** — `##` is already `"Section"`,
+  and the boxes arrive structural. Both `new-notebook` workarounds must be off.
+- **`MathNotebookDocument` last**, and it owns `StyleDefinitions`: it replaces the
+  converter's `"Default.nb"` with the *embedded* AMSArticle sheet, which is what
+  makes the notebook readable in the cloud. Pass notebook options through it
+  rather than rebuilding the `Notebook` yourself.
+- **`ReplacePart` is not needed here** (unlike `new-notebook`) precisely because
+  `MathNotebookDocument` rebuilds the notebook with the options you hand it.
+- `ensureParser[ ]` installs `Wolfram/Parser` on first call, so a fresh machine
+  does network I/O and, on failure, degrades silently to
+  `ImportString[ …, "TeX" ]` with worse math fidelity. Probe
+  `PacletFind[ "Wolfram/Parser" ]` and surface the degradation instead of
+  swallowing it.
+
+`NotebookToMarkdown.wl` is **not** used — see *Pipeline and two-way sync* for
+why the reverse direction is abandoned. Its message / `Print` / `CellPrint`
+capture is still worth reading if the notebook's outputs must record those
+channels.
 
 ## After publishing
 
@@ -386,10 +541,16 @@ outputs must record those channels too.
 
 ## Checklist
 
-- [ ] `.md` source in `NotebooksLLM/`; user `.nb` edits folded back before regeneration.
-- [ ] Frontmatter stripped before import; `author:` rendered as an Author cell.
+- [ ] `.md` source in `NotebooksLLM/`, readable enough to edit while reading the `.nb`; the user told which file to edit.
+- [ ] `CellID`s assigned by the generator; fingerprint computed **after** the export/re-import round-trip and stored in `TaggingRules`.
+- [ ] Drift checked before every regeneration; any user edit in the `.nb` stops the build and goes to the user, never overwritten.
+- [ ] Converted with the rich engine at the pinned clone (`Template: Default`, `"Evaluate" -> False`), `CellLabel` stripped; built-in fallback only if the clone is absent, and said out loud.
+- [ ] No `::: theorem` / `::: proof` divs in the source — silently dropped under `Default`.
+- [ ] `author:` rendered as an Author cell (the `Default` template emits none); frontmatter stripped only on the built-in fallback path.
 - [ ] `[LLM Generated]` line above Title / Author / Abstract — note AMSArticle declares no `Subtitle` style, so that line falls through to `Default.nb`; use `Author` to keep the sheet's typography.
-- [ ] No `$…$` inline TeX anywhere; plain Unicode in Text, `FormBox` fences for display math.
+- [ ] Rich mode: `$…$` / `$$…$$` used freely, but no `\to` or `\mapsto` (silently empty) and no `\tag{…}`. Built-in fallback: plain Unicode in Text, `FormBox` fences for display math.
+- [ ] Equation `CellTags` attached after conversion, in document order, before `MathNotebookDocument`.
+- [ ] Weight-bearing tables written as a `Grid` in a `wolfram` fence — pipe tables render unstyled under both sheets.
 - [x] MathNotebook stylesheet **embedded** (not referenced) + environments; markers converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
 - [ ] Definitions and conjectures Lean-translatable (explicit hypotheses and quantifiers).
 - [ ] Section order: Initialization, Functions, Definitions, Classification, then the results.

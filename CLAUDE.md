@@ -65,7 +65,7 @@ Work/                          — execution state (spec/tasks/progress per item
 | `add-resource` | content | Add papers/repos/tools with recovery info (also MathWorld/nLab/OEIS/DLMF/Wikipedia) |
 | `cite` | content | Generate BibTeX from arXiv ID or DOI |
 | `new-notebook` | content | Markdown-to-notebook pipeline via Wolfram MCP (research, computation, paper-analysis, theorem-proof templates) |
-| `research-notebook` | content | Research document notebook (definitions, conjectures + evidence, open questions, literature); md↔nb two-way sync; cloud-published, linked from README |
+| `research-notebook` | content | Research document notebook (definitions, conjectures + evidence, open questions, literature); rich-engine parser + MathNotebook post-processing, one-way from a readable `.md` with fingerprint-based edit detection; cloud-published, linked from README |
 | `lean` | content | Drive Lean/Mathlib formalization sessions via lean-lsp MCP |
 | `start-tour` | presentation | Interactive guided walkthrough with code |
 | `paclet-docs` | paclet | Generate one symbol reference page per exported function via the official MCP doc tools; guide pages left to the author |
@@ -203,8 +203,10 @@ Execution state — active items, next tasks — lives in `Work/README.md`, not 
 
 See `Wiki/Resources/MarkdownToNotebook.md` for the pin, the recovery command, and why the reverse direction (`NotebookToMarkdown`) is used nowhere.
 `paclet-docs` does **not** use the rich engine — it uses the official MCP doc tools.
-`research-notebook` does not use it *yet*: it is under active evaluation as a second surface (see `Work/Active/AdoptMarkdownToNotebook.md`, T5).
-The blocker there is that the converter's `::: theorem` / `::: proof` environments exist only under `Template: Chapter`, which forces the WolframBookTools stylesheet, and under `Template: Default` those divs are **silently dropped**.
+
+`research-notebook` uses the rich engine as the **parser half of a two-half pipeline**: MarkdownToNotebook produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, equation numbering, and citations.
+The split is forced, not stylistic — the converter's `::: theorem` / `::: proof` divs exist only under `Template: Chapter` (which swaps in the WolframBookTools stylesheet, absent from a stock install), are **silently dropped** under `Default`, and even under `Chapter` give one `Theorem` style for every label, colliding section-derived numbers, no anchors, no cross-references, and no citations.
+That skill generates **one-way**: the `.md` is the source of truth and the user edits it while reading the `.nb`, with a per-cell `CellID` fingerprint stored in `TaggingRules` to detect `.nb` edits and stop a regeneration rather than overwrite them.
 
 ## How to Add a New Skill
 

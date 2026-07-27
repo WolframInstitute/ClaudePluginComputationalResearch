@@ -24,10 +24,8 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-`AdoptMarkdownToNotebook` went active on 2026-07-27 when its blocking Phase 0 question — the licence — was answered.
-Its T4 landed `new-notebook`'s rich mode and initialized `Wiki/`; it then stayed active because the user reopened `research-notebook` as a second generation surface (T5).
-`PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.
+Nothing is active.
+`EvaluateWorkItemsEfficiency` sits in `Backlog/` — measure the information budget of this very system, then decide whether it can run autonomously.
 
-| Item | Next task |
-|---|---|
-| [AdoptMarkdownToNotebook](Active/AdoptMarkdownToNotebook.md) | T5 — reopen `research-notebook` as a generation surface: probe the referencing support, choose the environment/stylesheet route, measure the md↔nb sync. |
+`AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.
+`PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.
