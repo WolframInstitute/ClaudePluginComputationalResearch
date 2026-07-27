@@ -31,13 +31,19 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 - ~~Re-measure before trusting the earlier evaluation: the repo moves daily, so the feature diff, the deployed-resource URL, and the shim list below may all have changed.~~ **Done 2026-07-27 (T2). Nothing changed.**
   `origin/main` is still `204db7c` (0 ahead / 0 behind the local clone), and every measured quantity is identical to the evaluation's: 5273 + 1505 lines, 12 skills, 12.7 MB, 0 stars, 0 forks, 0 tags, 0 releases, `license: null`, README still saying Function Repository publication "is pending review".
   The T3 feature diff therefore stands verbatim and needs no re-run.
-- Cost the **shim tax** honestly. `PureMath/scripts/build_notebooks.wls` carries roughly ten documented workarounds for MarkdownToNotebook's behaviour — the frontmatter parser mangling `Links: [...]`, eight bare scaffolded `Subsection`s from the Paclet template, tutorials still categorised as legacy "Tech Note" instead of the modern `Tutorial` entity, and `guideNotebook` having no code path for `RelatedTutorials`. Any adoption inherits these.
-- Decide whether adoption is **per-skill or plugin-wide**. The remaining candidates are `new-notebook`'s rich mode (Phase 1 of the original recommendation — the constructs the MCP append-cell transport cannot carry) and `research-notebook`'s md↔nb sync (Phase 2, still blocked on line-break preservation). The guide page is no longer a candidate.
+- ~~Cost the **shim tax** honestly.~~ **Done 2026-07-27 (T3). It is 197 of 356 lines — and 160 of those 197 cannot fire on our surfaces.**
+  `PureMath/scripts/build_notebooks.wls` is 55% workaround by line, but the workarounds are not general converter defects: 160 lines repair the **DocumentationTools template** code paths (`Paclet`/`Symbol`/`Guide`/`TechNote`) and 37 lines buy reliability for a 1,480-page batch driven through the *cloud* resource on 16 parallel subkernels.
+  Measured against the `Default` template on the pinned local clone, every template shim is inert and the batch shims have nothing to protect.
+- ~~Decide whether adoption is **per-skill or plugin-wide**.~~ **Decided 2026-07-27 (T3): per-skill, and exactly one skill — `new-notebook`.**
+  `research-notebook` is dropped as a candidate; plugin-wide was never coherent, since there is no shared conversion layer to swap.
 - If anything is adopted, register the repo in `Wiki/` via `add-resource` with recovery info — noting that this project has no `Wiki/` yet, so `init-wiki` comes first.
 
 ### Design / risks
 
-- **The line-break problem is a hard blocker for the sync direction.** `NotebookToMarkdown` reflows soft line breaks into single lines, which breaks this project's `Semantic line breaks: on` rule and would put a whole-file diff into every `research-notebook` sync. It needs either an upstream option that preserves line breaks or a re-wrap post-step on our side.
+- **The reverse direction is worse than a line-break problem — it loses content.** Re-measured at `204db7c` in T3 on a round-trip of a representative source.
+  Reflow is real (soft line breaks join into one line, breaking `Semantic line breaks: on`), but three further losses are silent and not fixable by a re-wrap post-step: the YAML frontmatter is **dropped entirely**, the `>` blockquote marker is dropped so a callout degrades to plain prose, and a pipe table comes back with an **empty header row** and its real header demoted to a body row.
+  A fourth is cosmetic: the ` ```wolfram ` fence normalises to ` ```wl `.
+  Running this over a `research-notebook` source would delete its frontmatter and corrupt its tables on every sync, so the sync direction is abandoned rather than deferred.
 - The deployed resource lives at a personal `obj/nikm/` cloud path that can disappear without notice. Phase 0 is closed without securing a tag, so this risk stands: any adoption should call the local `MarkdownToNotebook.wl` at a pinned SHA rather than the deployed resource URL.
   T2 verified the cloud resource **does** resolve and convert correctly today (first time it was exercised — T3 only tested the local file via `Get`), which makes the arm's-length option real rather than assumed.
   But it is **unversioned**: `ResourceObject[url]["Version"]` is `None` and there is no `"LatestUpdate"` property, so there is no way to tell which SHA it was deployed from, or to detect that it has drifted. That is a second, independent reason to prefer the pinned local file.
@@ -55,13 +61,13 @@ Three things happened after that evaluation; as of T1 (2026-07-27) none of them 
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — Cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption.
-- [ ] T4 — If adopting: implement the chosen surface and register the resource in `Wiki/`.
+- [ ] T4 — Implement `new-notebook`'s opt-in rich mode against the pinned local clone (`Default` template, `"Evaluate" -> False`, MCP fallback) and register the resource in `Wiki/` — which means `init-wiki` first.
 
 ### Done
 
 - [x] T1 — Phase 0: ask upstream for a licence, the FR review status, and a pinnable tag; record the answers. Blocks the rest. *(Session 1)*
 - [x] T2 — Re-measure the repo against the 2026-07-27 evaluation; note what changed. *(Session 2)*
+- [x] T3 — Cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption. *(Session 3)*
 
 ## Progress
 
@@ -110,6 +116,46 @@ One unchecked box ≈ one focused session.
   The tip's only change to executable behaviour since the earlier fixes is a `wolfr.am` short-link swap in `ensureParser[]` (`1ECIxdqhB` → `1ENEqrOlP`), the last-resort branch of the parser install chain — confirming that the `ensureParser[]` risk the Spec records sits on a code path the author is still touching.
 - **Next:** T3 — cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption.
 
+### Session 3 — 2026-07-27 — T3
+
+- **Prompt:** `/next-session`.
+- **Did:** costed the shim tax by line against `PureMath/scripts/build_notebooks.wls` (356 lines, at PureMath `17baf04`), then tested empirically which shims can fire on our candidate surfaces, then decided the adoption scope.
+
+  **The tax is 197 of 356 lines — 55% of the script is workaround.**
+  Twelve blocks, comments included: `markdownSection` (14), the `templateGroupQ`/`fillTemplateGroup` helpers (8), the `Links:` frontmatter re-parse with its `Hash[url]` CellID trick (30), the eight vestigial `Subsection` names (13), `normalizePacletNotebook` (29), "Tech Note" → "Tutorial" (11), the Guide `RelatedTutorials` slot (41), the `Scan`s that apply the normalizers (14), the `ResourceObject[url]` wrap that makes the function resolve on a fresh subkernel (4), the `TimeConstrained[…, 240]` hang bound (8), the serial straggler retry (9), and the tolerated-failure exit policy (16).
+
+  **But 160 of the 197 repair DocumentationTools templates, and 37 buy batch reliability. Neither bucket touches us.**
+  Converted a representative source — YAML frontmatter, H1/H2, inline and display math, a hyperlink, a blockquote, a pipe table, a nested list, a `wolfram` fence — through the pinned local clone (`204db7c`) with `Template: Default` and `"Evaluate" -> False`.
+  Result: 10 flat top-level cells, `Title / Text / DisplayFormula / Text / Section / Item×3 / 2ColumnTableMod / Input`, and **zero** of the shim triggers — no `TemplateGroupName` anywhere, 0 `Categorization` cells, 0 vestigial `Subsection`s, 0 `XXXX` placeholders, and no frontmatter leaked into a cell.
+  So the 160 template lines are dead code on the `Default` path by construction: `defaultNotebook[data]` returns a bare `Notebook[cells, StyleDefinitions -> "Default.nb"]` with no template to fill or repair.
+  The 37 reliability lines are a function of PureMath's scale and transport, not of the converter: they exist because 1,480 pages go through the *cloud* resource on `Max[16, $ProcessorCount]` subkernels.
+  Locally at N=1 a warm conversion takes **0.05 s with zero variance over five runs** (1.4 s on the first call, which is `ensureParser[]`), so there is no straggler population to retry and no batch to tolerate failures in.
+
+  **Decided: per-skill, and exactly one skill.** Adopt in `new-notebook` as Phase 1's opt-in rich mode; drop `research-notebook` as a candidate; plugin-wide is not a coherent option.
+  Revised the Spec's two requirements and the line-break risk accordingly, and narrowed T4 to the one surface.
+- **Learned:** four things.
+
+  **The shim tax does not transfer, and the reason is structural rather than lucky.**
+  Every PureMath shim is a repair to a *filled template* — a slot left empty, a slot filled wrong, a scaffolded section that should not be there.
+  `Default` has no slots, so there is nothing to repair.
+  The honest statement of the cost is therefore not "55%" but "55% of a doc-build script we are not writing"; our residual cost is `ensureParser[]`'s first-call paclet install (network I/O on a fresh machine, degrading silently to `ImportString[…, "TeX"]` with worse math fidelity) and the SHA pin.
+
+  **The reverse direction is disqualifying, and worse than the evaluation recorded.**
+  `NotebookToMarkdown` on the generated notebook returned 604 characters against a 793-character source, and the losses are not all formatting: the **frontmatter is gone entirely** and the **table header row comes back empty** with the real header demoted into the body.
+  Both are silent content loss on a round-trip, which no re-wrap post-step fixes.
+  The known reflow and the dropped `>` marker are also confirmed at this SHA.
+  This is what removes `research-notebook` from scope — not the line-break rule alone.
+
+  **`research-notebook` was already excluded by its own skill file, which I had not checked before costing.**
+  `skills/research-notebook/SKILL.md` states that MarkdownToNotebook "does not produce the AMSArticle + theorem-environment research layout this skill specifies, so it does not replace the research generator", and the `Default` template confirms it: 0 `Author` and 0 `Abstract` cells, where that skill needs `[LLM Generated]` / `Title` / `Author` / `Abstract`.
+  Its md↔nb sync also does not use `NotebookToMarkdown` today — it uses `ExportString[Import[path], "Markdown"]`.
+  So both directions were already out; T3 only measured how far.
+
+  **Two incidental gains for `new-notebook` that the evaluation did not name.**
+  Frontmatter is *consumed as metadata* rather than leaked as a literal `Text` cell — the exact defect `research-notebook` documents in the built-in importer and hand-strips around.
+  And a `wolfram` fence becomes `BoxData` that preserves the source formatting verbatim, spaces-inside-brackets and the newline after `:=` included, so the house code style survives conversion.
+- **Next:** T4 — implement `new-notebook`'s opt-in rich mode against the pinned local clone and register the resource in `Wiki/` (`init-wiki` first).
+
 ## Decisions
 
 | Date | Decision | Rationale |
@@ -119,4 +165,7 @@ One unchecked box ≈ one focused session.
 | 2026-07-27 (S1) | "No pinnable release" is dropped as a risk. | The absence of tags was conflated with the absence of a pin. Pinning by SHA works today (`204db7c`, 2026-07-26), and the local clone is already on it. |
 | 2026-07-27 (S2) | The 2026-07-27 evaluation is current, not stale; T3 and T4 may rely on it without re-measuring. | Upstream has not moved a byte since the clone (`origin/main` = `204db7c`, 0/0), and every recorded metric reproduces. The commits T1 read as new movement all predate the evaluated tip. |
 | 2026-07-27 (S2) | Prefer the pinned local file over the deployed cloud resource, for a second reason. | The cloud resource works today, but is unversioned — no `"Version"`, no `"LatestUpdate"` — so drift is undetectable, on top of the personal-path disappearance risk already recorded. |
+| 2026-07-27 (S3) | Adopt per-skill, in `new-notebook` only. Plugin-wide is off the table. | The shim tax is 197/356 lines in PureMath but empirically 0 on the `Default` template — 160 lines repair DocumentationTools slots that `defaultNotebook` never creates, and 37 protect a 1,480-page parallel cloud batch we do not run. There is also no shared conversion layer to swap plugin-wide: `new-notebook` owns the MCP append-cell pipeline and `research-notebook` layers on it. |
+| 2026-07-27 (S3) | Drop `research-notebook` as a candidate — both directions, permanently. | Forward: the `Default` template emits no `Author`/`Abstract` cells and none of the MathNotebook environments, and the skill file already says it "does not replace the research generator". Reverse: a measured round-trip at `204db7c` drops the frontmatter entirely and returns an empty table header, which is content loss, not formatting drift. Phase 2 is abandoned rather than deferred. |
+| 2026-07-27 (S3) | The residual cost to carry into T4 is `ensureParser[]` and the SHA pin, nothing else. | A warm local conversion is 0.05 s with zero variance; the only first-call cost is the `Wolfram/Parser` install, which degrades silently to `ImportString[…, "TeX"]`. Rich mode must surface that degradation in its response rather than swallow it. |
 | 2026-07-27 | The guide-page gap is no longer a reason to adopt. | Guide pages left scope the same day. What remains in favour is `new-notebook`'s rich mode (Phase 1) — the constructs the MCP append-cell transport cannot carry — and nothing else urgent. This item is now genuinely low priority. |

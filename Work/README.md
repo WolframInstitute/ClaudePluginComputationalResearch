@@ -29,4 +29,4 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
-| [AdoptMarkdownToNotebook](Active/AdoptMarkdownToNotebook.md) | T3 — cost the shim tax from `PureMath/scripts/build_notebooks.wls` and decide per-skill vs plugin-wide adoption. |
+| [AdoptMarkdownToNotebook](Active/AdoptMarkdownToNotebook.md) | T4 — implement `new-notebook`'s opt-in rich mode against the pinned local clone and register the resource in `Wiki/` (`init-wiki` first). |
