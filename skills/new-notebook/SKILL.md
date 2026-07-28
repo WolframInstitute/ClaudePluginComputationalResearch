@@ -10,17 +10,6 @@ description: >
   (new-project, start-tour) when they produce notebooks.
 ---
 
-## Hard Rules
-
-- **NEVER** read a `.nb` file with the `Read` tool or load its raw content into the context window.
-  To work with an existing notebook, export to Markdown first via `ExportString[Import[path], "Markdown"]` in the Wolfram MCP.
-- **NEVER** use `Export[path, ...]` in MCP code — always `ExportString[...]` and write the result with the `Write` tool.
-
-## Kernel execution (license-aware)
-
-This skill runs entirely on the AgentTools MCP (`mcp__Wolfram__WriteNotebook`, `mcp__Wolfram__ReadNotebook`, `mcp__Wolfram__WolframLanguageEvaluator`) — one persistent kernel, no extra license seat.
-The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` helpers each spawn a fresh `wolframscript` kernel and are a fallback for bulk runs only — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, generate notebooks one at a time through the MCP.
-
 # Wolfram Notebook Pipeline
 
 **All skills that create or modify `.nb` files must use this skill's pipeline and conventions** — including math formatting, backtick escaping, and post-processing.
@@ -34,6 +23,25 @@ ExportString[ImportString[markdownString, {"Markdown", "Notebook"}], "NB"]
 No temporary files are created.
 The markdown lives as a string in the Wolfram kernel, gets imported as a Notebook expression, post-processed, then serialized back to a string via `ExportString`.
 You then write that string to the target `.nb` file using the local `Write` tool.
+
+The details live in four read-on-demand siblings — read only what the current job needs:
+
+- [pipeline-builtin.md](pipeline-builtin.md) — post-processing + the complete built-in-engine MCP call (the canonical copy of `boxifyInputCells`, `markInitCells`, `addLLMSubtitle`)
+- [pipeline-rich.md](pipeline-rich.md) — what rich mode changes, the parser-degradation probe, the rich-mode MCP call
+- [templates.md](templates.md) — the named templates (`research`, `paper-analysis`, `computation`, `theorem-proof`)
+- [markdown-mapping.md](markdown-mapping.md) — markdown-to-cell mapping, long-notebook pattern, content best practices
+
+## Hard Rules
+
+- **NEVER** read a `.nb` file with the `Read` tool or load its raw content into the context window.
+  To work with an existing notebook, export to Markdown first via `ExportString[Import[path], "Markdown"]` in the Wolfram MCP.
+- **NEVER** use `Export[path, ...]` in MCP code — always `ExportString[...]` and write the result with the `Write` tool.
+  The MCP kernel runs in a separate process with its own filesystem, so `Export` writes where the user cannot see.
+
+## Kernel execution (license-aware)
+
+This skill runs entirely on the AgentTools MCP (`mcp__Wolfram__WriteNotebook`, `mcp__Wolfram__ReadNotebook`, `mcp__Wolfram__WolframLanguageEvaluator`) — one persistent kernel, no extra license seat.
+The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` helpers each spawn a fresh `wolframscript` kernel and are a fallback for bulk runs only — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, generate notebooks one at a time through the MCP.
 
 ## Where notebooks live — Critical
 
@@ -57,51 +65,18 @@ The generated `.nb` filename carries the source's **first-creation date** as a `
 The date is stamped once, when the notebook is first generated, and **preserved on every later regeneration** — `generate_notebooks.wls` reuses the earliest date already present in the folder and deletes any other-dated or legacy un-dated copy, so exactly one `.nb` survives per source.
 The date lives only in the filename; **do not** put it inside the notebook (the `[ LLM Generated ]` subtitle stays undated).
 
-### When to use the source layer
+When to use the source layer:
 
 - Creating a notebook intended to persist across sessions → write `NotebooksLLM/Name.md` as the source, then generate the `.nb`
 - Quick one-off exploration → generate `NotebooksLLM/Name_YYYY-MM-DD.nb` directly, skip the `.md` source
 
-### Source format (NotebooksLLM/Name.md)
+The source is a structured Markdown file following [markdown-mapping.md](markdown-mapping.md): one `# Title`, a `## Setup` section for package loads (becomes InitializationCells), `wolfram`-tagged fences for evaluatable Input cells, plain text for Text cells.
 
-A structured Markdown file following the cell mapping rules below.
-Example:
-
-```markdown
-# Title
-
-## Setup
-<!-- Package loads, initialization — becomes InitializationCells -->
-
-## Topic A
-<!-- Narrative text and code blocks -->
-
-## Topic B
-<!-- More narrative and code -->
-```
-
-Use fenced code blocks tagged `wolfram` for evaluatable Input cells.
-Plain text becomes Text cells.
-
-### Generating .nb from source
-
-Read `NotebooksLLM/Name.md`, pass its content through the Wolfram MCP pipeline (below), write the result to `NotebooksLLM/Name_YYYY-MM-DD.nb`.
+To generate: read `NotebooksLLM/Name.md`, pass its content through the MCP pipeline, write the result to `NotebooksLLM/Name_YYYY-MM-DD.nb`.
 Use the first-creation date: if a `Name_*.nb` already exists, reuse its date and overwrite that file; otherwise use today's date.
-The batch `generate_notebooks.wls` does this bookkeeping automatically.
+Only as the license-gated fallback, run the batch scripts (`wolframscript -file Scripts/generate_notebooks.wls`, plus `publish_notebooks.wls` for cloud publishing) — they do the date bookkeeping automatically.
 
-Alternatively — **only as the license-gated fallback** (MCP unavailable and a seat free; see *Kernel execution* above) — run `Scripts/generate_notebooks.wls` to batch-convert all `.md` sources in `NotebooksLLM/`:
-
-```bash
-wolframscript -file Scripts/generate_notebooks.wls
-```
-
-To also publish to Wolfram Cloud:
-
-```bash
-wolframscript -file Scripts/publish_notebooks.wls
-```
-
-### Provenance (optional)
+## Provenance (optional)
 
 If the project has prompt tracking on (a `Prompt tracking: **on**` line in `CLAUDE.md` — see the [provenance](../provenance/SKILL.md) skill), record the originating prompt/intent for the notebook:
 
@@ -120,43 +95,16 @@ When tracking is off (default), skip this — generate the notebook as usual.
 
 ## Which MCP tool to use
 
-### With WolframPacletDevelopment profile (preferred)
-
-If the official Wolfram MCP is running the `WolframPacletDevelopment` profile, use the native notebook tools:
-
-- `mcp__Wolfram__WriteNotebook` — write notebook content directly
-- `mcp__Wolfram__ReadNotebook` — read existing notebook content
-
-These handle `.nb` files natively without the Markdown→ImportString workaround.
-
-### Markdown pipeline (fallback)
-
-If `WriteNotebook`/`ReadNotebook` are not available (older profile), use the **Markdown→notebook pipeline** via `mcp__Wolfram__WolframLanguageEvaluator`:
-
-```wolfram
-ExportString[ImportString[markdownString, {"Markdown", "Notebook"}], "NB"]
-```
-
-### Unofficial Wolfram MCP
-
-When the unofficial MCP (`mcp__wolfram__`) is available, use its **LSP tools** (hover_info, find_definition, find_references, get_diagnostics, document_symbols) for code navigation.
-Do not use its notebook-manipulation tools when the official MCP is available.
-
-### Last resort
-
-If no MCP is available, create a minimal `.nb` manually using the `Write` tool with raw NB format.
-Warn the user.
+- **Official MCP with the `WolframPacletDevelopment` profile** (preferred): use `mcp__Wolfram__WriteNotebook` / `mcp__Wolfram__ReadNotebook` — they handle `.nb` files natively without the Markdown→ImportString workaround.
+- **Markdown pipeline** (fallback, older profile): `ExportString[ImportString[md, {"Markdown", "Notebook"}], "NB"]` via `mcp__Wolfram__WolframLanguageEvaluator`.
+- **Unofficial MCP** (`mcp__wolfram__`): use its LSP tools (hover_info, find_definition, find_references, get_diagnostics, document_symbols) for code navigation only; do not use its notebook-manipulation tools when the official MCP is available.
+- **Last resort** (no MCP): create a minimal `.nb` manually with the `Write` tool and raw NB format, and warn the user.
 
 To check availability: evaluate `1+1` with the official MCP.
 
 ## Conversion engine — built-in vs rich
 
-Two engines convert Markdown to cells.
-The built-in one is `ImportString[md, {"Markdown", "Notebook"}]`, documented throughout this skill.
-The **rich** one is [`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook), used at a pinned SHA from a local clone — see [Wiki/Resources/MarkdownToNotebook.md](../../Wiki/Resources/MarkdownToNotebook.md).
-It carries constructs the built-in importer mangles or drops.
-
-### Which engine runs
+Two engines convert Markdown to cells: the built-in `ImportString[md, {"Markdown", "Notebook"}]` ([pipeline-builtin.md](pipeline-builtin.md)) and the **rich** [`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook) parser ([pipeline-rich.md](pipeline-rich.md)), which carries constructs the built-in importer mangles or drops.
 
 Engine choice is **auto-detected from the source**, not configured.
 Decide in this order:
@@ -172,43 +120,13 @@ Decide in this order:
 
 A source with neither frontmatter nor math gains little from rich mode, so plain sources keep the cheaper path and the smaller dependency surface.
 
-### What rich mode changes
-
-| | Built-in | Rich |
-|---|---|---|
-| `## Heading` | `"Chapter"` — the down-shift fixes it | `"Section"` already — **do not shift** |
-| `wolfram` fence | `BoxData["raw string"]` — needs `boxifyInputCells` and its visualization guard | structural `RowBox`, source spacing verbatim — **no boxify, no guard** |
-| YAML frontmatter | leaks in as a `Text` cell | consumed as metadata |
-| `$…$` / `$$…$$` | flat `InlineMath` | `InlineFormula` / `DisplayFormula` with real `FractionBox`, `SubscriptBox` |
-| Markdown table | Tabular/TableView | `2ColumnTableMod` with `TableText` cells |
-| Notebook options | none | `CreateCellID -> True`, `StyleDefinitions -> "Default.nb"` |
-| `CellLabel` | none | stale `In[n]:=` stamped even under `"Evaluate" -> False` |
-
-Two consequences are easy to get wrong:
-
-- **Keep the notebook options.** `ExportString[Notebook[cells], "NB"]` silently drops them; rich mode must rebuild the original expression instead — `ReplacePart[nb, 1 -> cells]`.
-- **Drop the boxify step, keep the rest.** The parser already emits the structural box tree, so `boxifyInputCells` is dead weight, and its visualization guard is unnecessary: the guard existed only because `ToBoxes[ToExpression[…, Defer]]` strands graphics cells, and rich mode never calls it.
-  `markInitCells` and the `[ LLM Generated ]` marker normalization still apply unchanged.
-
-### Fixed conversion settings
+Fixed conversion settings, either engine:
 
 - **`"Evaluate" -> False`** always.
   Cells ship unevaluated; the front end evaluates them.
 - **`Template: Default`** — the default when frontmatter omits it, and the only template this skill uses.
   The documentation templates (`Symbol`, `Guide`, `TechNote`, `Paclet`) belong to [paclet-docs](../paclet-docs/SKILL.md), which uses the official MCP doc tools instead.
 - **Pin by SHA, call the local file.** Load the clone with `Get`, never the deployed cloud resource: that resource lives on a personal `obj/nikm/` path and reports no `"Version"`, so drift is undetectable.
-
-### Surface the parser degradation
-
-The converter's `ensureParser[]` installs the `Wolfram/Parser` paclet on first use.
-On a fresh machine that is network I/O, and if it fails the converter **silently** degrades to `ImportString[…, "TeX"]` with worse math fidelity.
-Probe before converting and report the result — do not swallow it:
-
-```wolfram
-PacletFind["Wolfram/Parser"] =!= {}
-```
-
-If it returns `False`, say the first conversion will install a paclet, and that math fidelity degrades silently if the install fails.
 
 ## Backtick escaping — Critical
 
@@ -237,33 +155,28 @@ For Wolfram package names containing context marks (e.g., `"Needs[\"MyPackage`\"
 This is the single most important rule.
 Without it, code blocks will not parse as Input cells.
 
-## Why ExportString instead of Export
-
-The Wolfram MCP kernel runs in a separate process with its own filesystem.
-`Export[...]` writes to the kernel's filesystem, which is **not** the local filesystem.
-Use `ExportString` to get the `.nb` content as a string, then use the `Write` tool to save locally.
+Always build markdown with `StringJoin` using `fence` and `tick` variables; the other escapes are the usual `\` → `\\`, `"` → `\"`, newlines as `\n`.
 
 ## Pipeline
 
-### Creating a new notebook
+Creating a new notebook:
 
-1. **Compose** well-structured Markdown following the mapping rules below
-2. **Evaluate** via the Wolfram MCP: build string → `ImportString` → post-process → `ExportString`
+1. **Compose** well-structured Markdown per [markdown-mapping.md](markdown-mapping.md) (structure from [templates.md](templates.md) when applicable)
+2. **Evaluate** via the Wolfram MCP: build string → convert → post-process → `ExportString` ([pipeline-builtin.md](pipeline-builtin.md) or [pipeline-rich.md](pipeline-rich.md))
 3. **Write** the returned string to the target `.nb` file using the `Write` tool
 4. **Verify** by checking file size or evaluating `Length[First[Import["/path/to/file.nb"]]]` via the official MCP
 
-### Modifying an existing notebook
+Modifying an existing notebook:
 
 1. **Export** → `ExportString[Import["/path/to/file.nb"], "Markdown"]` via the official Wolfram MCP
 2. **Edit** the Markdown string (find/replace, append, restructure)
-3. **Re-import** through the full pipeline: `ImportString` → post-process → `ExportString`
+3. **Re-import** through the full pipeline: convert → post-process → `ExportString`
 4. **Write** back to the original path (or a new file if the user wants to keep the original)
 5. **Verify** cell count
 
 **Short notebooks** (< ~30 cells): rebuild entirely from Markdown.
 **Long notebooks**: export → patch the relevant section → re-import.
-
-**Appending to a notebook**: export → append new Markdown sections at the end → re-import the full combined string.
+**Appending**: export → append new Markdown sections at the end → re-import the full combined string.
 
 Do **not** manipulate raw `.nb` cell lists by hand — always go through the Markdown round-trip.
 
@@ -274,416 +187,6 @@ When running inside a VM (Claude Desktop Projects or sandboxed environment):
 - Confirm that a shared folder exists and is accessible
 - The `ExportString` + `Write` pipeline works on mounted filesystems
 - Cell count verification via `Import` may fail — check file size instead
-
-## Named templates
-
-When the user doesn't specify a structure, infer from context or ask:
-
-### `research` template
-```
-# <Title>
-## Setup        ← package loads (become InitializationCells)
-## Exploration  ← initial computations and visualizations
-## Results      ← key findings and summaries
-## Discussion   ← interpretation, conjectures, next steps
-```
-
-### `paper-analysis` template
-```
-# <Title>
-## Paper Metadata   ← full title, authors, year, arXiv ID
-## Summary          ← 3–4 sentence abstract in own words
-## Key Definitions  ← brief explanations of terms
-## Key Results      ← one sentence per theorem/result
-## Relevance        ← connection to current project
-## Code             ← reproduce or verify key computations
-```
-
-### `computation` template
-```
-# <Title>
-## Setup          ← package loads and configuration
-## Algorithm      ← pseudocode or description (CodeText cells)
-## Implementation ← actual Wolfram Language code
-## Tests          ← verification against known cases
-## Visualization  ← plots and graphics
-```
-
-### `theorem-proof` template
-
-For math-research projects (see [new-project](../new-project/SKILL.md) math-research type).
-The full markdown skeleton is at `${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/notebook_theorem_proof_template.md` — copy it as the starting point, then specialize.
-
-```
-# <Theorem Name>
-## Setup            ← package loads
-## Definitions      ← terms used in the statement (linked to Wiki/Definitions/)
-## Statement        ← precise theorem statement, numbered hypotheses
-## Proof
-###   Step 1        ← each major step is its own subsection
-###   Step 2
-###   Step N — Conclusion
-## Corollaries      ← downstream results with brief proofs
-## Examples         ← low-dimensional / finite verifications
-## Non-examples     ← cases where a hypothesis fails (justifies hypotheses)
-## References       ← Wiki/Theorems/ link + external refs
-```
-
-Notes:
-
-- One `Subsection` per proof step (use `###`); within a step, alternate narrative text with `wolfram` code blocks that verify or illustrate.
-- Hypotheses get numbered ItemNumbered cells so the proof can refer to them as "H1", "H2", etc.
-- Use **display math** (`$$ ... $$`) for the theorem statement and key equations within the proof; **inline math** (`$ ... $`) for variables.
-- The full `boxifyInputCells` + `markInitCells` post-processing applies as usual — do not skip them.
-
-## Markdown-to-cell mapping
-
-### Headings → Notebook Structure
-
-The WL-15 markdown importer maps `#`→`Title`, `##`→`Chapter`, `###`→`Section`, `####`→`Subsection`.
-That extra `Chapter` level is inconsistent with the rest of the corpus (which uses `Title`/`Section`/`Subsection`), so the post-processing **shifts every heading down one level** (`Chapter`→`Section`, `Section`→`Subsection`, `Subsection`→`Subsubsection`) immediately after `cells = First[nb]`.
-The **final** styles a source author should expect:
-
-| Markdown | Importer style | Final style (after shift) | Notebook Role |
-|----------|----------------|---------------------------|---------------|
-| `# Title` | `"Title"` | `"Title"` | Notebook title (use once, at top) |
-| `## Section` | `"Chapter"` | `"Section"` | Major division |
-| `### Subsection` | `"Section"` | `"Subsection"` | Subsection heading |
-| `#### Subsubsection` | `"Subsection"` | `"Subsubsection"` | Subsubsection heading |
-
-So author `##` headings render as `"Section"`, not `"Chapter"`.
-A `**[ LLM Generated ]**` marker line in the source (the documented convention) is imported as a bold `"Text"` cell and normalized to a single `"Subtitle"` cell under the `"Title"` by the marker rules that run alongside the heading shift.
-
-### Text and Formatting
-
-| Markdown | Result |
-|----------|--------|
-| Plain paragraph | `Cell["...", "Text"]` |
-| `**bold**` | `StyleBox["...", FontWeight->Bold]` |
-| `*italic*` | `StyleBox["...", FontSlant->Italic]` |
-| inline code (single backtick) | `Cell["...", "InlineCode"]` within TextData |
-| `[text](url)` | Clickable hyperlink (ButtonBox) |
-| `> blockquote` | Text cell with left border frame |
-
-### Lists
-
-| Markdown | Cell Style |
-|----------|-----------|
-| `- item` | `"Item"` |
-| `  - subitem` (2-space indent) | `"Subitem"` |
-| `1. first` | `"ItemNumbered"` |
-
-### Math (LaTeX)
-
-| Markdown | Result |
-|----------|--------|
-| `$...$` | Inline math — `InlineMath` within TextData |
-| `$$...$$` | Display math — `DisplayFormula` cell |
-
-**Use math liberally.** Definitions, theorems, formulas, variable references → LaTeX.
-
-**Escaping in Wolfram strings:** double all backslashes in LaTeX math:
-
-```wolfram
-md = "The curvature $\\kappa(x,y)$ is defined as\n\n$$\\kappa(x,y) = 1 - \\frac{W_1(\\mu_x, \\mu_y)}{d(x,y)}$$\n\n";
-```
-
-Common LaTeX commands that work: `\frac`, `\sum`, `\int`, `\partial`, `\mathbb`, `\mathcal`, `\alpha`–`\omega`, `\in`, `\subset`, `\to`, `\mapsto`, `\leq`, `\geq`, `\neq`, `\infty`, `\ldots`, `\cdots`, `\text`.
-
-**Wolfram notation vs LaTeX in text cells:** - **Simple symbols** (Greek, relations, arrows): Wolfram `\[Alpha]`, `\[Element]` etc. work — they become Unicode. - **Structural math** (fractions, sub/superscripts): use LaTeX `$\frac{a}{b}$`, `$x_i$`. - **Blackboard bold**: use LaTeX `$\mathbb{R}$`.
-
-### Code blocks
-
-| Markdown fence tag | Cell Style | Purpose |
-|----------|-----------|---------|
-| `wolfram` | `"Input"` | Evaluatable Wolfram code |
-| (no tag) | `"Program"` → post-processed to `"CodeText"` | Display-only code |
-
-### Tables
-
-Standard Markdown tables become interactive Tabular/TableView cells.
-
-## Post-processing
-
-After `ImportString`, apply these transformations before `ExportString`:
-
-### 1. Rename `"Program"` → `"CodeText"`
-
-```wolfram
-cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts]
-```
-
-### 2. Boxify Input/Code cells — Critical
-
-`ImportString[md, {"Markdown", "Notebook"}]` produces `Cell[BoxData["raw string"], "Input"]` where the code is a single literal string inside `BoxData`.
-The front end will display this, but **hover help, F1 lookup, autocomplete, and the suggestion bar will not work** — those features rely on a structural `RowBox` tree where each symbol name is a leaf string and function tokens (`FindPoint`) are adjacent to their argument bracket (`[`).
-
-Boxify Input/Code cells via `ToBoxes[ToExpression[code, StandardForm, Defer]]` so the symbol structure is preserved — **except** cells that build graphics.
-
-**Visualization guard — Critical.** Boxifying a cell whose code produces `Graphics` (`Plot`, `HighlightGraph`, `InfraSceneHighlight`, `ListLinePlot`, `GraphPlot`, charts, etc.) strands the cell with a `Map is not a Graphics primitive` error at front-end evaluation.
-Leave those cells as plain-text `BoxData[content]` (same as the parse-failure fallback) and boxify everything else:
-
-```wolfram
-vizHeads = {"Graphics", "Plot", "HighlightGraph", "InfraSceneHighlight",
-  "Chart", "Histogram", "Manipulate", "Animate", "ArrayPlot", "MatrixPlot",
-  "DensityPlot", "ContourPlot", "RegionPlot", "GraphPlot", "Show[", "Graph["};
-vizCellQ[content_String] := StringContainsQ[content, vizHeads];
-
-boxifyInputCells[cellList_List] := cellList /. {
-  Cell[BoxData[content_String], style:("Input"|"Code"), opts___] :>
-    If[vizCellQ[content], Cell[BoxData[content], style, opts],
-      With[{parsed = ToExpression[content, StandardForm, Defer]},
-        If[parsed === $Failed,
-          Cell[BoxData[content], style, opts],
-          Cell[BoxData[ToBoxes[parsed]], style, opts]
-        ]
-      ]],
-  Cell[content_String, style:("Input"|"Code"), opts___] :>
-    If[vizCellQ[content], Cell[BoxData[content], style, opts],
-      With[{parsed = ToExpression[content, StandardForm, Defer]},
-        If[parsed === $Failed,
-          Cell[BoxData[content], style, opts],
-          Cell[BoxData[ToBoxes[parsed]], style, opts]
-        ]
-      ]]
-};
-```
-
-`Defer` keeps the parsed expression unevaluated so `ToBoxes` produces the structural box tree without running the code.
-Falls back to `BoxData[rawString]` if parsing fails (e.g. partial code) or if the cell is a visualization cell.
-
-**Apply this AFTER `ImportString` and BEFORE `ExportString`** in every notebook pipeline.
-Do not skip — without it, every Input cell ships broken.
-
-### 3. Initialization cells
-
-Mark Input cells under "Setup"/"Initialization"/"Dependencies"/"Preamble" headings:
-
-```wolfram
-markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
-  Do[Which[
-    MatchQ[c, Cell[t_String, "Chapter"|"Section"|"Subsection", ___] /;
-      StringMatchQ[t, ("*Setup*"|"*Initialization*"|"*Preamble*"|"*Dependencies*"),
-        IgnoreCase -> True]],
-      inSetup = True; AppendTo[result, c],
-    MatchQ[c, Cell[_, "Title"|"Chapter"|"Section"|"Subsection"|"Subsubsection", ___]],
-      inSetup = False; AppendTo[result, c],
-    inSetup && MatchQ[c, Cell[_, "Input", ___]],
-      AppendTo[result, Append[c, InitializationCell -> True]],
-    True, AppendTo[result, c]
-  ], {c, cellList}];
-  result
-];
-```
-
-Uses `StringMatchQ` with wildcards to avoid false positives (e.g., "Indefinite Integrals" must NOT trigger).
-
-### 4. LLM-generated subtitle — Critical
-
-Every generated notebook is **explicitly marked as LLM-generated**: a `"Subtitle"` cell reading `[ LLM Generated ]` goes directly under the `"Title"` cell.
-The marker text is the **spaced form** `[ LLM Generated ]` — the same spelling the wiki articles use — matching the `**[ LLM Generated ]**` convention in the markdown sources; the normalization rules below still accept the legacy unspaced `[LLM Generated]` from older sources.
-
-The marker can arrive two ways: (a) written into the markdown source as `**[ LLM Generated ]**`, which `ImportString` renders as a bold `"Text"` cell, or (b) injected here.
-To avoid shipping both, **first normalize** any bold-Text marker to a `"Subtitle"` cell immediately after `cells = First[nb]` (see the heading and marker rules in the complete call below), **then** call `addLLMSubtitle`, which dedupes and places exactly one marker under the `"Title"`.
-Insert it after `markInitCells` and before `ExportString`:
-
-```wolfram
-addLLMSubtitle[cellList_List] := Module[
-  {cells = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
-  pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
-  If[MissingQ[pos],
-    Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
-    Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
-];
-```
-
-Never ship an LLM-generated `.nb` without this marker (paclet code is exempt; notebooks are not).
-
-## The complete Wolfram MCP call
-
-```wolfram
-Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ, vizHeads, tick, fence},
-
-  tick = FromCharacterCode[96];
-  fence = StringJoin[tick, tick, tick];
-
-  vizHeads = {"Graphics", "Plot", "HighlightGraph", "InfraSceneHighlight",
-    "Chart", "Histogram", "Manipulate", "Animate", "ArrayPlot", "MatrixPlot",
-    "DensityPlot", "ContourPlot", "RegionPlot", "GraphPlot", "Show[", "Graph["};
-  vizCellQ[content_String] := StringContainsQ[content, vizHeads];
-
-  boxifyInputCells[cellList_List] := cellList /. {
-    Cell[BoxData[content_String], style:("Input"|"Code"), opts___] :>
-      If[vizCellQ[content], Cell[BoxData[content], style, opts],
-        With[{parsed = ToExpression[content, StandardForm, Defer]},
-          If[parsed === $Failed,
-            Cell[BoxData[content], style, opts],
-            Cell[BoxData[ToBoxes[parsed]], style, opts]
-          ]
-        ]],
-    Cell[content_String, style:("Input"|"Code"), opts___] :>
-      If[vizCellQ[content], Cell[BoxData[content], style, opts],
-        With[{parsed = ToExpression[content, StandardForm, Defer]},
-          If[parsed === $Failed,
-            Cell[BoxData[content], style, opts],
-            Cell[BoxData[ToBoxes[parsed]], style, opts]
-          ]
-        ]]
-  };
-
-  markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
-    Do[Which[
-      MatchQ[c, Cell[t_String, "Chapter"|"Section"|"Subsection", ___] /;
-        StringMatchQ[t, ("*Setup*"|"*Initialization*"|"*Preamble*"|"*Dependencies*"),
-          IgnoreCase -> True]],
-        inSetup = True; AppendTo[result, c],
-      MatchQ[c, Cell[_, "Title"|"Chapter"|"Section"|"Subsection"|"Subsubsection", ___]],
-        inSetup = False; AppendTo[result, c],
-      inSetup && MatchQ[c, Cell[_, "Input", ___]],
-        AppendTo[result, Append[c, InitializationCell -> True]],
-      True, AppendTo[result, c]
-    ], {c, cellList}];
-    result
-  ];
-
-  addLLMSubtitle[cellList_List] := Module[
-    {cells = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
-    pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
-    If[MissingQ[pos],
-      Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
-      Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
-  ];
-
-  md = StringJoin[
-    "# My Notebook Title\n\n",
-    "Introductory text.\n\n",
-    "## Setup\n\n",
-    fence, "wolfram\nNeeds[\"Pkg", tick, "\"]\n", fence, "\n\n",
-    "## Analysis\n\n",
-    "Explanatory text.\n\n",
-    fence, "wolfram\nPlot[Sin[x], {x, 0, 2 Pi}]\n", fence, "\n"
-  ];
-
-  nb = ImportString[md, {"Markdown", "Notebook"}];
-  cells = First[nb];
-  cells = cells /. {
-    Cell[c_, "Chapter", o___] :> Cell[c, "Section", o],
-    Cell[c_, "Section", o___] :> Cell[c, "Subsection", o],
-    Cell[c_, "Subsection", o___] :> Cell[c, "Subsubsection", o]
-  };
-  cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
-    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
-    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o]
-  };
-  cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
-  cells = boxifyInputCells[cells];
-  cells = markInitCells[cells];
-  cells = addLLMSubtitle[cells];
-  ExportString[Notebook[cells], "NB"]
-]
-```
-
-## The rich-mode Wolfram MCP call
-
-Used when *Conversion engine* selects rich mode.
-Same shape as the built-in call, minus the heading shift and the boxify step, plus `CellLabel` stripping and option preservation.
-Build `md` with the same `tick` / `fence` rules.
-
-```wolfram
-Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle},
-
-  wl = "MarkdownToNotebook/MarkdownToNotebook.wl";   (* pinned clone, project root *)
-
-  markInitCells[cellList_List] := Module[{inSetup = False, result = {}},
-    Do[Which[
-      MatchQ[c, Cell[t_String, "Section"|"Subsection"|"Subsubsection", ___] /;
-        StringMatchQ[t, ("*Setup*"|"*Initialization*"|"*Preamble*"|"*Dependencies*"),
-          IgnoreCase -> True]],
-        inSetup = True; AppendTo[result, c],
-      MatchQ[c, Cell[_, "Title"|"Section"|"Subsection"|"Subsubsection", ___]],
-        inSetup = False; AppendTo[result, c],
-      inSetup && MatchQ[c, Cell[_, "Input", ___]],
-        AppendTo[result, Append[c, InitializationCell -> True]],
-      True, AppendTo[result, c]
-    ], {c, cellList}];
-    result
-  ];
-
-  addLLMSubtitle[cellList_List] := Module[
-    {cs = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
-    pos = FirstPosition[cs, Cell[_, "Title", ___], Missing[], {1}];
-    If[MissingQ[pos],
-      Prepend[cs, Cell["[ LLM Generated ]", "Subtitle"]],
-      Insert[cs, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
-  ];
-
-  md = StringJoin["# My Notebook Title\n\n", "**[ LLM Generated ]**\n\n", "..."];
-
-  Get[wl];
-  nb = MarkdownToNotebook[md, "Evaluate" -> False];
-  cells = First[nb];
-  cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"],
-    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"],
-    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"]
-  };
-  cells = cells /. Cell[c_, s_String, o___] :>
-    Cell[c, s, Sequence @@ DeleteCases[{o}, CellLabel -> _]];
-  cells = markInitCells[cells];
-  cells = addLLMSubtitle[cells];
-  ExportString[ReplacePart[nb, 1 -> cells], "NB"]
-]
-```
-
-Note the differences from the built-in call, each load-bearing:
-
-- **No heading shift** — `##` is already `"Section"`, so shifting would demote every heading one level too far.
-- **No `boxifyInputCells`, no `vizCellQ`** — the boxes arrive structural.
-- **`markInitCells` matches `"Section"` first**, not `"Chapter"`.
-- **`ReplacePart[nb, 1 -> cells]`**, not `Notebook[cells]` — keeps `CreateCellID` and `StyleDefinitions`.
-- **`CellLabel` stripped** — the converter stamps `In[n]:=` on cells it did not evaluate.
-
-## After the MCP call
-
-1. Write the returned string to the target file via the `Write` tool
-2. **Verify** by checking file size or evaluating `Length[First[Import["/path/to/file.nb"]]]` via the official MCP
-
-## String construction rules
-
-Always build markdown with `StringJoin` using `fence` and `tick` variables.
-Never write literal backtick characters.
-
-**Escaping rules** (markdown inside a Wolfram Language string):
-
-- `\` → `\\`
-- `"` → `\"`
-- Newlines: `\n`
-- Backticks: NEVER literal — always use `tick` / `fence` variables
-- Wolfram context marks: use `tick` variable
-
-## Long notebook pattern
-
-For notebooks with > ~30 cells, build per-section chunks:
-
-```wolfram
-section1 = StringJoin["## Section 1\n\n", "Text.\n\n", fence, "wolfram\n...\n", fence, "\n\n"];
-section2 = StringJoin["## Section 2\n\n", "Text.\n\n", fence, "wolfram\n...\n", fence, "\n\n"];
-md = StringJoin["# Title\n\n", section1, section2];
-```
-
-## Content best practices
-
-- One `# Title` at the top — only once
-- `## Setup` for package loads and configuration (becomes initialization cells)
-- One logical operation per `wolfram` code block
-- Narrative Text paragraphs between code blocks
-- Bullet lists for enumerated points
-- Tables for structured comparisons
-- Untagged fences for pseudocode or expected output (become CodeText)
-- Bold for key terms
-- Inline math for variables and short formulas
-- Display math for definitions and important equations
 
 ## Style rules — Critical
 
