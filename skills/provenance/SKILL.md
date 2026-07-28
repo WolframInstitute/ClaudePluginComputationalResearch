@@ -109,10 +109,29 @@ HTML comments are dropped by the `{"Markdown","Notebook"}` importer, so they nev
 # Ollivier–Ricci Curvature
 ```
 
-`Scripts/generate_notebooks.wls` parses that block and injects it into the generated `.nb` as `Notebook[cells, TaggingRules -> {"Provenance" -> <|...|>}]` — Wolfram's native, non-rendering metadata slot.
-You do not write `TaggingRules` by hand; the script does it.
-When the comment is absent, the `.nb` is generated exactly as before (no `TaggingRules`).
+The comment is the durable record; the generated `.nb` mirrors it in `TaggingRules` under the `"Provenance"` key — Wolfram's native, non-rendering metadata slot.
+Who injects it depends on the generation path:
+
+- **MCP path (the normal one):** the generating skill injects it during the build — construct the association from the comment's fields, strip the comment from the markdown string before conversion, and stamp the notebook expression before `ExportString` with the merge helper below.
+- **Batch fallback (`Scripts/generate_notebooks.wls`):** the script parses the comment and injects it itself — do not pre-strip the comment or write `TaggingRules` by hand there.
+
+When the comment is absent, the `.nb` is generated exactly as before (no `"Provenance"` key).
 See [new-notebook](../new-notebook/SKILL.md).
+
+**`TaggingRules` is a shared slot — merge by key, never replace the option.**
+[research-notebook](../research-notebook/SKILL.md) stores its per-cell fingerprint there under the `"ResearchNotebook"` key, so a writer that sets a literal `TaggingRules -> {...}` erases the other key.
+Every writer stamps through this helper (canonical here; verified to survive the `ExportString`/`ImportString` round-trip with both keys intact):
+
+```wolfram
+stampTaggingRule[ nb_Notebook, key_String -> value_ ] :=
+  With[ { existing = Replace[ TaggingRules /. Options[ nb ], TaggingRules -> {} ] },
+    Notebook[ First @ nb,
+      Sequence @@ FilterRules[ Options[ nb ], Except[ TaggingRules ] ],
+      TaggingRules -> Normal @ Append[ Association @ existing, key -> value ] ]
+  ]
+```
+
+`stampTaggingRule[ nb, "Provenance" -> prov ]` adds or updates the provenance without touching any other `TaggingRules` key or notebook option; stamping only touches options, so an already-computed cell fingerprint stays valid.
 
 To read it back from a notebook:
 
@@ -169,7 +188,8 @@ Distil the intent from the conversation; include the verbatim prompt only if it'
 These skills check the toggle and, when on, record provenance in this format:
 
 - **new-notebook** — writes the leading HTML comment into the notebook source and appends a ledger entry.
-  The script propagates the comment to `TaggingRules`.
+  On the MCP path it stamps the `TaggingRules` itself via `stampTaggingRule`; on the batch fallback the script propagates the comment.
+- **research-notebook** — same comment and ledger entry; the build passes `TaggingRules -> { "Provenance" -> prov }` through `MathNotebookDocument`, and the later fingerprint stamp merges its `"ResearchNotebook"` key alongside it.
 - **update-wiki** — appends a `## Provenance` section to newly generated articles and a ledger entry.
 - **work** / **next-session** — record `Origin:` in the Spec; each session's prompt goes to the ledger, and the `## Progress` line links it.
 

@@ -90,6 +90,12 @@ fingerprint, and every regeneration checks it first:
    stamp programmatically built cells — and **fingerprint after the round-trip**,
    never the in-memory expression, because `Export` normalises cell content and
    an in-memory fingerprint reports every cell as edited.
+   The stamp must **merge** into any `TaggingRules` already on the notebook —
+   with prompt tracking on, the build has put a `"Provenance"` key there — so
+   write it through the `stampTaggingRule` helper in the
+   [provenance](../provenance/SKILL.md) skill, never as a literal
+   `TaggingRules -> {...}` that replaces the option. Stamping only touches
+   options, so the just-computed cell fingerprint stays valid.
 2. **Before regenerating**, re-import and compare. A cell with no `CellID` is
    **user-added**; a recorded `CellID` that is gone is **user-deleted**; a
    recorded `CellID` whose hash moved is **user-edited**.
@@ -517,7 +523,10 @@ Four things this shape gets right, each learned the hard way:
 - **`MathNotebookDocument` last**, and it owns `StyleDefinitions`: it replaces the
   converter's `"Default.nb"` with the *embedded* AMSArticle sheet, which is what
   makes the notebook readable in the cloud. Pass notebook options through it
-  rather than rebuilding the `Notebook` yourself.
+  rather than rebuilding the `Notebook` yourself — with prompt tracking on, that
+  includes `TaggingRules -> { "Provenance" -> prov }` built from the source's
+  provenance comment (stripped from the `.md` string before conversion); the
+  fingerprint stamp later merges its `"ResearchNotebook"` key alongside it.
 - **`ReplacePart` is not needed here** (unlike `new-notebook`) precisely because
   `MathNotebookDocument` rebuilds the notebook with the options you hand it.
 - `ensureParser[ ]` installs `Wolfram/Parser` on first call, so a fresh machine
@@ -536,13 +545,15 @@ channels.
 - Sync the open questions to the Wiki (or the journal, when it is on) so they
   outlive the notebook.
 - If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see
-  [provenance](../provenance/SKILL.md)), record the originating prompt in the
-  `.md` source and `Wiki/Prompts.md`.
+  [provenance](../provenance/SKILL.md)), the provenance comment belongs in the
+  `.md` source **before** the build (so the `.nb` carries the `"Provenance"`
+  `TaggingRules` key next to the fingerprint — see *The conversion call*);
+  append the ledger entry to `Wiki/Prompts.md` here.
 
 ## Checklist
 
 - [ ] `.md` source in `NotebooksLLM/`, readable enough to edit while reading the `.nb`; the user told which file to edit.
-- [ ] `CellID`s assigned by the generator; fingerprint computed **after** the export/re-import round-trip and stored in `TaggingRules`.
+- [ ] `CellID`s assigned by the generator; fingerprint computed **after** the export/re-import round-trip and stored in `TaggingRules` by **merging** into the option (`stampTaggingRule`) — a `"Provenance"` key may already sit there.
 - [ ] Drift checked before every regeneration; any user edit in the `.nb` stops the build and goes to the user, never overwritten.
 - [ ] Converted with the rich engine at the pinned clone (`Template: Default`, `"Evaluate" -> False`), `CellLabel` stripped; built-in fallback only if the clone is absent, and said out loud.
 - [ ] No `::: theorem` / `::: proof` divs in the source — silently dropped under `Default`.

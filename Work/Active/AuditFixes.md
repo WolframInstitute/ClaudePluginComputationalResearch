@@ -65,7 +65,6 @@ The mechanical layer passed every test (inventory, wiring, scaffolds, compiles, 
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T3 — Design and specify the provenance injection on the MCP path (coexisting with the fingerprint key); update `provenance`, `new-notebook`, `research-notebook`.
 - [ ] T4 — Deduplicate the policy prose: license block, semantic-line-breaks, one-fact table, wiki skeletons, paclet conventions, ResolveLink verification.
 - [ ] T5 — Split `new-project` into core + four project-type siblings.
 - [ ] T6 — Split `new-notebook` into core + four siblings; delete the triplicated WL functions.
@@ -78,6 +77,7 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 
 - [x] T1 (S1) — Fix the `.nb`-read hook (stdin JSON, stderr, exit 2, `matcher: Read`) and verify with a piped-JSON test.
 - [x] T2 (S2) — Fix the contradictions: NotebooksLLM gitignore, init-wiki draft line, abolished-log mentions, marker spelling, stale skill lists and naming in `new-project`, stale cross-references, pre-checked box, `demo-notebook` mentions, missing toggles in init-wiki's template, journal question in the questionnaire.
+- [x] T3 (S3) — Design and specify the provenance injection on the MCP path (coexisting with the fingerprint key); update `provenance`, `new-notebook`, `research-notebook`.
 
 ## Hand-off
 
@@ -91,6 +91,7 @@ Overwritten each session, not appended to: what the next session must know that 
 |---|---|---|
 | 2026-07-28 | Keep `research-notebook`; document order fixed to definitions → theorems → symbols/functions → code calls | User mandate in the audit follow-up |
 | 2026-07-28 | Skill renames deferred out of scope | Breaking change; needs a major version and explicit user approval |
+| 2026-07-28 | `TaggingRules` writers merge by key through one canonical helper (in `provenance`), instead of nesting provenance under the fingerprint key or splitting metadata slots | Keeps each key's owner independent; either write order preserves the other key, verified round-trip |
 
 ## Progress
 
@@ -98,3 +99,4 @@ Append-only audit trail, **one line per session**, newest at the bottom.
 
 - **S1** 2026-07-28 T1 — rewrote `hooks/check-nb-read.sh` for the stdin-JSON contract and scoped `hooks.json` to `Read`; three-case pipe test passes. → [HookContract](../../Wiki/Concepts/HookContract.md)
 - **S2** 2026-07-28 T2 — swept the ten contradictions across seven skills, README, and `generate_notebooks.wls`; spaced marker standardised with legacy spelling still normalized, `.wls` syntax-checked. → [Status](../../Wiki/Status.md#recent-changes)
+- **S3** 2026-07-28 T3 — specified MCP-path provenance injection via the merge-by-key `stampTaggingRule` helper (canonical in `provenance`, kernel-verified) across `provenance`/`new-notebook`/`research-notebook`. → [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)

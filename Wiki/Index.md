@@ -27,6 +27,7 @@ See [Work/README.md](../Work/README.md).
 - [Generating Wolfram paclet documentation](Concepts/PacletDocumentation.md) — five ways a generated doc page ships broken, what actually verifies one, and why there is no unevaluated code block
 - [The Progress harvest](Concepts/ProgressHarvest.md) — what moved out of the closed items' Progress blocks into `Wiki/`, what did not, and why bytes are the wrong measure of it
 - [The Claude Code hook contract](Concepts/HookContract.md) — hooks read JSON from stdin and block via exit 2 + stderr; a positional-args hook is silently inert
+- [The notebook TaggingRules registry](Concepts/TaggingRulesRegistry.md) — `"Provenance"` and `"ResearchNotebook"` share the one metadata slot; every writer merges by key via `stampTaggingRule`, never replaces the option
 
 ## Resources
 

@@ -113,9 +113,15 @@ wolframscript -file Scripts/publish_notebooks.wls
 If the project has prompt tracking on (a `Prompt tracking: **on**` line in `CLAUDE.md` — see the [provenance](../provenance/SKILL.md) skill), record the originating prompt/intent for the notebook:
 
 1. Write a leading `<!-- provenance: ... -->` comment at the top of the `NotebooksLLM/Name.md` source.
-   `generate_notebooks.wls` strips it before import and injects it into the `.nb` as `Notebook[cells, TaggingRules -> {"Provenance" -> <|...|>}]`.
-   Do **not** write `TaggingRules` yourself.
-2. Append an entry to the `Wiki/Prompts.md` ledger.
+2. Inject it into the `.nb` on the MCP path yourself:
+   build `prov = <| "intent" -> ..., "date" -> ..., ... |>` from the comment's fields,
+   strip the comment from the markdown string before conversion (the built-in importer drops HTML comments, but the rich parser is not guaranteed to),
+   and stamp the notebook expression just before `ExportString` with the `stampTaggingRule` merge helper from the [provenance](../provenance/SKILL.md) skill.
+   `TaggingRules` is a shared slot — `research-notebook`'s fingerprint key lives there too — so merge by key; never write a literal `TaggingRules -> {...}` that replaces the option.
+   In the built-in call this wraps the final expression: `ExportString[ stampTaggingRule[ Notebook[cells], "Provenance" -> prov ], "NB" ]`;
+   in the rich-mode call apply it to `ReplacePart[nb, 1 -> cells]`, which it leaves option-complete (the helper preserves `CreateCellID` and `StyleDefinitions`).
+3. On the batch fallback path only, skip step 2: `generate_notebooks.wls` strips the comment and injects the `TaggingRules` itself.
+4. Append an entry to the `Wiki/Prompts.md` ledger.
 
 When tracking is off (default), skip this — generate the notebook as usual.
 
