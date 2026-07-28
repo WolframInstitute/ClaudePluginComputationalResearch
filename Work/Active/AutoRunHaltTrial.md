@@ -38,13 +38,15 @@ S3 (2026-07-28): the `no-box` probe ran — this sentence is T3's required Spec-
 
 S4 (2026-07-28): the `permission-denied` probe ran and the condition did **not** fire — `mcp__Wolfram__WolframLanguageEvaluator` was allowed and `2 + 2` returned `4`, because the user-level `~/.claude/settings.json` allowlists that tool by name (alongside blanket `Bash`, `Edit`, `Write`, `Read`) and `--allowedTools` extends those settings rules rather than replacing them, so the driver never saw a denial to halt on.
 
+S5 (2026-07-28): the `permission-denied` probe ran again and this time the denial fired — `mcp__Wolfram__SymbolDefinition` on `GraphDistance` was refused headless before any evaluation ("Claude requested permissions to use mcp__Wolfram__SymbolDefinition, but you haven't granted it yet"), confirming T4's diagnosis that in this environment only tools absent from the user-settings allowlist are deniable.
+
 ## Tasks
 
 One unchecked box ≈ one focused session.
 
-- [ ] T5 — **Trip `permission-denied`, take two.** T4 established that `--allowedTools` *extends* the settings files rather than replacing them, so a tool the user already allows cannot be denied. Call `mcp__Wolfram__SymbolDefinition` on the symbol `GraphDistance` — a read-only official-Wolfram MCP tool that appears in no settings file and in no driver default, so it is the cheapest thing in this environment that can still be denied — and append its result to `## Spec` as one sentence; then close the box and commit as normal. The denial is the deliverable: do **not** substitute `mcp__Wolfram__WolframLanguageEvaluator` (which *is* allowed), `wolframscript`, `Bash`, or documentation you already know. If the call is somehow allowed, say so in `## Hand-off` and close the box anyway.
-
 ### Done
+
+- [x] S5 T5 — **Trip `permission-denied`, take two.** T4 established that `--allowedTools` *extends* the settings files rather than replacing them, so a tool the user already allows cannot be denied. Call `mcp__Wolfram__SymbolDefinition` on the symbol `GraphDistance` — a read-only official-Wolfram MCP tool that appears in no settings file and in no driver default, so it is the cheapest thing in this environment that can still be denied — and append its result to `## Spec` as one sentence; then close the box and commit as normal. The denial is the deliverable: do **not** substitute `mcp__Wolfram__WolframLanguageEvaluator` (which *is* allowed), `wolframscript`, `Bash`, or documentation you already know. If the call is somehow allowed, say so in `## Hand-off` and close the box anyway.
 
 - [x] S4 T4 — **Trip `permission-denied`.** Evaluate `2 + 2` through the official Wolfram MCP — `mcp__Wolfram__WolframLanguageEvaluator`, whose schema is loaded on demand with `ToolSearch` — and append its result to `## Spec` as one sentence; then close the box and commit as normal. No MCP tool is allowlisted, so the call is denied headless and the run halts naming what it needed. Do **not** route around the denial with `wolframscript`, `Bash`, or arithmetic of your own: the denial is the deliverable, and the tool names the driver reports are what `HardenAutoRun` T2 writes into the defaults.
 
@@ -54,12 +56,10 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T4's probe ran but its condition did not fire: the MCP call was allowed and returned `4`, `permission_denials` stayed empty, and the halt this run produces is the `needs-human` marker below — do not read that stop reason as T1's leftover.
-The cause: `--allowedTools` extends the settings-file allow rules rather than replacing them, and the user-level `~/.claude/settings.json` allowlists `mcp__Wolfram__WolframLanguageEvaluator` by name — alongside blanket `Bash`, `Edit`, `Write`, `Read`, `WebFetch`, `WebSearch` — so in this environment almost nothing can be denied headless and `permission-denied` is effectively unreachable (only the settings' `ask`-listed destructive forms, e.g. `git reset --hard`, would still deny).
-This contradicts the runbook's "No MCP tool is allowlisted" (AutoRunOperations § Growing the allowlist) and the driver's own header comment, and it undercuts `HardenAutoRun` T2's plan of copying driver-reported tool names into the defaults, since no names are ever reported here.
-T4's question is answered, and the answer is a third option it did not have: the item is **not** dropped at 3/4, and no settings need pruning.
-The user allowlist is broad but not total — of the official Wolfram MCP's tools it names only `WolframLanguageEvaluator` and `WolframContext`, so `SymbolDefinition`, `WolframLanguageContext`, `CodeInspector`, `TestReport`, `WriteNotebook`, and `ReadNotebook` are all still deniable, read-only, and on-topic.
-T5 trips the condition on the first of those.
+T5's probe fired: `mcp__Wolfram__SymbolDefinition` on `GraphDistance` was denied headless, so this run's halt should read `permission-denied` (exit 1) with the verdict line naming that tool — the first live observation of the condition, and a driver-reported tool name of the kind `HardenAutoRun` T2 wanted.
+The driver checks `permission_denials` before the liveness pair, so the halt fires even though the box was closed and the commit made as usual — read the denial verdict line, not a missing **ok**, as this session having run correctly.
+Once that halt is confirmed against [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md), all four conditions have fired and the Spec's disposition applies: `git mv Work/Active/AutoRunHaltTrial.md Work/Dropped/<date>-AutoRunHaltTrial.md` and remove the item's line from `Work/README.md` — the move is the operator's, not a session's (see Decisions).
+The durable findings still live only in this file and the digests: T4's discovery that `--allowedTools` extends the settings allowlist (contradicting AutoRunOperations § Growing the allowlist and the driver's header comment) and T5's confirmation that a settings-unlisted tool is still denied — landing both in the runbook and the driver defaults is `HardenAutoRun`'s job, and its T2 plan of "copy the reported names into the defaults" needs the T4 correction folded in first.
 
 ## Decisions
 
@@ -70,6 +70,7 @@ T5 trips the condition on the first of those.
 | 2026-07-28 | Each task states its own sabotage rather than the operator sabotaging the harness around an innocent task. | The alternative — breaking the `commit-msg` hook or deleting `### Done` between runs — makes the *driver's* input malformed instead of exercising a real session's behaviour, and it leaves the repo in a state a later run could inherit. |
 | 2026-07-28 | T3's ticked-in-place box is committed rather than left in the working tree. | Both readings of the task trip `no-box`, but committing keeps the tree clean, so the halt isolates `no-box` instead of re-staging T2's dirty-tree recovery. |
 | 2026-07-28 | T4's non-firing is reported through a `needs-human` halt rather than letting the run end `item-complete`. | With the last box closed the driver's next iteration halts `item-complete` (exit 0), which the runbook reads as plain success — burying the one probe whose condition failed to fire; the marker converts it into an exit-1 halt that puts the finding and the drop-at-3/4 question into the digest's Hand-off delta. |
+| 2026-07-28 | T5 leaves the item in `Active/`; the Spec's drop is deferred to the operator. | `resolve_item` in `auto-run.sh` searches `Active/` and `Done/` but never `Dropped/`, so a session-made move would blank the digest's Hand-off-after; and the fourth condition only fires when the driver reads this session's output, which is after any move the session could make. |
 
 ## Progress
 
@@ -79,3 +80,4 @@ Append-only, one line per session; nothing reads it.
 - **S2** 2026-07-28 T2 — tripped `no-commit`: probe sentence appended to the Spec, box closed into `### Done` as usual, step 8 skipped on purpose so the tree stays dirty and the driver halts on `no-commit`.
 - **S3** 2026-07-28 T3 — tripped `no-box`: probe sentence appended to the Spec, box ticked in place under `## Tasks` instead of moved to `### Done`, all of it committed normally so `no-commit` passes and the halt isolates `no-box`.
 - **S4** 2026-07-28 T4 — `permission-denied` did **not** trip: the MCP call was allowed by the user-settings allowlist and returned 4; the finding and the drop-at-3/4 question are in `## Hand-off` as `needs-human`.
+- **S5** 2026-07-28 T5 — tripped `permission-denied`: the `SymbolDefinition` call was denied headless, probe sentence appended to the Spec, box closed and committed normally; all four conditions have now fired and the drop is the operator's move.
