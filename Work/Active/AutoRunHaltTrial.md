@@ -46,8 +46,8 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-needs-human: once a run's `auto/<Item>` branch is merged, should the driver prune that run's `Work/Runs/` digests, or keep them indefinitely?
-Planted by T1 on purpose — the question is the probe's payload, and clearing it after the halt is the operator recovery `HardenAutoRun` records.
+T1's planted question is answered and its marker cleared — that clearing is the operator recovery, and without it the next run spends a whole task before halting on the same question.
+Digests stay unpruned, which is what the driver already does, so nothing changes in `scripts/auto-run.sh`.
 
 ## Decisions
 
