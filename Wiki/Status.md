@@ -38,7 +38,7 @@ That loop is now built: `scripts/auto-run.sh` behind `/auto-run`, with the defer
 Every stop condition fires as specified against a stub `claude` in a fixture repo, and on 2026-07-28 the loop was trialled live on the throwaway item `AutoRunTrial`: two real wiki-prose tasks landed unattended, at $1.54 and $2.60, with zero permission denials on the default allowlist.
 That trial found three defects a stub could not — a session cannot tell it is headless and has to be told, the caps had to move ahead of the `(human)` gate, and the digest was reporting a 1.01 M-token task as 30 tokens — all fixed and re-verified live.
 It also priced the loop: per-task cost tracks turn count, not cold start, so the 31.5 k-token preamble is ~3 % of a real task and the `$5.00` default cost cap, not `--max-tasks 3`, is what actually bounds a run.
-What remains untested is failure — `needs-human`, the liveness pair, and `permission-denied` have still only ever fired against a stub.
+Failure has since been tested too, and it moved more than the happy path did — see the paragraph below.
 That run also exposed the one thing a stub could not: a headless session cannot observe that it is headless, and recorded in `## Hand-off` that it had run interactively.
 The driver now states its own autonomy in `--append-system-prompt`, because absence of a user is not inferable from inside a session.
 The trial's real input was ~1.01 M tokens, almost all cache reads, which puts the 31 k cold start in proportion: it is a small term inside a real task, not the dominant one.
@@ -48,6 +48,13 @@ Operating that loop is now written down — see [The `/auto-run` operator runboo
 It is the practical half of the pipeline article: the stop-reason table read as instructions, how to grow the allowlist from a `permission-denied` halt, and why an `auto/<Item>` branch must be reviewed before the next run rather than after several.
 Writing it against the script rather than the specification surfaced five small divergences — selection globs `Work/Active/` instead of reading the index, the `(human)` marker matches anywhere in a task line, `unparseable-output` quotes 1 kB of stdout plus 1 kB of stderr rather than 2 kB, `item-vanished` and `interrupted` are missing from the documented stop reasons, and exit codes are four-valued (`2` for preflight, which writes no digest, and `130` for an interrupt).
 All five have since been reconciled into the pipeline article, so the two agree; the standing rule is that the script is the fact and the article is what gets corrected.
+
+The four failure conditions have now fired against real sessions — see [the failure trial](Concepts/AutonomousPipeline.md#the-failure-trial--what-four-live-halts-cost-and-changed).
+Five runs against a second throwaway (`AutoRunHaltTrial`, now in `Work/Dropped/`) tripped `needs-human`, `no-commit`, `no-box`, and `permission-denied` for $12.60; every one reported `subtype: success`, confirming that the CLI's verdict on a session carries no information and the driver is right to verify rather than trust.
+The important result is a failure to fail: **`--allowedTools` is added to the settings files rather than replacing them**, so the driver's allowlist is a floor and bounds nothing, and with 248 blanket allow rules at user level `permission-denied` is nearly unreachable — the supervised trial's "zero denials" had measured the settings' permissiveness, not the tasks' needs.
+Tripping it took a tool the settings do not name (`mcp__Wolfram__SymbolDefinition`).
+The driver's defaults now carry the seven official Wolfram MCP tools outright instead of waiting to be told, the runbook's four wrong claims are fixed, and what makes an unattended run safe is the branch-plus-merge gate rather than the allowlist.
+`no-commit` and `no-box` turned out to be unprovokable by a well-behaved session — they guard harness faults and malformed item files, not misjudgement — and `needs-human` is reachable only after liveness passes, so a session that follows `revise` and stops mid-task halts as `no-box` instead.
 
 That preamble has now been cut — see [Preamble audit](Concepts/PreambleAudit.md).
 Of this repo's 16.9 kB `CLAUDE.md`, 47 % was inventory: the Skills table was a third copy of content the harness already injects as 9.6 kB of skill descriptions, and the tables had drifted anyway (headings claimed 20 skills and 21 commands against 21 and 22 on disk) while consuming 18 of the file's 26 commits.
@@ -66,6 +73,7 @@ The 30.9-vs-53 kB gap is deduplication, dropped narration, and collapsed contrad
 
 ## Recent changes
 
+- 2026-07-28 — Closed `HardenAutoRun`: tripped all four never-live `/auto-run` stop conditions against real sessions, found that `--allowedTools` only ever *adds* to the settings files (so the allowlist bounds nothing and `permission-denied` is nearly unreachable here), gave the driver the Wolfram MCP defaults, and fixed four wrong claims in the runbook. See [the failure trial](Concepts/AutonomousPipeline.md#the-failure-trial--what-four-live-halts-cost-and-changed).
 - 2026-07-28 — Harvested the closed items' Progress blocks into `Wiki/` (T5), closing `EvaluateWorkItemsEfficiency`; three new articles plus six `> Superseded:` markers. See [The Progress harvest](Concepts/ProgressHarvest.md).
 - 2026-07-28 — Audited the *generated* project `CLAUDE.md` (T9): 82 % policy already, the code-style block exonerated, and a contradiction between two auto-loaded files fixed; see [Generated preamble audit](Concepts/GeneratedPreambleAudit.md).
 - 2026-07-28 — Closed the throwaway trial item `AutoRunTrial` by doing its gated task interactively: `/auto-run` stays in `README.md`'s user-facing command list, with the row now naming the human review and merge that the deferred `revise` gate depends on.
@@ -90,3 +98,7 @@ The 30.9-vs-53 kB gap is deduplication, dropped narration, and collapsed contrad
   What a session spends reading the files it actually edits is unmeasured and may be the larger number; no method for capturing it exists yet.
 - The durable share of `## Did` (66.8 %) is extrapolated from an 18 % sample, not classified exhaustively.
   Its 60 kB is too large to hand-classify in one session, so the ~40 kB figure derived from it carries sampling error that the `Learned` numbers do not.
+- Should `/auto-run` stop inheriting the user's settings?
+  Passing a minimal `--settings` file would make `--allowedTools` bound a run as the pipeline specification originally claimed, instead of merely flooring it.
+  `HardenAutoRun` left it alone because that is a change of security posture rather than a correction, and its Spec scoped it to maintenance.
+  Meanwhile an unattended session can run any shell command not on the settings' 17-entry `ask` list, and the `auto/<Item>` branch plus the human merge is what actually contains it.

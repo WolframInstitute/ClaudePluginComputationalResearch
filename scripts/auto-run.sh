@@ -16,13 +16,33 @@ DRY_RUN=0
 ITEM=""
 
 # `acceptEdits` covers file edits only, so the git invocations `next-session`
-# step 8 makes have to be named. Anything absent is denied headless and lands in
-# `permission_denials`, which halts the run and tells you what to add.
+# step 8 makes have to be named.
+#
+# This list is a FLOOR, not a ceiling: `--allowedTools` is added to whatever the
+# settings files already allow, it does not replace them. A tool the user's
+# `~/.claude/settings.json` allows is therefore reachable in an unattended run
+# whether or not it appears below, and on a machine with blanket `Bash`/`Edit`
+# rules almost nothing can be denied. Only a tool absent from every settings
+# file lands in `permission_denials` and halts the run naming itself
+# (established live, HardenAutoRun T2 — see Wiki/Concepts/AutoRunOperations.md
+# § Growing the allowlist). So the floor has to carry everything a task legally
+# needs, rather than relying on the halt to discover it.
 ALLOWED=(
   Read Write Edit Glob Grep Skill TodoWrite
   "Bash(git status:*)" "Bash(git add:*)" "Bash(git commit:*)" "Bash(git mv:*)"
   "Bash(git log:*)" "Bash(git diff:*)" "Bash(git show:*)" "Bash(git rev-parse:*)"
   "Bash(ls:*)" "Bash(cat:*)" "Bash(mkdir:*)" "Bash(date:*)" "Bash(grep:*)"
+  # The MCP-first Wolfram set from CLAUDE.md § Wolfram Kernel Execution Policy:
+  # one persistent kernel, no extra license seat. `SymbolDefinition` is the one
+  # that was actually observed denied, and the other six are the same server's
+  # tools any Wolfram-touching task reaches for next.
+  mcp__Wolfram__WolframLanguageEvaluator mcp__Wolfram__WolframLanguageContext
+  mcp__Wolfram__SymbolDefinition mcp__Wolfram__CodeInspector
+  mcp__Wolfram__TestReport
+  mcp__Wolfram__ReadNotebook mcp__Wolfram__WriteNotebook
+  # The `.wls` fallback for when no MCP is attached; costs a license seat, so
+  # CLAUDE.md's policy has the skill check headroom before spawning it.
+  "Bash(wolframscript:*)"
 )
 
 # ── arguments ───────────────────────────────────────────────────────────────

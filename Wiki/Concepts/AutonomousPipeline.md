@@ -5,8 +5,8 @@
 The specification for running `Work/` items unattended: what drives the loop, how an item is selected with no human present, when the loop stops, and what happens to the `revise` gate.
 Decided 2026-07-27 for `EvaluateWorkItemsEfficiency` T4, against [T3's item format](ItemFileFormat.md) and [T1's budget](SessionInformationBudget.md).
 Built 2026-07-28 by T7 — see [Implementation](#implementation) for where each part lives.
-First run against a real item on 2026-07-28 under T8's supervised trial; [what this does not settle](#what-this-does-not-settle) records what that run did and did not establish.
-Where this article and `scripts/auto-run.sh` disagree the script is the fact, and this article is corrected to match it — last reconciled 2026-07-28 against the script as of `05cdc45`.
+First run against a real item on 2026-07-28 under T8's [supervised trial](#the-supervised-trial--what-two-real-runs-cost-and-changed), which exercised only the happy path; the four failure conditions were tripped live later the same day by `HardenAutoRun`'s [failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed), and [what this does not settle](#what-this-does-not-settle) records what is left.
+Where this article and `scripts/auto-run.sh` disagree the script is the fact, and this article is corrected to match it — last reconciled 2026-07-28 against the script as of `HardenAutoRun` T2's allowlist change.
 
 ## The harness cannot schedule this, and the reason is structural
 
@@ -127,10 +127,20 @@ An unattended `git reset --hard` is the one action that can destroy work no huma
 
 ### Permissions — `acceptEdits`, not `bypassPermissions`
 
-`--permission-mode acceptEdits` plus an explicit `permissions.allow` list.
-Headless, an unallowlisted tool call cannot raise a prompt, so it is denied and recorded in `permission_denials`, which condition 3 turns into a clean halt naming what the run needed.
-The loop therefore tells you what to allowlist instead of being handed everything up front.
-`acceptEdits` covers file edits only, so the allowlist has to carry the `git` invocations `next-session` step 8 makes.
+`--permission-mode acceptEdits` plus an explicit `--allowedTools` list.
+Headless, a tool call that is not allowed cannot raise a prompt, so it is denied and recorded in `permission_denials`, which condition 3 turns into a clean halt naming what the run needed.
+`acceptEdits` covers file edits only, so the list has to carry the `git` invocations `next-session` step 8 makes.
+
+**The design intent that the loop "tells you what to allowlist instead of being handed everything up front" does not survive contact with a real settings file**, and this is the one place the specification was wrong rather than merely incomplete.
+`--allowedTools` is **added** to the settings files' `permissions.allow` rather than replacing it, so the driver's list is a floor and not a ceiling: it guarantees a minimum and bounds nothing.
+Measured on this machine (`HardenAutoRun` T2, 2026-07-28), the user-level allowlist carries 248 entries including blanket `Bash`, `Edit`, `Write`, `Read`, `NotebookEdit`, `WebFetch`, and `WebSearch`, so almost no call a session makes is deniable and `permission-denied` is nearly unreachable.
+Only a tool absent from every settings file can be denied — which is how the condition was eventually tripped, on `mcp__Wolfram__SymbolDefinition`.
+
+Two things follow.
+The defaults must **carry** what a class of task needs rather than wait to be told, so the seven official Wolfram MCP tools and `Bash(wolframscript:*)` are now in them.
+And the allowlist is not what makes an unattended run safe: with blanket `Bash` allowed, the effective bound is the settings' `ask` list, which headless cannot prompt and therefore denies.
+The `auto/<Item>` branch plus the human merge is the real containment, and it is load-bearing in a way this section previously implied it was not.
+Operating detail is in [the runbook](AutoRunOperations.md#--allowedtools-is-a-floor-not-a-ceiling).
 
 ### The digest — the review surface
 
@@ -216,12 +226,41 @@ The trial item closed on 2026-07-28 with its `(human)` task done interactively �
 That last task also showed how a trial item can be drafted stale: it asked whether `/auto-run` belonged in `README.md`'s command list, and the task that built the driver had added the row sixteen minutes before the trial item existed.
 A throwaway written to exercise the driver will tend to overlap the driver's own documentation, so its tasks are worth re-reading against `HEAD` at the start of the session rather than trusted as drafted.
 
+### The failure trial — what four live halts cost and changed
+
+`HardenAutoRun` T1 and T2, 2026-07-28, against the throwaway `AutoRunHaltTrial`.
+The supervised trial above had run only tasks that *could not* fail, so four conditions had fired against a stub `claude` and nothing else.
+Each task on the dummy carried its own sabotage instruction in its own text, rather than the operator breaking the harness around an innocent task — a malformed input tests the driver's parsing, not a session's behaviour.
+
+| condition | task | stop reason | cost | turns |
+|---|---|---|---|---|
+| `needs-human` | T1 | `needs-human`, exit 1 | $2.03 | 16 |
+| `no-commit` | T2 | `no-commit`, exit 1 | $1.71 | 16 |
+| `no-box` | T3 | `no-box`, exit 1 | $1.77 | 16 |
+| `permission-denied` | T4 | *did not fire* — `needs-human`, exit 1 | $4.09 | 21 |
+| `permission-denied` | T5 | `permission-denied`, exit 1 | $3.00 | 21 |
+
+All five reported `subtype: success`, confirming that the CLI's own verdict carries no information about whether the session did its job — the premise of condition 5.
+Five tasks cost $12.60, against the trial's $1.54 and $2.60, so a failing task is no cheaper than a succeeding one: the driver halts *after* the process finishes, never during it.
+
+Three findings, in ascending order of consequence.
+
+**`no-commit` and `no-box` cannot be provoked by a well-behaved session.** Both had to be instructed explicitly, which locates what they actually guard: harness faults and malformed item files — a rejected `commit-msg` hook, a box ticked outside `### Done` — rather than misjudgement. That is a narrower remit than "liveness" suggests, and it is the right one.
+
+**`needs-human` is reachable only from a session that closed its box.** The driver checks it *after* the liveness pair, so a session that follows `revise` literally — write the question, commit, stop — fails liveness first and halts as `no-box`. The reason is therefore honest for a task that finished and raised a follow-on question, and misleading for a task that genuinely could not proceed. The conditions were not reordered: `revise`'s instruction is what makes the ordering visible, and the runbook now says to read the `## Hand-off` delta on a `no-box` halt before believing it.
+
+**The allowlist bounds nothing** — see [Permissions](#permissions--acceptedits-not-bypasspermissions) above. T4's failure to fire is the single most useful result of the whole item: the condition ran clean because `--allowedTools` extends the settings files instead of replacing them, so the supervised trial's "zero denials" had measured the settings' permissiveness and not the task's needs.
+
+That last one also demonstrated the deferred gate working as designed.
+T4 could not resolve its own situation, wrote a `needs-human:` question naming the two options it could see, and halted — and the operator answered with a third the session had not: trip the condition on an official-Wolfram MCP tool the settings do not name, needing neither a settings change nor a destructive command.
+
 ## What this does not settle
 
-- **Two real tasks have run, both of them prose.** The trial above exercised the happy path, the author gate, the caps, the digest, the liveness check, and every fail-closed path, twice. What it did not exercise is failure: `needs-human`, `no-commit`, `no-box`, `permission-denied`, `unparseable-output`, and the three `condition 3` reasons remain stub-tested only. A stub halts on demand; a real session fails in ways nobody has yet seen, and the load-bearing liveness condition has never fired against one.
+- **All four failure conditions have now fired live** — see [the failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed). What remains stub-tested is the *harness*-fault group: `unparseable-output` and the three `condition 3` reasons (`nonzero-exit`, `is-error`, `stop-reason`/`terminal-reason`). Those fire on a CLI-level failure — a rejected flag, an expired login — rather than on anything a session does, so a stub is a closer model of them than it was of the four above, and provoking them live would mean breaking the CLI rather than the work.
 - **Nothing but wiki prose has run unattended.** The trial item was chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `revise` does not exempt from sign-off.
 - **The `(human)` marker and `> Autonomous: allowed` both work.** `AutoRunTrial` carries them; selection accepted the item and the gate halted on the marked task, as specified.
-- **The allowlist is a guess that happens to cover wiki prose.** The first real task ran with zero `permission_denials` on the defaults, so nothing has yet forced an `--allow` addition. That says only that a prose task stays inside `Read`/`Write`/`Edit`/`Grep`/`Skill` plus the `git` forms `next-session` makes; no MCP tool is allowlisted at all, so the first task that touches the Wolfram MCP still halts on its first call. That is the designed behaviour — the loop reports what to add rather than being handed everything.
+- **Nothing has yet run unattended that needed a tool the environment did not already allow.** The defaults now carry the Wolfram MCP set, but that was written from `CLAUDE.md`'s policy rather than from a run demanding it, because in this environment a run cannot demand it. Whether the set is *sufficient* for a real notebook or paclet task is unmeasured, and no halt will tell you here — only a narrow settings file elsewhere would.
+- **Whether the driver should isolate itself from the user's settings is open.** Passing a minimal `--settings` file, or otherwise refusing to inherit 248 blanket allow rules, would make `--allowedTools` mean what this specification originally claimed. It would also be a change in the pipeline's security posture rather than a correction, so `HardenAutoRun` left it alone: its Spec forbade redesign, and the branch-plus-merge gate is doing the containment meanwhile.
 - **Item selection is deliberately weak.** Requiring exactly one eligible item means the pipeline cannot work a queue. Priority ordering was rejected rather than solved, because a wrong autonomous ordering is invisible until the digest and the cost of the restriction is a human typing one item name.
 - **The 31,479-token figure is environment-specific.** It includes the MCP tool schemas for every server configured on this machine. A scaffolded research project with a 3.3 kB `CLAUDE.md` and fewer servers pays materially less, so the number bounds this repo, not the plugin.
 - **Whether cold start is worth its price is still open, and the price is larger than the floor suggests.** The ~31.5k figure is the preamble paid once per task; the first real task's *total* input was about 1.01 M tokens over 26 turns — almost entirely cache reads — for $1.54. Cold start is a small term inside a real session, not the dominant one, which weakens the case for optimising it and leaves the actual comparison untouched: what a warm session loses to rot remains unmeasured, and T1's open question about un-instrumented reading time applies here too.

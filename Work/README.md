@@ -24,11 +24,13 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-| Item | Next task |
-|---|---|
-| `HardenAutoRun` | T1 — trip `needs-human` and the liveness pair live against a throwaway |
-| `AutoRunHaltTrial` | none — T5 tripped `permission-denied`, the fourth and last condition; verify the halt against its digest, then drop (operator move, see its Hand-off) |
+_(none)_
 
+`Backlog/` is empty too.
+The one thing left open by the items below is whether `/auto-run` should stop inheriting the user's `~/.claude/settings.json` allow rules — recorded as an open question in [Wiki/Status.md](../Wiki/Status.md#open-questions), not yet filed as an item, because it changes the pipeline's security posture rather than fixing it.
+
+`HardenAutoRun` completed on 2026-07-28 after two tasks: all four never-live `/auto-run` stop conditions fired against real sessions, `--allowedTools` turned out to only ever *add* to the settings files, and the driver gained the Wolfram MCP defaults.
+`AutoRunHaltTrial` was dropped on 2026-07-28: the crash-test dummy `HardenAutoRun` drove, whose five tasks were sabotage rather than work — `Dropped/` rather than `Done/` for exactly that reason.
 `EvaluateWorkItemsEfficiency` completed on 2026-07-28 after nine tasks: the per-session budget is measured, the item file format is decided and in force, both auto-loaded preambles are audited, the unattended pipeline is built and trialled live, and T5's harvest moved the closed items' durable content into `Wiki/`.
 `AutoRunTrial` completed on 2026-07-28: the throwaway item that gave `EvaluateWorkItemsEfficiency` T8 a real item to drive, closing with its `(human)` task done interactively.
 `AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.

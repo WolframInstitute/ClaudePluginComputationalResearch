@@ -13,6 +13,7 @@ Where the script and the specification disagree the script is the fact — see [
 
 `/auto-run <Item> --dry-run` prints the selection, the branch it would use, the next task, the caps, the digest path, and the full allowlist — and exits without creating a branch, a digest, or a process.
 Use it first on any item that has not run before.
+It is checked *after* the preflight rather than before it, so it still refuses a dirty working tree: `--dry-run` is a rehearsal of a real launch, not an inspection you can perform mid-edit.
 
 The defaults are three tasks, ninety minutes, and five dollars (`--max-tasks`, `--max-minutes`, `--max-cost`).
 
@@ -40,6 +41,11 @@ Launching from the `auto/<Item>` branch itself scopes the range to the current r
 
 The token and cost figures are summed from each run's `.usage` and are the pipeline's own measurement of its per-task price — the only mechanism that keeps [the session budget](SessionInformationBudget.md) from going stale.
 
+One trap in that reading order, seen live on a `no-commit` halt.
+**Commits** and **Files touched** are both derived from `git log`/`git diff` and so show only what was *committed*, while the **Hand-off delta** is read from the working-tree file and shows what the session *wrote*.
+On a `no-commit` halt the two disagree by design: the diff sections are empty and the delta is full, so a digest read top-to-bottom looks like a session that produced nothing when in fact its work is sitting uncommitted in the tree.
+Read the delta before concluding anything from the empty diff, and then read `git status`.
+
 ## Stop reasons — what each one asks of you
 
 The driver exits `0` for the first two rows, `130` for an interrupt, and `1` for everything else.
@@ -60,9 +66,12 @@ The driver exits `0` for the first two rows, `130` for an interrupt, and `1` for
 
 Three of these have sharp edges.
 
-**`needs-human` is checked after a task, not before one.**
-So a marker left in `## Hand-off` does not stop the next run at the door — it spends one whole task first, then halts on the same question.
-Clearing the marker is part of answering it.
+**`needs-human` is checked after a task, not before one — and only after the liveness pair has passed.**
+So a marker left in `## Hand-off` does not stop the next run at the door: it spends one whole task first, then halts on the same question, and clearing the marker is part of answering it.
+The ordering has a sharper consequence than that.
+`revise` § *Autonomous mode* tells a session facing a real decision to write the question, commit that, and **stop** — but a session that stops without closing its box fails liveness first and halts as `no-box`, so the reason you actually see is the wrong one.
+`needs-human` is reachable only from a session that closed its box, committed, *and* left a question.
+In practice that means the reason is honest when a task finished and raised a follow-on question, and misleading when a task genuinely could not proceed; on a `no-box` halt, read the `## Hand-off` delta for a `needs-human:` line before treating it as a liveness failure.
 
 **`no-box` usually means the box was checked in place.**
 The driver counts `- [x]` lines only inside the `### Done` subsection, so a session that ticked the box but left it under `## Tasks` looks identical to one that did nothing.
@@ -76,24 +85,60 @@ The driver never cleans up after a fault.
 It leaves the branch, the working tree, and any partial work exactly as they stand, because an unattended `git reset --hard` is the one action that can destroy work no human has seen.
 Recovery is always yours to perform.
 
+### What the four failure halts actually look like
+
+Measured on 2026-07-28 by `HardenAutoRun` T1 and T2, against the throwaway `AutoRunHaltTrial`, whose tasks each carried their own sabotage instruction.
+Until then these four had only ever fired against a stub `claude`, which halts on demand and so proves nothing about a real session.
+Five runs, one task each, $12.60 total.
+
+| condition | verdict line | commits / diff | recovery performed |
+|---|---|---|---|
+| `needs-human` | `**ok**` for the task, *then* a second `**halt**` line — the only reason with two lines | present | clear the marker, commit |
+| `no-commit` | one `**halt**`, `— no new commit` | **both empty**, while the Hand-off delta is full | `git add -A && git commit` the tree as it stands |
+| `no-box` | one `**halt**`, `` — `### Done` gained no box (2 → 2) `` | present | move the ticked line into `### Done` with its session number |
+| `permission-denied` | one `**halt**`, `— 1 permission denial(s): mcp__Wolfram__SymbolDefinition` | present | add the named tool to the defaults |
+
+All four exit `1`, all four report `subtype: success` — the CLI's own verdict on the session is useless as a signal, which is the whole reason the driver verifies rather than trusts.
+Turn counts were 16–21 and per-task cost $1.71–$4.09, in line with the trial's $1.5–2.6 and above it once a task does real tool work.
+
+Two of these were harder to trip than the runbook implied, and both taught something.
+`no-commit` and `no-box` cannot be provoked by a well-behaved session at all — they had to be *instructed*, which is itself the finding: these conditions catch harness faults and malformed item files, not misjudgement.
+`permission-denied` took two attempts, and the first failure is the more important result — see below.
+
 ## Growing the allowlist
 
-Headless, a tool call that is not allowlisted cannot raise a prompt, so it is denied, recorded in the run JSON's `permission_denials`, and turned into a `permission-denied` halt that names the tool.
-This is the designed way to discover what a class of task needs: the loop reports the requirement rather than being handed everything up front.
-
+Headless, a tool call that is not allowed cannot raise a prompt, so it is denied, recorded in the run JSON's `permission_denials`, and turned into a `permission-denied` halt that names the tool.
 The fix is one `--allow` per entry, appended to the defaults:
 
 ```bash
-/auto-run MyItem --allow 'Bash(wolframscript:*)' --allow 'Bash(rg:*)'
+/auto-run MyItem --allow 'Bash(rg:*)' --allow 'mcp__Wolfram__CreateSymbolDoc'
 ```
 
-The defaults cover `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Skill`, `TodoWrite`, the eight `git` forms `next-session` step 8 makes, and `ls`, `cat`, `mkdir`, `date`, `grep`.
+The defaults cover `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Skill`, `TodoWrite`, the eight `git` forms `next-session` step 8 makes, `ls`, `cat`, `mkdir`, `date`, `grep`, the seven official Wolfram MCP tools named in `CLAUDE.md` § *Wolfram Kernel Execution Policy*, and `Bash(wolframscript:*)` for the fallback path.
 There is no way to *remove* a default — the list only grows.
 
-Two things to expect:
+### `--allowedTools` is a floor, not a ceiling
 
-- **The digest names the tool, not its input.** A denied `Bash` call appears as bare `Bash`, so the command has to be inferred from the task and the skill it invokes. When that is not obvious, run the task once interactively and watch what it reaches for.
-- **No MCP tool is allowlisted.** Any task that touches the Wolfram MCP halts on its first call unless you add the tool by name. Wiki-prose tasks are the ones that run clean today, which is why they were chosen for the trial.
+This is the correction `HardenAutoRun` T2 made, and it inverts what this section used to claim.
+
+**`--allowedTools` is added to whatever the settings files already allow; it does not replace them.**
+So the driver's list does not *bound* an unattended run — it only guarantees a minimum.
+A tool that `~/.claude/settings.json` allows is reachable in every autonomous run whether or not the driver names it, and the only tools that can ever be denied are those absent from **every** settings file.
+
+On this machine that is close to fatal for the discovery mechanism.
+The user-level allowlist carries 248 entries including **blanket `Bash`, `Edit`, `Write`, `Read`, `NotebookEdit`, `WebFetch`, and `WebSearch`**, plus the project's own 175 — so almost nothing a session reaches for can be denied, and `permission-denied` is nearly unreachable by accident.
+The first Wolfram probe proved it: a task told to evaluate `2 + 2` through `mcp__Wolfram__WolframLanguageEvaluator` ran clean and returned `4`, because that tool is allowlisted by name at user level.
+Tripping the condition took a deliberately chosen tool the settings do *not* name — `mcp__Wolfram__SymbolDefinition` — which was refused before evaluation with *"Claude requested permissions to use mcp__Wolfram__SymbolDefinition, but you haven't granted it yet"*.
+
+Three consequences for an operator:
+
+- **A clean run is not evidence that the defaults were sufficient.** The supervised trial's zero `permission_denials` on two prose tasks was read as "prose stays inside the defaults"; it actually showed only that the settings were permissive. Any conclusion of that shape has to be re-derived on a machine with a narrow settings file.
+- **Do not rely on the halt to discover requirements.** In a permissive environment there is nothing to discover, so the defaults have to carry what a task legally needs up front — which is why the Wolfram set is now in them rather than waiting to be reported.
+- **`acceptEdits` plus `--allowedTools` is not a sandbox here.** With blanket `Bash` allowed at user level, an autonomous session can run any shell command that is not on the settings' 17-entry `ask` list. Headless, `ask` cannot prompt and so behaves as deny — those seventeen destructive `git`/`rm` forms are the *real* bound on an unattended run, not the driver's list. Treat the branch-plus-merge gate, not the allowlist, as what makes autonomy safe.
+
+One thing still holds unchanged: **the digest names the tool, not its input.**
+A denied `Bash` call appears as bare `Bash`, so the command has to be inferred from the task and the skill it invokes.
+When that is not obvious, run the task once interactively and watch what it reaches for.
 
 ## Landing `auto/<Item>` on `main`
 
@@ -106,9 +151,10 @@ git checkout main && git merge --no-ff auto/MyItem
 git branch -d auto/MyItem
 ```
 
-A repo with a `commit-msg` hook adds a wrinkle at both ends.
-This one enforces Conventional Commits with a 72-character subject, so `git merge --no-ff`'s default `Merge branch 'auto/MyItem'` is **rejected** and the merge stops half-done — finish it with `git commit -m 'chore(work): merge …'`.
-The same hook is a live hazard inside a run: a session whose commit the hook rejects has written its files but committed nothing, which the driver sees as `no-commit`.
+A repo with a `commit-msg` hook adds a wrinkle, though not at the merge.
+This one — `.githooks/commit-msg`, activated by `core.hooksPath` rather than sitting in `.git/hooks/`, so look for it there — enforces Conventional Commits with a 72-character subject, but it whitelists subjects beginning `Merge `, `Revert `, `fixup!`, `squash!`, and `amend!`.
+So `git merge --no-ff`'s default `Merge branch 'auto/MyItem'` **passes**, verified live on 2026-07-28; an earlier draft of this runbook claimed it was rejected and prescribed a manual `git commit` to finish a half-done merge, which was wrong.
+The hook remains a live hazard *inside* a run: a session whose commit it rejects has written its files but committed nothing, which the driver sees as `no-commit`.
 So `no-commit` in a hooked repo means "read the hook's output", not "the session did nothing" — and the files are still in the working tree.
 
 Review the diff, not the digest: the digest reports what the driver observed, while the diff is what the sessions actually wrote.
@@ -123,7 +169,10 @@ An unmerged branch means the next run stacks new tasks on top of work nobody has
 ## Where the script and the specification disagree
 
 Nowhere, as of 2026-07-28.
-This runbook found five divergences when it was written; [the specification](AutonomousPipeline.md) has since been corrected to match the script on all five — selection globbing `Work/Active/` rather than reading the index, the `(human)` gate matching as a substring, `unparseable-output` quoting 1 kB of stdout plus 1 kB of stderr, `item-vanished` and `interrupted` as stop reasons, and the four-valued exit status.
+This runbook found five divergences when it was written, all since corrected in [the specification](AutonomousPipeline.md) — selection globbing `Work/Active/` rather than reading the index, the `(human)` gate matching as a substring, `unparseable-output` quoting 1 kB of stdout plus 1 kB of stderr, `item-vanished` and `interrupted` as stop reasons, and the four-valued exit status.
+
+Running the four failure conditions live then found four more, this time in **this** article rather than in the specification, and all four are fixed above: the claim that no MCP tool is allowlisted, the claim that the merge message is rejected by the hook, the implication that `needs-human` fires on a session that stopped mid-task, and the omission that `--dry-run` still requires a clean tree.
+That the runbook was wrong where the specification was right is the expected direction — the specification was reconciled against the script, while this article was written against the script's *documented intent* and never against a real failure.
 
 The precedence rule stands for the next divergence: the script is the fact, and the article is what gets corrected.
 When you find one, fix the article rather than recording it here — a standing list of known-wrong documentation is a second thing to keep current.
