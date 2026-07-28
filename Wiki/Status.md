@@ -73,6 +73,7 @@ The 30.9-vs-53 kB gap is deduplication, dropped narration, and collapsed contrad
 
 ## Recent changes
 
+- 2026-07-28 — Full plugin audit passed the mechanical layer (inventory, wiring, scaffolds, compiles, live scripts) and opened `AuditFixes` (ten tasks); T1 fixed the `.nb`-read hook, inert since introduction because it read positional arguments where the harness delivers stdin JSON. See [The Claude Code hook contract](Concepts/HookContract.md).
 - 2026-07-28 — Closed `HardenAutoRun`: tripped all four never-live `/auto-run` stop conditions against real sessions, found that `--allowedTools` only ever *adds* to the settings files (so the allowlist bounds nothing and `permission-denied` is nearly unreachable here), gave the driver the Wolfram MCP defaults, and fixed four wrong claims in the runbook. See [the failure trial](Concepts/AutonomousPipeline.md#the-failure-trial--what-four-live-halts-cost-and-changed).
 - 2026-07-28 — Harvested the closed items' Progress blocks into `Wiki/` (T5), closing `EvaluateWorkItemsEfficiency`; three new articles plus six `> Superseded:` markers. See [The Progress harvest](Concepts/ProgressHarvest.md).
 - 2026-07-28 — Audited the *generated* project `CLAUDE.md` (T9): 82 % policy already, the code-style block exonerated, and a contradiction between two auto-loaded files fixed; see [Generated preamble audit](Concepts/GeneratedPreambleAudit.md).

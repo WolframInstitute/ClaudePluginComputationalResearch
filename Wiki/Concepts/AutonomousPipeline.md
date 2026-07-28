@@ -272,4 +272,5 @@ T4 could not resolve its own situation, wrote a `needs-human:` question naming t
 - [Session Information Budget](SessionInformationBudget.md) — T1: the fixed preamble term this loop pays per task
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: the one-destination rule the digest obeys
 - `Work/Done/2026-07-28-EvaluateWorkItemsEfficiency.md` — the item this serves
+- [The Claude Code hook contract](HookContract.md) — another harness behavior that had to be verified live rather than assumed
 - [Status](../Status.md)

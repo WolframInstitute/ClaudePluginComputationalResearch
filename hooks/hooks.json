@@ -2,6 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
+        "matcher": "Read",
         "hooks": [
           {
             "type": "command",

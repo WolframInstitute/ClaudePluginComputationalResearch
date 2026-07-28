@@ -65,7 +65,6 @@ The mechanical layer passed every test (inventory, wiring, scaffolds, compiles, 
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T1 — Fix the `.nb`-read hook (stdin JSON, stderr, exit 2, `matcher: Read`) and verify with a piped-JSON test.
 - [ ] T2 — Fix the contradictions: NotebooksLLM gitignore, init-wiki draft line, abolished-log mentions, marker spelling, stale skill lists and naming in `new-project`, stale cross-references, pre-checked box, `demo-notebook` mentions, missing toggles in init-wiki's template, journal question in the questionnaire.
 - [ ] T3 — Design and specify the provenance injection on the MCP path (coexisting with the fingerprint key); update `provenance`, `new-notebook`, `research-notebook`.
 - [ ] T4 — Deduplicate the policy prose: license block, semantic-line-breaks, one-fact table, wiki skeletons, paclet conventions, ResolveLink verification.
@@ -78,7 +77,7 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 
 ### Done
 
-(completed tasks move here with the session that closed them)
+- [x] T1 (S1) — Fix the `.nb`-read hook (stdin JSON, stderr, exit 2, `matcher: Read`) and verify with a piped-JSON test.
 
 ## Hand-off
 
@@ -96,3 +95,5 @@ Overwritten each session, not appended to: what the next session must know that 
 ## Progress
 
 Append-only audit trail, **one line per session**, newest at the bottom.
+
+- **S1** 2026-07-28 T1 — rewrote `hooks/check-nb-read.sh` for the stdin-JSON contract and scoped `hooks.json` to `Read`; three-case pipe test passes. → [HookContract](../../Wiki/Concepts/HookContract.md)

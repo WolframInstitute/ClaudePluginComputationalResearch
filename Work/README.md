@@ -24,7 +24,7 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-- [AuditFixes](Active/AuditFixes.md) — next: T1, fix the `.nb`-read hook (stdin JSON, stderr, exit 2, `matcher: Read`).
+- [AuditFixes](Active/AuditFixes.md) — next: T2, fix the cross-skill contradictions (gitignore, init-wiki seed line, stale references, marker spelling).
 
 `Backlog/` is empty.
 The one thing left open by the items below is whether `/auto-run` should stop inheriting the user's `~/.claude/settings.json` allow rules — recorded as an open question in [Wiki/Status.md](../Wiki/Status.md#open-questions), not yet filed as an item, because it changes the pipeline's security posture rather than fixing it.
