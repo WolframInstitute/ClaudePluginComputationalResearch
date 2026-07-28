@@ -42,6 +42,8 @@ S4 (2026-07-28): the `permission-denied` probe ran and the condition did **not**
 
 One unchecked box ≈ one focused session.
 
+- [ ] T5 — **Trip `permission-denied`, take two.** T4 established that `--allowedTools` *extends* the settings files rather than replacing them, so a tool the user already allows cannot be denied. Call `mcp__Wolfram__SymbolDefinition` on the symbol `GraphDistance` — a read-only official-Wolfram MCP tool that appears in no settings file and in no driver default, so it is the cheapest thing in this environment that can still be denied — and append its result to `## Spec` as one sentence; then close the box and commit as normal. The denial is the deliverable: do **not** substitute `mcp__Wolfram__WolframLanguageEvaluator` (which *is* allowed), `wolframscript`, `Bash`, or documentation you already know. If the call is somehow allowed, say so in `## Hand-off` and close the box anyway.
+
 ### Done
 
 - [x] S4 T4 — **Trip `permission-denied`.** Evaluate `2 + 2` through the official Wolfram MCP — `mcp__Wolfram__WolframLanguageEvaluator`, whose schema is loaded on demand with `ToolSearch` — and append its result to `## Spec` as one sentence; then close the box and commit as normal. No MCP tool is allowlisted, so the call is denied headless and the run halts naming what it needed. Do **not** route around the denial with `wolframscript`, `Bash`, or arithmetic of your own: the denial is the deliverable, and the tool names the driver reports are what `HardenAutoRun` T2 writes into the defaults.
@@ -55,8 +57,9 @@ One unchecked box ≈ one focused session.
 T4's probe ran but its condition did not fire: the MCP call was allowed and returned `4`, `permission_denials` stayed empty, and the halt this run produces is the `needs-human` marker below — do not read that stop reason as T1's leftover.
 The cause: `--allowedTools` extends the settings-file allow rules rather than replacing them, and the user-level `~/.claude/settings.json` allowlists `mcp__Wolfram__WolframLanguageEvaluator` by name — alongside blanket `Bash`, `Edit`, `Write`, `Read`, `WebFetch`, `WebSearch` — so in this environment almost nothing can be denied headless and `permission-denied` is effectively unreachable (only the settings' `ask`-listed destructive forms, e.g. `git reset --hard`, would still deny).
 This contradicts the runbook's "No MCP tool is allowlisted" (AutoRunOperations § Growing the allowlist) and the driver's own header comment, and it undercuts `HardenAutoRun` T2's plan of copying driver-reported tool names into the defaults, since no names are ever reported here.
-needs-human: with three of four conditions fired and `permission-denied` unreachable as specified, should the item be dropped at 3/4 with the finding handed to `HardenAutoRun`, or do you want a live trip first — which means either pruning the user-settings allow rules or probing an `ask`-listed destructive command, both outside what a session may do on its own?
-Recovery: nothing in-repo — the tree is clean and T4's box is closed; answer the question, clear the marker, and move the file to `Work/Dropped/YYYY-MM-DD-AutoRunHaltTrial.md` per the Spec's dropped-not-completed rule (the driver resolves items only in `Active/` and `Done/`, so the move belongs after the last run, not before).
+T4's question is answered, and the answer is a third option it did not have: the item is **not** dropped at 3/4, and no settings need pruning.
+The user allowlist is broad but not total — of the official Wolfram MCP's tools it names only `WolframLanguageEvaluator` and `WolframContext`, so `SymbolDefinition`, `WolframLanguageContext`, `CodeInspector`, `TestReport`, `WriteNotebook`, and `ReadNotebook` are all still deniable, read-only, and on-topic.
+T5 trips the condition on the first of those.
 
 ## Decisions
 
