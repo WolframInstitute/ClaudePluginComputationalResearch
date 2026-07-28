@@ -60,6 +60,9 @@ One unchecked box ≈ one focused session.
 
 ## Progress
 
+> Harvested 2026-07-28 (`EvaluateWorkItemsEfficiency` T5): the durable content of these blocks is now in [Wiki/Resources/MarkdownToNotebook.md](../../Wiki/Resources/MarkdownToNotebook.md), which is the version to read and the one that gets corrected. The blocks below are the audit trail and are not pruned.
+> Three claims here are false today — each carries its own `> Superseded:` marker.
+
 ### Session 1 — 2026-07-27 — T1
 
 - **Prompt:** "Continue working on research items until done. Commit and push after each. I am going to bed."
@@ -69,6 +72,8 @@ One unchecked box ≈ one focused session.
   Sole author Nikolay Murzin (`sw1sh`); the resource frontmatter credits "Nikolay Murzin, Claude (Anthropic)".
   12.7 MB, 0 stars, default branch `main`.
   This is an actively-moving target, not a finished artifact: the last eight commits are all parser/converter fixes referencing issue numbers up to #127.
+
+  > Superseded 2026-07-27 (`AdoptMarkdownToNotebook` S2): "moves daily" was an artefact of June. 277 commits over 39 active days since 2026-05-22, but July runs 12 active days in 26 with 4- and 5-day gaps — and the repo had not moved a byte between this clone and the re-measurement. Authorship is also no longer sole: 96 of the last 100 commits Nikolay Murzin, 4 Mads Bahrami.
 
   **Classification — none of the three options cleanly.**
   It is not a paclet: no `PacletInfo.wl`, and the README states outright "there is no paclet directory and no native extension".
@@ -80,6 +85,8 @@ One unchecked box ≈ one focused session.
 
   **License: none.** The GitHub API reports `license: null` and there is no `LICENSE` file, so formally all rights are reserved.
   Per this item's edge cases that is a hard stop on vendoring, and it lands before any code was read with intent to copy.
+
+  > Superseded 2026-07-27 (`AdoptMarkdownToNotebook` S1): the user confirmed the licence is fine to depend on, so the hard stop is lifted and vendoring survives as a fallback. The repo still carries no `LICENSE` file; a standing, non-blocking ask for one is open with Nikolay Murzin.
 
   **Shape.** Two entry points, both plain top-level definitions with no `BeginPackage` (deliberate — the converter `Get`s itself into a fresh private context so converting a document cannot clobber the definition doing the converting):
   `MarkdownToNotebook[source, spec : (_String | Automatic), opts]` in `MarkdownToNotebook.wl` (5273 lines) and `NotebookToMarkdown` in `NotebookToMarkdown.wl` (1505 lines) — the reverse direction, which is directly relevant to `research-notebook`'s md↔nb sync.
@@ -231,6 +238,8 @@ Worth its own work item; not worth blocking Phase 1 on.
 **Phase 3 — fold this into `PacletDocumentation` before that item starts.**
 Its scope was "build a doc-authoring pipeline"; four of these skills (`wolfram-symbol-page`, `wolfram-guide-page`, `wolfram-tech-note`, `wolfram-overview-page`) already author precisely the `ref/`, `guide/`, `tutorial/`, and Overview pages it targets, and `docs/gaps.md` plus `docs/palette.md` are a ready-made map of the design space.
 That item should be rewritten as "evaluate driving theirs" rather than "build ours".
+
+> Superseded 2026-07-27 (`PacletDocumentation` S3/S4): not taken. That item drove the **official MCP doc tools** instead, on the user's call, to avoid depending on a repo with no licence and no pinnable release. Its one technical cost — the missing guide-page tool — was then annulled when guide pages left scope as a human deliverable. See [Paclet Documentation](../../Wiki/Concepts/PacletDocumentation.md).
 
 **Do not run `install-skills.sh`, then or later.**
 Symlinked personal skills track their `main` — a live feed from a repo that moved yesterday — and their trigger descriptions ("whenever the user wants to document a Wolfram paclet or project") would compete with `build-paclet` and `publish-paclet` with nothing to arbitrate.

@@ -44,10 +44,11 @@ The second question is only worth answering if the first has a good answer, beca
 
 One unchecked box ≈ one focused session.
 
-- [ ] T5 — Harvest the ~50 kB of durable content out of the 21 `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. *Added by S2; delete if you would rather leave the closed items alone. Unblocked by T3: the format is decided, harvested blocks are not pruned, and a claim that is false today gets a one-line `> Superseded:` marker.*
+All tasks are done.
 
 ### Done
 
+- [x] T5 — Harvest the durable content out of the `Work/Done/` Progress blocks that predate `Wiki/` into wiki articles. (S8)
 - [x] T9 — Apply T6's must-be-resident test to the `CLAUDE.md` this plugin generates. (S8)
 - [x] T8 — Trial the pipeline supervised on one real item; confirm the stop conditions fire as specified. (S7)
 - [x] T7 — Implement the autonomous pipeline: driver, command, `revise` mode, markers. (S6)
@@ -59,14 +60,14 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T9 is done and the preamble line of enquiry is **closed** — both `CLAUDE.md` files this project controls have now had the must-be-resident test, and [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md) records why no further byte-trimming is worth a session.
-T5 is the only task left.
+The item is complete; both of its questions are answered.
 
-Two things about the pipeline are still open and are not T5's business, so they need a home if this item closes.
-No MCP tool is on the default allowlist, so the first autonomous task that touches Wolfram halts on its first call — zero denials were observed across the trial, but only prose tasks ran.
-And `needs-human`, the liveness pair, and `permission-denied` have still only ever fired against a stub; the cheapest way to close that is a throwaway item with a task designed to trip each one.
+Is the system efficient — measured, in [SessionInformationBudget](../../Wiki/Concepts/SessionInformationBudget.md) and [ProgressWikiSplit](../../Wiki/Concepts/ProgressWikiSplit.md); the format that follows is in force ([ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md)), both auto-loaded preambles are audited ([PreambleAudit](../../Wiki/Concepts/PreambleAudit.md), [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md)), and T5's harvest cleared the legacy backlog ([ProgressHarvest](../../Wiki/Concepts/ProgressHarvest.md)).
+Can it run unattended — yes; built, trialled live, and documented in [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md) and [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md).
 
-This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
+The two loose ends this item's hand-off had been carrying — the untested failure paths and the empty MCP allowlist — are filed as `Work/Backlog/HardenAutoRun.md`.
+
+This file predates the format it decided: S1 and S2 keep their multi-paragraph Progress blocks under the migration rule, and S3 onward is one line.
 
 ## Decisions
 
@@ -98,12 +99,16 @@ This file is itself mid-migration — S1 and S2 keep their multi-paragraph Progr
 | 2026-07-28 (S8) | The 7.2 kB `code_style_template.md` stays whole in the generated `CLAUDE.md`, despite being two thirds of it. | It classifies as policy end to end by the same test that kept the kernel policy: nothing prompts a session to look up a style guide, and a violation is invisible afterwards because the code works. Size made it the suspect; the test exonerates it. See [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md). |
 | 2026-07-28 (S8) | The four code-style bullets that duplicate the user's global `~/.claude/CLAUDE.md` are **kept**, while the one that contradicts it is fixed. | The plugin cannot read a user's global file or assume one exists, so deleting the overlap is correct on this machine and lossy on every other. A contradiction is a bug regardless of who has a global file; duplication is only a cost. |
 | 2026-07-28 (S8) | T9 closes as *audited, cuts justified as correctness not cost* — no further byte-trimming of the generated preamble. | The two duplicate sections were worth 230 B / 582 B, and T7 measured an 11.6 kB cut moving cold start ~1 %; a saving this size is below the noise of an MCP-schema-dominated floor. |
+| 2026-07-28 (S8) | The harvest produced four articles, not one per closed item. | Durable content clusters by *subject* (a paclet, a converter, a doc pipeline) and not by the item that happened to discover it — MathNotebook facts came from two separate items, and `DeclutterReadme`/`MarketplaceReadme` yielded nothing that earns an article. One-article-per-item would have reproduced the duplication the harvest exists to remove. |
+| 2026-07-28 (S8) | `> Harvested:` pointers were added to the closed items alongside the `> Superseded:` markers T3 authorised. | Same class of edit — a one-line marker, no pruning or rewriting — and without it a reader landing in a closed block has no way to know a corrected version exists. |
+| 2026-07-28 (S8) | The two open `/auto-run` gaps left this item as `Work/Backlog/HardenAutoRun.md` rather than becoming T10/T11. | This item's two questions are answered; the gaps are maintenance on the artifact it produced. Keeping them here would hold an answered investigation open indefinitely. |
 
 ## Progress
 
 Append-only, one line per session; nothing reads it.
 S1 and S2 predate the format and keep their blocks.
 
+- **S8** 2026-07-28 T5 — harvested 30.9 kB of durable content out of 97 kB of closed-item Progress into three new articles plus an extended one, with six `> Superseded:` markers and a `> Harvested:` pointer per item; filed the leftover `/auto-run` gaps as `Backlog/HardenAutoRun.md` and closed the item. → [ProgressHarvest](../../Wiki/Concepts/ProgressHarvest.md), [MathNotebook](../../Wiki/Resources/MathNotebook.md), [PacletDocumentation](../../Wiki/Concepts/PacletDocumentation.md), [PureMath](../../Wiki/Resources/PureMath.md)
 - **S8** 2026-07-28 T9 — audited the generated project `CLAUDE.md` against T6's test: 82 % policy before any cut, the code-style block exonerated, and a contradiction between two auto-loaded files found and fixed; `## Work` and the math template's skills listing cut as third copies. → [GeneratedPreambleAudit](../../Wiki/Concepts/GeneratedPreambleAudit.md), `Wiki/Concepts/measure_generated_preamble.py`
 - **S7** 2026-07-28 T8 — trialled the pipeline live on the throwaway `AutoRunTrial`: two real tasks landed, three defects found and fixed in `05cdc45`, both fixes re-verified, and all eight fail-closed paths checked against this repo. → [AutonomousPipeline § The supervised trial](../../Wiki/Concepts/AutonomousPipeline.md#the-supervised-trial--what-two-real-runs-cost-and-changed), [AutoRunOperations](../../Wiki/Concepts/AutoRunOperations.md)
 - **S6** 2026-07-28 T7 — built the autonomous pipeline: `scripts/auto-run.sh`, `/auto-run`, `revise` § *Autonomous mode*, the two eligibility markers, and the `ARCHITECTURE.md` / `README.md` rows; every stop condition fired against a stub, and the cold start re-measured at 31,187 tokens. → [AutonomousPipeline § Implementation](../../Wiki/Concepts/AutonomousPipeline.md#implementation)

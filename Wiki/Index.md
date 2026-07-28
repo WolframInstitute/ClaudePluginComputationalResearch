@@ -24,7 +24,11 @@ See [Work/README.md](../Work/README.md).
 - [The `/auto-run` operator runbook](Concepts/AutoRunOperations.md) — what to do for each stop reason, how to read a digest, how to grow the allowlist, and how `auto/<Item>` reaches `main`
 - [Preamble audit](Concepts/PreambleAudit.md) — what belongs in an auto-loaded `CLAUDE.md`: 47 % of this repo's was inventory already in context by two other routes
 - [Generated preamble audit](Concepts/GeneratedPreambleAudit.md) — the same test on the `CLAUDE.md` the plugin *generates*: already 82 % policy, the suspect code-style block exonerated, and two auto-loaded files found contradicting each other
+- [Generating Wolfram paclet documentation](Concepts/PacletDocumentation.md) — five ways a generated doc page ships broken, what actually verifies one, and why there is no unevaluated code block
+- [The Progress harvest](Concepts/ProgressHarvest.md) — what moved out of the closed items' Progress blocks into `Wiki/`, what did not, and why bytes are the wrong measure of it
 
 ## Resources
 
 - [MarkdownToNotebook](Resources/MarkdownToNotebook.md) — Markdown→notebook converter backing `new-notebook`'s rich mode; pinned by SHA
+- [MathNotebook](Resources/MathNotebook.md) — AMS-style stylesheets, 12 numbered environments and cross-referencing; the post-processing half of `research-notebook`
+- [PureMath](Resources/PureMath.md) — the 1,480-page reference implementation of the MarkdownToNotebook doc pipeline; read for design, not depended on

@@ -119,6 +119,8 @@ One unchecked box ≈ one focused session.
 
 ## Progress
 
+> Harvested 2026-07-28 (`EvaluateWorkItemsEfficiency` T5): the durable content of these blocks is now in [Wiki/Resources/MarkdownToNotebook.md](../../Wiki/Resources/MarkdownToNotebook.md) and [Wiki/Resources/PureMath.md](../../Wiki/Resources/PureMath.md), which are the versions to read and the ones that get corrected. The blocks below are the audit trail and are not pruned.
+
 ### Session 1 — 2026-07-27 — T1
 
 - **Prompt:** "licence of markdown to notebook is fine" — the user volunteered the answer to Phase 0's blocking question, which started the item.
@@ -134,6 +136,8 @@ One unchecked box ≈ one focused session.
   Curl against `resources.wolframcloud.com` is equally useless — a published and an unpublished resource both return the same 302 to an OAuth check.
   Upstream has moved in a direction that matters to the tasks still open: commit `afd7c1e` — "fill paclet/guide/tutorial template slots natively so build shims can drop" — attacks the exact shim tax T3 exists to cost, and `#59`/`#61`/`#62` are math and message fidelity fixes.
   T2 should therefore expect the 2026-07-27 measurement to be materially stale rather than confirm it.
+
+  > Superseded 2026-07-27 (S2): wrong. `afd7c1e` landed two commits *below* the evaluated tip `204db7c`, as did every fidelity fix listed here. Nothing was stale; the shims were already in the measured baseline.
   Authorship is also no longer single-author (96 of the last 100 commits Nikolay Murzin, 4 Mads Bahrami), which mildly softens the bus-factor risk the Spec records.
 - **Next:** T2 — re-measure the repo against the 2026-07-27 evaluation; note what changed.
 
@@ -198,6 +202,8 @@ One unchecked box ≈ one focused session.
   `skills/research-notebook/SKILL.md` states that MarkdownToNotebook "does not produce the AMSArticle + theorem-environment research layout this skill specifies, so it does not replace the research generator", and the `Default` template confirms it: 0 `Author` and 0 `Abstract` cells, where that skill needs `[LLM Generated]` / `Title` / `Author` / `Abstract`.
   Its md↔nb sync also does not use `NotebookToMarkdown` today — it uses `ExportString[Import[path], "Markdown"]`.
   So both directions were already out; T3 only measured how far.
+
+  > Superseded 2026-07-27 (S5): `research-notebook` has no md↔nb sync at all any more. Generation is one-way and `.nb` edits are detected with a per-cell `CellID` fingerprint in `TaggingRules`; the `ExportString` route was measured unusable even for diffing.
 
   **Two incidental gains for `new-notebook` that the evaluation did not name.**
   Frontmatter is *consumed as metadata* rather than leaked as a literal `Text` cell — the exact defect `research-notebook` documents in the built-in importer and hand-strips around.

@@ -65,6 +65,8 @@ One unchecked box ≈ one focused session.
 
 ## Progress
 
+> Harvested 2026-07-28 (`EvaluateWorkItemsEfficiency` T5): the durable content of these blocks is now in [Wiki/Resources/MathNotebook.md](../../Wiki/Resources/MathNotebook.md), which is the version to read and the one that gets corrected. The blocks below are the audit trail and are not pruned.
+
 ### Session 1 — 2026-07-27 — T1
 
 - **Prompt:** "Continue working on research items until done. Commit and push after each. I am going to bed."
@@ -118,6 +120,8 @@ One unchecked box ≈ one focused session.
 - **Learned:** the paclet's `CLAUDE.md` is the single most valuable artifact in the repo for this work — it already documents the stylesheet-resolution traps, the `Rasterize`-strips-counters problem (a single-cell rasterize reads every `CounterBox` as 0 and every tagged one as `XXX`, so numbering can only be asserted by rendering the whole notebook), the `CellDingbat`-cannot-read-its-own-cell limitation, and the publishing path.
   Read it before each remaining task rather than rediscovering any of it.
   Its warning that `Scripts/PublishPaclet.wls` must be used instead of this plugin's generic `publish-paclet` — because the generic recipe copies only `Kernel/` and `Tests/` and would ship a paclet with no palette and no stylesheets — is a defect report against *our* skill, and is worth its own work item.
+
+  > Superseded 2026-07-27: fixed in `PacletDocumentation` T5 (S6) rather than in a separate item. `paclet_common.wl` now stages every top-level item except dotfiles and `build/`, and MathNotebook's own `CLAUDE.md` note about the generic recipe was corrected. See [Paclet Documentation](../../Wiki/Concepts/PacletDocumentation.md#the-fixed-staging-list-was-the-real-defect).
 - **Next:** T2 — confirm the embedded-vs-referenced `StyleDefinitions` decision for cloud readers.
 
 ### Session 2 — 2026-07-27 — T2

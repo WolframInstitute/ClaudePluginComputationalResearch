@@ -69,6 +69,8 @@ All tasks are done.
 
 ## Progress
 
+> Harvested 2026-07-28 (`EvaluateWorkItemsEfficiency` T5): the durable content of these blocks is now in [Wiki/Concepts/PacletDocumentation.md](../../Wiki/Concepts/PacletDocumentation.md) and [Wiki/Resources/PureMath.md](../../Wiki/Resources/PureMath.md), which are the versions to read and the ones that get corrected. The blocks below are the audit trail and are not pruned.
+
 ### Session 1 — 2026-07-27 — T1
 
 - **Prompt:** "Continue working on research items until done. Commit and push after each. I am going to bed."
@@ -216,6 +218,8 @@ All tasks are done.
 - **Learned:** the Spec's decisive acceptance criterion — "resolves in-product via `?Symbol`" — was the weakest of the three checks available, and `CheckPaclet`, the one the skill leaned hardest on, does not apply to this class of paclet at all. Both were settled from tool contracts in T1 rather than by running them, which is exactly the reading T1 flagged as untested.
   The general lesson for the plugin: a paclet's public API shape decides whether generated reference docs can carry examples, and a front-end-driven paclet cannot. Worth asking before promising examples.
   Also owed: `MathNotebook/Scripts/PublishPaclet.wls:26` stages a fixed `{"Kernel", "FrontEnd", "Assets", "Tests"}` and would drop `Documentation/` from anything published — T5's problem, recorded in Blocked.
+
+  > Superseded 2026-07-27 (S6): fixed, guarded by `DirectoryQ`. The larger defect it pointed at — this plugin's own `paclet_common.wl` staging only `PacletInfo.wl` + `Kernel/` + `Tests/` — was fixed in the same session.
 - **Next:** T5 — wire docs into `build-paclet` and `publish-paclet`, deploy them, and fix fixed-list publish scripts.
 
 ### Session 6 — 2026-07-27 — T5

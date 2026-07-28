@@ -59,8 +59,14 @@ The defects were in the small sections instead — `## Work` was a third copy of
 The finding worth the task is a **contradiction**: the user's global `~/.claude/CLAUDE.md` forbids comments unless asked while the template mandates a one-line summary per exported symbol, both auto-loaded, with no precedence stated. The template now states it.
 Cutting the two duplicates saved only 230 B / 582 B, and the pipeline's ~1 %-per-11.6 kB result says a saving that size is not measurable — so the generated preamble is closed as audited, with the cuts justified as correctness rather than cost.
 
+The legacy harvest that T2 identified is now done — see [The Progress harvest](Concepts/ProgressHarvest.md).
+30.9 kB of wiki content came out of 97 kB of closed-item `## Progress`: three new articles ([MathNotebook](Resources/MathNotebook.md), [Paclet Documentation](Concepts/PacletDocumentation.md), [PureMath](Resources/PureMath.md)) and a substantial extension of [MarkdownToNotebook](Resources/MarkdownToNotebook.md).
+Per T3's rule nothing was pruned: the closed blocks stay as the audit trail, each gains a one-line `> Harvested:` pointer, and six claims that are false today gained `> Superseded:` markers — three of them cases where the refutation already existed elsewhere in the corpus and the reader had to reconstruct the order to know which won.
+The 30.9-vs-53 kB gap is deduplication, dropped narration, and collapsed contradictions rather than loss; what the wiki genuinely does not carry is chronology, which is why the blocks were kept.
+
 ## Recent changes
 
+- 2026-07-28 — Harvested the closed items' Progress blocks into `Wiki/` (T5), closing `EvaluateWorkItemsEfficiency`; three new articles plus six `> Superseded:` markers. See [The Progress harvest](Concepts/ProgressHarvest.md).
 - 2026-07-28 — Audited the *generated* project `CLAUDE.md` (T9): 82 % policy already, the code-style block exonerated, and a contradiction between two auto-loaded files fixed; see [Generated preamble audit](Concepts/GeneratedPreambleAudit.md).
 - 2026-07-28 — Closed the throwaway trial item `AutoRunTrial` by doing its gated task interactively: `/auto-run` stays in `README.md`'s user-facing command list, with the row now naming the human review and merge that the deferred `revise` gate depends on.
 - 2026-07-28 — Reconciled [the pipeline specification](Concepts/AutonomousPipeline.md) with `scripts/auto-run.sh` on all five divergences the runbook found, and recorded what the first real autonomous run established — including that a headless session cannot detect its own headlessness.

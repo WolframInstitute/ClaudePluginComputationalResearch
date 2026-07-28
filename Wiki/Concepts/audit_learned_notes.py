@@ -38,6 +38,7 @@ Flags:
 import os, re, subprocess
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ANNOTATION = re.compile(r"^> (Superseded|Harvested)\b")
 FIXED_OVERHEAD = 27671  # from measure_session_budget.py
 
 # One entry per claim-line, in the order audit() yields them, grouped by
@@ -120,7 +121,11 @@ def blocks(path):
             m = re.search(r"(?ms)^- \*\*%s:\*\*(.*?)(?=^- \*\*|\Z)" % f, block)
             fields[f] = len(m.group(1).strip().encode()) if m else 0
         learned = re.search(r"(?ms)^- \*\*Learned:\*\*(.*?)(?=^- \*\*|\Z)", block)
-        lines = [l.strip() for l in learned.group(1).split("\n") if l.strip()] if learned else []
+        # `> Superseded:` / `> Harvested:` are 2026-07-28 annotations added by the T5
+        # harvest, not claims the session wrote. Counting them would contaminate a
+        # measurement of what the sessions produced. See Concepts/ProgressHarvest.md.
+        lines = [l.strip() for l in learned.group(1).split("\n")
+                 if l.strip() and not ANNOTATION.match(l.strip())] if learned else []
         session = int(re.search(r"Session (\d+)", head).group(1))
         out.append((item, session, len(block.encode()), fields, lines))
     return out
