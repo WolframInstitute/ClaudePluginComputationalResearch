@@ -24,9 +24,10 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-_(none)_
-
-`HardenAutoRun` is in `Backlog/` and is the obvious next thing to start: two sessions to trip `/auto-run`'s three still-stub-tested stop conditions live and to fill its empty MCP allowlist.
+| Item | Next task |
+|---|---|
+| `HardenAutoRun` | T1 — trip `needs-human` and the liveness pair live against a throwaway |
+| `AutoRunHaltTrial` | T1 — the crash-test dummy `HardenAutoRun` drives; not work, and it will be dropped rather than completed |
 
 `EvaluateWorkItemsEfficiency` completed on 2026-07-28 after nine tasks: the per-session budget is measured, the item file format is decided and in force, both auto-loaded preambles are audited, the unattended pipeline is built and trialled live, and T5's harvest moved the closed items' durable content into `Wiki/`.
 `AutoRunTrial` completed on 2026-07-28: the throwaway item that gave `EvaluateWorkItemsEfficiency` T8 a real item to drive, closing with its `(human)` task done interactively.
