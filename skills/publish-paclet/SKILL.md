@@ -87,7 +87,7 @@ The returned string is the **public cloud URL** — stable across versions, sinc
 ### 3. Deploy the documentation pages
 
 A published `.paclet` serves the reader who installs it.
-The reader who was just sent a link has nothing to open — which is why the retired `demo-notebook` existed at all.
+The reader who was just sent a link has nothing to open.
 So deploy the doc pages as public cloud notebooks with an HTML index, via [deploy_paclet_docs.wl](../../scripts/deploy_paclet_docs.wl):
 
 ```wolfram

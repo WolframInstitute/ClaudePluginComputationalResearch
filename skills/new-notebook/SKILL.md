@@ -62,7 +62,7 @@ These are **not** wiki articles — they do not go in `Wiki/`.
 
 The generated `.nb` filename carries the source's **first-creation date** as a `_YYYY-MM-DD` suffix.
 The date is stamped once, when the notebook is first generated, and **preserved on every later regeneration** — `generate_notebooks.wls` reuses the earliest date already present in the folder and deletes any other-dated or legacy un-dated copy, so exactly one `.nb` survives per source.
-The date lives only in the filename; **do not** put it inside the notebook (the `[LLM Generated]` subtitle stays undated).
+The date lives only in the filename; **do not** put it inside the notebook (the `[ LLM Generated ]` subtitle stays undated).
 
 ### When to use the source layer
 
@@ -189,7 +189,7 @@ Two consequences are easy to get wrong:
 
 - **Keep the notebook options.** `ExportString[Notebook[cells], "NB"]` silently drops them; rich mode must rebuild the original expression instead — `ReplacePart[nb, 1 -> cells]`.
 - **Drop the boxify step, keep the rest.** The parser already emits the structural box tree, so `boxifyInputCells` is dead weight, and its visualization guard is unnecessary: the guard existed only because `ToBoxes[ToExpression[…, Defer]]` strands graphics cells, and rich mode never calls it.
-  `markInitCells` and the `[LLM Generated]` marker normalization still apply unchanged.
+  `markInitCells` and the `[ LLM Generated ]` marker normalization still apply unchanged.
 
 ### Fixed conversion settings
 
@@ -353,7 +353,7 @@ The **final** styles a source author should expect:
 | `#### Subsubsection` | `"Subsection"` | `"Subsubsection"` | Subsubsection heading |
 
 So author `##` headings render as `"Section"`, not `"Chapter"`.
-A `**[LLM Generated]**` marker line in the source (the documented convention) is imported as a bold `"Text"` cell and normalized to a single `"Subtitle"` cell under the `"Title"` by the marker rules that run alongside the heading shift.
+A `**[ LLM Generated ]**` marker line in the source (the documented convention) is imported as a bold `"Text"` cell and normalized to a single `"Subtitle"` cell under the `"Title"` by the marker rules that run alongside the heading shift.
 
 ### Text and Formatting
 
@@ -481,20 +481,20 @@ Uses `StringMatchQ` with wildcards to avoid false positives (e.g., "Indefinite I
 
 ### 4. LLM-generated subtitle — Critical
 
-Every generated notebook is **explicitly marked as LLM-generated**: a `"Subtitle"` cell reading `[LLM Generated]` goes directly under the `"Title"` cell.
-The marker text has **no inner spaces** — it matches the `**[LLM Generated]**` convention used in the markdown sources.
+Every generated notebook is **explicitly marked as LLM-generated**: a `"Subtitle"` cell reading `[ LLM Generated ]` goes directly under the `"Title"` cell.
+The marker text is the **spaced form** `[ LLM Generated ]` — the same spelling the wiki articles use — matching the `**[ LLM Generated ]**` convention in the markdown sources; the normalization rules below still accept the legacy unspaced `[LLM Generated]` from older sources.
 
-The marker can arrive two ways: (a) written into the markdown source as `**[LLM Generated]**`, which `ImportString` renders as a bold `"Text"` cell, or (b) injected here.
+The marker can arrive two ways: (a) written into the markdown source as `**[ LLM Generated ]**`, which `ImportString` renders as a bold `"Text"` cell, or (b) injected here.
 To avoid shipping both, **first normalize** any bold-Text marker to a `"Subtitle"` cell immediately after `cells = First[nb]` (see the heading and marker rules in the complete call below), **then** call `addLLMSubtitle`, which dedupes and places exactly one marker under the `"Title"`.
 Insert it after `markInitCells` and before `ExportString`:
 
 ```wolfram
 addLLMSubtitle[cellList_List] := Module[
-  {cells = DeleteCases[cellList, Cell["[LLM Generated]", "Subtitle", ___]], pos},
+  {cells = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
   pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
   If[MissingQ[pos],
-    Prepend[cells, Cell["[LLM Generated]", "Subtitle"]],
-    Insert[cells, Cell["[LLM Generated]", "Subtitle"], pos[[1]] + 1]]
+    Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
+    Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
 ];
 ```
 
@@ -548,11 +548,11 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
   ];
 
   addLLMSubtitle[cellList_List] := Module[
-    {cells = DeleteCases[cellList, Cell["[LLM Generated]", "Subtitle", ___]], pos},
+    {cells = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
     pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
     If[MissingQ[pos],
-      Prepend[cells, Cell["[LLM Generated]", "Subtitle"]],
-      Insert[cells, Cell["[LLM Generated]", "Subtitle"], pos[[1]] + 1]]
+      Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
+      Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
   ];
 
   md = StringJoin[
@@ -573,9 +573,9 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
     Cell[c_, "Subsection", o___] :> Cell[c, "Subsubsection", o]
   };
   cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]", ___]}], _String, o___] :> Cell["[LLM Generated]", "Subtitle", o],
-    Cell[TextData[StyleBox["[LLM Generated]", ___]], _String, o___] :> Cell["[LLM Generated]", "Subtitle", o],
-    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[LLM Generated]", "Subtitle", o]
+    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
+    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
+    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o]
   };
   cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
   cells = boxifyInputCells[cells];
@@ -612,22 +612,22 @@ Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle},
   ];
 
   addLLMSubtitle[cellList_List] := Module[
-    {cs = DeleteCases[cellList, Cell["[LLM Generated]", "Subtitle", ___]], pos},
+    {cs = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
     pos = FirstPosition[cs, Cell[_, "Title", ___], Missing[], {1}];
     If[MissingQ[pos],
-      Prepend[cs, Cell["[LLM Generated]", "Subtitle"]],
-      Insert[cs, Cell["[LLM Generated]", "Subtitle"], pos[[1]] + 1]]
+      Prepend[cs, Cell["[ LLM Generated ]", "Subtitle"]],
+      Insert[cs, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
   ];
 
-  md = StringJoin["# My Notebook Title\n\n", "**[LLM Generated]**\n\n", "..."];
+  md = StringJoin["# My Notebook Title\n\n", "**[ LLM Generated ]**\n\n", "..."];
 
   Get[wl];
   nb = MarkdownToNotebook[md, "Evaluate" -> False];
   cells = First[nb];
   cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]", ___]}], _String, o___] :> Cell["[LLM Generated]", "Subtitle"],
-    Cell[TextData[StyleBox["[LLM Generated]", ___]], _String, o___] :> Cell["[LLM Generated]", "Subtitle"],
-    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[LLM Generated]", "Subtitle"]
+    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"],
+    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"],
+    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"]
   };
   cells = cells /. Cell[c_, s_String, o___] :>
     Cell[c, s, Sequence @@ DeleteCases[{o}, CellLabel -> _]];

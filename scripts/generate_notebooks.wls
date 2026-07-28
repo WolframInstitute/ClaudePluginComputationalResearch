@@ -37,11 +37,11 @@ markInitCells[cellList_List] :=
 	]
 
 addLLMSubtitle[cellList_List] :=
-	Module[{cells = DeleteCases[cellList, Cell["[LLM Generated]", "Subtitle", ___]], pos},
+	Module[{cells = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
 		pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
 		If[MissingQ[pos],
-			Prepend[cells, Cell["[LLM Generated]", "Subtitle"]],
-			Insert[cells, Cell["[LLM Generated]", "Subtitle"], pos[[1]] + 1]
+			Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
+			Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]
 		]
 	]
 
@@ -133,9 +133,9 @@ Do[
 		Cell[c_, "Subsection", o___] :> Cell[c, "Subsubsection", o]
 	};
 	cells = cells /. {
-		Cell[TextData[{StyleBox["[LLM Generated]", ___]}], _String, o___] :> Cell["[LLM Generated]", "Subtitle", o],
-		Cell[TextData[StyleBox["[LLM Generated]", ___]], _String, o___] :> Cell["[LLM Generated]", "Subtitle", o],
-		Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[LLM Generated]", "Subtitle", o]
+		Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
+		Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
+		Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o]
 	};
 	cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
 	cells = cells /. {

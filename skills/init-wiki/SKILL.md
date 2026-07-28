@@ -51,7 +51,6 @@ Use empty `.gitkeep` files in folders that start empty (except `Concepts/` and `
 # Wiki Index
 
 Knowledge base for [project]. Updated after each substantial step.
-All articles are **draft** until reviewed — see revision workflow.
 
 ## Status
 - [Status](Status.md) — current state
@@ -161,6 +160,26 @@ These are generated artifacts, not wiki articles — they do not go in Wiki/.
 Say "start tour" for an interactive walk through the project. Tour/ is
 created on demand (local, gitignored). Each section produces a narrative .md
 and runnable code file. The LLM stops after each section for feedback.
+```
+
+If `CLAUDE.md` does not already carry the `## Provenance` and `## Scientific journal` toggle sections (a scaffolded project gets them from `claude_template.md`), append them too, defaulting to **off**:
+
+```markdown
+## Provenance
+
+Prompt tracking: **off**
+<!-- When on, generated artifacts (notebooks, functions, wiki articles, work items)
+     record their originating prompt/intent in Wiki/Prompts.md and carry an embedded
+     back-pointer. Toggle with /provenance; see the `provenance` skill. -->
+
+## Scientific journal
+
+Scientific journal: **off**
+<!-- When on, the LLM keeps a running LaTeX/Typst journal in Journal/ — a concise,
+     structured, append-only stream of dated def/thm/rem/claim entries recording the
+     math/physics content and main claims established, with resources cited into
+     Journal/references.bib. Plain "on" = very concise; "on (verbose)" = fuller
+     detail. Toggle with /journal; see the `journal` skill. -->
 ```
 
 If `CLAUDE.md` does not already contain a `Semantic line breaks:` line (a scaffolded project gets one from `code_style_template.md`), also append the source-formatting toggle so this repo carries the config:

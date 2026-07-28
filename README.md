@@ -68,7 +68,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **scaffold-paper** | Scaffold a LaTeX or Typst paper, then edit it on request |
 | **journal** | Keep an optional cited LaTeX/Typst journal (def/thm/rem), off by default |
 | **init-wiki** | Create a markdown knowledge base (Wiki/) |
-| **update-wiki** | Update wiki articles, index, and log |
+| **update-wiki** | Update wiki articles, index, and backlinks |
 | **check-wiki** | Audit the wiki for staleness and gaps |
 | **search-wolfram** | Search Wolfram docs, Function Repository, Community, writings |
 | **search-math** | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |

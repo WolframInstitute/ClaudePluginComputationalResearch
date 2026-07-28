@@ -16,9 +16,6 @@ Generate a symbol reference page for each exported function of a paclet, in the
 paclet's own `Documentation/` tree, so a Wolfram user meets the paclet the way
 they meet built-in functions: `?Symbol`, F1, Documentation Center search.
 
-This replaced `demo-notebook` (retired 2026-07-27) — a cloud notebook was
-discoverable only by following a README link.
-
 ## Guide pages are out of scope — Critical
 
 **Do not generate a guide page.** Grouping a paclet's functions by role, naming
@@ -185,4 +182,4 @@ verifies every URI resolves from the install, and then deploys the pages as publ
 cloud notebooks with an HTML index
 ([deploy_paclet_docs.wl](../../scripts/deploy_paclet_docs.wl)) so a reader who has
 installed nothing can still read them. That deployed index is the link to put in
-the README — it is what replaced the retired demo notebook.
+the README.

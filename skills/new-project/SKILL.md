@@ -81,6 +81,10 @@ Before scaffolding, you need:
   If yes, turn on prompt provenance: generated artifacts record their originating prompt/intent in `Wiki/Prompts.md` plus an embedded back-pointer.
   See the `provenance` skill.
   The scaffolds always write the toggle as `off`; flip it on after scaffolding if the user wants it (see *After scaffolding*).
+- **Keep a scientific journal?** (optional) — default: **no**.
+  If yes, turn on the running LaTeX/Typst journal: dated def/thm/rem/claim entries in `Journal/`, every resource cited.
+  See the `journal` skill.
+  The scaffolds always write the toggle as `off`; flip it on after scaffolding if the user wants it (see *After scaffolding*).
 
 If the user already provided these in their message, don't ask again.
 
@@ -150,7 +154,7 @@ The init-wiki skill will:
 - Ask for (or infer) domain-specific folders
 - Create seed files
 - Append wiki section to CLAUDE.md
-- Update .gitignore with `Tour/`, `Resources/`, `NotebooksLLM/`
+- Update .gitignore with `Tour/`, `Resources/`, `NotebooksLLM/*.nb` (the `.md` sources stay tracked)
 
 ### 3. Create initial code files
 
@@ -189,13 +193,11 @@ This step is **not optional**.
 
 ### 6. Create initial notebook
 
-Use the **new-notebook** skill to create `NotebooksLLM/<ProjectName>1.nb` with:
+Use the **new-notebook** skill: write `NotebooksLLM/<ProjectName>.md` as the notebook source and generate `NotebooksLLM/<ProjectName>_YYYY-MM-DD.nb` from it (two-layer architecture; the `.nb` carries its first-creation date), with:
 - Setup section (package loads)
 - Introductory text
 - Initial computations demonstrating the core functions
 - Visualization examples
-
-If using the two-layer architecture, also write `NotebooksLLM/<ProjectName>.md` as the notebook source.
 
 ### 7. Create Paper/ (if requested)
 
@@ -495,7 +497,8 @@ Create test files in `<PacletName>/<PacletName>/Tests/`.
 ## After scaffolding
 
 If the user asked to track prompts, turn provenance on via the `provenance` skill: set `Prompt tracking: **on**` in `CLAUDE.md`, create `Wiki/Prompts.md`, and add its `## Prompts` entry to `Wiki/Index.md`.
-Otherwise leave the toggle at its scaffolded default (`off`).
+If the user asked for the scientific journal, turn it on via the `journal` skill: set `Scientific journal: **on**` in `CLAUDE.md` and scaffold `Journal/`.
+Otherwise leave each toggle at its scaffolded default (`off`).
 
 Tell the user:
 - Project location and folder overview
@@ -514,6 +517,12 @@ Tell the user:
     with `Lean/`)
   - `new-notebook` — create/edit notebooks (supports a `theorem-proof`
     template for math-research projects)
+  - `research-notebook` — cloud-published research document
+    (definitions → theorems → symbols/functions → code calls)
+  - `scaffold-paper` — add a LaTeX/Typst `Paper/` later
+  - `check-wiki` — wiki health check (stale articles, broken links)
+  - `build-paclet` / `publish-paclet` / `paclet-docs` — build, publish,
+    and document paclets (paclet types)
   - `work` — create work items (spec / tasks / progress)
   - `next-session` — run one task per fresh session against a work item
   - `update-wiki` — update wiki after changes

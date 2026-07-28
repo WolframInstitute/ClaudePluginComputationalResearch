@@ -2,7 +2,7 @@
 name: update-wiki
 description: >
   Update the wiki after a substantial change. Creates or updates articles,
-  maintains the index, status, log, and backlinks. Use after any significant
+  maintains the index, status, and backlinks. Use after any significant
   step — code changes, new functionality, completed tasks, discoveries.
   Triggers on: "update wiki", "log this", or automatically after substantial work.
   Also invoke proactively after completing any multi-step task.

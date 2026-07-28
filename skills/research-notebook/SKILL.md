@@ -46,7 +46,7 @@ the pinned local clone, `Template: Default`, `"Evaluate" -> False`.
 A research source always carries frontmatter and LaTeX math, so that skill's
 selection rule always picks rich mode here — but the built-in importer remains
 the fallback when the clone is absent, and the fallback **changes what you may
-write in the source** (see *No inline TeX in the sources*).
+write in the source** (see *TeX in the sources — engine-dependent*).
 The backtick-escaping and init-cell-marking rules from `new-notebook` still
 apply; `boxifyInputCells` and the heading shift do **not** — rich mode drops
 both.
@@ -146,14 +146,14 @@ author: Pavel Hajek, Claude <model name>
 `author:` becomes an `Author` cell (an AMSArticle style) directly under the
 Title; credit the human first and the model by name. The notebook opens with
 
-1. `[LLM Generated]` — the **very first cell, above the Title**,
+1. `[ LLM Generated ]` — the **very first cell, above the Title**,
 2. the `Title`,
 3. the `Author`,
 4. the `Abstract`.
 
 AMSArticle declares no `Subtitle` style, so a `Subtitle` cell falls through to
 `Default.nb` and loses the sheet's typography. Use the `Author` style for the
-`[LLM Generated]` line.
+`[ LLM Generated ]` line.
 
 ## TeX in the sources — engine-dependent — Critical
 
@@ -284,7 +284,7 @@ proved conjectures feed the [lean](../lean/SKILL.md) skill for formalization.
 
 ## Notebook structure
 
-1. **Title**, `[LLM Generated]` subtitle, then a 2–4 sentence abstract stating
+1. **Title**, `[ LLM Generated ]` subtitle, then a 2–4 sentence abstract stating
    the main claims — written **last**, after the evidence is in.
 2. **Initialization** (folded, init cells): paclet loads, MathNotebook load,
    `SeedRandom`, a reproducibility line (paclet version, git commit, date),
@@ -444,8 +444,8 @@ when that value *is* the point.
 so do not reach for it. Evaluate in the kernel and build the Output cells
 yourself — the approach proven in
 [`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook)
-(`captureCellRun` / `outputBoxes`; nothing to install, see *Reusing
-MarkdownToNotebook* below):
+(`captureCellRun` / `outputBoxes`; nothing to install, see *The conversion
+call* below):
 
 1. Parse each cell's source with `ToExpression[code, InputForm, Hold]` to get
    the top-level statements, and evaluate them **in document order**, threading
@@ -497,7 +497,7 @@ Module[ { wl, nb, cells },
   cells = cells /. Cell[ c_, s_String, o___ ] :>
     Cell[ c, s, Sequence @@ DeleteCases[ { o }, CellLabel -> _ ] ];
 
-  (* Author cell from the frontmatter, [LLM Generated] line, equation CellTags *)
+  (* Author cell from the frontmatter, [ LLM Generated ] line, equation CellTags *)
   cells = researchHead[ cells ];
   cells = tagFormulas[ cells, eqTags ];
   cells = withCellIDs[ cells ];   (* CreateCellID does not stamp built cells *)
@@ -526,8 +526,8 @@ Four things this shape gets right, each learned the hard way:
   `PacletFind[ "Wolfram/Parser" ]` and surface the degradation instead of
   swallowing it.
 
-`NotebookToMarkdown.wl` is **not** used — see *Pipeline and two-way sync* for
-why the reverse direction is abandoned. Its message / `Print` / `CellPrint`
+`NotebookToMarkdown.wl` is **not** used — see *Why there is no reverse
+direction* for why that direction is abandoned. Its message / `Print` / `CellPrint`
 capture is still worth reading if the notebook's outputs must record those
 channels.
 
@@ -547,11 +547,11 @@ channels.
 - [ ] Converted with the rich engine at the pinned clone (`Template: Default`, `"Evaluate" -> False`), `CellLabel` stripped; built-in fallback only if the clone is absent, and said out loud.
 - [ ] No `::: theorem` / `::: proof` divs in the source — silently dropped under `Default`.
 - [ ] `author:` rendered as an Author cell (the `Default` template emits none); frontmatter stripped only on the built-in fallback path.
-- [ ] `[LLM Generated]` line above Title / Author / Abstract — note AMSArticle declares no `Subtitle` style, so that line falls through to `Default.nb`; use `Author` to keep the sheet's typography.
+- [ ] `[ LLM Generated ]` line above Title / Author / Abstract — note AMSArticle declares no `Subtitle` style, so that line falls through to `Default.nb`; use `Author` to keep the sheet's typography.
 - [ ] Rich mode: `$…$` / `$$…$$` used freely, but no `\to` or `\mapsto` (silently empty) and no `\tag{…}`. Built-in fallback: plain Unicode in Text, `FormBox` fences for display math.
 - [ ] Equation `CellTags` attached after conversion, in document order, before `MathNotebookDocument`.
 - [ ] Weight-bearing tables written as a `Grid` in a `wolfram` fence — pipe tables render unstyled under both sheets.
-- [x] MathNotebook stylesheet **embedded** (not referenced) + environments; markers converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
+- [ ] MathNotebook stylesheet **embedded** (not referenced) + environments; markers converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
 - [ ] Definitions and conjectures Lean-translatable (explicit hypotheses and quantifiers).
 - [ ] Section order: Initialization, Functions, Definitions, Classification, then the results.
 - [ ] Functions section lists every symbol used, grouped by role, one line each.
