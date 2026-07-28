@@ -174,5 +174,5 @@ The two hand-encoded tables `CLASS` and `DID_SAMPLE` are asserted against the li
 ## See also
 
 - [Session Information Budget](SessionInformationBudget.md) — T1: the size of the per-session read, and the 27.7 kB fixed term that dominates it
-- `Work/Active/EvaluateWorkItemsEfficiency.md` — the item this serves; T3 decides the format
+- `Work/Done/2026-07-28-EvaluateWorkItemsEfficiency.md` — the item this serves; T3 decides the format
 - [Status](../Status.md)

@@ -39,6 +39,24 @@ import os, re, subprocess
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ANNOTATION = re.compile(r"^> (Superseded|Harvested)\b")
+
+
+def unannotated(text):
+    """Drop the T5 harvest's `> Superseded:` / `> Harvested:` lines.
+
+    They are 2026-07-28 annotations, not claims the sessions wrote, so they enter
+    neither the byte totals nor the classified corpus — otherwise this script would
+    measure the harvest instead of the sessions, and the `Did` median would shift
+    to a different block. See Concepts/ProgressHarvest.md.
+    """
+    out = []
+    for line in text.split("\n"):
+        if ANNOTATION.match(line.strip()):
+            if out and not out[-1].strip():
+                out.pop()          # also the blank line the marker was inserted after
+            continue
+        out.append(line)
+    return "\n".join(out).strip()
 FIXED_OVERHEAD = 27671  # from measure_session_budget.py
 
 # One entry per claim-line, in the order audit() yields them, grouped by
@@ -119,15 +137,12 @@ def blocks(path):
         fields = {}
         for f in FIELDS:
             m = re.search(r"(?ms)^- \*\*%s:\*\*(.*?)(?=^- \*\*|\Z)" % f, block)
-            fields[f] = len(m.group(1).strip().encode()) if m else 0
+            fields[f] = len(unannotated(m.group(1)).encode()) if m else 0
         learned = re.search(r"(?ms)^- \*\*Learned:\*\*(.*?)(?=^- \*\*|\Z)", block)
-        # `> Superseded:` / `> Harvested:` are 2026-07-28 annotations added by the T5
-        # harvest, not claims the session wrote. Counting them would contaminate a
-        # measurement of what the sessions produced. See Concepts/ProgressHarvest.md.
-        lines = [l.strip() for l in learned.group(1).split("\n")
-                 if l.strip() and not ANNOTATION.match(l.strip())] if learned else []
+        lines = [l.strip() for l in unannotated(learned.group(1)).split("\n")
+                 if l.strip()] if learned else []
         session = int(re.search(r"Session (\d+)", head).group(1))
-        out.append((item, session, len(block.encode()), fields, lines))
+        out.append((item, session, len(unannotated(block).encode()), fields, lines))
     return out
 
 
@@ -241,7 +256,7 @@ for path in items():
     for i, (pos, head) in enumerate(heads):
         blk = body[pos : (heads[i + 1][0] if i + 1 < len(heads) else len(body))]
         m = re.search(r"(?ms)^- \*\*Did:\*\*(.*?)(?=^- \*\*|\Z)", blk)
-        dids.append((len(m.group(1).strip().encode()), bs[i][1], m.group(1).strip()))
+        dids.append((len(unannotated(m.group(1)).encode()), bs[i][1], unannotated(m.group(1))))
     dids.sort()
     size, session, txt = dids[len(dids) // 2]
     lines = [l.strip() for l in txt.split("\n") if l.strip()]

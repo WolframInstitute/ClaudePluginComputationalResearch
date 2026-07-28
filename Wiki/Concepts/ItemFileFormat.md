@@ -169,5 +169,5 @@ It prints the per-section byte counts, the read path with and without `## Progre
 
 - [Session Information Budget](SessionInformationBudget.md) — T1: what a session reads, and the 27.7 kB fixed term
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: what is in Progress that should not be
-- `Work/Active/EvaluateWorkItemsEfficiency.md` — the item this serves; T4 specifies the autonomous loop against this format
+- `Work/Done/2026-07-28-EvaluateWorkItemsEfficiency.md` — the item this serves; T4 specifies the autonomous loop against this format
 - [Status](../Status.md)

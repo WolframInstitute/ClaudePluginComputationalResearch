@@ -232,5 +232,5 @@ A throwaway written to exercise the driver will tend to overlap the driver's own
 - [The work item file format](ItemFileFormat.md) — T3: the five sections, and why `## Hand-off` is where this loop reads an item's state
 - [Session Information Budget](SessionInformationBudget.md) — T1: the fixed preamble term this loop pays per task
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: the one-destination rule the digest obeys
-- `Work/Active/EvaluateWorkItemsEfficiency.md` — the item this serves
+- `Work/Done/2026-07-28-EvaluateWorkItemsEfficiency.md` — the item this serves
 - [Status](../Status.md)

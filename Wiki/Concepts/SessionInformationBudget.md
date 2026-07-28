@@ -5,6 +5,9 @@
 What one `next-session` run must read before it can do useful work, and what it writes so the next run can start cold.
 Measured 2026-07-27 from git history over the six items in `Work/Done/`, for `EvaluateWorkItemsEfficiency` T1.
 
+> **The figures below are a 2026-07-27 snapshot; the script no longer reproduces them.** Re-running it on 2026-07-28 reports a fixed overhead of **18,449 B, not 27,671**, over **40 session states, not 22**. Neither is an error in the measurement — the repo moved underneath it. Three causes, in order of size: T6 cut `CLAUDE.md` from 16,650 to 5,254 B (see [Preamble audit](PreambleAudit.md)) while `next-session`, `revise` and `Work/README.md` all grew; six further sessions happened; and T5's harvest commit touched three closed items, adding a non-session state to each — the caveat in *Item files are edited by sessions belonging to other items*, below, now includes this article's own item.
+> Every **conclusion** survives: the fixed term still exceeded the item file in 25 of 40 states, and the partial-read rule still avoids 22 %. What changed is that the fixed term is now smaller in absolute bytes because it was deliberately cut — which is the lever this article identified.
+
 ## Scope limit — read this first
 
 This measures the **bookkeeping** budget only: `CLAUDE.md`, the skill files, `Work/README.md`, and the item file.
@@ -99,7 +102,7 @@ It also corrects one framing above — `## Did`, not `## Learned`, is where most
 ## Item files are edited by sessions belonging to other items
 
 The commit-to-session mapping is not 1:1.
-`14c8981` created four item files at once; `9fe8ba6` and `6c1502c` were `PacletDocumentation` sessions that also amended `AdoptMarkdownToNotebook`'s Spec and Tasks (+210 B).
+`14c8981` created four item files at once; `9fe8ba6` and `6c1502c` were `PacletDocumentation` sessions that also amended `AdoptMarkdownToNotebook`'s Spec and Tasks (+210 B); and `29b7d6e` — T5's harvest — added a `> Harvested:` pointer to four closed items at once, doing no work on any of them.
 So "one session, one item" holds for *work* but not for *edits*, and per-session accounting derived from git needs this caveat.
 It also means an autonomous loop cannot assume an item file only changes when that item is worked.
 
@@ -130,5 +133,5 @@ Items are renamed on close (`Work/Active/<Name>.md` → `Work/Done/YYYY-MM-DD-<N
 ## See also
 
 - [Work/README.md](../../Work/README.md) — the folder-is-status convention and the active index
-- `Work/Active/EvaluateWorkItemsEfficiency.md` — the item this measurement serves
+- `Work/Done/2026-07-28-EvaluateWorkItemsEfficiency.md` — the item this measurement serves
 - [Status](../Status.md)
