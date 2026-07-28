@@ -42,15 +42,7 @@ If the task changes a paclet submodule (paclet-dev), make the edits in that pacl
 
 ## 5. File what the session produced
 
-**One fact, one destination — nothing is written twice** (rationale: `Wiki/Concepts/ItemFileFormat.md`).
-
-| the fact is… | write it to |
-|---|---|
-| durable — about a tool, an artifact, or this plugin | a `Wiki/` article, created or **corrected in place** (step 7) |
-| a choice between real alternatives | one `## Decisions` row, one sentence each; a reversal **edits** the row it reverses |
-| the Spec being wrong | the Spec sentence itself — replace it, do not append an amendment |
-| what the next session must know, and not yet true anywhere else | `## Hand-off` — **overwrite** it, including to empty |
-| that the session happened | one `## Progress` line |
+**One fact, one destination — nothing is written twice**: file each fact per the destination table in [work § *The item file format*](../work/SKILL.md#the-item-file-format) (rationale: `Wiki/Concepts/ItemFileFormat.md`).
 
 The Progress line, appended at the bottom:
 
@@ -63,7 +55,7 @@ Do not add sections to the item file: conclusions go to `Wiki/`, blockers to `##
 
 If the project has prompt tracking on (see the [provenance](../provenance/SKILL.md) skill), the session's prompt goes to the `Wiki/Prompts.md` ledger, not into the item file.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write prose one sentence per source line, here and in the step-4 deliverable.
+Prose written here and in the step-4 deliverable follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*.
 
 ## 6. Close the task
 

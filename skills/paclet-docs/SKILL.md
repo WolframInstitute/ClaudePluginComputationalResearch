@@ -33,10 +33,9 @@ What you may do:
 
 ## What you need
 
-1. **Paclet name or directory.** Detect as `build-paclet` does — dev repo
-   (triple nesting) `<PacletName>/<PacletName>/PacletInfo.wl`, standalone
-   (double nesting) `<PacletName>/PacletInfo.wl`, or a direct path containing
-   `PacletInfo.wl`. Resolve the absolute `<pacletDir>` once.
+1. **Paclet name or directory.** Detect per [build-paclet § *Detecting the
+   paclet directory*](../build-paclet/SKILL.md#detecting-the-paclet-directory);
+   resolve the absolute `<pacletDir>` once.
 2. **The exported symbols.** Prefer the `"Symbols"` list in the `Kernel`
    extension of `PacletInfo.wl` — it is the author's own statement of the public
    API. Only fall back to `Needs[ "<Org>`<Paclet>`" ]` then
@@ -135,23 +134,11 @@ it opens, and the `paclet:` URI resolves to nothing. Add it if absent:
 
 ### 4. Verify it resolves in-product — the only test that counts
 
-A malformed or undeclared page fails **silently**. So verify, do not assume.
-
-Build and install with docs bundled — `CreatePacletArchive` then
-`PacletInstall[ archive, ForceVersionInstall -> True ]` — and resolve every URI:
-
-```wolfram
-Documentation`ResolveLink[ "paclet:<Pub>/<Paclet>/ref/<Symbol>" ]
-```
-
-It must return the path of an existing file **under the installed paclet**, not
-under your source tree. `Null` means the page is not wired: check the
-`Documentation` extension, then `pacletName` / `publisherID`, then the URI.
-
-**Do not use `Information` or `?Symbol` as the test.** They print the `::usage`
-string from the kernel, which a paclet with a `Usage.wl` has whether or not any
-documentation exists — on MathNotebook, `ConvertMathCells` showed a full usage
-line while having no page at all. It is a test that cannot fail.
+A malformed or undeclared page fails **silently**. So verify, do not assume:
+build and install with docs bundled — `CreatePacletArchive` then
+`PacletInstall[ archive, ForceVersionInstall -> True ]` — and run the
+[build-paclet § *Docs-resolution check*](../build-paclet/SKILL.md#docs-resolution-check)
+on every URI.
 
 `mcp__Wolfram__CheckPaclet` is **not** a paclet linter and does not belong here.
 It wraps `Wolfram`PacletCICD`CheckPaclet`, which requires a Paclet *Repository*

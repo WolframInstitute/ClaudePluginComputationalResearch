@@ -342,11 +342,7 @@ This creates:
 
 ### Triple nesting convention
 
-The paclet name appears three times in the path:
-```
-PacletName/PacletName/Kernel/PacletName.wl
-^submodule  ^paclet    ^main loader
-```
+The paclet name appears three times in the path — submodule, paclet, main loader (`PacletName/PacletName/Kernel/PacletName.wl`); detection is specified once in [build-paclet § *Detecting the paclet directory*](../build-paclet/SKILL.md#detecting-the-paclet-directory).
 
 - Level 1 (`PacletName/`): the git submodule directory in the dev repo
 - Level 2 (`PacletName/PacletName/`): the actual paclet root containing PacletInfo.wl, Kernel/, Tests/

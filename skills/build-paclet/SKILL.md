@@ -17,15 +17,7 @@ Build a `.paclet` archive from the paclet source and install it locally.
 
 ## Kernel execution (license-aware)
 
-Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the other `mcp__Wolfram__*` tools) for the whole build — it reuses one persistent kernel and consumes no extra license seat.
-Only fall back to `wolframscript` if the MCP is unavailable, and before spawning it check headroom via the MCP:
-
-```wolfram
-With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
-```
-
-If `free <= 0`, do **not** spawn `wolframscript` — it will fail with a license error.
-Build through the MCP instead, or tell the user a seat must be freed.
+Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the other `mcp__Wolfram__*` tools) for the whole build; before any `wolframscript` fallback, check headroom per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy).
 
 ## Detecting the paclet directory
 
@@ -84,14 +76,20 @@ Needs["<OrgName>`<PacletName>`"]
 via the evaluator.
 If it errors, check `PacletInfo.wl` validity, that `Kernel/` has the main loader, and kernel-file syntax (`mcp__Wolfram__CodeInspector`).
 
-If docs were bundled, also check one page resolves — `PacletDataRebuild[]`, then
+If docs were bundled, also run the [docs-resolution check](#docs-resolution-check) below on at least one page.
+
+## Docs-resolution check
+
+The canonical verification that bundled documentation actually resolves — `paclet-docs` and `publish-paclet` reference it here.
+After installing with docs bundled, run `PacletDataRebuild[]`, then for every documented symbol:
 
 ```wolfram
 Documentation`ResolveLink["paclet:<Pub>/<Paclet>/ref/<Symbol>"]
 ```
 
-must return a file **under the installed paclet**.
-`Null` means the `Documentation` extension is missing from `PacletInfo.wl` (see the [paclet-docs](../paclet-docs/SKILL.md) skill).
+Each must return the path of an existing file **under the installed paclet** (`$UserBasePacletsDirectory`), not under the source tree.
+`Null` means the page is not wired: check the `Documentation` extension in `PacletInfo.wl`, then `pacletName` / `publisherID`, then the URI (see the [paclet-docs](../paclet-docs/SKILL.md) skill).
+**Do not substitute `Information` or `?Symbol`** — they print the kernel's `::usage` string whether or not a page exists (on MathNotebook, `ConvertMathCells` showed a full usage line while having no page at all); it is a test that cannot fail.
 
 ## Fallback: wolframscript (MCP unavailable)
 

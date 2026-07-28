@@ -54,7 +54,7 @@ Copy `${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/work_item_template.md` to 
 Fill the `Origin:` line in the Spec with the user's originating request.
 If the project has prompt tracking on (see the [provenance](../provenance/SKILL.md) skill), also append a `Wiki/Prompts.md` ledger entry for the new item.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the Spec and other prose in this item one sentence per source line.
+The Spec and other item prose follow the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*.
 
 ### 2. Present and wait
 

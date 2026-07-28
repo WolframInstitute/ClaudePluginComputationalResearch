@@ -65,8 +65,7 @@ OEIS A-numbers entered bare (e.g. `A000045`) without a URL should be treated as 
 
 ### Step 2 — Create wiki article
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the article's prose (Summary, Use in this project) one sentence per source line.
-The `## Recover` lines stay as `Key: Value`.
+Article prose (Summary, Use in this project) follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*; the `## Recover` lines stay as `Key: Value`.
 
 Write `Wiki/Resources/Name.md`:
 

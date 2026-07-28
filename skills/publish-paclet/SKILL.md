@@ -14,15 +14,7 @@ Produces a URL that anyone can use to install the paclet.
 
 ## Kernel execution (license-aware)
 
-Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the other `mcp__Wolfram__*` tools) for build, install, and cloud upload — it reuses one persistent kernel and consumes no extra license seat.
-Only fall back to `wolframscript` if the MCP is unavailable, and before spawning it check headroom via the MCP:
-
-```wolfram
-With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
-```
-
-If `free <= 0`, do **not** spawn `wolframscript` — it will fail with a license error.
-Publish through the MCP instead, or tell the user a seat must be freed.
+Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the other `mcp__Wolfram__*` tools) for build, install, and cloud upload; before any `wolframscript` fallback, check headroom per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy).
 
 ## What you need
 
@@ -56,15 +48,7 @@ Before publishing, verify:
 Build and install locally via the evaluator exactly as in the [build-paclet](../build-paclet/SKILL.md) skill (`CreatePacletArchive` + `PacletInstall[..., ForceVersionInstall -> True]` in the persistent kernel), staging **every** top-level item — including `Documentation/`, which that skill's snippet leaves out by default (`withDocs = True` here).
 Keep the resulting archive path.
 
-Then verify the docs actually resolve from the install, before anything is uploaded — `PacletDataRebuild[]`, then for every documented symbol:
-
-```wolfram
-Documentation`ResolveLink["paclet:<Pub>/<Paclet>/ref/<Symbol>"]
-```
-
-Each must return an existing file under `$UserBasePacletsDirectory`.
-A page that resolves to `Null` is dead weight in the archive; stop and fix it (usually a missing `Documentation` extension in `PacletInfo.wl`) rather than publishing it.
-Do **not** substitute `Information` or `?Symbol` — they print the kernel's `::usage` string whether or not a page exists.
+Then, before anything is uploaded, run the [build-paclet § *Docs-resolution check*](../build-paclet/SKILL.md#docs-resolution-check) for every documented symbol; a page that resolves to `Null` is dead weight in the archive — stop and fix it rather than publish it.
 
 ### 2. Upload to Wolfram Cloud via the evaluator
 

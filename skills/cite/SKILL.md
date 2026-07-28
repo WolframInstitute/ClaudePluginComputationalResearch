@@ -26,15 +26,7 @@ Optionally appends to `Paper/references.bib` and creates a wiki article via [add
 
 ## Kernel execution (license-aware)
 
-`cite_from_id.wls` spawns a fresh `wolframscript` kernel (a single `Import` of the arXiv/Crossref metadata), which consumes a license seat.
-Before running it, check headroom on the AgentTools MCP (no extra seat):
-
-```wolfram
-With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
-```
-
-If `free <= 0`, do **not** spawn `wolframscript` — run the same `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator` instead.
-The script remains the path when the MCP is unavailable.
+`cite_from_id.wls` spawns a fresh `wolframscript` kernel (one license seat) — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the same `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator` instead.
 
 ## Workflow
 

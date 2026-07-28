@@ -132,13 +132,7 @@ If `Journal/` does not exist yet, scaffold it first (default LaTeX).
 The journal owns `Journal/references.bib`.
 To cite a resource, generate a BibTeX entry, append it there, then reference it with `\cite{key}` (LaTeX) or `#cite(<key>)` (Typst).
 
-Generate the entry with [cite](../cite/SKILL.md) / `cite_from_id.wls`, which is **license-aware**: before spawning `wolframscript`, check headroom on the AgentTools MCP (no extra seat):
-
-```wolfram
-With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
-```
-
-If `free <= 0`, run the same `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator` instead.
+Generate the entry with [cite](../cite/SKILL.md) / `cite_from_id.wls`, which spawns a `wolframscript` kernel — license-aware per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the same `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator` instead.
 `grep` the key in `references.bib` first to avoid duplicates.
 
 ## list (or no argument)
@@ -174,5 +168,4 @@ This skill is the single source of truth for the format — the others reference
 - Keep notation consistent with `macros.sty` / `macros.typ`; extend them freely.
 - One file per day under `entries/`; never reorder the include lines and never rewrite a past day-file.
 - Put images/plots in `Journal/figures/`.
-- When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the prose inside def/thm/rem/claim environments one sentence per source line.
-  This is source-only; the typeset output is unchanged.
+- Prose inside def/thm/rem/claim environments follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting* (source-only; the typeset output is unchanged).

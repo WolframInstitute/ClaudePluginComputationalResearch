@@ -65,8 +65,7 @@ Body. Use subsections as needed.
 Keep articles concise and factual.
 Write like an encyclopedia, not a journal.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default — see its *Source formatting* rule), write the article source one sentence per line.
-This changes only the source; the rendered article is unchanged.
+Article source follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting* (source-only; the rendered article is unchanged).
 
 ### 3. Update Wiki/Index.md
 

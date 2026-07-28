@@ -83,21 +83,7 @@ Link format: `[Title](Folder/File.md) — summary`.
 
 ## Step 4 — Seed Status.md
 
-```markdown
-# Status
-
-## Current state
-
-Wiki initialized. No articles yet.
-
-## Recent changes
-
-(none yet)
-
-## Open questions
-
-(none)
-```
+Seed `Status.md` with the section skeleton from [update-wiki § *Update Wiki/Status.md*](../update-wiki/SKILL.md) — `Current state` reads "Wiki initialized. No articles yet.", the other sections "(none yet)".
 
 `Status.md` summarizes the knowledge base.
 Execution state — active work, next tasks, blockers — lives in `Work/README.md`, not here.
@@ -225,23 +211,11 @@ Use the article format from the update-wiki skill.
 
 ## Article format
 
-```markdown
-# Title
-
-One-paragraph summary.
-
-## Details
-
-Body. Use subsections as needed.
-
-## See also
-
-- [Other Article](../Folder/OtherArticle.md) — why it's related
-```
+Use the article format from [update-wiki § *Create or update articles*](../update-wiki/SKILL.md) — every article carries the `*[ LLM Generated ]*` marker under its title.
 
 No status headers on wiki articles — they're documentation, maintained automatically.
 
-When `CLAUDE.md` has `Semantic line breaks: on` (the default), write seeded article prose one sentence per source line — see the *Source formatting* rule.
+Seeded article prose follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*.
 
 ## Backlink convention
 

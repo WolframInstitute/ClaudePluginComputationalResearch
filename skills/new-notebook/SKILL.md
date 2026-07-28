@@ -19,14 +19,7 @@ description: >
 ## Kernel execution (license-aware)
 
 This skill runs entirely on the AgentTools MCP (`mcp__Wolfram__WriteNotebook`, `mcp__Wolfram__ReadNotebook`, `mcp__Wolfram__WolframLanguageEvaluator`) — one persistent kernel, no extra license seat.
-The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` helpers spawn a fresh `wolframscript` kernel and are a **license-gated fallback** for bulk runs only.
-Before invoking them, confirm a seat is free via the MCP:
-
-```wolfram
-With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
-```
-
-If `free <= 0`, generate notebooks one at a time through the MCP instead of calling the batch scripts.
+The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` helpers each spawn a fresh `wolframscript` kernel and are a fallback for bulk runs only — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, generate notebooks one at a time through the MCP.
 
 # Wolfram Notebook Pipeline
 

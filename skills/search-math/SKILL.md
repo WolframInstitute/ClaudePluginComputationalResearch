@@ -22,15 +22,7 @@ Use it whenever a math-research project needs to anchor a concept against author
 
 ## Kernel execution (license-aware)
 
-The search scripts below each spawn a fresh `wolframscript` kernel, which consumes a license seat.
-Before running them, check headroom on the AgentTools MCP (no extra seat):
-
-```wolfram
-With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
-```
-
-If `free <= 0`, do **not** spawn `wolframscript` — run the equivalent `Import[...]` query through `mcp__Wolfram__WolframLanguageEvaluator`, which reuses the one persistent kernel.
-The `.wls` scripts remain the path when the MCP is unavailable.
+The search scripts below each spawn a fresh `wolframscript` kernel (one license seat) — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the equivalent `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator`.
 
 ## Sources
 
