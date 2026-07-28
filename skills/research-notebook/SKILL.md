@@ -91,7 +91,8 @@ product.
 **But never assume the user obeyed that.** The build stamps a per-cell
 fingerprint, and every regeneration checks it first; if any cell was added,
 deleted, or edited in the `.nb`, **the build stops** and the drift goes to the
-user — transcribe it into the `.md` or discard it, never regenerate over it.
+user — the [revise](../revise/SKILL.md) loop: transcribe it into the `.md` or
+discard it, never regenerate over it.
 The stamping and comparison procedure, with its two load-bearing details, is in
 [fingerprint.md](fingerprint.md).
 

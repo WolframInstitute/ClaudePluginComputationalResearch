@@ -11,6 +11,7 @@ description: >
 
 Build a `.paclet` archive, install it locally, and upload it to Wolfram Cloud as a public object.
 Produces a URL that anyone can use to install the paclet.
+Publishing is externally visible — the [revise](../revise/SKILL.md) loop applies: present what will be uploaded and wait for the go-ahead.
 
 ## Kernel execution (license-aware)
 

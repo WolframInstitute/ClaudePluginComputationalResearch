@@ -46,7 +46,7 @@ The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` hel
 ## Where notebooks live — Critical
 
 All LLM notebook artifacts live in `NotebooksLLM/`.
-The plain `Notebooks/` folder is reserved for user-authored notebooks — **never read, write, or overwrite anything in `Notebooks/`.** Within `NotebooksLLM/` you may freely create and overwrite; you may not touch `Notebooks/`.
+The plain `Notebooks/` folder is reserved for user-authored notebooks — protected content per [revise](../revise/SKILL.md) § *Protected content*: **never read, write, or overwrite anything in `Notebooks/`.** Within `NotebooksLLM/` you may freely create and overwrite.
 
 ## Two-layer architecture (co-located)
 

@@ -6,6 +6,9 @@ Inventory — layout, scripts, commands, templates, project types, notebook conv
 The skills themselves need no lookup: each one's `description:` frontmatter is already in context.
 This file carries only what a session must know *before* it knows to look something up.
 
+Every session follows the [revise](skills/revise/SKILL.md) protocol for code, functionality, plans, and deliverables: generate, present, **wait** for the user.
+Wiki prose is exempt, and autonomous runs defer the gate to branch + digest (`revise` § *Autonomous mode*).
+
 ## Source formatting
 
 Semantic line breaks: **on**

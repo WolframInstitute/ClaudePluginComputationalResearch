@@ -122,7 +122,7 @@ cd Paper && typst compile main.typ     # Typst (typst watch for live preview)
 
 This skill **scaffolds and edits**; it does not write the paper.
 
-- **main.tex / main.typ is the user's writing space.** Do not author content unprompted and do not overwrite user prose.
+- **main.tex / main.typ is the user's writing space** — protected content in the [revise](../revise/SKILL.md) § *Protected content* sense: never author or overwrite it unprompted.
 - Act as an **editor on request**:
   - Import material at a specified location ("put the lemma after Section 2").
   - Correct or rewrite a paragraph the user points to.

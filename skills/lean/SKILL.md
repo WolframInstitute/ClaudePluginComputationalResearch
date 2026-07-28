@@ -13,6 +13,7 @@ description: >
 
 Coherent workflow around the `lean-lsp` MCP for formalization work.
 The MCP itself is rate-limited and read-only; this skill orchestrates calls into a useful sequence and persists progress to `Work/`.
+Proof code and formalization checklists are deliverables in the [revise](../revise/SKILL.md) sense — present them and wait.
 
 ## When this skill kicks in
 

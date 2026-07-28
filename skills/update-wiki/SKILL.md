@@ -11,7 +11,7 @@ description: >
 # Wiki Update
 
 After every substantial step, update the wiki to keep it accurate.
-The wiki is documentation — update freely, no human sign-off needed for prose.
+The wiki is documentation — update freely: wiki prose is the named exemption in [revise](../revise/SKILL.md) § *What does NOT need revision*.
 
 ## Prerequisites
 
@@ -126,7 +126,6 @@ When off, skip.
 
 ## What NOT to do
 
-- Do not ask the user for permission to update wiki prose
 - Do not create articles for trivial changes (typo fixes, formatting)
 - Do not duplicate information across articles — cross-reference instead
 - Do not add status headers to articles (that's what Status.md is for)
