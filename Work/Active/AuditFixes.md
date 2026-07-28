@@ -65,7 +65,6 @@ The mechanical layer passed every test (inventory, wiring, scaffolds, compiles, 
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T5 — Split `new-project` into core + four project-type siblings.
 - [ ] T6 — Split `new-notebook` into core + four siblings; delete the triplicated WL functions.
 - [ ] T7 — Restructure `research-notebook`: new canonical document order (definitions → theorems → symbols/functions → code calls), evict domain math to the home project's Wiki, split siblings, rename the fingerprint "revision protocol" language. (human)
 - [ ] T8 — Make `revise` reachable: CLAUDE.md line + links in the six re-deriving skills, deleting their paraphrases.
@@ -78,6 +77,7 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - [x] T2 (S2) — Fix the contradictions: NotebooksLLM gitignore, init-wiki draft line, abolished-log mentions, marker spelling, stale skill lists and naming in `new-project`, stale cross-references, pre-checked box, `demo-notebook` mentions, missing toggles in init-wiki's template, journal question in the questionnaire.
 - [x] T3 (S3) — Design and specify the provenance injection on the MCP path (coexisting with the fingerprint key); update `provenance`, `new-notebook`, `research-notebook`.
 - [x] T4 (S4) — Deduplicate the policy prose: license block, semantic-line-breaks, one-fact table, wiki skeletons, paclet conventions, ResolveLink verification.
+- [x] T5 (S5) — Split `new-project` into core + four project-type siblings.
 
 ## Hand-off
 
@@ -101,3 +101,4 @@ Append-only audit trail, **one line per session**, newest at the bottom.
 - **S2** 2026-07-28 T2 — swept the ten contradictions across seven skills, README, and `generate_notebooks.wls`; spaced marker standardised with legacy spelling still normalized, `.wls` syntax-checked. → [Status](../../Wiki/Status.md#recent-changes)
 - **S3** 2026-07-28 T3 — specified MCP-path provenance injection via the merge-by-key `stampTaggingRule` helper (canonical in `provenance`, kernel-verified) across `provenance`/`new-notebook`/`research-notebook`. → [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)
 - **S4** 2026-07-28 T4 — deduplicated the six policy-prose blocks to single canonical homes with pointers, −110 lines across 15 files. → [Status](../../Wiki/Status.md#recent-changes)
+- **S5** 2026-07-28 T5 — split `new-project` 524 → 159-line core + four project-type siblings, scaffold-script trees dropped. → [Status](../../Wiki/Status.md#recent-changes)
