@@ -24,11 +24,12 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-- [AuditFixes](Active/AuditFixes.md) — next: T10, final sweep — mechanical checks, version bump, marketplace sync, blog draft.
+(nothing active)
 
 `Backlog/` is empty.
 The one thing left open by the items below is whether `/auto-run` should stop inheriting the user's `~/.claude/settings.json` allow rules — recorded as an open question in [Wiki/Status.md](../Wiki/Status.md#open-questions), not yet filed as an item, because it changes the pipeline's security posture rather than fixing it.
 
+`AuditFixes` completed on 2026-07-28 after ten tasks: the inert `.nb`-read hook fixed, the cross-skill contradictions and duplicated policy prose removed, three oversized skills split into cores plus read-on-demand siblings, `research-notebook` restructured to the user-mandated canonical order, the `revise` protocol made reachable, the standard skill skeleton applied to all 21 skills, and the plugin bumped to 4.9.0 with the marketplace synced.
 `HardenAutoRun` completed on 2026-07-28 after two tasks: all four never-live `/auto-run` stop conditions fired against real sessions, `--allowedTools` turned out to only ever *add* to the settings files, and the driver gained the Wolfram MCP defaults.
 `AutoRunHaltTrial` was dropped on 2026-07-28: the crash-test dummy `HardenAutoRun` drove, whose five tasks were sabotage rather than work — `Dropped/` rather than `Done/` for exactly that reason.
 `EvaluateWorkItemsEfficiency` completed on 2026-07-28 after nine tasks: the per-session budget is measured, the item file format is decided and in force, both auto-loaded preambles are audited, the unattended pipeline is built and trialled live, and T5's harvest moved the closed items' durable content into `Wiki/`.
