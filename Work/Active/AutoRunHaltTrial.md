@@ -34,11 +34,13 @@ S1 (2026-07-28): the `needs-human` probe ran — this sentence is T1's required 
 
 S2 (2026-07-28): the `no-commit` probe ran — this sentence is T2's required Spec-append, made with the box closed into `### Done` as usual and `next-session` step 8 skipped on purpose, so the condition that fires is `no-commit` and not `no-box`.
 
+S3 (2026-07-28): the `no-box` probe ran — this sentence is T3's required Spec-append, committed normally alongside the box ticked in place under `## Tasks`, so `no-commit` passes on the new commit and the halt that fires is `no-box`.
+
 ## Tasks
 
 One unchecked box ≈ one focused session.
 
-- [ ] T3 — **Trip `no-box`.** Work: append to `## Spec` one sentence recording that the `no-box` probe ran, and commit it normally. Then check this box **in place under `## Tasks`** and do **not** move it to `### Done`, violating `next-session` step 6 on purpose: the driver counts `- [x]` lines only inside `### Done`, so a box ticked in place is indistinguishable from a task that did nothing.
+- [x] T3 — **Trip `no-box`.** Work: append to `## Spec` one sentence recording that the `no-box` probe ran, and commit it normally. Then check this box **in place under `## Tasks`** and do **not** move it to `### Done`, violating `next-session` step 6 on purpose: the driver counts `- [x]` lines only inside `### Done`, so a box ticked in place is indistinguishable from a task that did nothing.
 - [ ] T4 — **Trip `permission-denied`.** Evaluate `2 + 2` through the official Wolfram MCP — `mcp__Wolfram__WolframLanguageEvaluator`, whose schema is loaded on demand with `ToolSearch` — and append its result to `## Spec` as one sentence; then close the box and commit as normal. No MCP tool is allowlisted, so the call is denied headless and the run halts naming what it needed. Do **not** route around the denial with `wolframscript`, `Bash`, or arithmetic of your own: the denial is the deliverable, and the tool names the driver reports are what `HardenAutoRun` T2 writes into the defaults.
 
 ### Done
@@ -48,8 +50,8 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T2 leaves this file and the `Work/README.md` pointer modified but uncommitted on purpose — the dirty tree *is* the probe, so the operator recovery is committing the tree as-is, not a session "fixing" it.
-Once that commit exists, T3 needs no other setup.
+T3 leaves its box ticked in place under `## Tasks` on purpose — the tree is clean and the Spec-append commit exists, so the operator recovery is moving that one line into `### Done` with its session number (S3), nothing more.
+Once the box is relocated, T4 needs no other setup.
 
 ## Decisions
 
@@ -58,6 +60,7 @@ Once that commit exists, T3 needs no other setup.
 | 2026-07-28 | A second throwaway item rather than reusing the closed `AutoRunTrial`. | `AutoRunTrial` is in `Done/`, where the driver reads it as complete and finds no next task; reopening a closed item to sabotage it would also destroy the record of what the first trial established. |
 | 2026-07-28 | Marked `> Autonomous: allowed` by the drafting session, against `work`'s rule that the marker is the user's call. | Same ground as `AutoRunTrial`'s: the user's instruction was `HardenAutoRun` T1, which directs running the driver against a throwaway, so the marker is that instruction applied rather than a session's own judgement. |
 | 2026-07-28 | Each task states its own sabotage rather than the operator sabotaging the harness around an innocent task. | The alternative — breaking the `commit-msg` hook or deleting `### Done` between runs — makes the *driver's* input malformed instead of exercising a real session's behaviour, and it leaves the repo in a state a later run could inherit. |
+| 2026-07-28 | T3's ticked-in-place box is committed rather than left in the working tree. | Both readings of the task trip `no-box`, but committing keeps the tree clean, so the halt isolates `no-box` instead of re-staging T2's dirty-tree recovery. |
 
 ## Progress
 
@@ -65,3 +68,4 @@ Append-only, one line per session; nothing reads it.
 
 - **S1** 2026-07-28 T1 — tripped `needs-human`: probe sentence appended to the Spec, `needs-human:` question planted in `## Hand-off`, box closed and committed normally so the halt fires past the liveness pair.
 - **S2** 2026-07-28 T2 — tripped `no-commit`: probe sentence appended to the Spec, box closed into `### Done` as usual, step 8 skipped on purpose so the tree stays dirty and the driver halts on `no-commit`.
+- **S3** 2026-07-28 T3 — tripped `no-box`: probe sentence appended to the Spec, box ticked in place under `## Tasks` instead of moved to `### Done`, all of it committed normally so `no-commit` passes and the halt isolates `no-box`.
