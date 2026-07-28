@@ -36,13 +36,15 @@ S2 (2026-07-28): the `no-commit` probe ran — this sentence is T2's required Sp
 
 S3 (2026-07-28): the `no-box` probe ran — this sentence is T3's required Spec-append, committed normally alongside the box ticked in place under `## Tasks`, so `no-commit` passes on the new commit and the halt that fires is `no-box`.
 
+S4 (2026-07-28): the `permission-denied` probe ran and the condition did **not** fire — `mcp__Wolfram__WolframLanguageEvaluator` was allowed and `2 + 2` returned `4`, because the user-level `~/.claude/settings.json` allowlists that tool by name (alongside blanket `Bash`, `Edit`, `Write`, `Read`) and `--allowedTools` extends those settings rules rather than replacing them, so the driver never saw a denial to halt on.
+
 ## Tasks
 
 One unchecked box ≈ one focused session.
 
-- [ ] T4 — **Trip `permission-denied`.** Evaluate `2 + 2` through the official Wolfram MCP — `mcp__Wolfram__WolframLanguageEvaluator`, whose schema is loaded on demand with `ToolSearch` — and append its result to `## Spec` as one sentence; then close the box and commit as normal. No MCP tool is allowlisted, so the call is denied headless and the run halts naming what it needed. Do **not** route around the denial with `wolframscript`, `Bash`, or arithmetic of your own: the denial is the deliverable, and the tool names the driver reports are what `HardenAutoRun` T2 writes into the defaults.
-
 ### Done
+
+- [x] S4 T4 — **Trip `permission-denied`.** Evaluate `2 + 2` through the official Wolfram MCP — `mcp__Wolfram__WolframLanguageEvaluator`, whose schema is loaded on demand with `ToolSearch` — and append its result to `## Spec` as one sentence; then close the box and commit as normal. No MCP tool is allowlisted, so the call is denied headless and the run halts naming what it needed. Do **not** route around the denial with `wolframscript`, `Bash`, or arithmetic of your own: the denial is the deliverable, and the tool names the driver reports are what `HardenAutoRun` T2 writes into the defaults.
 
 - [x] S3 T3 — **Trip `no-box`.** Work: append to `## Spec` one sentence recording that the `no-box` probe ran, and commit it normally. Then check this box **in place under `## Tasks`** and do **not** move it to `### Done`, violating `next-session` step 6 on purpose: the driver counts `- [x]` lines only inside `### Done`, so a box ticked in place is indistinguishable from a task that did nothing.
 - [x] S2 T2 — **Trip `no-commit`.** Work: append to `## Spec` one sentence recording that the `no-commit` probe ran. Check the box and move it to `### Done` exactly as usual, then **skip `next-session` step 8 entirely and commit nothing** — deliberately, so that the condition which fires is `no-commit` and not `no-box`. Leaving the tree dirty is part of the probe.
@@ -50,8 +52,11 @@ One unchecked box ≈ one focused session.
 
 ## Hand-off
 
-T3 leaves its box ticked in place under `## Tasks` on purpose — the tree is clean and the Spec-append commit exists, so the operator recovery is moving that one line into `### Done` with its session number (S3), nothing more.
-Once the box is relocated, T4 needs no other setup.
+T4's probe ran but its condition did not fire: the MCP call was allowed and returned `4`, `permission_denials` stayed empty, and the halt this run produces is the `needs-human` marker below — do not read that stop reason as T1's leftover.
+The cause: `--allowedTools` extends the settings-file allow rules rather than replacing them, and the user-level `~/.claude/settings.json` allowlists `mcp__Wolfram__WolframLanguageEvaluator` by name — alongside blanket `Bash`, `Edit`, `Write`, `Read`, `WebFetch`, `WebSearch` — so in this environment almost nothing can be denied headless and `permission-denied` is effectively unreachable (only the settings' `ask`-listed destructive forms, e.g. `git reset --hard`, would still deny).
+This contradicts the runbook's "No MCP tool is allowlisted" (AutoRunOperations § Growing the allowlist) and the driver's own header comment, and it undercuts `HardenAutoRun` T2's plan of copying driver-reported tool names into the defaults, since no names are ever reported here.
+needs-human: with three of four conditions fired and `permission-denied` unreachable as specified, should the item be dropped at 3/4 with the finding handed to `HardenAutoRun`, or do you want a live trip first — which means either pruning the user-settings allow rules or probing an `ask`-listed destructive command, both outside what a session may do on its own?
+Recovery: nothing in-repo — the tree is clean and T4's box is closed; answer the question, clear the marker, and move the file to `Work/Dropped/YYYY-MM-DD-AutoRunHaltTrial.md` per the Spec's dropped-not-completed rule (the driver resolves items only in `Active/` and `Done/`, so the move belongs after the last run, not before).
 
 ## Decisions
 
@@ -61,6 +66,7 @@ Once the box is relocated, T4 needs no other setup.
 | 2026-07-28 | Marked `> Autonomous: allowed` by the drafting session, against `work`'s rule that the marker is the user's call. | Same ground as `AutoRunTrial`'s: the user's instruction was `HardenAutoRun` T1, which directs running the driver against a throwaway, so the marker is that instruction applied rather than a session's own judgement. |
 | 2026-07-28 | Each task states its own sabotage rather than the operator sabotaging the harness around an innocent task. | The alternative — breaking the `commit-msg` hook or deleting `### Done` between runs — makes the *driver's* input malformed instead of exercising a real session's behaviour, and it leaves the repo in a state a later run could inherit. |
 | 2026-07-28 | T3's ticked-in-place box is committed rather than left in the working tree. | Both readings of the task trip `no-box`, but committing keeps the tree clean, so the halt isolates `no-box` instead of re-staging T2's dirty-tree recovery. |
+| 2026-07-28 | T4's non-firing is reported through a `needs-human` halt rather than letting the run end `item-complete`. | With the last box closed the driver's next iteration halts `item-complete` (exit 0), which the runbook reads as plain success — burying the one probe whose condition failed to fire; the marker converts it into an exit-1 halt that puts the finding and the drop-at-3/4 question into the digest's Hand-off delta. |
 
 ## Progress
 
@@ -69,3 +75,4 @@ Append-only, one line per session; nothing reads it.
 - **S1** 2026-07-28 T1 — tripped `needs-human`: probe sentence appended to the Spec, `needs-human:` question planted in `## Hand-off`, box closed and committed normally so the halt fires past the liveness pair.
 - **S2** 2026-07-28 T2 — tripped `no-commit`: probe sentence appended to the Spec, box closed into `### Done` as usual, step 8 skipped on purpose so the tree stays dirty and the driver halts on `no-commit`.
 - **S3** 2026-07-28 T3 — tripped `no-box`: probe sentence appended to the Spec, box ticked in place under `## Tasks` instead of moved to `### Done`, all of it committed normally so `no-commit` passes and the halt isolates `no-box`.
+- **S4** 2026-07-28 T4 — `permission-denied` did **not** trip: the MCP call was allowed by the user-settings allowlist and returned 4; the finding and the drop-at-3/4 question are in `## Hand-off` as `needs-human`.

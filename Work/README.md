@@ -27,7 +27,7 @@ The one thing the folders can't show — each in-progress item and its next task
 | Item | Next task |
 |---|---|
 | `HardenAutoRun` | T1 — trip `needs-human` and the liveness pair live against a throwaway |
-| `AutoRunHaltTrial` | T4 — trip `permission-denied`; the crash-test dummy `HardenAutoRun` drives, dropped rather than completed at the end |
+| `AutoRunHaltTrial` | none — all four probes ran but `permission-denied` never fired (user settings allowlist the MCP tool); answer the `needs-human` in its Hand-off, then drop |
 
 `EvaluateWorkItemsEfficiency` completed on 2026-07-28 after nine tasks: the per-session budget is measured, the item file format is decided and in force, both auto-loaded preambles are audited, the unattended pipeline is built and trialled live, and T5's harvest moved the closed items' durable content into `Wiki/`.
 `AutoRunTrial` completed on 2026-07-28: the throwaway item that gave `EvaluateWorkItemsEfficiency` T8 a real item to drive, closing with its `(human)` task done interactively.
