@@ -16,6 +16,12 @@ Generate a symbol reference page for each exported function of a paclet, in the
 paclet's own `Documentation/` tree, so a Wolfram user meets the paclet the way
 they meet built-in functions: `?Symbol`, F1, Documentation Center search.
 
+## When to use
+
+- The user says "document the paclet", "paclet docs", "symbol pages", "reference
+  pages", "write docs for X", or runs `/paclet-docs`.
+- After a paclet's public API stabilizes and before publishing it.
+
 ## Guide pages are out of scope — Critical
 
 **Do not generate a guide page.** Grouping a paclet's functions by role, naming
@@ -56,7 +62,7 @@ Doc pages are `.nb` files, and a `PreToolUse` hook blocks reading them. Author
 and edit them **only** through the MCP doc tools. If a page needs changing, use
 `EditSymbolDoc` / `EditSymbolDocExamples` — never open the notebook.
 
-## Step-by-step
+## Steps
 
 ### 1. Agree the scope before generating anything
 
@@ -170,3 +176,19 @@ cloud notebooks with an HTML index
 ([deploy_paclet_docs.wl](../../scripts/deploy_paclet_docs.wl)) so a reader who has
 installed nothing can still read them. That deployed index is the link to put in
 the README.
+
+## Integration with other skills
+
+- [build-paclet](../build-paclet/SKILL.md) — directory detection and the
+  *Docs-resolution check* are stated there; this skill uses both.
+- [publish-paclet](../publish-paclet/SKILL.md) — bundles and deploys the pages
+  this skill writes (see *Shipping the pages*).
+- The `new-notebook` pipeline is **not** used here — doc pages go through the
+  official MCP doc tools.
+
+## When NOT to use
+
+- Guide pages — a human deliverable, out of scope by design (see the *Guide
+  pages* section).
+- Presentation notebooks for humans reading top-to-bottom — that is
+  `new-notebook` / `research-notebook`.

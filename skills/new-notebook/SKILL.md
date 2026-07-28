@@ -31,6 +31,11 @@ The details live in four read-on-demand siblings — read only what the current 
 - [templates.md](templates.md) — the named templates (`research`, `paper-analysis`, `computation`, `theorem-proof`)
 - [markdown-mapping.md](markdown-mapping.md) — markdown-to-cell mapping, long-notebook pattern, content best practices
 
+## When to use
+
+- The user says "create notebook", "make a notebook", "notebook about X", "edit notebook", "update notebook", "put this in a notebook", "generate .nb".
+- Another skill produces a notebook (`new-project`, `start-tour`) — every `.nb`-touching skill routes through this pipeline.
+
 ## Hard Rules
 
 - **NEVER** read a `.nb` file with the `Read` tool or load its raw content into the context window.
@@ -157,7 +162,7 @@ Without it, code blocks will not parse as Input cells.
 
 Always build markdown with `StringJoin` using `fence` and `tick` variables; the other escapes are the usual `\` → `\\`, `"` → `\"`, newlines as `\n`.
 
-## Pipeline
+## Steps
 
 Creating a new notebook:
 
@@ -213,3 +218,16 @@ The `.md` source name is undated; the generated `.nb` appends the first-creation
 - Single-topic notebooks: `TopicName.md` / `TopicName_YYYY-MM-DD.nb`
 - Paper analysis: `Author_Year.md`
 - Chains/multi-topic: descriptive name (`UniversalityGraph.md`)
+
+## Integration with other skills
+
+- `research-notebook` builds on this pipeline (rich engine + MathNotebook post-processing) for research documents.
+- `new-project` and `start-tour` generate their notebooks through it.
+- `paclet-docs` does **not** — documentation pages go through the official MCP doc tools.
+- `provenance` defines the `stampTaggingRule` helper used in the *Provenance* step.
+
+## When NOT to use
+
+- Research documents with definitions/theorems/conjectures — that is `research-notebook`.
+- Paclet documentation pages — that is `paclet-docs`.
+- Anything in the user-authored `Notebooks/` folder — protected, never touched.

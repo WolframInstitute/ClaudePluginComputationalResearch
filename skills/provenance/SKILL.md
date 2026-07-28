@@ -20,6 +20,19 @@ Provenance fills the remaining gap: the originating prompt/intent behind each ar
 This mirrors the existing `## Recover` convention (see [add-resource](../add-resource/SKILL.md)): plain markdown, git-tracked, machine-readable, no database.
 It is **optional** — nothing here runs unless the project toggle is on.
 
+## When to use
+
+- The user says "track prompts", "record the prompt", "where did this come from", "turn provenance on/off", "show the prompt ledger", or runs `/provenance`.
+- Automatically, when the toggle is **on** and an artifact is generated (the generating skills follow this skill's format — see *Integration with other skills*).
+
+## Steps
+
+When the toggle is on and an artifact is generated:
+
+1. Build the canonical record (§ *The canonical record*).
+2. Embed the back-pointer in the artifact (§ *Embedded back-pointers*).
+3. Append the entry to `Wiki/Prompts.md` (§ *The central ledger*).
+
 ## The toggle (check this first)
 
 Provenance is opt-in per project, declared in the project's `CLAUDE.md`:
@@ -183,7 +196,7 @@ Leave existing entries in place — they are part of the git history.
 When the user wants to record provenance for something just produced (or an older artifact), append a ledger entry and add the matching embedded back-pointer using the rules above.
 Distil the intent from the conversation; include the verbatim prompt only if it's short or requested.
 
-## How other skills use this
+## Integration with other skills
 
 These skills check the toggle and, when on, record provenance in this format:
 
@@ -194,3 +207,8 @@ These skills check the toggle and, when on, record provenance in this format:
 - **work** / **next-session** — record `Origin:` in the Spec; each session's prompt goes to the ledger, and the `## Progress` line links it.
 
 This skill is the single source of truth for the format — the others reference it rather than redefining it.
+
+## When NOT to use
+
+- The toggle is **off** (the default) — do nothing, silently; never create the ledger or nag the user.
+- Recording *who* wrote code or *what* changed — git authorship and `Wiki/Status.md` already carry those.

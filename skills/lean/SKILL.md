@@ -15,7 +15,7 @@ Coherent workflow around the `lean-lsp` MCP for formalization work.
 The MCP itself is rate-limited and read-only; this skill orchestrates calls into a useful sequence and persists progress to `Work/`.
 Proof code and formalization checklists are deliverables in the [revise](../revise/SKILL.md) sense — present them and wait.
 
-## When this skill kicks in
+## When to use
 
 - The project has a `Lean/` (or `lean/`) directory with a `lakefile.lean`
 - The user pastes a Lean snippet / `theorem` declaration
@@ -32,11 +32,13 @@ Before any other action:
 3. Confirm the `lean-lsp` MCP responds — call `mcp__lean-lsp__lean_file_outline` on the target file.
    If it fails, ask the user to run `lake build` once.
 
-## Core loop
+## Steps
+
+The core loop, per sub-goal:
 
 For each goal you are trying to close:
 
-### Step 1 — Read the goal
+### 1. Read the goal
 
 ```
 mcp__lean-lsp__lean_goal  (file, line[, column])
@@ -46,7 +48,7 @@ Omit `column` to see the goal **before** and **after** the line.
 
 If the result is `"no goals"`, the proof is complete.
 
-### Step 2 — Search for closing lemmas (in this order)
+### 2. Search for closing lemmas (in this order)
 
 1. **Local first** — is there a lemma already proved in the same file?
    `mcp__lean-lsp__lean_local_search` with the goal's main predicate as query.
@@ -59,7 +61,7 @@ If the result is `"no goals"`, the proof is complete.
 
 After finding a candidate name, confirm with `mcp__lean-lsp__lean_hover_info` (type signature + docs) and optionally `mcp__lean-lsp__lean_declaration_file`.
 
-### Step 3 — Try tactics without editing
+### 3. Try tactics without editing
 
 ```
 mcp__lean-lsp__lean_multi_attempt  (file, line, snippets: ["simp", "ring", "omega", "exact?"])
@@ -68,7 +70,7 @@ mcp__lean-lsp__lean_multi_attempt  (file, line, snippets: ["simp", "ring", "omeg
 Use **line-based** form (omit `column`) for fast REPL-style attempts.
 Use column-based form when the attempt must occur at an exact source position.
 
-### Step 4 — Edit + verify
+### 4. Edit + verify
 
 After editing the file via the `Edit` tool, verify with:
 
@@ -79,7 +81,7 @@ mcp__lean-lsp__lean_verify  (fully-qualified theorem name, e.g. "MyNS.my_thm")
 
 `lean_verify` also runs an axiom check — fail loudly if it reports `sorryAx` or unexpected axioms.
 
-### Step 5 — Re-run goal
+### 5. Re-run goal
 
 Return to Step 1 if the goal is not yet closed.
 

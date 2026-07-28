@@ -20,6 +20,11 @@ Two formats:
 The paper is the **user's document**.
 This skill scaffolds the structure and then acts as an *editor*, not an author (see Rules below).
 
+## When to use
+
+- The user says "scaffold paper", "add paper", "create paper folder", "set up latex", "set up typst", "I want to write a paper".
+- During `new-project` when the questionnaire's *Include Paper/?* is yes.
+
 ## What you need
 
 1. **Project directory** — where to create Paper/.
@@ -32,7 +37,7 @@ This skill scaffolds the structure and then acts as an *editor*, not an author (
 
 If invoked from new-project, these are already known.
 
-## Step-by-step
+## Steps
 
 ### 1. Run the scaffold script
 
@@ -133,3 +138,14 @@ This skill **scaffolds and edits**; it does not write the paper.
 - When you do add prose at the user's request, write in the user's voice.
 - **Source formatting.** Prose you add or rewrite in `main.tex` / `main.typ` follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting* (source-only; the compiled PDF is unchanged).
   Do not reflow paragraphs of existing user prose you were not asked to touch.
+
+## Integration with other skills
+
+- `new-project` invokes this when a paper is requested; `cite` and `add-resource` feed `references.bib`.
+- `journal` is the other typeset document — append-only entries, distinct from the user-owned paper.
+- The editor role is the [revise](../revise/SKILL.md) § *Protected content* rule applied to `main.tex` / `main.typ`.
+
+## When NOT to use
+
+- Writing the paper's content — the paper is the user's; act only as an editor on request.
+- A running record of results — that is the `journal` skill.

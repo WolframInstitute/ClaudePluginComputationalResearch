@@ -13,6 +13,12 @@ description: >
 After every substantial step, update the wiki to keep it accurate.
 The wiki is documentation — update freely: wiki prose is the named exemption in [revise](../revise/SKILL.md) § *What does NOT need revision*.
 
+## When to use
+
+- After any substantial step — code changes, new functionality, completed tasks, discoveries (see *What counts as "substantial"*).
+- The user says "update wiki" or "log this".
+- Invoked by `next-session` step 7 to file the session's durable facts.
+
 ## Prerequisites
 
 `Wiki/` must exist.
@@ -28,7 +34,7 @@ If it doesn't, invoke the `init-wiki` skill first.
 - An experiment run and results obtained
 - Any task completed from a work item
 
-## Update procedure
+## Steps
 
 ### 1. Read current state
 
@@ -130,3 +136,13 @@ When off, skip.
 - Do not duplicate information across articles — cross-reference instead
 - Do not add status headers to articles (that's what Status.md is for)
 - Do not write in first person — write in neutral encyclopedic tone
+
+## Integration with other skills
+
+- `init-wiki` seeds what this maintains; `check-wiki` audits it; the article and Status skeletons here are the canonical copies both reference.
+- `next-session` invokes this to file durable facts; `add-resource` creates the resource articles; `provenance` and `journal` hook into steps 6–7 when their toggles are on.
+
+## When NOT to use
+
+- `Wiki/` does not exist — run `init-wiki` first.
+- Execution state (active items, next tasks, blockers) — that lives in `Work/`, not the wiki.

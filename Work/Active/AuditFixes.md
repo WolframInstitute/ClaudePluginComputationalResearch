@@ -65,7 +65,6 @@ The mechanical layer passed every test (inventory, wiring, scaffolds, compiles, 
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T9 — Apply the standard skill skeleton across all 21 skills; update ARCHITECTURE.md "How to Add a New Skill" to require it.
 - [ ] T10 — Final sweep: re-run the audit's mechanical checks, bump plugin version, sync marketplace repo, update the blog post draft for review.
 
 ### Done
@@ -78,6 +77,7 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - [x] T6 (S6) — Split `new-notebook` into core + four siblings; delete the triplicated WL functions.
 - [x] T7 (S7) — Restructure `research-notebook`: new canonical document order (definitions → theorems → symbols/functions → code calls), evict domain math, split siblings, rename the fingerprint "revision protocol" language. (human — done interactively in the user-directed batch; review requested)
 - [x] T8 (S8) — Make `revise` reachable: CLAUDE.md line + links in the six re-deriving skills, deleting their paraphrases.
+- [x] T9 (S9) — Apply the standard skill skeleton across all 21 skills; update ARCHITECTURE.md "How to Add a New Skill" to require it.
 
 ## Hand-off
 
@@ -106,3 +106,4 @@ Append-only audit trail, **one line per session**, newest at the bottom.
 - **S6** 2026-07-28 T6 — split `new-notebook` 713 → 215-line core + four siblings; the three WL helpers now defined once in `pipeline-builtin.md`. → [Status](../../Wiki/Status.md#recent-changes)
 - **S7** 2026-07-28 T7 — restructured `research-notebook` to the canonical document order, renamed the fingerprint language, split three siblings, evicted the domain math. → [DisplacementNaming](../../Wiki/Concepts/DisplacementNaming.md)
 - **S8** 2026-07-28 T8 — `revise` named in CLAUDE.md as the session protocol; six re-deriving skills now link it instead of paraphrasing. → [Status](../../Wiki/Status.md#recent-changes)
+- **S9** 2026-07-28 T9 — standard skeleton (When to use / Steps / Integration / When NOT to use) applied to all 21 skills; ARCHITECTURE.md requires it for new skills. → [Status](../../Wiki/Status.md#recent-changes)

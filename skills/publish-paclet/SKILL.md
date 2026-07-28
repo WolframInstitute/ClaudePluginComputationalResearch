@@ -13,6 +13,11 @@ Build a `.paclet` archive, install it locally, and upload it to Wolfram Cloud as
 Produces a URL that anyone can use to install the paclet.
 Publishing is externally visible — the [revise](../revise/SKILL.md) loop applies: present what will be uploaded and wait for the go-ahead.
 
+## When to use
+
+- The user says "publish paclet", "upload paclet", "deploy paclet", "release paclet", "push paclet to cloud", "share the paclet".
+- After `build-paclet` and the tests pass, when the paclet should become installable by others.
+
 ## Kernel execution (license-aware)
 
 Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the other `mcp__Wolfram__*` tools) for build, install, and cloud upload; before any `wolframscript` fallback, check headroom per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy).
@@ -42,7 +47,9 @@ Before publishing, verify:
    A hand-written script that copies a fixed directory list drops `Documentation/` (and anything else added since it was written) without a word.
    Fix the list, or say plainly that the docs will not ship.
 
-## Step-by-step (preferred: MCP)
+## Steps
+
+Preferred path: the MCP, end to end.
 
 ### 1. Build + install, with docs
 
@@ -130,3 +137,13 @@ Offer both edits; the README is the author's.
 
 The paclet is uploaded as `<PacletName>.paclet` in the user's cloud home.
 This means each publish overwrites the previous version at the same URL — the URL is stable across versions.
+
+## Integration with other skills
+
+- [build-paclet](../build-paclet/SKILL.md) — the build recipe and the *Docs-resolution check* run here with `withDocs = True`.
+- [paclet-docs](../paclet-docs/SKILL.md) — writes the pages this skill bundles and deploys.
+
+## When NOT to use
+
+- Iterating locally — that is `build-paclet` (fast, docs excluded by default).
+- The docs-resolution check fails — fix the pages first; never publish dead pages.

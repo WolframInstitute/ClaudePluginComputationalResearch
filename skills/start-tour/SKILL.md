@@ -13,6 +13,11 @@ An interactive walkthrough of the project.
 Each section has narrative (what it is, why it matters) and runnable code (demonstrations, experiments).
 The LLM stops after each section for user feedback — this is the revision loop applied to presentation.
 
+## When to use
+
+- The user says "start tour", "give me a tour", "continue tour", "where were we", "tour status".
+- When presenting the project to someone new.
+
 ## Prerequisites
 
 `Wiki/` must exist with articles to tour.
@@ -29,7 +34,9 @@ Tour/
 
 `Tour/` is gitignored — it's local, on-demand state.
 
-## Starting a new tour
+## Steps
+
+Starting a new tour (for an existing one, see *Resuming a tour*):
 
 ### 1. Create Tour/ directory
 
@@ -148,3 +155,13 @@ After each section interaction, update:
 | YYYY-MM-DD | N | Presented, user revised: changed code example |
 | YYYY-MM-DD | N | Skipped by user |
 ```
+
+## Integration with other skills
+
+- The stop-per-section rhythm is the [revise](../revise/SKILL.md) loop applied to presentation.
+- Tour notebooks, when produced, go through `new-notebook`; the tour content itself comes from `Wiki/` articles.
+
+## When NOT to use
+
+- The wiki is empty — run `init-wiki` and populate it first.
+- A publishable write-up of results — that is `research-notebook`, not a tour.

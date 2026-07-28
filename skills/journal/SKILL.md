@@ -18,6 +18,11 @@ A running LaTeX or Typst document the LLM maintains: one file (`Journal/journal.
 LaTeX (default) or Typst — the format is fixed once `Journal/` is scaffolded.
 **Optional** — nothing here runs unless the project toggle is on.
 
+## When to use
+
+- The user says "keep a journal", "journal this", "turn the journal on/off", "journal status", or `/journal`.
+- Automatically, when the toggle is **on** and a session establishes a def/thm/rem/claim-worthy fact (other skills feed entries — see *Integration with other skills*).
+
 ## Journal vs. Wiki
 
 | | `Wiki/Definitions`, `Wiki/Theorems` | `Journal/journal.tex` |
@@ -65,7 +70,12 @@ grep -qiE 'scientific journal:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || ech
 The journal is a **record, not a deliverable** — exempt from the `revise` loop (like wiki prose and the prompt ledger).
 Edit `journal.tex` / `macros.sty` freely.
 
-## scaffold [--typst]
+## Steps
+
+Check the toggle first; when off, only *scaffold* and *Turning it on / off* apply.
+Then dispatch on the request — each subcommand is a subsection below: **scaffold** (create `Journal/`), **add** (append a dated entry), **list** (show the index).
+
+### scaffold [--typst]
 
 Create `Journal/` if it does not exist:
 
@@ -84,7 +94,7 @@ The master carries an end-marker where those include lines go, newest first:
 Scaffold **lazily** — `Journal/` is never pre-created by `new-project`; create it (default LaTeX) the first time the toggle goes on or the first `add`.
 If `Journal/` is tracked (not gitignored), add the same build-artifact patterns as `scaffold-paper`, scoped to `Journal/`.
 
-## add "<topic / content>"
+### add "<topic / content>"
 
 One file per day.
 Distill the conversation into **concise** def/thm/rem/claim environments — not prose paragraphs.
@@ -127,7 +137,7 @@ Typst day-file (`entries/2026-06-02.typ`) — opens with the macros import (an i
 
 If `Journal/` does not exist yet, scaffold it first (default LaTeX).
 
-## Citing into the journal
+### Citing into the journal
 
 The journal owns `Journal/references.bib`.
 To cite a resource, generate a BibTeX entry, append it there, then reference it with `\cite{key}` (LaTeX) or `#cite(<key>)` (Typst).
@@ -135,7 +145,7 @@ To cite a resource, generate a BibTeX entry, append it there, then reference it 
 Generate the entry with [cite](../cite/SKILL.md) / `cite_from_id.wls`, which spawns a `wolframscript` kernel — license-aware per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the same `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator` instead.
 `grep` the key in `references.bib` first to avoid duplicates.
 
-## list (or no argument)
+### list (or no argument)
 
 List the `entries/` day-files (equivalently, the `\input` / `#include` lines in the master), most recent first, so the user sees what the journal contains.
 
@@ -149,7 +159,7 @@ When the user asks to enable the journal:
 To disable, set `Scientific journal: **off**`.
 Leave existing entries in place — they are part of the git history.
 
-## How other skills feed the journal
+## Integration with other skills
 
 When the toggle is on, these skills append to the journal in this format:
 
@@ -169,3 +179,8 @@ This skill is the single source of truth for the format — the others reference
 - One file per day under `entries/`; never reorder the include lines and never rewrite a past day-file.
 - Put images/plots in `Journal/figures/`.
 - Prose inside def/thm/rem/claim environments follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting* (source-only; the typeset output is unchanged).
+
+## When NOT to use
+
+- The toggle is **off** (the default) — nothing here runs; only *Turning it on / off* applies.
+- The fact is settled, deduplicated knowledge — that is a Wiki article (`update-wiki`), not a journal entry.

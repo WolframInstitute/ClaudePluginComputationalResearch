@@ -14,7 +14,15 @@ Create a `Wiki/` knowledge base in the current repo.
 The wiki is plain Markdown — no databases, no embeddings, no special tooling.
 Works on GitHub, in Obsidian, in any text editor.
 
-## Step 1 — Ask the user for domain folders
+## When to use
+
+- The user says "init wiki", "set up knowledge base", "add wiki to this repo".
+- A new project needs its knowledge base (`new-project` invokes this).
+- `update-wiki` or `check-wiki` was invoked but `Wiki/` does not exist yet.
+
+## Steps
+
+### 1. Ask the user for domain folders
 
 The core structure is fixed:
 
@@ -40,12 +48,12 @@ Default is `Code/`, but some projects use `Wolfram/`, `src/`, `Lean/`, etc. This
 
 If the user doesn't care, pick sensible defaults based on the repo.
 
-## Step 2 — Create the folder structure
+### 2. Create the folder structure
 
 Create all directories and seed files.
 Use empty `.gitkeep` files in folders that start empty (except `Concepts/` and `Resources/` which get populated via other skills).
 
-## Step 3 — Seed Index.md
+### 3. Seed Index.md
 
 ```markdown
 # Wiki Index
@@ -81,7 +89,7 @@ Tour data lives in `Tour/` (local, gitignored).
 One section per domain folder.
 Link format: `[Title](Folder/File.md) — summary`.
 
-## Step 4 — Seed Status.md
+### 4. Seed Status.md
 
 Seed `Status.md` with the section skeleton from [update-wiki § *Update Wiki/Status.md*](../update-wiki/SKILL.md) — `Current state` reads "Wiki initialized. No articles yet.", the other sections "(none yet)".
 
@@ -90,7 +98,7 @@ Execution state — active work, next tasks, blockers — lives in `Work/README.
 
 Populate with real information if the repo already has content worth summarizing.
 
-## Step 5 — Update CLAUDE.md
+### 5. Update CLAUDE.md
 
 Append the wiki section to the repo's `CLAUDE.md` (create the file if it doesn't exist).
 Use this template:
@@ -182,7 +190,7 @@ Semantic line breaks: **on**
      grep -qiE 'semantic line breaks:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || echo off -->
 ```
 
-## Step 6 — Update .gitignore
+### 6. Update .gitignore
 
 Add these entries if not already present:
 
@@ -197,7 +205,7 @@ Exceptions: if the project has git submodules in `Resources/`, preserve them wit
 `Wiki/` itself is tracked.
 `Tour/`, `Resources/` (binary files), and generated `.nb` files are gitignored.
 
-## Step 7 — Scan and seed articles
+### 7. Scan and seed articles
 
 If the repo already has code, documentation, or other content:
 
@@ -233,3 +241,14 @@ Examples from `Wiki/Systems/TM.md`:
 
 From `Wiki/Index.md` (one level up from subfolders):
 - `[Turing Machine](Systems/TuringMachine.md)`
+
+## Integration with other skills
+
+- `new-project` invokes this during scaffolding; `update-wiki` maintains what this seeds; `check-wiki` audits it.
+- The article and Status skeletons are stated once in [update-wiki](../update-wiki/SKILL.md) and referenced from the steps above.
+- The CLAUDE.md template this skill appends is where the `provenance` and `journal` toggles live.
+
+## When NOT to use
+
+- `Wiki/` already exists — use `update-wiki` (content) or `check-wiki` (health) instead.
+- The repo is a throwaway experiment that will never accumulate durable knowledge.

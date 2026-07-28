@@ -32,6 +32,23 @@ exploration log:
 points at code. No filler prose, no over-explanation, no code inside Text
 cells. If a paragraph doesn't add a mathematical fact, delete it.
 
+## When to use
+
+- The user says "research notebook", "notebook with conjectures", "research
+  document on X", "write up the research on X", or runs `/research-notebook`.
+- A topic's computations have accumulated enough to be written up as a precise,
+  citable document.
+
+## Steps
+
+1. Write or update the `NotebooksLLM/<Topic>.md` source in the canonical
+   document order below, following *TeX in the sources* and *Prose style*.
+2. If a generated `.nb` exists, run the drift check first
+   ([fingerprint.md](fingerprint.md)); stop on any drift.
+3. Convert (§ *The conversion call*), evaluate and embed outputs
+   ([output-embedding.md](output-embedding.md)), stamp the fingerprint.
+4. Publish and link (§ *Evaluate, publish, link*), then § *After publishing*.
+
 Three read-on-demand siblings carry the deep mechanics — read only what the
 current step needs:
 
@@ -412,3 +429,14 @@ Four things this shape gets right, each learned the hard way:
 - [ ] Prose in thesis voice; abstract a section-by-section roadmap, written last; no selling adjectives.
 - [ ] Zero-message evaluation; Output cells embedded (graphics live, not rasterized); `ExportString` result checked with `StringQ` and the file re-imported.
 - [ ] Deployed public; README `Research Notebooks` table updated.
+
+## Integration with other skills
+
+- `new-notebook` supplies the base pipeline conventions (backtick escaping, init-cell marking, engine selection); this skill layers the rich engine + MathNotebook post-processing on top.
+- `cite` produces the bibliography entries; `lean` consumes the Lean-translatable statements; `provenance` stamps the `"Provenance"` key when its toggle is on.
+- `update-wiki` / `journal` receive the open questions after publishing.
+
+## When NOT to use
+
+- A demo, tour, or exploration notebook — that is `new-notebook` (or `start-tour`).
+- The user edited the generated `.nb` and the drift is unresolved — the build stays stopped until they decide.

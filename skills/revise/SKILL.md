@@ -13,7 +13,14 @@ description: >
 This is the core interaction protocol.
 Every skill that produces code, functionality, plans, or deliverables follows these rules.
 
-## The revision loop
+## When to use
+
+- Read at the start of every session; apply whenever producing code, functionality, plans, or deliverables.
+- Not invoked directly — the other skills follow it as a protocol.
+
+## Steps
+
+The revision loop:
 
 ```
 LLM generates → presents to user → WAITS for feedback → user revises or approves → done
@@ -109,3 +116,13 @@ There is no activity log.
 The audit trail is **git history** — commit with clear messages (authorship already distinguishes human from LLM).
 Work done against a `Work/` item is also captured in that item's `## Progress` log, one block per session.
 Do not maintain a `Wiki/Log.md`.
+
+## Integration with other skills
+
+- Every deliverable-producing skill follows this loop; `scaffold-paper`, `lean`, `publish-paclet`, `new-notebook`, `research-notebook`, and `update-wiki` link here for their specific gates.
+- `work` presents Specs through it; `next-session` reads it before every session; `scripts/auto-run.sh` runs under *Autonomous mode*.
+
+## When NOT to use
+
+- Wiki prose and journal entries — the named exemptions; update them freely.
+- Purely mechanical operations that change no deliverable (formatting, `git mv`, index updates).

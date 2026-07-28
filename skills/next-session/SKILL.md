@@ -16,31 +16,38 @@ Run exactly **one** task against a `Work/` item, then stop.
 Running each task in a fresh session is the whole point — it keeps context small and avoids the rot that builds up over a long chat.
 Read `revise` first; it governs the deliverable.
 
-## 1. Locate the item
+## When to use
+
+- The user says "next session", "next task", "work the next task", "continue the work item", "resume <Name>", or runs `/next-session`.
+- Always in a **fresh** session — clean context per task is the whole point.
+
+## Steps
+
+### 1. Locate the item
 
 - If a name was given (`/next-session GraphCurvature`), use `Work/Active/<Name>.md`.
   If it is in `Work/Backlog/` instead, `git mv` it into `Active/` first (it is being started).
   An archived item (`Work/Done/` or `Work/Dropped/`) has no next task — surface that instead.
 - Else read `Work/README.md` (it lists active items); if exactly one is active, use it; if several, ask which.
 
-## 2. Load context
+### 2. Load context
 
 Read the item file — `## Spec`, `## Tasks`, `## Hand-off`, `## Decisions`.
 The format holds that read flat in session count, so there is no partial-read rule: `## Progress` is one line per session and nothing in it is needed (see `Wiki/Concepts/ItemFileFormat.md`).
 An item that predates the format carries multi-paragraph Progress blocks — read only the last one or two of those, and give the item a `## Hand-off` in step 5.
 
-## 3. Pick the task
+### 3. Pick the task
 
 Take the first unchecked box in `## Tasks`.
 State it back to the user.
 
-## 4. Do exactly one task
+### 4. Do exactly one task
 
 Implement that single task — code, notebook, proof, whatever it calls for — following the `revise` loop for the deliverable.
 Do not start the next task.
 If the task changes a paclet submodule (paclet-dev), make the edits in that paclet's worktree on the item's branch — procedure in [paclet-worktree.md](paclet-worktree.md), read only in that case.
 
-## 5. File what the session produced
+### 5. File what the session produced
 
 **One fact, one destination — nothing is written twice**: file each fact per the destination table in [work § *The item file format*](../work/SKILL.md#the-item-file-format) (rationale: `Wiki/Concepts/ItemFileFormat.md`).
 
@@ -57,14 +64,14 @@ If the project has prompt tracking on (see the [provenance](../provenance/SKILL.
 
 Prose written here and in the step-4 deliverable follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*.
 
-## 6. Close the task
+### 6. Close the task
 
 Check the box and move it to `### Done` with the session number.
 Update the item's line in `Work/README.md` (next task).
 If that was the **last** task, complete the item: `git mv` the file from `Active/` into `Done/`, prefixing it with today's date (`Work/Done/YYYY-MM-DD-<Name>.md`), and remove its line from `Work/README.md`.
 The folder is now its status — there is no field to flip.
 
-## 7. Sync durable knowledge
+### 7. Sync durable knowledge
 
 Invoke `update-wiki` for the durable facts from step 5 — a new function, a result, a definition, a gotcha about an external tool.
 It updates `Wiki/` articles and `Status.md`.
@@ -74,13 +81,13 @@ When a fact contradicts what an article says, **edit the article**; `Wiki/` is t
 If the project's scientific journal is on (see the [journal](../journal/SKILL.md) skill), append a concise dated def/thm/rem/claim entry for what was established this session, citing resources used.
 When off, skip.
 
-## 8. Commit
+### 8. Commit
 
 If the user commits, use the `commit` skill. git history is now the project's audit trail, so write a message that names the item and task.
 In an autonomous run (see `revise` § *Autonomous mode*) there is no user to ask: commit unconditionally, on the `auto/<Item>` branch you were started on. The driver reads the new commit and the newly checked box as proof the task ran.
 In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` and the dev-repo tracking (`Work/`, `Wiki/`, `Code/`) on `main` — see [paclet-worktree.md](paclet-worktree.md).
 
-## 9. Stop
+### 9. Stop
 
 Say: "Session N complete (Tk).
 Start a fresh session and run /next-session for the next task."
@@ -90,3 +97,16 @@ Do not continue.
 
 For a `Type: formalization` item, "do one task" (step 4) means close one Lean sub-goal via the `lean` core loop.
 Which Mathlib lemma or tactic closed it is a durable fact — it goes to the `Wiki/` theorem article, not into the item file.
+
+## Integration with other skills
+
+- `work` creates and formats the items this skill executes; the one-fact destination table lives there.
+- `revise` governs the deliverable (and its *Autonomous mode* governs `/auto-run` sessions).
+- `update-wiki` files the durable facts in step 7; `journal` and `provenance` are fed when their toggles are on.
+- `commit` writes the audit-trail commit in step 8.
+
+## When NOT to use
+
+- Creating or re-scoping an item — that is `work`.
+- Chaining a second task in the same session — never; start a fresh session instead.
+- An archived item (`Done/` or `Dropped/`) — it has no next task.

@@ -12,6 +12,11 @@ description: >
 Thin wrapper around [scripts/cite_from_id.wls](../../scripts/cite_from_id.wls) that takes an identifier (arXiv ID, DOI, or URL containing either) and emits a BibTeX entry.
 Optionally appends to `Paper/references.bib` and creates a wiki article via [add-resource](../add-resource/SKILL.md).
 
+## When to use
+
+- The user says "cite this", "bibtex for arXiv:...", "DOI 10.xxx/...", "add citation".
+- A reference is added during paper writing, journal entries, or `research-notebook` literature sections.
+
 ## Recognized inputs
 
 | Input | Example |
@@ -28,9 +33,9 @@ Optionally appends to `Paper/references.bib` and creates a wiki article via [add
 
 `cite_from_id.wls` spawns a fresh `wolframscript` kernel (one license seat) — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the same `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator` instead.
 
-## Workflow
+## Steps
 
-### Step 1 — Run the script
+### 1. Run the script
 
 ```bash
 wolframscript -f "${CLAUDE_PLUGIN_ROOT}/scripts/cite_from_id.wls" <identifier>
@@ -40,12 +45,12 @@ Output is a BibTeX entry on stdout.
 For arXiv inputs the entry is built from the arXiv Atom API and includes `title`, `author`, `year`, `eprint`, `archivePrefix`, `url`, and `abstract`.
 For DOI inputs the entry is fetched from Crossref's `application/x-bibtex` content negotiation.
 
-### Step 2 — Show the entry to the user
+### 2. Show the entry to the user
 
 Always show the raw BibTeX before writing anywhere.
 The user may want to edit the key, trim the abstract, or fix author casing.
 
-### Step 3 — Decide where it goes
+### 3. Decide where it goes
 
 Ask the user (or infer from context):
 
@@ -77,3 +82,8 @@ If the user supplies multiple identifiers (newline- or comma-separated), run the
 - [search-math](../search-math/SKILL.md) — surfaces references from MathWorld / Wikipedia that often have DOIs; pipe those DOIs into this skill.
 - [scaffold-paper](../scaffold-paper/SKILL.md) — produces the `Paper/references.bib` this skill appends to.
 - [journal](../journal/SKILL.md) — owns `Journal/references.bib`; cite into it the same way as Paper.
+
+## When NOT to use
+
+- The resource needs a full wiki article with a `## Recover` section — that is `add-resource`.
+- No identifier exists (a blog post, a web page) — cite by URL in prose instead of fabricating an entry.

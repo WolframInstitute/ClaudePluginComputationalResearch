@@ -22,9 +22,15 @@ Resources have two layers:
 The wiki article is the source of truth.
 Local files can be rebuilt from `## Recover` sections via `Scripts/recover_resources.sh`.
 
-## Adding a resource
+## When to use
 
-### Step 1 — Download (if applicable)
+- The user says "add this paper", "save this resource", "note this repo", or hands over a URL, PDF, repo, notebook, or dataset worth keeping.
+- During `new-project` literature setup, and when `search-math` / `search-wolfram` results are worth registering.
+- When an external dependency enters the project and needs a `## Recover` line.
+
+## Steps
+
+### 1. Download (if applicable)
 
 Create `Resources/` if it doesn't exist.
 
@@ -63,7 +69,7 @@ OEIS A-numbers entered bare (e.g. `A000045`) without a URL should be treated as 
 - Repos: directory name matching the repo name
 - Other: descriptive name with extension
 
-### Step 2 — Create wiki article
+### 2. Create wiki article
 
 Article prose (Summary, Use in this project) follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*; the `## Recover` lines stay as `Key: Value`.
 
@@ -160,7 +166,7 @@ The `## Recover` section is machine-readable.
 Each line is `Key: Value`.
 The recovery script parses these to rebuild `Resources/`.
 
-### Step 3 — Update wiki
+### 3. Update wiki
 
 1. Add one-line entry to `Wiki/Index.md` under Resources:
    ```markdown
@@ -169,7 +175,7 @@ The recovery script parses these to rebuild `Resources/`.
 
 2. Add cross-links to related articles' See also sections
 
-### Step 4 — Read and summarize (if paper)
+### 4. Read and summarize (if paper)
 
 For papers specifically:
 
@@ -228,4 +234,16 @@ Anything external that informs or supports the project:
 - Datasets, spreadsheets
 - Tools, packages, libraries
 - Web pages, blog posts, documentation
+
+## Integration with other skills
+
+- `new-project` runs this pipeline for every reference paper it downloads.
+- `search-math` and `search-wolfram` hand their kept results here.
+- `cite` produces the BibTeX entry when the resource is also cited in a paper or journal.
+- `provenance` mirrors the `## Recover` convention for prompts.
+
+## When NOT to use
+
+- Internal artifacts (code, notebooks, wiki articles the project itself produces) — they are not resources.
+- A link mentioned in passing that nothing depends on — adding it is noise.
 - Emails, chat logs, slide decks

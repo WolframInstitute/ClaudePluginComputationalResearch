@@ -14,6 +14,11 @@ description: >
 Companion to [search-wolfram](../search-wolfram/SKILL.md) — searches external (non-Wolfram-ecosystem) mathematics resources.
 Use it whenever a math-research project needs to anchor a concept against authoritative external references.
 
+## When to use
+
+- The user says "search math", "find on MathWorld", "look up in nLab", "OEIS sequence", "DLMF formula", "search Wikipedia math".
+- During math-research project setup when external math sources are needed.
+
 ## What you need
 
 1. **Topic / keywords** — what to search for.
@@ -24,9 +29,9 @@ Use it whenever a math-research project needs to anchor a concept against author
 
 The search scripts below each spawn a fresh `wolframscript` kernel (one license seat) — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the equivalent `Import[...]` through `mcp__Wolfram__WolframLanguageEvaluator`.
 
-## Sources
+## Steps
 
-Run scripts **in parallel**.
+The steps are the sources — run their scripts **in parallel**, then finish with *After searching*.
 Skip any source that is clearly irrelevant (e.g. skip OEIS for a non-discrete topic).
 
 ### 1. MathWorld

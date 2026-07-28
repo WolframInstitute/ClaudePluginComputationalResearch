@@ -20,6 +20,11 @@ Durable knowledge goes in `Wiki/`; planning and progress go here.
 
 Work items follow the `revise` protocol — the LLM drafts the Spec, presents it, and waits for approval before work begins.
 
+## When to use
+
+- The user says "new work item", "start a work item", "spec out X", "plan for X", "break X into tasks", "track this across sessions", "add a task", "update the spec", or runs `/work`.
+- Any effort that will span more than one session and needs a Spec and task list.
+
 ## Folders are the status
 
 An item's status is **which folder it lives in** — there is no status field.
@@ -44,7 +49,7 @@ If `Work/` does not exist, create it and seed `Work/README.md` from `${CLAUDE_PL
 The folder is tracked in git — do not gitignore it.
 Create each bucket (`Active/`, `Backlog/`, `Done/`, `Dropped/`) lazily the first time an item lands in it.
 
-## Creating a work item
+## Steps
 
 ### 1. Draft
 
@@ -132,10 +137,16 @@ The Spec is the contract, and it is **edited in place** — a session that finds
 If the user edited it, it is protected content: describe the proposed change, wait for approval, edit, then add one `## Decisions` row.
 If it is LLM-drafted and unapproved, edit directly.
 
-## Relationship to other skills
+## Integration with other skills
 
 - `next-session` executes one task per fresh session against an item created here.
   In a paclet-dev repo, an item that changes paclet code is developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree and lands as a PR on that paclet's repo (the dev repo stays on `main`) — name the target paclet in the Spec.
 - `update-wiki` records durable knowledge in `Wiki/` — this skill does not touch the Wiki; it manages execution state only.
 - The `revise` protocol governs every Spec and task-list interaction.
 - For Lean formalization, `lean` creates a `Type: formalization` item here.
+
+## When NOT to use
+
+- Casual uses of the word "work" — this skill is for creating and managing work items only.
+- Executing a task — that is `next-session`, one task per fresh session.
+- Durable knowledge — that goes to `Wiki/` via `update-wiki`, never into an item file.

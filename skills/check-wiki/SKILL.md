@@ -12,12 +12,18 @@ description: >
 Audit the wiki for staleness, gaps, and broken links.
 Fix issues automatically where possible; report what was fixed and what needs human attention.
 
+## When to use
+
+- Start of a new conversation/session (quick check: only scan the index and status, don't deep-check every article; flag anything suspicious for manual review)
+- After a large refactor or code reorganization
+- When the user asks for project status, or says "check wiki", "wiki health", "audit wiki"
+
 ## Prerequisites
 
 `Wiki/` must exist.
 If it doesn't, suggest running init-wiki.
 
-## Procedure
+## Steps
 
 ### 1. Load the wiki state
 
@@ -93,11 +99,13 @@ Wiki Health Check:
 If everything is clean: "Wiki is healthy.
 No issues found."
 
-## When to run automatically
+## Integration with other skills
 
-- Start of a new conversation/session (quick check)
-- After a large refactor or code reorganization
-- When the user asks for project status
+- `init-wiki` creates the structure this skill audits; suggest it when `Wiki/` is missing.
+- `update-wiki` fixes what this skill finds (stale articles, missing entries, broken links).
+- `work` owns the stalled-item check's subject matter — this skill only reports.
 
-For session-start checks, keep it fast: only scan the index and status, don't deep-check every article.
-Flag anything suspicious for manual review.
+## When NOT to use
+
+- `Wiki/` does not exist yet — run `init-wiki` instead.
+- Right after a routine `update-wiki` pass — the wiki was just brought current.

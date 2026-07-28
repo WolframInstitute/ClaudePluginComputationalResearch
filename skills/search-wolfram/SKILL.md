@@ -16,6 +16,11 @@ Systematically search the Wolfram ecosystem for resources related to a topic.
 This is a standalone skill — invoke it when the user wants to find what Wolfram already offers for their subject.
 Not every project needs this; it's for projects that build on or connect to the Wolfram Language ecosystem.
 
+## When to use
+
+- The user says "search wolfram", "find wolfram resources", "wolfram community search", "what functions exist for X", "check the function repository".
+- During project setup when Wolfram-specific resource gathering is wanted.
+
 ## What you need
 
 1. **Topic / keywords** — what to search for.
@@ -28,9 +33,9 @@ Not every project needs this; it's for projects that build on or connect to the 
 
 The search scripts below each spawn a fresh `wolframscript` kernel (one license seat) — check headroom first per the authoritative policy in [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); with no free seat, run the equivalent `Import[...]`/`ResourceSearch[...]` through `mcp__Wolfram__WolframLanguageEvaluator` (and `mcp__Wolfram__WolframLanguageContext` for documentation).
 
-## Sources
+## Steps
 
-Run these scripts in parallel where possible.
+The steps are the sources — run their scripts in parallel where possible, then finish with *After searching*.
 Skip any source that is clearly irrelevant to the topic.
 
 ### 1. Wolfram Language Documentation
@@ -155,3 +160,8 @@ Suggest which resources are most useful for the project and what to explore next
 - Use **add-resource** for each downloaded notebook or notable reference
 - Update **Wiki/Index.md** if new articles were created
 - If Paper/ exists and references were found, suggest adding citations to `Paper/references.bib`
+
+## When NOT to use
+
+- Pure-math references (MathWorld, nLab, OEIS, DLMF) — that is `search-math`.
+- Looking up one documented function — ask the Wolfram MCP (`WolframLanguageContext`) directly; no sweep needed.

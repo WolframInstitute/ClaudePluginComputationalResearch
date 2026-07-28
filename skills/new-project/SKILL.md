@@ -16,6 +16,11 @@ description: >
 Set up a new project with the wiki knowledge base and optional Wolfram Language computation, paclet development, or a structured LaTeX/Typst journal.
 The project takes a research topic from **any scientific domain** and explores it through Wolfram models and computation.
 
+## When to use
+
+- The user says "new project on X", "let's start a project about Y", "set up folders for Z", "init project", "create a paclet for X", "new paclet dev repo".
+- The user wants to investigate or explore a topic computationally and no project exists yet.
+
 ## What to ask the user
 
 Before scaffolding, you need:
@@ -104,12 +109,16 @@ If the user already provided these in their message, don't ask again.
 
 **Detection**: Cowork if working directory contains `/sessions/` or `/mnt/`, or `check-env.sh` reports no local MCP but the official Wolfram MCP responds.
 
-## Environment check (all types)
+## Steps
+
+After the questionnaire above:
+
+### 1. Environment check (all types)
 
 Run `${CLAUDE_PLUGIN_ROOT}/scripts/check-env.sh`, then evaluate `1+1` with the official Wolfram MCP.
 Determine mode (local vs. Cowork) and available tools.
 
-## Scaffolding, by type
+### 2. Scaffold, by type
 
 Follow the chosen type's procedure in its sibling file, read on demand — only the one for the chosen type:
 
@@ -120,7 +129,7 @@ Follow the chosen type's procedure in its sibling file, read on demand — only 
 
 The directory trees are not repeated in those files; each scaffold script prints what it created.
 
-## After scaffolding
+### 3. After scaffolding
 
 If the user asked to track prompts, turn provenance on via the `provenance` skill: set `Prompt tracking: **on**` in `CLAUDE.md`, create `Wiki/Prompts.md`, and add its `## Prompts` entry to `Wiki/Index.md`.
 If the user asked for the scientific journal, turn it on via the `journal` skill: set `Scientific journal: **on**` in `CLAUDE.md` and scaffold `Journal/`.
@@ -157,3 +166,13 @@ Tell the user:
     definitions, theorems, and main claims (off by default; `/journal on`)
   - `start-tour` — interactive project walkthrough
 - Suggest next steps based on the topic and papers
+
+## Integration with other skills
+
+- `init-wiki`, `add-resource`, `new-notebook`, and `scaffold-paper` are invoked by the type procedures; `search-wolfram` / `search-math` gather resources during setup.
+- `provenance` and `journal` own the two optional toggles this skill asks about.
+
+## When NOT to use
+
+- The project already exists — use the specific skill (`init-wiki`, `scaffold-paper`, `work`, …) for the missing piece.
+- A quick one-off computation — no scaffolding needed; just compute.

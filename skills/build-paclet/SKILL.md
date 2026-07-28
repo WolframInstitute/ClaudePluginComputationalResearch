@@ -10,6 +10,12 @@ description: >
 
 Build a `.paclet` archive from the paclet source and install it locally.
 
+## When to use
+
+- Before publishing — always build and test locally first
+- After editing kernel files — rebuild to pick up changes
+- When the user wants to test the paclet in a clean environment
+
 ## What you need
 
 1. **Paclet name** — the CamelCase name matching the directory structure.
@@ -27,7 +33,9 @@ Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the othe
 
 Resolve the absolute `<pacletDir>` (the directory containing `PacletInfo.wl`) once, then use it in the build below.
 
-## Step-by-step (preferred: MCP)
+## Steps
+
+Preferred path: the MCP, end to end.
 
 ### 1. Lint (optional)
 
@@ -104,8 +112,13 @@ Add `--with-docs` to bundle the `Documentation/` directory.
 The script prints the paclet directory, archive path, installed name/version, and install location.
 Verify with `wolframscript -c 'Needs["<OrgName>`<PacletName>`"]'`.
 
-## When to use
+## Integration with other skills
 
-- Before publishing — always build and test locally first
-- After editing kernel files — rebuild to pick up changes
-- When the user wants to test the paclet in a clean environment
+- `publish-paclet` builds through this skill's recipe (with `withDocs = True`) before uploading.
+- `paclet-docs` uses the *Detecting the paclet directory* rule and the *Docs-resolution check* stated here.
+- `new-project` (paclet types) scaffolds the layout this skill detects.
+
+## When NOT to use
+
+- Publishing to the cloud — that is `publish-paclet` (it builds with docs and verifies them).
+- Editing documentation pages — that is `paclet-docs`.

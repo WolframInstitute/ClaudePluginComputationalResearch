@@ -142,7 +142,9 @@ That skill generates **one-way**: the `.md` is the source of truth and the user 
 ## How to Add a New Skill
 
 1. Create `skills/<skill-name>/SKILL.md` with frontmatter (`name`, `description`)
-2. Write the procedural instructions in the body
+2. Write the body to the **standard skeleton** — every skill carries these four sections, in this order where content allows:
+   `## When to use` (triggers), `## Steps` (the procedure, numbered `### 1. Title`), `## Integration with other skills`, `## When NOT to use`.
+   Domain sections (policy blocks, formats, references) may sit between them; deep mechanics go to read-on-demand sibling `.md` files next to `SKILL.md` (see `next-session/paclet-worktree.md` for the convention)
 3. The plugin system auto-discovers skills from the `skills/` directory
 4. If the skill needs a script, add it to `scripts/` and reference it via `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
 5. If the skill should have a slash command, create `commands/<name>.md`
