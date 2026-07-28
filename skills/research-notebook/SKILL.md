@@ -3,17 +3,18 @@ name: research-notebook
 description: >
   Build an LLM-generated "research notebook": a concise, mathematically precise,
   cloud-published Wolfram notebook that develops one topic as a research
-  document — definitions first, then the conjectures the computations support
-  (each with computed evidence), function demonstrations named by the literal
-  code, an enumerated list of further research questions, and a literature
-  section. Converts the Markdown source with the rich MarkdownToNotebook parser,
-  then applies the MathNotebook paclet environments (Definition, Conjecture,
+  document in a fixed canonical order — the definitions first, then the theorems
+  (with conjectures and their computed evidence subsumed there), then the
+  symbols and functions used, then the relevant code calls — closing with
+  enumerated further research questions and a cited literature section.
+  Converts the Markdown source with the rich MarkdownToNotebook parser, then
+  applies the MathNotebook paclet environments (Definition, Theorem, Conjecture,
   Question, ...) so statements translate directly to Lean. Visual-first: mostly
   pictures and plots, not numeric dumps. Generated one-way from a readable
   Markdown source the user edits directly; a per-cell fingerprint detects any
   edit made in the .nb instead, and regeneration stops rather than overwrite it.
-  Use when the user says "research notebook", "notebook with
-  conjectures", "research document on X", "write up the research on X", or the
+  Use when the user says "research notebook", "notebook with conjectures",
+  "research document on X", "write up the research on X", or the
   /research-notebook command.
 ---
 
@@ -25,13 +26,23 @@ exploration log:
 | Skill | Produces |
 |-------|----------|
 | `new-notebook` | generic Markdown → `.nb` pipeline (this skill builds on it) |
-| `research-notebook` | definitions → conjectures + evidence → demonstrations → open questions → literature |
+| `research-notebook` | definitions → theorems + evidence → symbols/functions → code calls → open questions → literature |
 
 **Style: lightweight and precise.** Every sentence either defines, states, or
 points at code. No filler prose, no over-explanation, no code inside Text
 cells. If a paragraph doesn't add a mathematical fact, delete it.
 
-## Pipeline and the revision protocol — Critical
+Three read-on-demand siblings carry the deep mechanics — read only what the
+current step needs:
+
+- [fingerprint.md](fingerprint.md) — the drift-detection fingerprint: stamping,
+  checking, and why no `.nb` → `.md` direction exists
+- [mathnotebook.md](mathnotebook.md) — MathNotebook install, stylesheet
+  embedding, verified environment mechanics
+- [output-embedding.md](output-embedding.md) — evaluating Input cells and
+  embedding Output cells headless
+
+## Pipeline — Critical
 
 The source of truth is `NotebooksLLM/<Topic>.md`.
 Conversion is a **two-half pipeline**, and both halves are load-bearing:
@@ -63,10 +74,11 @@ would force the WolframBookTools stylesheet; under `Default` the divs are
 **silently dropped entirely** — no cells, no message. Use the bold environment
 markers instead.
 
-### Generation is one-way; revision is a protocol, not a sync
+### Generation is one-way; the fingerprint guards the .nb
 
 **The `.md` → `.nb` direction is the only transfer.** There is no `.nb` → `.md`
-transfer at all, in either engine — see *Why there is no reverse direction*.
+transfer at all, in either engine — the measured evidence is in
+[fingerprint.md](fingerprint.md) § *Why there is no reverse direction*.
 
 So the working arrangement is: **the user reads the `.nb` and edits the `.md`.**
 That is only honest if the `.md` is genuinely readable, which is a live
@@ -77,58 +89,11 @@ generated: point at the `.md` as the file to edit, and say the `.nb` is a build
 product.
 
 **But never assume the user obeyed that.** The build stamps a per-cell
-fingerprint, and every regeneration checks it first:
-
-1. **At build**, after writing the `.nb`, re-import it, fingerprint the
-   round-tripped cells, and store the result in a notebook option:
-   ```wolfram
-   TaggingRules -> { "ResearchNotebook" -> { "Cells" -> fingerprint } }
-   ```
-   The fingerprint is `<| CellID -> Hash[ { content, style } ] |>` over level
-   `{1}`. Two details are load-bearing: **assign the `CellID`s yourself** —
-   `CreateCellID -> True` is an instruction to the front end and does **not**
-   stamp programmatically built cells — and **fingerprint after the round-trip**,
-   never the in-memory expression, because `Export` normalises cell content and
-   an in-memory fingerprint reports every cell as edited.
-   The stamp must **merge** into any `TaggingRules` already on the notebook —
-   with prompt tracking on, the build has put a `"Provenance"` key there — so
-   write it through the `stampTaggingRule` helper in the
-   [provenance](../provenance/SKILL.md) skill, never as a literal
-   `TaggingRules -> {...}` that replaces the option. Stamping only touches
-   options, so the just-computed cell fingerprint stays valid.
-2. **Before regenerating**, re-import and compare. A cell with no `CellID` is
-   **user-added**; a recorded `CellID` that is gone is **user-deleted**; a
-   recorded `CellID` whose hash moved is **user-edited**.
-3. **If anything drifted, stop.** Present the drift and let the user decide —
-   transcribe it into the `.md`, or discard it. Do not regenerate over it and do
-   not guess. If nothing drifted, regenerate freely.
-
-Verified: an untouched notebook reports zero drift (no false positives), and a
-notebook with one cell rewritten, one added and one deleted reports exactly those
-three.
-
-### Why there is no reverse direction
-
-Both candidates lose content, measured at the pinned SHA.
-
-`ExportString[ Import[ path ], "Markdown" ]` on a generated research notebook
-turned a 639-character source into 955 characters of unusable output:
-
-- Every typeset construct became a reference to a PNG that does not exist —
-  `![…](img/….png)` — including each subscripted inline formula, each
-  `DisplayFormula`, every `Citation` button, and the whole table.
-- The environment markers were gone: a `Definition` cell exports as bare prose,
-  so a round-trip would silently demote it to `Text`.
-- A `wolfram` fence came back as broken literal source containing `$Failed` and
-  `MarkdownTools\`Private\`` symbols.
-- Non-ASCII characters mojibaked (`κ` → `Îº`), headings shifted down a level, and
-  the frontmatter was dropped.
-
-`NotebookToMarkdown.wl` is not a way out either — it loses frontmatter and
-empties table headers (see `Wiki/Resources/MarkdownToNotebook.md`).
-
-The fingerprint above replaces both: it detects *that* and *where* the user
-edited without needing to read the notebook back as Markdown.
+fingerprint, and every regeneration checks it first; if any cell was added,
+deleted, or edited in the `.nb`, **the build stops** and the drift goes to the
+user — transcribe it into the `.md` or discard it, never regenerate over it.
+The stamping and comparison procedure, with its two load-bearing details, is in
+[fingerprint.md](fingerprint.md).
 
 ## Source frontmatter and the notebook head
 
@@ -143,8 +108,8 @@ Either way the keys are metadata, not content — the `Default` template emits n
 
 ```markdown
 ---
-notebook: Displacements
-title: Displacements on graphs
+notebook: Curvature
+title: Ollivier curvature on graphs
 author: Pavel Hajek, Claude <model name>
 ---
 ```
@@ -206,36 +171,9 @@ which makes the failure easy to miss.
 
 ## MathNotebook environments and Lean-translatability
 
-**Install.** The paclet is **not** on the Paclet Repository — its source repo is
-private, so `PacletInstall[ "WolframInstitute/MathNotebook" ]` resolves to
-nothing. Install from the cloud build:
-
-```wolfram
-PacletInstall[ "https://www.wolframcloud.com/obj/hajek_pavel/MathNotebook.paclet",
-  ForceVersionInstall -> True ]
-Needs[ "WolframInstitute`MathNotebook`" ]
-```
-
-Once a copy is installed, `UpdateMathNotebook[ ]` upgrades it in place. The
-paclet is MIT, needs Wolfram 14.3+, and its `PrimaryContext` is
-`WolframInstitute`MathNotebook``.
-
-**Embed the stylesheet — never reference it by name.** A notebook deployed with
-`StyleDefinitions -> FrontEnd`FileName[ { "MathNotebook" }, "AMSArticle.nb" ]`
-travels with **zero** style definitions: the option is only a path into a paclet
-layer on the author's disk, so a cloud reader falls back to `Default.nb`, where
-the environments lose both their numbers and their labels. Embed instead — the
-cost is about 47 kB:
-
-```wolfram
-Get[ "${CLAUDE_PLUGIN_ROOT}/scripts/mathnotebook_post.wl" ]
-MathNotebookDocument[ cells, bibTags ]
-```
-
-`MathNotebookDocument` runs the whole post-processing pipeline in the one order
-that works — environments, then equation numbering, then citations — and wraps
-the result with the embedded sheet. Citations must come last, because a
-reference to an equation has to see the cell as `DisplayFormulaNumbered`.
+Install, stylesheet embedding, and the verified marker mechanics are in
+[mathnotebook.md](mathnotebook.md); what an author needs while writing the
+source is here.
 
 **Source convention → environment cells.** In the `.md` source, open a paragraph
 with a bold marker. All **12** environments are available, sharing one counter:
@@ -246,13 +184,8 @@ with a bold marker. All **12** environments are available, sharing one counter:
 | Definition | `**Definition.**` `**Example.**` `**Construction.**` | bold label, roman body |
 | Remark | `**Remark.**` `**Question.**` `**Observation.**` | italic label, roman body |
 
-`ConvertEnvironmentCells` strips the marker and applies the style; a bold marker
-naming no environment is left as a `Text` cell. Both spellings are handled — a
-parsed bold run and a literal `**Definition.**` string.
-
-Numbering comes from the stylesheet as a `CellDingbat` of `CounterBox`es, so it
-is the front end's to compute and **never yours to write**: do not put a number
-in the source. Two counter facts to write against:
+Numbering is the front end's to compute and **never yours to write**: do not put
+a number in the source. Two counter facts to write against:
 
 - **Theorem numbers are per-section**, `⟨section⟩.⟨n⟩`, shared across all 12
   environments — a Definition then a Theorem in section 1 are 1.1 and 1.2.
@@ -261,63 +194,57 @@ in the source. Two counter facts to write against:
 Note that the Plain class italicises the body, which is the amsthm convention but
 surprises authors who write a long `Theorem` cell.
 
-**The bold markers survive rich-mode conversion unchanged**, and that is what
-makes the two-half pipeline work: MarkdownToNotebook emits a bold run as
-`StyleBox[ "Definition.", FontWeight -> "Bold" ]` as the first element of the
-cell's `TextData`, which is exactly the shape `markerSplit` matches. Verified end
-to end — `**Definition.**` / `**Remark.**` / `**Conjecture.**` came out as
-`Definition 1.1` / `Remark 1.2` / `Conjecture 2.1` with the correct label and
-body styling.
-
-**Displayed math.** In rich mode `$$…$$` becomes the `DisplayFormula` cell
-(see *TeX in the sources*); on the built-in fallback a `wolfram` fence starting
-with `FormBox[…]` does. MathNotebook defines no separate equation environment.
-Give the cell `CellTags` and `NumberTaggedFormulas` promotes it to
-`DisplayFormulaNumbered`, which draws `(n)` flush right — an equation is numbered
-exactly when something can cite it.
-
-**Tables are the one cosmetic loss.** The converter's `2ColumnTableMod` /
-`TableText` / `ModInfo` styles are defined in neither `Default.nb` nor
-`AMSArticle.nb`, so a Markdown pipe table renders as plain monospace text with no
-rules and no header emphasis. Prefer a `Grid` in a `wolfram` fence when a table
-carries weight; keep pipe tables for throwaway comparisons.
-
-**Write every Definition and Conjecture so it translates directly to a Lean
-statement**: explicit hypotheses, explicit quantifiers, quantification over
+**Write every Definition, Theorem, and Conjecture so it translates directly to a
+Lean statement**: explicit hypotheses, explicit quantifiers, quantification over
 finite/decidable objects wherever possible ("for every connected graph G with
 |V| ≤ n ..."), no appeals to pictures inside statements. Open questions and
 proved conjectures feed the [lean](../lean/SKILL.md) skill for formalization.
 
-## Notebook structure
+## Canonical document order — Critical
 
-1. **Title**, `[ LLM Generated ]` subtitle, then a 2–4 sentence abstract stating
-   the main claims — written **last**, after the evidence is in.
+The generated document develops its topic in this fixed order — the four core
+blocks are user-mandated and not negotiable:
+
+1. **Head**: `[ LLM Generated ]` line, **Title**, **Author**, then a 2–4
+   sentence **Abstract** stating the main claims — written **last**, after the
+   evidence is in.
 2. **Initialization** (folded, init cells): paclet loads, MathNotebook load,
    `SeedRandom`, a reproducibility line (paclet version, git commit, date),
-   and — for graph topics — the example-graph constructions **copied verbatim
-   from the project's ExampleGraphs notebook/module** (e.g. Infrageometry's
-   `Kernel/ExampleGraphs.wl`), so the notebook is self-contained.
-3. **Functions** — the index of every symbol used, grouped by role (see
-   *Required sections* below).
-4. **Definitions** — `Definition` cells, precise, Lean-translatable.
-5. **Classification** — the categories the defined objects fall into, the
-   implication lattice, and a counterexample plus census per independence (see
-   *Required sections* below).
-6. **Conjectures** — the conjectures the computations support, each a
-   numbered `Conjecture` cell followed by a folded **Example** subsection (titled `### Example`, never "Evidence"):
-   a systematic check over the example-graph battery whose verdict is rendered
-   **as a graphic** (see *Visual-first*). Each conjecture carries a status
-   marker: `verified up to n = ...` / `open` / `proved in [ref]`. A conjecture
-   that fails the battery is **demoted to a Question** and the minimal
-   counterexample found is kept, as a picture.
-7. **Demonstrations** — one Section per function, titled by the **literal
-   symbol name** (e.g. `GraphInteriorForm`); Subsections titled by the literal
-   option/method form (e.g. `"Method" -> "3DFiber"`). Short Text cell, then
-   code, then picture. Follow `wi:sw-example` house style when present.
-8. **Further research questions** — an enumerated list (`ItemNumbered`), each
-   referencing the conjectures/definitions it concerns by number; proof
+   and the example-object constructions **copied verbatim from the project's
+   example module**, so the notebook is self-contained.
+3. **Definitions** — the list of definitions: `Definition` cells, precise,
+   Lean-translatable. When a metric construction is set-valued by default, name
+   the set-valued object as the primitive and the single-valued case by a
+   predicate — decide by **closure** under the theory's operations, verify the
+   closure computationally, and state the convention in a `Remark` whose
+   Example is that computation (a worked case:
+   [Wiki/Concepts/DisplacementNaming.md](../../Wiki/Concepts/DisplacementNaming.md)).
+4. **Theorems** — the list of theorems, with conjectures and their evidence
+   subsumed here: each statement a numbered `Theorem` / `Conjecture` cell
+   followed by a folded **Example** subsection (titled `### Example`, never
+   "Evidence") — a systematic check over the project's example battery whose
+   verdict is rendered **as a graphic** (see *Visual-first*).
+   Each conjecture carries a status marker: `verified up to n = ...` / `open` /
+   `proved in [ref]`. A conjecture that fails the battery is **demoted to a
+   Question** and the minimal counterexample found is kept, as a picture.
+   State how the defined notions relate — the implication lattice as a display
+   formula, each independence backed by a **counterexample and a census**, not
+   an assertion. Never assert an implication you have not checked: enumerate
+   over small objects (full enumeration on a small object beats sampling on a
+   large one), and expect some proposed claims to be false — finding the
+   exception is the result.
+5. **Symbols and functions used** — a flat index of every symbol the notebook
+   uses, grouped by role (constructions / operations / invariants and
+   predicates / visualisation), each a literal symbol name, an em dash, and at
+   most a dozen words. This is the reader's index; it is not the demonstrations.
+6. **The relevant code calls** — one Section per function, titled by the
+   **literal symbol name** (e.g. `GraphInteriorForm`); Subsections titled by the
+   literal option/method form (e.g. `"Method" -> "3DFiber"`). Short Text cell,
+   then code, then picture. Follow `wi:sw-example` house style when present.
+7. **Further research questions** — an enumerated list (`ItemNumbered`), each
+   referencing the theorems/definitions it concerns by number; proof
    strategies for the conjectures live here.
-9. **Literature** — every claim that isn't ours gets a citation tag `[tag]`
+8. **Literature** — every claim that isn't ours gets a citation tag `[tag]`
    (MathNotebook `Citation` style); the final References section lists the
    entries, produced by the [cite](../cite/SKILL.md) skill and kept in sync
    with `Paper/references.bib` when the project has one. See *Citations and
@@ -355,7 +282,7 @@ Write like a mathematics thesis, not like a product announcement.
 
 - **Declarative "we" voice**: "We define…", "We prove…", "We ask whether…".
 - **The abstract is a roadmap**, one short paragraph per section, in order:
-  "In the Definitions section, we define… In the Structure section, we prove…".
+  "In the Definitions section, we define… In the Theorems section, we prove…".
   Write it last.
 - **No selling.** Banned: "exact structural facts", "the strongest", "cleanly",
   "sharp", "fragile", "cautionary", "genuinely", "remarkable", "powerful",
@@ -367,119 +294,34 @@ Write like a mathematics thesis, not like a product announcement.
 - **One fact per sentence**, with the qualifier attached: "verified on the 8×8
   honeycomb patch" rather than "verified".
 
-## Required sections beyond the core structure
-
-**Functions** — right after Initialization, a flat list of every function the
-notebook uses, grouped by role (constructions / operations / invariants and
-predicates / visualisation), each a literal symbol name, an em dash, and at most
-a dozen words. This is the reader's index; it is not the demonstrations.
-
-**Classification** — after Definitions. Classify the objects just defined into
-categories and state how the categories relate. This is the section a
-mathematician reads to know what kind of thing they are holding, so:
-
-- give the implication lattice among the predicates, as a display formula;
-- state which independences hold, and back each with a **counterexample and a
-  census**, not an assertion — "of the 20 bijections of C6 with magnitude ≤ 1,
-  only 3 are automorphisms" is worth more than a paragraph of prose;
-- distinguish the graded invariants (magnitude, degree) from the boolean
-  predicates, and say explicitly that they do not interact.
-
-Never assert an implication you have not checked. Enumerate over small objects
-(all 720 permutations of C6, all 729 scale-1 displacements) — full enumeration on
-a small object beats sampling on a large one, and it catches the false
-"obvious" claims. Expect some to be false: a claim the user proposes may well
-have exceptions, and finding the exception is the result.
-
-## Multivaluedness and the naming of definitions
-
-Discrete-geometric constructions defined from a metric are **set-valued by
-default**: the metric leaves ties it cannot break, and the operations create
-them. Decide the naming by **closure**, not by analogy with the smooth case:
-
-- If the operations of the theory do not preserve single-valuedness, the
-  set-valued object is the primitive one and takes the plain name
-  (`Displacement`), with a predicate for the special case
-  (`DisplacementSingleValuedQ`) and the phrase "single-valued X" in prose.
-  Naming the single-valued object `X` would name a class the theory leaves
-  after one operation.
-- Verify this rather than assuming it: feed single-valued inputs through every
-  operation and report the largest value set. (For displacements on graphs only
-  composition preserves single-valuedness; sum, inverse, scaling and commutator
-  all break it.)
-- Call a single-valued object contained in a set-valued one a **selection**,
-  the standard term from set-valued analysis.
-
-State the convention in a `Remark` in the Definitions section, with the closure
-computation as its Example. The same choice recurs for every metric-only notion,
-so make it once and cite it.
-
 ## Visual-first — Critical
 
 The notebook is **mostly pictures and plots**. Never end an Example or
 demonstration cell with a bare number, boolean list, or textual table:
 
-- verdicts over the graph battery → `ArrayPlot`/heatmap grid or a row of
+- verdicts over the example battery → `ArrayPlot`/heatmap grid or a row of
   highlighted graphs, pastel colors;
-- counterexamples → the graph drawn with the violating substructure
+- counterexamples → the object drawn with the violating substructure
   highlighted;
 - quantitative claims → a plot, not a list of values.
 
 A small symbolic result (a single boolean, a short set) may stand alone only
 when that value *is* the point.
 
-## Evaluate, publish, link — like the Infrageometry repo
+## Evaluate, publish, link
 
 1. **Smoke test**: evaluate every Input cell through the Wolfram MCP
    (license-aware — see [new-notebook](../new-notebook/SKILL.md) *Kernel
    execution*); the build must finish with **zero messages**.
 2. **Embed outputs**: the generator evaluates every Input cell and attaches its
-   Output cells, so the shipped notebook carries real results — see
-   *Embedding evaluated outputs* below.
+   Output cells, so the shipped notebook carries real results — procedure and
+   traps in [output-embedding.md](output-embedding.md).
 3. **Deploy** to the Wolfram Cloud, public, stable object name
    `<Project>/<Topic>.nb` (matching `Scripts/publish_notebooks.wls`).
 4. **Link from the repo README** in a `## 📓 Research Notebooks` section — a
    table `| Notebook | Description | Link |`, one row per notebook, the link
-   anchored on "Wolfram Cloud" — exactly the format the Infrageometry paclet
-   README uses. Create the section if missing; update the row in place if the
-   notebook already has one.
-
-## Embedding evaluated outputs
-
-`NotebookEvaluate` needs a front end driving the kernel and **hangs headless**,
-so do not reach for it. Evaluate in the kernel and build the Output cells
-yourself — the approach proven in
-[`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook)
-(`captureCellRun` / `outputBoxes`; nothing to install, see *The conversion
-call* below):
-
-1. Parse each cell's source with `ToExpression[code, InputForm, Hold]` to get
-   the top-level statements, and evaluate them **in document order**, threading
-   kernel state across cells.
-2. A statement whose held form is `CompoundExpression[___, Null]` — a
-   `;`-terminated line — evaluates for its side effect and emits **no** Output,
-   matching notebook semantics. Every other statement contributes one Output.
-3. Wrap the result with `ToBoxes`, which keeps graphics **live** as
-   `GraphicsBox`/`Graphics3DBox` rather than rasterizing. Rasterize only what has
-   no faithful inline form (a whole `Notebook` or `NotebookObject`), and cap the
-   raster (long dimension ≈ 1200 px, area ≈ 480k px) so the cell does not trip
-   the resource checker's large-cell bounds.
-4. Emit `Cell[CellGroupData[{inputCell, outputCells...}, Open]]`.
-5. Evaluate in a **private context** per notebook (`Block[{$Context = "Build<Name>`",
-   $ContextPath = {"System`"}}, …]`) so the build does not leak symbols.
-6. Substitute `NotebookDirectory[]` with the target directory before evaluating —
-   there is no notebook at build time.
-
-Two traps, both real:
-
-- **Match Input cells at level `{1}` only.** An imported Markdown table becomes a
-  `Tabular` cell whose content nests further `Cell` expressions; a
-  `Replace[…, {1, Infinity}]` matches those too and consumes the code list out of
-  step. The symptom is silent: `ExportString[nb, "NB"]` returns the 7-character
-  string `"$Failed"` with no message, and the written file is 7 bytes.
-- **`ExportString` failing silently** is the general failure mode. Always check
-  `StringQ` on its result and that the written notebook re-imports with head
-  `Notebook`; file size alone will not tell you.
+   anchored on "Wolfram Cloud". Create the section if missing; update the row
+   in place if the notebook already has one.
 
 ## The conversion call
 
@@ -513,8 +355,8 @@ Module[ { wl, nb, cells },
 ```
 
 Then write the notebook, re-import it, and stamp the fingerprint — see
-*Generation is one-way* for why the fingerprint must come from the round-tripped
-cells rather than from `cells` above.
+[fingerprint.md](fingerprint.md) for why the fingerprint must come from the
+round-tripped cells rather than from `cells` above.
 
 Four things this shape gets right, each learned the hard way:
 
@@ -534,11 +376,6 @@ Four things this shape gets right, each learned the hard way:
   `ImportString[ …, "TeX" ]` with worse math fidelity. Probe
   `PacletFind[ "Wolfram/Parser" ]` and surface the degradation instead of
   swallowing it.
-
-`NotebookToMarkdown.wl` is **not** used — see *Why there is no reverse
-direction* for why that direction is abandoned. Its message / `Print` / `CellPrint`
-capture is still worth reading if the notebook's outputs must record those
-channels.
 
 ## After publishing
 
@@ -563,16 +400,14 @@ channels.
 - [ ] Equation `CellTags` attached after conversion, in document order, before `MathNotebookDocument`.
 - [ ] Weight-bearing tables written as a `Grid` in a `wolfram` fence — pipe tables render unstyled under both sheets.
 - [ ] MathNotebook stylesheet **embedded** (not referenced) + environments; markers converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
-- [ ] Definitions and conjectures Lean-translatable (explicit hypotheses and quantifiers).
-- [ ] Section order: Initialization, Functions, Definitions, Classification, then the results.
-- [ ] Functions section lists every symbol used, grouped by role, one line each.
-- [ ] Classification section gives the implication lattice and a counterexample plus census for each independence.
-- [ ] Set-valued-by-default naming decided by closure under the operations, with the closure check shown.
-- [ ] Every conjecture has an `Example` subsection rendered as a graphic, and a status marker; failures demoted to Questions with counterexample pictures.
-- [ ] Demonstration sections titled by literal function/option code; no code in Text cells.
-- [ ] Enumerated further research questions referencing conjectures by number.
+- [ ] Section order: Head, Initialization, Definitions, Theorems, Symbols and functions used, Code calls, Further research questions, Literature.
+- [ ] Definitions and theorems Lean-translatable (explicit hypotheses and quantifiers); set-valued naming decided by closure, convention stated in a Remark.
+- [ ] Theorems section: every conjecture has an `### Example` subsection rendered as a graphic and a status marker; failures demoted to Questions with counterexample pictures; implication lattice stated with counterexample + census per independence.
+- [ ] Symbols-and-functions index lists every symbol used, grouped by role, one line each.
+- [ ] Code-call sections titled by literal function/option code; no code in Text cells.
+- [ ] Enumerated further research questions referencing theorems by number.
 - [ ] Literature section built with `BibTeXReferences` + `ReferenceCells` from `Paper/references.bib`; bib keys short.
-- [ ] Initialization folded: seeds, reproducibility line, ExampleGraphs constructions.
+- [ ] Initialization folded: seeds, reproducibility line, example-module constructions.
 - [ ] Prose in thesis voice; abstract a section-by-section roadmap, written last; no selling adjectives.
 - [ ] Zero-message evaluation; Output cells embedded (graphics live, not rasterized); `ExportString` result checked with `StringQ` and the file re-imported.
 - [ ] Deployed public; README `Research Notebooks` table updated.

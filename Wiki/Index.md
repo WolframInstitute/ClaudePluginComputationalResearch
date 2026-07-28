@@ -28,6 +28,7 @@ See [Work/README.md](../Work/README.md).
 - [The Progress harvest](Concepts/ProgressHarvest.md) — what moved out of the closed items' Progress blocks into `Wiki/`, what did not, and why bytes are the wrong measure of it
 - [The Claude Code hook contract](Concepts/HookContract.md) — hooks read JSON from stdin and block via exit 2 + stderr; a positional-args hook is silently inert
 - [The notebook TaggingRules registry](Concepts/TaggingRulesRegistry.md) — `"Provenance"` and `"ResearchNotebook"` share the one metadata slot; every writer merges by key via `stampTaggingRule`, never replaces the option
+- [Set-valued naming in the graph-displacement theory](Concepts/DisplacementNaming.md) — domain notes evicted from `research-notebook` by AuditFixes T7; belongs in the Infrageometry home project once it has a wiki
 
 ## Resources
 
