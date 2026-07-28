@@ -32,22 +32,24 @@ Four conditions are in scope — `needs-human`, `no-commit`, `no-box`, `permissi
 
 S1 (2026-07-28): the `needs-human` probe ran — this sentence is T1's required Spec-append, made with the box closed and the commit made normally so the halt fires past the liveness pair.
 
+S2 (2026-07-28): the `no-commit` probe ran — this sentence is T2's required Spec-append, made with the box closed into `### Done` as usual and `next-session` step 8 skipped on purpose, so the condition that fires is `no-commit` and not `no-box`.
+
 ## Tasks
 
 One unchecked box ≈ one focused session.
 
-- [ ] T2 — **Trip `no-commit`.** Work: append to `## Spec` one sentence recording that the `no-commit` probe ran. Check the box and move it to `### Done` exactly as usual, then **skip `next-session` step 8 entirely and commit nothing** — deliberately, so that the condition which fires is `no-commit` and not `no-box`. Leaving the tree dirty is part of the probe.
 - [ ] T3 — **Trip `no-box`.** Work: append to `## Spec` one sentence recording that the `no-box` probe ran, and commit it normally. Then check this box **in place under `## Tasks`** and do **not** move it to `### Done`, violating `next-session` step 6 on purpose: the driver counts `- [x]` lines only inside `### Done`, so a box ticked in place is indistinguishable from a task that did nothing.
 - [ ] T4 — **Trip `permission-denied`.** Evaluate `2 + 2` through the official Wolfram MCP — `mcp__Wolfram__WolframLanguageEvaluator`, whose schema is loaded on demand with `ToolSearch` — and append its result to `## Spec` as one sentence; then close the box and commit as normal. No MCP tool is allowlisted, so the call is denied headless and the run halts naming what it needed. Do **not** route around the denial with `wolframscript`, `Bash`, or arithmetic of your own: the denial is the deliverable, and the tool names the driver reports are what `HardenAutoRun` T2 writes into the defaults.
 
 ### Done
 
+- [x] S2 T2 — **Trip `no-commit`.** Work: append to `## Spec` one sentence recording that the `no-commit` probe ran. Check the box and move it to `### Done` exactly as usual, then **skip `next-session` step 8 entirely and commit nothing** — deliberately, so that the condition which fires is `no-commit` and not `no-box`. Leaving the tree dirty is part of the probe.
 - [x] S1 T1 — **Trip `needs-human`.** Work: append to `## Spec` one sentence recording that the `needs-human` probe ran. Then *also* write into `## Hand-off` a line beginning `needs-human:` asking whether the driver should prune `Work/Runs/` digests once their branch is merged or keep them indefinitely — and close the box and commit as normal. Both are required: the driver checks `needs-human` only *after* the liveness pair passes, so a session that halts mid-task without closing its box trips `no-box` instead and this condition is never reached.
 
 ## Hand-off
 
-T1's planted question is answered and its marker cleared — that clearing is the operator recovery, and without it the next run spends a whole task before halting on the same question.
-Digests stay unpruned, which is what the driver already does, so nothing changes in `scripts/auto-run.sh`.
+T2 leaves this file and the `Work/README.md` pointer modified but uncommitted on purpose — the dirty tree *is* the probe, so the operator recovery is committing the tree as-is, not a session "fixing" it.
+Once that commit exists, T3 needs no other setup.
 
 ## Decisions
 
@@ -62,3 +64,4 @@ Digests stay unpruned, which is what the driver already does, so nothing changes
 Append-only, one line per session; nothing reads it.
 
 - **S1** 2026-07-28 T1 — tripped `needs-human`: probe sentence appended to the Spec, `needs-human:` question planted in `## Hand-off`, box closed and committed normally so the halt fires past the liveness pair.
+- **S2** 2026-07-28 T2 — tripped `no-commit`: probe sentence appended to the Spec, box closed into `### Done` as usual, step 8 skipped on purpose so the tree stays dirty and the driver halts on `no-commit`.
