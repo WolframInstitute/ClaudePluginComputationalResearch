@@ -68,7 +68,7 @@ The plugin's blog post lives in the author's **live** clone of `p135246/p135246.
 When skills, commands, or features change, update the post there.
 Two rules for every edit:
 
-- **Short descriptions only.** A version-history entry is one short paragraph naming the main idea — the length of the 3.2 and 3.8 entries, not a feature list. Long, detailed, or enthusiastic entries get cut.
+- **Ideas only, no technical details.** A version-history entry states the new idea or the shift in paradigm, in one short paragraph. Not a feature list, not mechanisms, not file or skill names — the reader wants to know what changed in the thinking. Anything longer or more concrete gets cut.
 - **Always update `Last updated` at the top** to the date of the edit. It is a living document and the line goes stale silently.
 
 This is an active, **public** repo that carries the author's own commits and may be ahead of / behind its remote — edit the post and present changes for review, but do **not** commit or push it as part of plugin changes; the author syncs and publishes it.
