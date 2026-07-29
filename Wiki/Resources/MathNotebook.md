@@ -3,9 +3,11 @@
 *[ LLM Generated ]*
 
 Pavel Hajek, *MathNotebook* — `WolframInstitute/MathNotebook`, https://github.com/WolframInstitute/MathNotebook (**private**).
-Paclet `WolframInstitute/MathNotebook`, version 0.1.11, **MIT**, `WolframVersion` 14.3+, `PrimaryContext` `WolframInstitute`MathNotebook``.
+Paclet `WolframInstitute/MathNotebook`, **MIT**, `WolframVersion` 14.3+, `PrimaryContext` `WolframInstitute`MathNotebook``.
 
 Harvested 2026-07-28 from the closed items `MathNotebookIntegration` and `PacletDocumentation` — see [Progress Harvest](../Concepts/ProgressHarvest.md).
+Refreshed 2026-07-29 against `a757b1c` (0.1.16 on `main`); the locally installed paclet is **0.1.17**, built from a working tree ahead of the remote.
+The two disagree about `PlainArticle`'s contents — see below — so read that sheet off the *installed* paclet, not the clone.
 
 ## Summary
 
@@ -13,9 +15,35 @@ A Wolfram paclet supplying AMS-style typeset document stylesheets, numbered theo
 It is the styling and referencing half of `research-notebook`; [MarkdownToNotebook](MarkdownToNotebook.md) is the parsing half.
 
 The clone at the project root is a **dev repo**, not the paclet: it follows the triple-nesting convention, so the paclet is at `MathNotebook/MathNotebook/` with `PacletInfo.wl`, `Kernel/` (`Package[]` format), `FrontEnd/`, `Assets/`, `Tests/`, and — since `PacletDocumentation` T4 — `Documentation/` carrying 21 generated symbol pages.
-Five stylesheets ship under `FrontEnd/StyleSheets/MathNotebook/`: `AMSArticle.nb`, `ArXivArticle.nb`, `LaTeXBase.nb`, `RevTeXAPS.nb`, `SpringerJournal.nb`.
+**Seven** stylesheets ship under `FrontEnd/StyleSheets/MathNotebook/`: the shared base `LaTeXBase.nb`, the five journal templates `AMSArticle.nb`, `ArXivArticle.nb`, `RevTeXAPS.nb`, `SpringerJournal.nb`, `ComplexSystems.nb`, and `PlainArticle.nb`.
+A palette ships beside them at `FrontEnd/Palettes/MathNotebook.nb`.
 
 The repo's own `CLAUDE.md` is the densest source of front-end knowledge in it and is worth reading before touching the stylesheets.
+
+## PlainArticle — the sheet this project uses
+
+`PlainArticle.nb` is **deliberately not a sixth template**: it exists to declare *fewer* styles.
+It is `Default.nb`'s typography with the paper's *structure* added, and it is what `ImportLaTeXDocument` falls back to when the `\documentclass` names no journal with a template.
+[research-notebook](../../skills/research-notebook/SKILL.md) sets it as `$MathNotebookStyleSheetName` in `scripts/mathnotebook_post.wl`.
+
+**Bare `Default.nb` is not an alternative.** Under it a reference to a definition renders `2.0` — the section counter increments and the theorem counter never does — and that is invisible to the kernel, to a round trip, and to the resolved counter values.
+`PlainArticle` is the minimum sheet that keeps numbering alive.
+
+Read off the **installed 0.1.17**, it declares 24 named styles plus the parent cell `StyleData[StyleDefinitions -> "Default.nb"]`:
+
+| group | styles |
+|---|---|
+| structural | `Notebook`, `Section`, `Subsection`, `Subsubsection`, `Abstract`, `Reference` |
+| inheriting `StyleData["Text"]` | the twelve environments, `Proof`, `Date`, `Caption` |
+| links | `Hyperlink` (← `Link`), `Citation` (← `Hyperlink`), `URL` (← `Hyperlink`) |
+
+Deferred to `Default.nb` entirely: `Title`, `Text`, `Author`, `Link`, `Item`, `ItemNumbered`, and the three `DisplayFormula` styles.
+Every explicit `FontSize` is dropped, and the `"Printout"` variants with them.
+
+**The clone at `a757b1c` (0.1.16) and the installed 0.1.17 disagree about this list.** 0.1.16 declares `Text` and `Link` and *not* `Reference`; 0.1.17 declares `Reference` and drops those two. The table above is 0.1.17, measured through `MathNotebookStyleSheet[ ]`.
+
+Rendered end to end at 0.1.17 (2026-07-29), the sheet numbers correctly: `Definition 1.1` in section 1, then `Claim 2.1` / `Example 2.2` / `Remark 2.3` / `Question 2.4` sharing one per-section counter, a document-global `(1)` flush right, a citation resolving to a live `Definition 1.1`, and a bibliography tag staying `[ollivier09]`.
+The look is `Default.nb`'s — including its orange section headings.
 
 ## The stylesheet: what AMSArticle declares
 
@@ -81,6 +109,9 @@ What works is `Export[file, notebookObject]` inside `UsingFrontEnd`, then readin
 Any regression test of numbering has to assert on the rendered image, not on style names.
 
 One caveat on that render: the exported raster came out **dark** even though the sheet declares `LightDark -> Light` and `Background -> GrayLevel[1]` on `Notebook` — a headless raster follows the front end's own appearance, not the sheet. A light/dark check on a published artifact cannot be done from the raster alone.
+Setting `Background -> White` **and** `LightDark -> "Light"` on the notebook being exported pins it; either alone fails, in opposite directions.
+
+A second requirement when rendering a research notebook: **open every `CellGroupData` first**. A folded group rasterizes as its head cell alone, so the evidence under a claim is simply not in the image and its numbering cannot be read off it.
 
 ## Referencing: cross-references, no bibliography
 
@@ -126,7 +157,13 @@ It exports `$MathNotebookEnvironmentStyles` (all 12), `$MathNotebookStyleSheetNa
 Each pass passed its own test in isolation while the composition was wrong: the citation pass found no target for an equation tag whose cell had not yet become `DisplayFormulaNumbered`, and failed *silently*, leaving the citation as literal text, which reads as an authoring mistake rather than a pipeline one.
 An order that fails silently should not be the caller's responsibility.
 
-Two rules the post-processor encodes:
+**Every pass walks into `CellGroupData`, and none of them did until 2026-07-29.**
+All four — `ConvertEnvironmentCells`, `NumberTaggedFormulas`, `ConvertCitations` and `CitationTargets` — operated at level `{1}`, so anything inside a fold was skipped **silently**: a `**Example.**` marker stayed a `Text` cell with its marker still spelled out in the prose, a tagged equation never became `DisplayFormulaNumbered`, and a `[tag]` never became a button.
+Nothing detected it while the document order put no content inside a group; the restructured `research-notebook`, which folds every claim's evidence under an `Example`, put the whole evidence half of the document there at once.
+The fix is one shared walker, `mapCellList[ f, cells ]`, recursing through groups and preserving each group's `Open`/`Closed` state, plus `documentCells` for the target scan.
+Verified two levels deep: `Example`, a numbered equation, and a `Remark` nested inside a second group all convert, and both folds stay `Closed`.
+
+Three rules the post-processor encodes:
 
 - **A tagged equation is a numbered equation.** A `DisplayFormula` cell carrying `CellTags` is promoted to `DisplayFormulaNumbered`. An equation gets a number exactly when something can cite it, which needs no new Markdown syntax — `CellTags` is also what `CounterBox[counter, tag]` resolves against.
 - **The tag list guards `ConvertCitations` against false positives.** `[tag]` is ordinary prose and collides with Markdown link syntax, so only keys present in the bibliography are converted. Verified: real citations converted, an existing Markdown hyperlink untouched, a bare `[unknown]` left as plain text.
@@ -147,7 +184,7 @@ A WL trap found writing that parser, and recorded in the paclet's `CLAUDE.md` fo
 
 Clone: git@github.com:WolframInstitute/MathNotebook.git
 Target: MathNotebook
-Commit: e088d72
+Commit: a757b1c
 
 Private — clone over SSH with an account that has access (an https clone fails for credentials).
 The clone sits at the project root, gitignored, alongside `MarkdownToNotebook/` and `PureMath/`.

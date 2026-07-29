@@ -17,9 +17,30 @@ Needs[ "WolframInstitute`MathNotebook`" ]
 Once a copy is installed, `UpdateMathNotebook[ ]` upgrades it in place.
 The paclet is MIT, needs Wolfram 14.3+, and its `PrimaryContext` is `WolframInstitute`MathNotebook``.
 
+## Which sheet: `PlainArticle`
+
+Seven sheets ship under `FrontEnd/StyleSheets/MathNotebook/`: `LaTeXBase.nb` (the shared base), the five journal templates `AMSArticle`, `ArXivArticle`, `RevTeXAPS`, `SpringerJournal`, `ComplexSystems`, and `PlainArticle`.
+
+**This skill uses `PlainArticle.nb`** — set as `$MathNotebookStyleSheetName` in `scripts/mathnotebook_post.wl`.
+It is deliberately *not* a sixth template: it exists to declare **fewer** styles, and it is `Default.nb`'s typography with the paper's structure added.
+25 style names against `AMSArticle`'s 34, every explicit `FontSize` dropped along with the `"Printout"` variants, and `Title`, `Text`, `Author`, `Reference` and the three `DisplayFormula` styles left to `Default.nb`.
+
+The rule that decides its contents, from the paclet's own `CLAUDE.md`: a style `Default.nb` has no notion of comes across whole (the twelve environments, `Proof`, `Caption`, `Date`, `Hyperlink`/`Citation`/`URL`); a style `Default.nb` *does* declare contributes only the number or the word the document prints (the three sectioning levels, `Abstract`); six get nothing at all.
+
+**Bare `Default.nb` is not an option.** Under it a reference to a definition renders `2.0` — the section counter increments and the theorem counter never does — and that is invisible to the kernel, to a round trip, and even to the resolved counter values.
+`PlainArticle` is the minimum sheet that keeps numbering alive.
+
+Counted in the shipped `Default.nb` (`$InstallationDirectory/SystemFiles/FrontEnd/StyleSheets/Default.nb`): it declares `Author`, `Reference`, `Title`, `Subtitle`, `Abstract`, `DisplayFormulaNumbered` and `ItemNumbered`, so nothing the pipeline uses is left undeclared. It does not declare `Caption`, which is why `PlainArticle` carries that one.
+Note the caveat from the paclet's `CLAUDE.md`: a scan of `Default.nb` cannot answer "does this style exist" in the negative — `Hyperlink` and `Link` resolve without being in the file — so this count is evidence a style *is* declared, not that an absent one is unavailable.
+
+Two consequences of the deferral worth knowing while authoring:
+
+- `Subtitle` resolves (from `Default.nb`) under `PlainArticle` but **not** under `AMSArticle`, which declares no such style. Use `Author` for the `[ LLM Generated ]` line — the one style that survives a swap to any sheet.
+- `Reference` comes from `Default.nb`, whose left margin differs from `AMSArticle`'s. Keep bib keys short and the label fits under both.
+
 ## Embed the stylesheet — never reference it by name
 
-A notebook deployed with `StyleDefinitions -> FrontEnd`FileName[ { "MathNotebook" }, "AMSArticle.nb" ]` travels with **zero** style definitions: the option is only a path into a paclet layer on the author's disk, so a cloud reader falls back to `Default.nb`, where the environments lose both their numbers and their labels.
+A notebook deployed with `StyleDefinitions -> FrontEnd`FileName[ { "MathNotebook" }, "PlainArticle.nb" ]` travels with **zero** style definitions: the option is only a path into a paclet layer on the author's disk, so a cloud reader falls back to `Default.nb`, where the environments lose both their numbers and their labels.
 Embed instead — the cost is about 47 kB:
 
 ```wolfram
@@ -48,5 +69,5 @@ Give the cell `CellTags` and `NumberTaggedFormulas` promotes it to `DisplayFormu
 
 ## Tables are the one cosmetic loss
 
-The converter's `2ColumnTableMod` / `TableText` / `ModInfo` styles are defined in neither `Default.nb` nor `AMSArticle.nb`, so a Markdown pipe table renders as plain monospace text with no rules and no header emphasis.
+The converter's `2ColumnTableMod` / `TableText` / `ModInfo` styles are defined in neither `Default.nb` nor any MathNotebook sheet, so a Markdown pipe table renders as plain monospace text with no rules and no header emphasis.
 Prefer a `Grid` in a `wolfram` fence when a table carries weight; keep pipe tables for throwaway comparisons.

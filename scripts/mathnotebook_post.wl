@@ -4,7 +4,7 @@ $MathNotebookEnvironmentStyles = {
   "Remark", "Question", "Observation"
 };
 
-$MathNotebookStyleSheetName = "AMSArticle.nb";
+$MathNotebookStyleSheetName = "PlainArticle.nb";
 
 $MathNotebookReferenceLabelSpec = Join[
   <| "DisplayFormulaNumbered" -> { "(", { "DisplayFormulaNumbered" }, ")" },
@@ -19,17 +19,36 @@ MathNotebookDocument[ cells_List, bibTags_List : { }, opts : OptionsPattern[ Not
     ConvertCitations[ NumberTaggedFormulas @ ConvertEnvironmentCells @ cells, bibTags ],
     opts, StyleDefinitions -> MathNotebookStyleSheet[ ] ]
 
-NumberTaggedFormulas[ cells_List ] :=
-  Replace[ cells,
-    Cell[ content_, "DisplayFormula", opts___ ] /; ! FreeQ[ { opts }, CellTags ] :>
-      Cell[ content, "DisplayFormulaNumbered", opts ],
+(* Every pass walks INTO CellGroupData. A research notebook folds each Example under the claim
+   it supports, so its environment marker, its tagged equations and its citations all sit inside
+   a group -- at level {1} they were silently skipped and the Example stayed a Text cell. *)
+mapCellList[ f_, cells_List ] :=
+  Replace[ cells, {
+    Cell[ CellGroupData[ group_List, state___ ], opts___ ] :>
+      Cell[ CellGroupData[ mapCellList[ f, group ], state ], opts ],
+    cell_Cell :> f[ cell ] },
     { 1 } ]
+
+documentCells[ cells_List ] :=
+  Flatten @ Replace[ cells, {
+    Cell[ CellGroupData[ group_List, ___ ], ___ ] :> documentCells @ group,
+    cell_Cell :> { cell } },
+    { 1 } ]
+
+NumberTaggedFormulas[ cells_List ] :=
+  mapCellList[ numberTaggedFormula, cells ]
+
+numberTaggedFormula[ Cell[ content_, "DisplayFormula", opts___ ] ] /; ! FreeQ[ { opts }, CellTags ] :=
+  Cell[ content, "DisplayFormulaNumbered", opts ]
+
+numberTaggedFormula[ cell_ ] :=
+  cell
 
 ConvertEnvironmentCells[ Notebook[ cells_List, opts___ ] ] :=
   Notebook[ ConvertEnvironmentCells @ cells, opts ]
 
 ConvertEnvironmentCells[ cells_List ] :=
-  convertEnvironmentCell /@ cells
+  mapCellList[ convertEnvironmentCell, cells ]
 
 MathNotebookStyleSheet[ ] :=
   Get @ FileNameJoin @ {
@@ -38,14 +57,17 @@ MathNotebookStyleSheet[ ] :=
 
 ConvertCitations[ cells_List, bibTags_List ] :=
   With[ { targets = CitationTargets @ cells },
-    Replace[ cells,
-      Cell[ TextData[ content_ ], style_String, opts___ ] :>
-        Cell[ TextData @ Flatten[ citationSplit[ #, targets, bibTags ] & /@ Flatten @ { content } ],
-          style, opts ],
-      { 1 } ] ]
+    mapCellList[ citationCell[ #, targets, bibTags ] &, cells ] ]
+
+citationCell[ Cell[ TextData[ content_ ], style_String, opts___ ], targets_, bibTags_ ] :=
+  Cell[ TextData @ Flatten[ citationSplit[ #, targets, bibTags ] & /@ Flatten @ { content } ],
+    style, opts ]
+
+citationCell[ cell_, _, _ ] :=
+  cell
 
 CitationTargets[ cells_List ] :=
-  Association @ Cases[ cells,
+  Association @ Cases[ documentCells @ cells,
     Cell[ _, style_String, opts___ ] /; ! FreeQ[ { opts }, CellTags ] :>
       First @ Flatten @ { CellTags /. { opts } } -> style ]
 
