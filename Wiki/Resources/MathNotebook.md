@@ -6,8 +6,8 @@ Pavel Hajek, *MathNotebook* — `WolframInstitute/MathNotebook`, https://github.
 Paclet `WolframInstitute/MathNotebook`, **MIT**, `WolframVersion` 14.3+, `PrimaryContext` `WolframInstitute`MathNotebook``.
 
 Harvested 2026-07-28 from the closed items `MathNotebookIntegration` and `PacletDocumentation` — see [Progress Harvest](../Concepts/ProgressHarvest.md).
-Refreshed 2026-07-29 against `a757b1c` (0.1.16 on `main`); the locally installed paclet is **0.1.17**, built from a working tree ahead of the remote.
-The two disagree about `PlainArticle`'s contents — see below — so read that sheet off the *installed* paclet, not the clone.
+Refreshed 2026-07-30 against `5f68f30` (**0.1.20** on `main`), which is also the installed version; clone and install now agree.
+Sections marked *0.1.20* below were re-measured then and supersede the 0.1.16/0.1.17 readings.
 
 ## Summary
 
@@ -29,7 +29,7 @@ It is `Default.nb`'s typography with the paper's *structure* added, and it is wh
 **Bare `Default.nb` is not an alternative.** Under it a reference to a definition renders `2.0` — the section counter increments and the theorem counter never does — and that is invisible to the kernel, to a round trip, and to the resolved counter values.
 `PlainArticle` is the minimum sheet that keeps numbering alive.
 
-Read off the **installed 0.1.17**, it declares 24 named styles plus the parent cell `StyleData[StyleDefinitions -> "Default.nb"]`:
+Read off **0.1.20**, it declares 24 named styles plus the parent cell `StyleData[StyleDefinitions -> "Default.nb"]`:
 
 | group | styles |
 |---|---|
@@ -37,10 +37,12 @@ Read off the **installed 0.1.17**, it declares 24 named styles plus the parent c
 | inheriting `StyleData["Text"]` | the twelve environments, `Proof`, `Date`, `Caption` |
 | links | `Hyperlink` (← `Link`), `Citation` (← `Hyperlink`), `URL` (← `Hyperlink`) |
 
-Deferred to `Default.nb` entirely: `Title`, `Text`, `Author`, `Link`, `Item`, `ItemNumbered`, and the three `DisplayFormula` styles.
-Every explicit `FontSize` is dropped, and the `"Printout"` variants with them.
+Deferred to `Default.nb` entirely at 0.1.20: exactly six styles — `Title`, `Text`, `Author`, and the three `DisplayFormula` styles — pinned as that list in `Tests/StyleSheets.wlt`.
+Every explicit `FontSize` **and `FontFamily`** is dropped, and the `"Printout"` variants with them: `PlainArticle` has none where `AMSArticle` carries 26.
 
-**The clone at `a757b1c` (0.1.16) and the installed 0.1.17 disagree about this list.** 0.1.16 declares `Text` and `Link` and *not* `Reference`; 0.1.17 declares `Reference` and drops those two. The table above is 0.1.17, measured through `MathNotebookStyleSheet[ ]`.
+The list moved twice: 0.1.16 declared `Text` and `Link` and *not* `Reference`; 0.1.17 declared `Reference` and dropped those two; `BibliographyDisplay` T1 (`f46e7fe`) then made `Reference` inherit `StyleData["Text"]` — the sheet's own prose face — rather than deferring to `Default.nb`.
+
+**One open defect on this sheet** (`EnvironmentBlocks` T3): `PlainArticle`'s `DisplayFormula` is left-flush where the four journal templates centre theirs, so an equation inside an environment body sits 64 pt left of the block's prose — on the very sheet an imported paper lands on.
 
 Rendered end to end at 0.1.17 (2026-07-29), the sheet numbers correctly: `Definition 1.1` in section 1, then `Claim 2.1` / `Example 2.2` / `Remark 2.3` / `Question 2.4` sharing one per-section counter, a document-global `(1)` flush right, a citation resolving to a live `Definition 1.1`, and a bibliography tag staying `[ollivier09]`.
 The look is `Default.nb`'s — including its orange section headings.
@@ -70,9 +72,13 @@ CellDingbat -> Cell[ TextData[ { env <> " ", CounterBox[ "Section" ], ".", Count
 so **the visible label *is* the dingbat** — produced entirely by front-end `CounterBox`es with no kernel involvement, and renumbering itself when cells move.
 The consequence for any post-processing is absolute: a `**Definition.**` marker must be **stripped**, never rewritten as text. The number is not yours to write.
 
+**An environment is a multi-cell block** (*0.1.20*): a body continuing past one cell continues in a cell of the **same style** carrying `CellDingbat -> None` and `CounterIncrements -> {}` (`environmentContinuationCell`).
+A generator that drops to a `Text` cell for prose after a display equation breaks the block twice — the margin falls from the body's 130 pt to `Text`'s 66, and a LaTeX export emits bare prose outside the `\begin{definition}`.
+Wrapping in `CellGroupData` does not help; the margins are measured identical.
+
 Two rules that look symmetric in the style options and are not:
 
-- **All twelve environments share one counter**, amsthm-style. A Definition followed by a Theorem in section 1 numbers 1.1 then 1.2, not 1.1 and 1.1.
+- **All twelve environments share one counter**, amsthm-style. A Definition followed by a Theorem in section 1 numbers 1.1 then 1.2, not 1.1 and 1.1. This holds under six of the seven sheets; `ComplexSystems` deliberately gives each environment its own counter, which `Section` does not reset.
 - **Theorem numbers are per-section `⟨section⟩.⟨n⟩`; equation numbers are document-global `(n)`.** `Section` carries `CounterAssignments -> {{"Subsection", 0}, {"Subsubsection", 0}, {"Theorem", 0}}` and the equation counter is *not* in that list. Verified by render: entering section 3 reset the theorem counter while the following equation continued to `(3)`.
 
 The second is an *absence* in a list, which is exactly the kind of thing that reads as symmetric until it is rendered across three sections.
@@ -113,13 +119,21 @@ Setting `Background -> White` **and** `LightDark -> "Light"` on the notebook bei
 
 A second requirement when rendering a research notebook: **open every `CellGroupData` first**. A folded group rasterizes as its head cell alone, so the evidence under a claim is simply not in the image and its numbering cannot be read off it.
 
-## Referencing: cross-references, no bibliography
+## Referencing and the bibliography — *0.1.20*
 
-`Referencing.wl` exports `InsertCitation`, `CopyCellReference`, `TagSelectedCell`, `LabelReferences`, `InsertEnvironment`, `GoBack`.
+`Referencing.wl` exports `InsertCitation`, `InsertReference`, `SortBibliography`, `CopyCellReference`, `TagSelectedCell`, `LabelReferences`, `InsertEnvironment`, `GoBack`.
 A citation to a numbered environment is a `CounterBox[counter, tag]` resolved at the cell tagged `tag`, with the target's style looked up at insert time and an unknown tag falling back to `[tag]`.
 
-`Citation` is a character style inheriting from `Hyperlink`; `Reference` is a `Text`-derived paragraph style.
-**Neither generates anything** — nothing collects, sorts, or numbers entries. There is no bibliography engine, so a References section has to be authored and kept in sync by the caller.
+**There is now a bibliography engine**, added across `ImportDisplayDefects`, `PaletteAndViewUX` and `BibliographyDisplay` (0.1.17 → 0.1.20).
+It parses BibTeX (`bibliographyDatabase` and friends in `Document.wl`, brace-depth field splitting, TeX accents decoded), formats an entry by riffling fields in a fixed order (no bibliography style is emulated), sorts by `"FirstUse"` / `"Key"` / `"Entry"` / `"Uncited"` (`SortBibliography`), audits never-cited entries and dangling citations, and labels every `Reference` cell through `LabelReferences`.
+
+Three things it still does not do, which is why `research-notebook` keeps building its References section itself:
+
+- **It is reachable only from `ImportLaTeXDocument`.** There is no exported "import this `.bib` into this notebook" entry point.
+- **Nothing numbers.** A label is always `[key]` — `referenceLabel[tag] = "[" <> tag <> "]"` — and the citation buttons render `[key]` to match, so writing `[1] [2] [3]` by hand breaks the pairing.
+- **`InsertReference` creates an empty cell.** Only the LaTeX import route generates entry text.
+
+Since `b3f5dc4`, `LabelReferences` sets options per cell rather than rewriting the notebook, so `CellObject`s and `CellID`s survive a refresh.
 
 The paclet's existing rendering contract, which `scripts/mathnotebook_post.wl` reuses rather than reinventing:
 
@@ -129,7 +143,13 @@ citationButton[ tag ]   = ButtonBox[ label, BaseStyle -> "Citation", ButtonData 
 referenceDingbat[ tags ]                       (* same label as the cell's CellDingbat *)
 ```
 
-A long citation key overflows the `Reference` style's left margin — `[ollivier2009]` ran to the page edge while `[lin2011]` sat comfortably. Keep bib keys short.
+**The `Reference` gutter was widened twice and is now uniform** — `CellMargins -> {{205, 10}, {3, 3}}` with `ParagraphIndent -> -24` in **all seven** sheets, pinned by `Tests/StyleSheets.wlt`.
+It was 90 pt under AMS at 0.1.16, moved to 185 by `ImportDisplayDefects` T1, then to 205 by `BibliographyDisplay` T1 because the widest specimen key measures 190 pt at the plain sheet's Source Sans Pro 15 against 173 at AMS's Palatino 13.
+That leaves ~15 pt of clearance at 26 characters, so the short-key rule survives in weaker form: **keep bib keys under about 25 characters**, beyond which the label is still clipped at the window edge.
+
+A `Reference` cell needs **both** `CellTags -> key` and the `[key]` dingbat (`CellDingbat -> Cell[TextData["[key]"]]` plus `ParagraphIndent -> 0`); commit `a658678` fixed shipped samples that carried neither and printed unlabelled into the empty gutter.
+Two further shapes the front end will not resolve: a citation in `BoxData` renders in the code face rather than the prose face (it must be inline `TextData`), and a compound `\cite` must be one button per key with literal separators — a single button carrying several keys navigates nowhere.
+The suppressed "References" heading needs `CounterIncrements -> {}`, `CellDingbat -> None` **and** `TaggingRules -> <|"MathNotebook" -> <|"Suppressed" -> "True"|>|>`; with only the first it prints as a numbered section.
 
 ## Install and publish
 
@@ -184,7 +204,7 @@ A WL trap found writing that parser, and recorded in the paclet's `CLAUDE.md` fo
 
 Clone: git@github.com:WolframInstitute/MathNotebook.git
 Target: MathNotebook
-Commit: a757b1c
+Commit: 5f68f30
 
 Private — clone over SSH with an account that has access (an https clone fails for credentials).
 The clone sits at the project root, gitignored, alongside `MarkdownToNotebook/` and `PureMath/`.
@@ -198,4 +218,5 @@ git clone git@github.com:WolframInstitute/MathNotebook.git
 - [MarkdownToNotebook](MarkdownToNotebook.md) — the parser half of the `research-notebook` pipeline
 - [Paclet Documentation](../Concepts/PacletDocumentation.md) — the doc tree generated into this paclet, and the build/publish staging fix it forced
 - [Progress Harvest](../Concepts/ProgressHarvest.md) — where this article came from
+- [Folded cell groups](../Concepts/FoldedCellGroups.md) — the `{2}` group state a generated notebook uses to hide code under these stylesheets
 - `Work/Done/2026-07-27-MathNotebookIntegration.md` — the six sessions that established all of the above

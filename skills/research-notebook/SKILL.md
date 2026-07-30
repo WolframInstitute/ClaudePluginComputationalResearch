@@ -155,7 +155,9 @@ in it.
 
 ## Which environment — Critical
 
-All **12** MathNotebook environments are available and share one counter.
+All **12** MathNotebook environments are available and share one counter under
+`PlainArticle` and five of the six other sheets — `ComplexSystems` deliberately
+gives each environment its own counter, which `Section` does not reset.
 Choosing among them is a claim about the *status* of a statement, so choose
 honestly:
 
@@ -187,6 +189,14 @@ a number in the source. Two counter facts to write against:
 The Plain class (`Theorem`, `Lemma`, `Proposition`, `Corollary`, `Conjecture`,
 `Claim`) **italicises the body**, which is the amsthm convention but surprises
 authors who write a long cell. The Definition class is roman.
+
+**An environment is a multi-cell block, and a `Text` cell breaks it.** A body
+that continues past one cell — a paragraph after a display equation, say —
+continues in a cell of the **same style** carrying `CellDingbat -> None` and
+`CounterIncrements -> { }`. Drop to `Text` instead and the block breaks twice:
+the prose jumps from the body margin of 130 pt to `Text`'s 66, and a LaTeX export
+emits it as bare prose outside the `\begin{definition}`. Wrapping in
+`CellGroupData` does not help — the margins are measured identical.
 
 **Write every Definition, Claim and Conjecture so it translates directly to a
 Lean statement**: explicit hypotheses, explicit quantifiers, quantification over
@@ -319,12 +329,13 @@ load-bearing and was added for this structure (`mapCellList` in
 
 **Embed `PlainArticle.nb`.**
 It is `Default.nb`'s typography with the paper's *structure* added: it declares
-25 styles against `AMSArticle`'s 34, drops **every explicit `FontSize`** and the
-`"Printout"` variants with them, and leaves `Title`, `Text`, `Author`,
-`Reference` and the three `DisplayFormula` styles to `Default.nb`. What it does
-declare is what the document needs to be a document — the twelve environments,
-`Proof`, `Caption`, `Date`, `Hyperlink`/`Citation`/`URL`, and for the three
-sectioning levels and `Abstract` only the number or the word that prints.
+25 style cells against `AMSArticle`'s 34 (AMS carries a further 26 `"Printout"`
+variants; `PlainArticle` none), drops **every explicit `FontSize` and
+`FontFamily`**, and leaves exactly six styles to `Default.nb` — `Title`, `Text`,
+`Author`, and the three `DisplayFormula` styles. What it does declare is what the
+document needs to be a document — the twelve environments, `Proof`, `Caption`,
+`Date`, `Reference`, `Hyperlink`/`Citation`/`URL`, and for the three sectioning
+levels and `Abstract` only the number or the word that prints.
 
 The result reads as a stock Wolfram notebook: no colour change, no font change,
 numbering and labels intact.
@@ -335,9 +346,15 @@ counter never does. `PlainArticle` is the *minimum* sheet that keeps numbering
 alive, which is why it exists.
 
 Nothing the pipeline uses falls off the end: `Default.nb` declares `Author`,
-`Reference`, `Title`, `Subtitle`, `Abstract`, `DisplayFormulaNumbered` and
-`ItemNumbered`. It does not declare `Caption`, which is why `PlainArticle`
-carries that one across.
+`Title`, `Subtitle`, `Abstract`, `DisplayFormulaNumbered` and `ItemNumbered`.
+It does not declare `Caption`, which is why `PlainArticle` carries that one
+across — and since 0.1.20 `PlainArticle` declares `Reference` too, inheriting
+`Text` with a 205 pt gutter rather than deferring to `Default.nb`.
+
+**One open defect on this sheet.** `PlainArticle`'s `DisplayFormula` is
+left-flush where the four journal templates centre theirs, so an equation inside
+an environment body sits 64 pt left of the block's prose (MathNotebook
+`EnvironmentBlocks` T3, open at 0.1.20).
 
 ### Swapping the sheet is the reader's move, not the build's
 
@@ -500,9 +517,13 @@ which makes the failure easy to miss.
 
 ## Citations and References
 
-MathNotebook has cross-reference machinery but **no bibliography engine** —
-nothing collects, sorts, or numbers entries, so the References section is the
-generator's to build. `scripts/mathnotebook_post.wl` does it:
+Since 0.1.20 MathNotebook **does** have a bibliography engine — it parses BibTeX,
+formats entries, sorts them (`SortBibliography`, four methods including BibTeX's
+unsrt order), audits uncited entries, and labels each `Reference` cell — but it
+is reachable only from `ImportLaTeXDocument`. There is no "import this `.bib`
+into this notebook" entry point, and nothing anywhere produces numeric `[1]`
+labels; a label is always `[key]`. So on the Markdown path the References section
+is still the generator's to build. `scripts/mathnotebook_post.wl` does it:
 
 - `BibTeXReferences[ file ]` parses a `.bib` into `<| tag -> formatted string |>`.
   There is no `Import[ …, "BibTeX" ]` in Wolfram, so this is a small hand parser;
@@ -521,9 +542,28 @@ Only tags that actually exist are converted: the tags of cells in the notebook,
 plus the bibliography keys passed in. Ordinary bracketed prose and Markdown links
 are left alone.
 
-Keep bib keys **short**. Under `AMSArticle` a long key overflows the `Reference`
-style's left margin; under `PlainArticle` the style comes from `Default.nb`,
-where the margin is different again — short keys are correct under both.
+Keep bib keys **under about 25 characters**. The `Reference` gutter is 205 pt
+with `ParagraphIndent -> -24` in all seven sheets since 0.1.20, sized against a
+26-character specimen key with 15 pt of clearance; a longer key is still clipped
+at the window edge.
+
+A `Reference` cell needs **both** `CellTags -> key` and the `[key]` dingbat
+(`CellDingbat -> Cell[TextData["[key]"]]`, `ParagraphIndent -> 0`), or it prints
+unlabelled and indented into an empty gutter. `ReferenceCells` writes both;
+`LabelReferences[ ]` repairs a notebook that lacks them, in place, without
+disturbing `CellID`s.
+
+Two shapes the front end will not resolve:
+
+- **A citation must be inline `TextData`, never `BoxData`** — a
+  `Cell[ BoxData[ button ], "Text" ]` renders in the code face.
+- **A compound `\cite` is one button per key**, with literal separators between
+  them; a single button carrying several keys navigates nowhere.
+
+The References section's own heading is a suppressed `Section` cell needing
+`CounterIncrements -> { }`, `CellDingbat -> None` **and**
+`TaggingRules -> <| "MathNotebook" -> <| "Suppressed" -> "True" |> |>`; with only
+the first it prints as a numbered section.
 
 ## Prose style — Critical
 
@@ -662,6 +702,7 @@ Four things this shape gets right, each learned the hard way:
 - [ ] Environments converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
 - [ ] Section order: Head, Definitions, Claims and conjectures, Questions, References, Symbols, Initialization.
 - [ ] `Claim` is the default; `Theorem` only for something big and proved or cited; `Lemma` only immediately before a `Theorem`; commentary in `Remark` / `Observation`.
+- [ ] A multi-cell environment body continues in the **same style** with `CellDingbat -> None` and `CounterIncrements -> { }` — never a `Text` cell, which breaks the block's margin and its LaTeX export.
 - [ ] Definitions carry no implementation detail and name no symbol; Lean-translatable, with explicit hypotheses and quantifiers; set-valued naming decided by closure, convention stated in a `Remark`.
 - [ ] Every claim and conjecture followed by an `Example` **environment cell** and its `{2}` group — not an `### Example` subsection; conjectures carry a status marker; failures demoted to `Question`s with counterexample pictures; implication lattice stated with counterexample + census per independence.
 - [ ] Definitions carry an `Example` wherever the object has behaviour worth measuring; omitted, not padded, where it would only illustrate.
@@ -677,7 +718,7 @@ Four things this shape gets right, each learned the hard way:
 - [ ] Symbols index below the paper: every symbol used, grouped by role, one line each, back-referencing its definition by number.
 - [ ] Initialization last and folded: seeds, reproducibility line, example-module constructions, stylesheet-swap note.
 - [ ] No per-function demonstration sections — those belong to `new-notebook`.
-- [ ] References built with `BibTeXReferences` + `ReferenceCells` from `Paper/references.bib`; bib keys short.
+- [ ] References built with `BibTeXReferences` + `ReferenceCells` from `Paper/references.bib`; bib keys under ~25 characters; every `Reference` cell carries `CellTags` **and** its `[key]` dingbat; citations inline `TextData`, one button per key; the References heading suppressed with all three options.
 - [ ] Prose in thesis voice; abstract 2–4 sentences of claims, written last; no selling adjectives.
 - [ ] Zero-message evaluation; Output cells embedded (graphics live, not rasterized); `ExportString` result checked with `StringQ` and the file re-imported.
 - [ ] Deployed public; README `Research Notebooks` table updated.
