@@ -38,3 +38,4 @@ The fingerprint key predates the fix, which is why coexistence had to be designe
 ## See also
 
 - [The Claude Code hook contract](HookContract.md) — the audit's other silently-inert mechanism
+- [Folded cell groups](FoldedCellGroups.md) — the other notebook-level convention a generated `.nb` must get right

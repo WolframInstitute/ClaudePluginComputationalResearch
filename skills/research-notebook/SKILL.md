@@ -6,10 +6,11 @@ description: >
   research document — definitions, then the claims and conjectures the
   computations support, then the open questions, then the literature; with the
   symbol index and the initialization code placed below the document, out of
-  the reader's way. Definitions and claims alike carry a folded, numbered
-  Example: a real computation over a family of objects answered as a graphic —
-  a histogram, a census plot, a parameter scan — never a decorative
-  illustration. Converts the Markdown source with the rich MarkdownToNotebook
+  the reader's way. Definitions and claims alike carry a numbered Example whose
+  code is folded and whose graphic is not: a real computation over a family of
+  objects answered as a bare graphic — three cases side by side, a census grid,
+  a histogram, a parameter scan — never a decorative illustration. Converts the
+  Markdown source with the rich MarkdownToNotebook
   parser, then applies the MathNotebook paclet environments (Definition, Claim,
   Conjecture, Question, ...) on the PlainArticle stylesheet, so statements
   translate directly to Lean and the page looks like a stock notebook.
@@ -29,7 +30,7 @@ exploration log:
 | Skill | Produces |
 |-------|----------|
 | `new-notebook` | generic Markdown → `.nb` pipeline (this skill builds on it), and every per-function demonstration |
-| `research-notebook` | definitions → claims and conjectures with folded evidence → open questions → literature, over an appendix of symbols and initialization |
+| `research-notebook` | definitions → claims and conjectures with code-folded evidence → open questions → literature, over an appendix of symbols and initialization |
 
 ## The governing rule — Critical
 
@@ -87,21 +88,21 @@ it.
    carrying **no implementation detail**. A definition states what the object
    is; it does not name the symbol that computes it. That binding lives in the
    Symbols appendix, which points back here.
-   A definition **may carry a folded `Example`** of its own, on the same terms
+   A definition **may carry an `Example`** of its own, on the same terms
    as a claim's (§ *Examples*): it measures the defined object over a family and
    plots what it found. Give one to any definition whose object has behaviour
    worth measuring; omit it where the honest content would be a single drawn
    instance. The section reads as a clean list of definitions either way,
-   because the computation is folded underneath.
+   because the code is folded underneath, leaving only the graphic.
    When a metric construction is set-valued by default, name the set-valued
    object as the primitive and the single-valued case by a predicate — decide by
    **closure** under the theory's operations, verify the closure computationally,
    and state the convention in a `Remark` (a worked case:
    [Wiki/Concepts/DisplacementNaming.md](../../Wiki/Concepts/DisplacementNaming.md)).
 3. **Claims and conjectures** — the results. Each statement is one environment
-   cell chosen by § *Which environment*, followed immediately by a **folded
-   `Example` cell group** holding the computation and its graphic — the evidence,
-   held to the bar in § *Examples*. Here the Example is the point of the claim,
+   cell chosen by § *Which environment*, followed immediately by an **`Example`
+   cell group** holding the computation, folded, and its graphic, not folded —
+   the evidence, held to the bar in § *Examples*. Here the Example is the point of the claim,
    so a claim whose Example cannot clear that bar is a claim that has not been
    checked: say so with a status marker rather than shipping a decorative
    picture.
@@ -166,7 +167,7 @@ honestly:
 | `Theorem` | reserved for something **big**, and only with a proof or a citation to one |
 | `Lemma` | only a step toward a `Theorem`, stated immediately before it |
 | `Proposition`, `Corollary` | as in a paper: a minor proved result; a consequence of the statement above |
-| `Example` | the folded computational evidence under a claim or conjecture |
+| `Example` | the computational evidence under a definition, claim or conjecture — code folded, graphic shown |
 | `Remark`, `Observation` | commentary — a convention, a caveat, an aside. Use these freely rather than loose prose |
 | `Question` | an open question |
 | `Construction` | a construction the notebook reuses |
@@ -199,6 +200,11 @@ An `Example` belongs under a `Definition` as much as under a `Claim` or
 `Conjecture`: under a definition it shows what the object *does*, under a claim
 it is the evidence.
 
+**The document's rhythm is that alternation** — `Definition`, `Example`,
+`Definition`, `Example`, … through section 2, then `Claim`, `Example`, `Claim`,
+`Example`, … through section 3.
+A statement and its evidence are adjacent, and nothing comes between them.
+
 ### An Example is a computation, not an illustration
 
 **The bar: an Example must compute something whose answer was not obvious
@@ -222,19 +228,92 @@ Example, because it costs the reader an unfold and returns nothing. Where a
 single picture genuinely *is* the point — a minimal counterexample, say — put it
 in a `Remark`, which promises less.
 
-### Mechanically: an environment cell heading a folded group
+### Folded code, unfolded graphic — Critical
 
-The Example is an `Example` **environment cell** heading a
-`CellGroupData[ { ... }, Closed ]` group — not an `### Example` subsection.
+**The fold hides the code, never the result.**
+A reader scrolling the document meets statements and pictures; the computation
+behind each picture is one click away and never in the way.
+
+**The mechanism is the group state `{2}`** — a closed group that displays its
+**second** cell:
+
+```wolfram
+Cell[ CellGroupData[ {
+  Cell[ codeString,             "Input"  ],
+  Cell[ BoxData[ outputBoxes ], "Output" ] }, {2} ] ]
+```
+
+`Open` shows both cells, `Closed` shows the first — the `Input`, which is exactly
+backwards. `{n}` is the third state: closed, displaying cell `n`. So the ordinary
+Input-then-Output order is preserved and the reader sees only the graphic.
+
+This is the idiom of the working document — `Infrageometry/NotebooksLLM/Displacements.nb`,
+where all 22 computations are `{2}` groups — and it is the one to copy.
+
+Three mechanics that follow from it:
+
+- **One Output per Input.** A closed group displays a single cell, so an `Input`
+  with two Outputs can only show one. Split the computation.
+- **Nothing else is needed** — no `CellOpen -> False` on the `Input`, no
+  `CellGrouping -> Manual` on the notebook. Both were tried; `CellOpen` leaves a
+  strip too faint to find, and the displacement notebook sets neither.
+- **An `Input` cell must carry real code**, either a code `String` or genuine
+  boxes. `ToBoxes` applied to a code *string* ships a cell displaying the quoted
+  string — the failure is silent and visible only on screen.
+
+The `Example` environment cell stays a **sibling** above the group, not its head:
+it is the visible line the reader scans, and the graphic sits under it.
+
+### No decoration
+
+Examples are bare.
+No `PlotLabel`, no legend, no frame, no title above the graphic, no annotation
+restating the definition — the `Example` cell already said what this is, and the
+reader is looking at the picture, not at labels.
+A `Caption` cell exists for the case where the reader genuinely cannot tell what
+they are seeing; the default is no caption.
+Anything that can be deleted from a graphic without losing information is
+deleted.
+
+### Nontrivial objects, spread across categories
+
+- **One size up from the trivial case.** Not the smallest graph, not the
+  triangle, not the 4-cycle: the first size at which the quantity has room to
+  vary. Where the smallest case *is* the phenomenon, show it and the next one
+  too.
+- **Span categories, not one family.** Three objects side by side should be
+  three *kinds* — a tree, a lattice patch, a random graph; a bipartite case, a
+  dense case, a degenerate case — so the reader sees the range of the invariant
+  rather than one object at three resolutions.
+
+This does not loosen the enumeration rule in § *Canonical document order*: full
+enumeration on a small object still beats sampling on a large one when the
+question is whether a claim *holds*. That rule governs the verification's
+**scope**; this one governs which objects get **drawn**.
+
+### Layout: a row of three, or a grid of many
+
+- The default shape is a **`GraphicsRow` of three** graphics at one `ImageSize`,
+  so the comparison is visual and not scaled away.
+- When the point is a census over many cases, a **`GraphicsGrid` of smaller
+  graphics** — the whole battery at a glance.
+- A **single** plot is right only when the answer is one distribution or one
+  scan: a histogram, a curve against a parameter.
+
+### Mechanically: an environment cell, not a subsection
+
+The Example is an `Example` **environment cell** sitting above its `{2}` groups
+— not an `### Example` subsection.
 
 Three reasons: it numbers on the shared counter, so it is citable
 (`Example 2.2`); it sits at the same structural level as the definition or claim
 it serves rather than opening a new heading; and it removes the collision
 between a subsection named "Example" and the environment of the same name.
 
-Every post-processing pass walks into these groups, so markers, tagged equations
-and citations inside a fold all convert — that recursion is load-bearing and was
-added for this structure (`mapCellList` in `scripts/mathnotebook_post.wl`).
+Every post-processing pass walks into `CellGroupData`, so markers, tagged
+equations and citations inside a fold all convert — that recursion is
+load-bearing and was added for this structure (`mapCellList` in
+`scripts/mathnotebook_post.wl`).
 
 ## The stylesheet — Critical
 
@@ -479,9 +558,13 @@ number, boolean list, or textual table:
 A small symbolic result (a single boolean, a short set) may stand alone only
 when that value *is* the point.
 
+Every graphic is bare — no `PlotLabel`, no legend, no frame; § *Examples*
+§ *No decoration* states the rule and it holds outside Example groups too.
+
 This is the *floor* for any output cell. § *Examples* sets a higher bar for the
-folded groups specifically: there the graphic must also answer something that
-was not obvious before the computation ran.
+Example groups specifically: there the graphic must also answer something that
+was not obvious before the computation ran, over objects one size up from
+trivial, laid out as a row of three or a grid.
 
 ## Evaluate, publish, link
 
@@ -523,7 +606,7 @@ Module[ { wl, nb, cells },
   (* Author cell from the frontmatter, [ LLM Generated ] line, equation CellTags *)
   cells = researchHead[ cells ];
   cells = tagFormulas[ cells, eqTags ];
-  cells = foldExamples[ cells ];  (* each Example cell heads a Closed group *)
+  cells = foldExamples[ cells ];  (* each Input/Output pair into CellGroupData[ { … }, {2} ] *)
   cells = withCellIDs[ cells ];   (* CreateCellID does not stamp built cells *)
 
   MathNotebookDocument[ cells, bibTags, CreateCellID -> True ]
@@ -580,8 +663,14 @@ Four things this shape gets right, each learned the hard way:
 - [ ] Section order: Head, Definitions, Claims and conjectures, Questions, References, Symbols, Initialization.
 - [ ] `Claim` is the default; `Theorem` only for something big and proved or cited; `Lemma` only immediately before a `Theorem`; commentary in `Remark` / `Observation`.
 - [ ] Definitions carry no implementation detail and name no symbol; Lean-translatable, with explicit hypotheses and quantifiers; set-valued naming decided by closure, convention stated in a `Remark`.
-- [ ] Every claim and conjecture followed by a folded `Example` **environment cell group** — not an `### Example` subsection; conjectures carry a status marker; failures demoted to `Question`s with counterexample pictures; implication lattice stated with counterexample + census per independence.
-- [ ] Definitions carry a folded `Example` wherever the object has behaviour worth measuring; omitted, not padded, where it would only illustrate.
+- [ ] Every claim and conjecture followed by an `Example` **environment cell** and its `{2}` group — not an `### Example` subsection; conjectures carry a status marker; failures demoted to `Question`s with counterexample pictures; implication lattice stated with counterexample + census per independence.
+- [ ] Definitions carry an `Example` wherever the object has behaviour worth measuring; omitted, not padded, where it would only illustrate.
+- [ ] **Code folded, graphic not**: every computation is `Cell[CellGroupData[{Input, Output}, {2}]]` — closed on cell 2 — with the `Example` cell a sibling above it. Never `Closed` (shows the code) and never `Open` (shows both).
+- [ ] One Output per Input — a closed group can display only one cell.
+- [ ] `Input` cells carry real code (code `String` or genuine boxes) — `ToBoxes` on a code string ships a quoted string.
+- [ ] Graphics bare: no `PlotLabel`, legend, frame, title or restating annotation; a `Caption` cell only where the picture is otherwise unreadable.
+- [ ] Example objects **one size up from trivial** and spread across **categories** (tree / lattice / random, sparse / dense / degenerate), not one family at three sizes.
+- [ ] Layout is a `GraphicsRow` of three at one `ImageSize`, or a `GraphicsGrid` for a census; a lone plot only for a single distribution or scan.
 - [ ] **Every `Example` clears the bar**: computes over a *family*, answers something not obvious before it ran, and shows it as a histogram, census plot, parameter scan or comparison — never a single instance drawn with a part coloured in, never a restatement of the definition in code. A single telling picture goes in a `Remark` instead.
 - [ ] Equation `CellTags` attached after conversion, in document order, **before** `foldExamples`; `withCellIDs` recurses into groups; all before `MathNotebookDocument`.
 - [ ] Open questions live only in the Questions section, as `Question` cells, referencing definitions and claims by number.
