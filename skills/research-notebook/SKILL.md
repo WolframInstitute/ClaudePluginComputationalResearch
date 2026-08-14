@@ -1,250 +1,237 @@
 ---
 name: research-notebook
 description: >
-  Build an LLM-generated "research notebook": a concise, mathematically
-  precise, cloud-published Wolfram notebook that develops one topic as a
-  research document — definitions, then the claims and conjectures the
-  computations support, then the open questions, then the literature; with the
-  symbol index and the initialization code placed below the document, out of
-  the reader's way. Definitions and claims alike carry a numbered Example whose
-  code is folded and whose graphic is not: a real computation over a family of
-  objects answered as a bare graphic — three cases side by side, a census grid,
-  a histogram, a parameter scan — never a decorative illustration. Converts the
-  Markdown source with the rich MarkdownToNotebook
-  parser, then applies the MathNotebook paclet environments (Definition, Claim,
-  Conjecture, Question, ...) on the PlainArticle stylesheet, so statements
-  translate directly to Lean and the page looks like a stock notebook.
-  Visual-first: mostly pictures and plots, not numeric dumps. Generated one-way
-  from a readable Markdown source the user edits directly; a per-cell
-  fingerprint detects any edit made in the .nb instead, and regeneration stops
-  rather than overwrite it. Use when the user says "research notebook",
-  "notebook with conjectures", "research document on X", "write up the research
-  on X", or the /research-notebook command.
+  Write a mathematics paper as a Wolfram notebook. The document is an ordinary
+  paper — introduction, then sections in the order the mathematics needs, each
+  mixing definitions, examples, claims, proofs and remarks — not a fixed
+  Definitions/Claims/Questions template, and with no symbol index. Every
+  definition is followed by an Example: three to ten lines of plain code a
+  reader can copy and change, answering with one bare graphic. Statements,
+  equations and sections are numbered by the front end and cited by tag, never
+  by a number typed into the source. Proofs are short and step by step, each
+  step naming the definition or equation it uses. Converts a Markdown source
+  with the MarkdownToNotebook parser, then applies the MathNotebook
+  environments on the PlainArticle stylesheet, so statements translate directly
+  to Lean and the page looks like a stock notebook. Generated one-way from the
+  Markdown the user edits; a per-cell fingerprint stops the build rather than
+  overwrite an edit made in the .nb. Use when the user says "research
+  notebook", "notebook with conjectures", "research document on X", "write up
+  the research on X", or the /research-notebook command.
 ---
 
 # Research Notebook
 
-A research notebook is a *mathematical research document*, not a demo and not an
-exploration log:
+A research notebook is **a mathematics paper that computes**.
+
+The model is an `amsart` paper: numbered definitions and results, numbered
+equations, cross-references by number, short proofs. The one thing a paper on
+paper cannot do is run, so every definition here carries a worked Example.
 
 | Skill | Produces |
 |-------|----------|
 | `new-notebook` | generic Markdown → `.nb` pipeline (this skill builds on it), and every per-function demonstration |
-| `research-notebook` | definitions → claims and conjectures with code-folded evidence → open questions → literature, over an appendix of symbols and initialization |
+| `research-notebook` | a paper: definitions with examples, results with proofs, cross-referenced and numbered |
+
+Use it when the user says "research notebook", "research document on X",
+"notebook with conjectures", "write up the research on X", or runs
+`/research-notebook`.
+
+The reference for tone, structure and proof style is the author's own paper at
+`~/Library/CloudStorage/OneDrive-Personal/Math/articles/FINISHED/hodgepaper/hodgepaper.tex`.
+Read a section of it when the voice is unclear.
 
 ## The governing rule — Critical
 
-**Concise and clear. Simplicity of text and structure wins.**
-The notebook exists to convey a small number of clear messages.
-Every sentence either defines, states, or points at evidence.
-No filler prose, no over-explanation, no code inside Text cells, no section that
-exists only for symmetry.
-If a paragraph does not add a mathematical fact, delete it.
+**Mathematical content and structure. Nothing else.**
 
-This rule outranks every other instruction here.
-Where a convention below would add structure the topic does not need, drop the
-structure.
+- If a fact can be an equation, make it an equation.
+- One statement per sentence. Short sentences.
+- Prose exists to connect equations, not to describe them.
+- Delete any paragraph that adds no mathematical fact.
+- Never write a number the front end can compute.
 
-## When to use
-
-- The user says "research notebook", "notebook with conjectures", "research
-  document on X", "write up the research on X", or runs `/research-notebook`.
-- A topic's computations have accumulated enough to be written up as a precise,
-  citable document.
+This rule outranks everything below. Where a convention here would add
+structure the mathematics does not need, drop the structure.
 
 ## Steps
 
-1. Write or update the `NotebooksLLM/<Topic>.md` source in the canonical
-   document order below, following *TeX in the sources* and *Prose style*.
+1. Write or update `NotebooksLLM/<Topic>.md` in paper order (§ *Structure*),
+   following § *Language*, § *Definitions and Examples*, § *Referencing*.
 2. If a generated `.nb` exists, run the drift check first
    ([fingerprint.md](fingerprint.md)); stop on any drift.
 3. Convert (§ *The conversion call*), evaluate and embed outputs
    ([output-embedding.md](output-embedding.md)), stamp the fingerprint.
-4. Publish and link (§ *Evaluate, publish, link*), then § *After publishing*.
+4. **Smoke test**: every Input cell evaluates through the Wolfram MCP
+   (license-aware — see [new-notebook](../new-notebook/SKILL.md) *Kernel
+   execution*) with **zero messages**.
+5. **Deploy** to the Wolfram Cloud, public, stable object name
+   `<Project>/<Topic>.nb` (matching `Scripts/publish_notebooks.wls`).
+6. **Link from the repo README** in a `## 📓 Research Notebooks` section — a
+   table `| Notebook | Description | Link |`, one row per notebook, the link
+   anchored on "Wolfram Cloud". Create the section if missing; update the row
+   in place if the notebook already has one.
+7. Sync the open questions to the Wiki (or the journal, when on).
+8. If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see
+   [provenance](../provenance/SKILL.md)), the provenance comment belongs in the
+   `.md` **before** the build; append the ledger entry to `Wiki/Prompts.md`
+   here.
 
 Three read-on-demand siblings carry the deep mechanics — read only what the
 current step needs:
 
-- [fingerprint.md](fingerprint.md) — the drift-detection fingerprint: stamping,
-  checking, and why no `.nb` → `.md` direction exists
+- [fingerprint.md](fingerprint.md) — drift detection: stamping, checking, and
+  why no `.nb` → `.md` direction exists
 - [mathnotebook.md](mathnotebook.md) — MathNotebook install, stylesheet
-  embedding, verified environment mechanics
+  embedding, environment mechanics
 - [output-embedding.md](output-embedding.md) — evaluating Input cells and
   embedding Output cells headless
 
-## Canonical document order — Critical
+## Language — Critical
 
-The document is a **paper with an appendix under it**.
-The reader meets the mathematics and never has to scroll past machinery to do
-it.
+Write in the language of mathematics papers. Nothing else.
 
-### The paper
+**Banned — vocabulary imported from other fields.** It reads as jargon from
+data engineering, journalism or software testing, and each has an exact
+mathematical replacement:
 
-1. **Head** — `[ LLM Generated ]` line, **Title**, **Author**, **Abstract**.
-   The abstract is 2–4 sentences stating the main claims, written **last**,
-   after the evidence is in. It is not a section-by-section roadmap; the reader
-   can already see the sections.
-2. **Definitions** — `Definition` cells: precise, Lean-translatable, and
-   carrying **no implementation detail**. A definition states what the object
-   is; it does not name the symbol that computes it. That binding lives in the
-   Symbols appendix, which points back here.
-   A definition **may carry an `Example`** of its own, on the same terms
-   as a claim's (§ *Examples*): it measures the defined object over a family and
-   plots what it found. Give one to any definition whose object has behaviour
-   worth measuring; omit it where the honest content would be a single drawn
-   instance. The section reads as a clean list of definitions either way,
-   because the code is folded underneath, leaving only the graphic.
-   When a metric construction is set-valued by default, name the set-valued
-   object as the primitive and the single-valued case by a predicate — decide by
-   **closure** under the theory's operations, verify the closure computationally,
-   and state the convention in a `Remark` (a worked case:
-   [Wiki/Concepts/DisplacementNaming.md](../../Wiki/Concepts/DisplacementNaming.md)).
-3. **Claims and conjectures** — the results. Each statement is one environment
-   cell chosen by § *Which environment*, followed immediately by an **`Example`
-   cell group** holding the computation, folded, and its graphic, not folded —
-   the evidence, held to the bar in § *Examples*. Here the Example is the point of the claim,
-   so a claim whose Example cannot clear that bar is a claim that has not been
-   checked: say so with a status marker rather than shipping a decorative
-   picture.
-   Each conjecture carries a status marker: `verified up to n = ...` / `open` /
-   `proved in [ref]`. A conjecture that fails its battery is **demoted to a
-   `Question`** in section 4 and the minimal counterexample is kept, as a
-   picture.
-   State how the defined notions relate — the implication lattice as a display
-   formula, each independence backed by a **counterexample and a census**, not
-   an assertion. Never assert an implication you have not checked: enumerate
-   over small objects (full enumeration on a small object beats sampling on a
-   large one), and expect some proposed claims to be false — finding the
-   exception is the result.
-4. **Questions** — `Question` cells, one per open question, each referencing
-   the definitions and claims it concerns by number. Proof strategies for the
-   conjectures live here. This is the **only** place open questions live:
-   a conjecture demoted from section 3 moves here rather than staying put.
-5. **References** — every claim that isn't ours carries a citation tag `[tag]`;
-   this section lists the entries. See § *Citations and References*.
-
-### Below the paper
-
-6. **Symbols** — a flat index of every symbol the notebook uses, grouped by role
-   (constructions / operations / invariants and predicates / visualisation).
-   One line each: the literal symbol name, an em dash, a short description, and
-   a back-reference by number to the definition it realizes —
-   `GraphInteriorForm — the interior form of Definition 2.3.`
-   Those numbers are `CounterBox`es resolved by the front end, so they follow
-   the cells if anything moves.
-   This is a reference, never read linearly; that is exactly why it sits here
-   and disturbs nobody.
-7. **Initialization** — folded init cells: paclet loads, MathNotebook load,
-   `SeedRandom`, a reproducibility line (paclet version, git commit, date), and
-   the example-object constructions **copied verbatim from the project's example
-   module**, so the notebook is self-contained.
-   Add one Text cell noting that the stylesheet can be swapped from the
-   MathNotebook palette (§ *The stylesheet*).
-
-**Initialization can sit at the bottom because the outputs are embedded.**
-Nothing above it needs evaluating to be read — the shipped notebook already
-carries its results. An `InitializationCell` evaluates on open regardless of
-where it sits, so a reader who does want to compute is served too.
-
-### What this document does *not* contain
-
-**No per-function demonstration sections.** A section per symbol, titled by the
-literal code, showing options and methods, is a `new-notebook` deliverable. This
-skill produces the mathematics; the symbol index is the only trace of the code
-in it.
-
-## Which environment — Critical
-
-All **12** MathNotebook environments are available and share one counter under
-`PlainArticle` and five of the six other sheets — `ComplexSystems` deliberately
-gives each environment its own counter, which `Section` does not reset.
-Choosing among them is a claim about the *status* of a statement, so choose
-honestly:
-
-| Environment | Use for |
+| Do not write | Write |
 |---|---|
-| `Definition` | vocabulary — every term the notebook uses |
-| `Claim` | **the default.** A statement we assert and have checked computationally |
-| `Conjecture` | a statement we believe and have not settled |
-| `Theorem` | reserved for something **big**, and only with a proof or a citation to one |
-| `Lemma` | only a step toward a `Theorem`, stated immediately before it |
-| `Proposition`, `Corollary` | as in a paper: a minor proved result; a consequence of the statement above |
-| `Example` | the computational evidence under a definition, claim or conjecture — code folded, graphic shown |
-| `Remark`, `Observation` | commentary — a convention, a caveat, an aside. Use these freely rather than loose prose |
-| `Question` | an open question |
-| `Construction` | a construction the notebook reuses |
+| census, sweep, scan, battery, suite | "for all connected graphs with at most 8 vertices"; "as a function of $t$" |
+| witness | example, counterexample |
+| the bar, clears the bar | (delete — say what the example computes) |
+| workhorse, pipeline, harvest, probe, drill down | (delete) |
+| verdict, audit, smoke test, flag | (delete; in prose write "we verified") |
+| marker, tag | label, number — `CellTags` only when talking about the build |
 
-**`Claim` is the workhorse.** An LLM-generated notebook of computational
-evidence proves almost nothing, so `Theorem` is the exception and not the
-default. A `Lemma` with no theorem after it is a `Claim` that has been
-mislabelled.
+**Banned — adjectives asserting importance:** remarkable, powerful, elegant,
+striking, cleanly, sharp, fragile, genuinely, cautionary, deep, beautiful.
+State the fact. Write "the bound 2 cannot be lowered, since margin 1 fails" —
+not "the margin is sharp".
 
-Numbering is the front end's to compute and **never yours to write**: do not put
-a number in the source. Two counter facts to write against:
+**Use the standard phrases.** We define. Let $G$ be. Suppose that. Then. It
+follows that. Conversely. One checks that. We verified for all. Notice that.
+We ask whether. We say that $X$ is *reduced* if.
 
-- **Numbers are per-section**, `⟨section⟩.⟨n⟩`, shared across all 12
-  environments — a Claim then its Example in section 3 are 3.1 and 3.2.
-- **Equation numbers are document-global**, `(n)`; `Section` does not reset them.
+**Voice:** declarative "we". Italicise a term where it is defined
+(`a *Hodge decomposition* of $(V, \mathrm{d})$ is …`) and never again.
 
-The Plain class (`Theorem`, `Lemma`, `Proposition`, `Corollary`, `Conjecture`,
-`Claim`) **italicises the body**, which is the amsthm convention but surprises
-authors who write a long cell. The Definition class is roman.
+**Commentary goes in a `Remark`**, not in loose prose between cells. A labelled
+aside is easier to skip.
 
-**An environment is a multi-cell block, and a `Text` cell breaks it.** A body
-that continues past one cell — a paragraph after a display equation, say —
-continues in a cell of the **same style** carrying `CellDingbat -> None` and
-`CounterIncrements -> { }`. Drop to `Text` instead and the block breaks twice:
-the prose jumps from the body margin of 130 pt to `Text`'s 66, and a LaTeX export
-emits it as bare prose outside the `\begin{definition}`. Wrapping in
-`CellGroupData` does not help — the margins are measured identical.
+## Structure — an ordinary paper
 
-**Write every Definition, Claim and Conjecture so it translates directly to a
-Lean statement**: explicit hypotheses, explicit quantifiers, quantification over
-finite/decidable objects wherever possible ("for every connected graph G with
-|V| ≤ n ..."), no appeals to pictures inside statements. Open questions and
-settled conjectures feed the [lean](../lean/SKILL.md) skill.
+**There is no fixed section order.** The document is organised the way the
+mathematics is organised. Sections carry mathematical titles ("Hodge
+decompositions", "Curvature on trees"), never structural ones ("Definitions",
+"Claims", "Results").
 
-## Examples — Critical
+What is required:
 
-An `Example` belongs under a `Definition` as much as under a `Claim` or
-`Conjecture`: under a definition it shows what the object *does*, under a claim
-it is the evidence.
+1. **Head** — `[ LLM Generated ]` line, `Title`, `Author`, `Abstract`.
+   The abstract is 2–4 sentences stating the results, written last.
+2. **Introduction** — what the notebook does, and the results. State each main
+   result in the introduction as a numbered `Theorem` / `Claim` / `Conjecture`
+   cell whose body says where it is proved ("this is [Prop:Extension]"),
+   exactly as the model paper does. A reader who stops after the introduction
+   knows every result.
+3. **The body** — sections in the order the mathematics needs. Nothing is used
+   before it is defined. Each section freely mixes `Definition`, `Example`,
+   `Claim`, `Proof`, `Remark`, `Question`.
+4. **References** last.
+5. **Initialization** last of all, folded (§ *Initialization*).
 
-**The document's rhythm is that alternation** — `Definition`, `Example`,
-`Definition`, `Example`, … through section 2, then `Claim`, `Example`, `Claim`,
-`Example`, … through section 3.
-A statement and its evidence are adjacent, and nothing comes between them.
+What is **not** required, and is dropped unless the topic wants it:
 
-### An Example is a computation, not an illustration
+- a Definitions section, a Claims section, a Questions section — statements sit
+  where they are used;
+- a Symbols index — removed from this skill; see § *Notation*;
+- a Conventions section, unless there really is a standing convention, and then
+  it is a `Remark` early on, as in the model paper;
+- per-function demonstration sections — those are `new-notebook`'s.
 
-**The bar: an Example must compute something whose answer was not obvious
-before it ran, and show that answer as a graphic.** At minimum a histogram.
+Open questions may be collected in a final section when there are several, or
+left as `Question` cells where they arise. Either is a paper.
 
-Concretely, an Example clears the bar when both hold:
+## Notation
 
-- It runs over a **family** of objects — a census, a scan, a parameter sweep —
-  not over one object. One instance drawn is an illustration.
-- Its graphic carries a **distribution, a comparison, or a scan**: a histogram
-  of an invariant over all graphs of a size; an `ArrayPlot` of verdicts over the
-  example battery; a curve against a parameter; a grid of the cases that failed.
+A definition defines a mathematical object; it does not name the function that
+computes it. Bind the two in **one sentence after the definition**, or let the
+Example do it by using the symbol:
 
-It does **not** clear the bar when it is a picture of the object just defined
-with the relevant part coloured in, a restatement of the definition in code, or
-a graphic chosen because the section looked bare.
+> We compute the interior form with `GraphInteriorForm`.
 
-**An Example that cannot clear the bar is omitted, not padded.** The governing
-rule applies here with full force: a manufactured Example is worse than no
-Example, because it costs the reader an unfold and returns nothing. Where a
-single picture genuinely *is* the point — a minimal counterexample, say — put it
-in a `Remark`, which promises less.
+That sentence is the whole notation apparatus. There is no symbol index.
+
+## Definitions and Examples — Critical
+
+**Every definition is followed by an Example.** That alternation —
+`Definition`, `Example`, `Definition`, `Example` — is the rhythm of the
+document, and nothing comes between a definition and its Example.
+
+A `Claim` or `Conjecture` takes an Example when a picture helps; it is not
+required to.
+
+### What a Definition is
+
+- One object per definition. Explicit hypotheses, explicit quantifiers,
+  quantification over decidable objects where possible ("for every connected
+  graph $G$ with $|V(G)| \le n$"). No appeal to a picture inside the statement.
+- Written so it translates directly to a Lean statement — this feeds the
+  [lean](../lean/SKILL.md) skill.
+- Numbered by the front end. Never type the number.
+
+### What an Example is
+
+**The smallest computation that shows the object.**
+
+- **Three to ten lines of code**, readable top to bottom, that a reader can
+  copy into a fresh notebook and change one argument in.
+- It builds what it needs in a line, or uses an object from Initialization.
+- It answers with **one bare graphic**. A single number is allowed only when
+  that number is the point.
+- **One instance is fine.** That is what an example is. Where the behaviour
+  over a family is the point, plot the family — still in a few lines,
+  `Table[ … ]` then `ListPlot`.
+- Choose the smallest object in which the phenomenon appears. Not the triangle
+  when the triangle is degenerate.
+
+### No decoration — Critical
+
+The `Example` cell already said what this is. The graphic carries no
+`PlotLabel`, no legend, no frame, no `Style`, no `Labeled`, no annotation
+restating the definition, and no color option beyond a pastel default. Anything
+deletable without losing information is deleted.
+
+Good:
+
+```wolfram
+graph = GridGraph[ { 4, 4 } ];
+HighlightGraph[ graph, FindShortestPath[ graph, 1, 16 ] ]
+```
+
+```wolfram
+curvatures = Table[ OllivierCurvature[ CycleGraph[ n ], 1, 2 ], { n, 3, 12 } ];
+ListPlot[ curvatures, Joined -> True ]
+```
+
+Bad — variables, options and labels that carry no mathematics:
+
+```wolfram
+Module[ { g, path, styled },
+  g = GridGraph[ { 4, 4 }, VertexSize -> Medium, GraphLayout -> "SpringEmbedding" ];
+  path = FindShortestPath[ g, 1, 16 ];
+  styled = HighlightGraph[ g, path, GraphHighlightStyle -> "Thick" ];
+  Labeled[ styled, Style[ "Shortest path in the 4×4 grid", Bold, 14 ], Top ] ]
+```
 
 ### Folded code, unfolded graphic — Critical
 
-**The fold hides the code, never the result.**
-A reader scrolling the document meets statements and pictures; the computation
-behind each picture is one click away and never in the way.
+**The fold hides the code, never the result.** A reader scrolling the document
+meets statements and pictures; the code is one click away and never in the way.
+That is why an Example's code must be short — it is read by someone who chose
+to open it.
 
-**The mechanism is the group state `{2}`** — a closed group that displays its
+The mechanism is the group state `{2}` — a closed group displaying its
 **second** cell:
 
 ```wolfram
@@ -253,200 +240,249 @@ Cell[ CellGroupData[ {
   Cell[ BoxData[ outputBoxes ], "Output" ] }, {2} ] ]
 ```
 
-`Open` shows both cells, `Closed` shows the first — the `Input`, which is exactly
-backwards. `{n}` is the third state: closed, displaying cell `n`. So the ordinary
-Input-then-Output order is preserved and the reader sees only the graphic.
+`Open` shows both, `Closed` shows the `Input` — backwards. `{n}` is the third
+state: closed, displaying cell `n`.
 
-This is the idiom of the working document — `Infrageometry/NotebooksLLM/Displacements.nb`,
-where all 22 computations are `{2}` groups — and it is the one to copy.
+Three consequences:
 
-Three mechanics that follow from it:
+- **One Output per Input.** A closed group displays a single cell. Split the
+  computation.
+- **Nothing else is needed** — no `CellOpen -> False`, no
+  `CellGrouping -> Manual`. Both were tried and are worse.
+- **An `Input` cell must carry real code** — a code `String` or genuine boxes.
+  `ToBoxes` applied to a code *string* ships a cell displaying the quoted
+  string; the failure is silent and visible only on screen.
 
-- **One Output per Input.** A closed group displays a single cell, so an `Input`
-  with two Outputs can only show one. Split the computation.
-- **Nothing else is needed** — no `CellOpen -> False` on the `Input`, no
-  `CellGrouping -> Manual` on the notebook. Both were tried; `CellOpen` leaves a
-  strip too faint to find, and the displacement notebook sets neither.
-- **An `Input` cell must carry real code**, either a code `String` or genuine
-  boxes. `ToBoxes` applied to a code *string* ships a cell displaying the quoted
-  string — the failure is silent and visible only on screen.
+The `Example` environment cell is a **sibling above** the group, not its head.
+It numbers on the shared counter, so it is citable as `Example 2.2`. An
+`### Example` subsection is wrong on all three counts.
 
-The `Example` environment cell stays a **sibling** above the group, not its head:
-it is the visible line the reader scans, and the graphic sits under it.
+## Statements
 
-### No decoration
+| Environment | Use for |
+|---|---|
+| `Definition` | every term the notebook uses |
+| `Claim` | **the default.** A statement we assert and have checked computationally |
+| `Conjecture` | a statement we believe and have not settled |
+| `Theorem` | something big, with a proof or a citation to one |
+| `Lemma` | a step toward a `Theorem`, stated immediately before it |
+| `Proposition`, `Corollary` | a minor proved result; a consequence of the statement above |
+| `Example` | the computation under a definition or a claim |
+| `Remark`, `Observation` | a convention, a caveat, an aside |
+| `Question` | an open question |
+| `Construction` | a construction the notebook reuses |
+| `Proof` | a proof (§ *Proofs*) — unnumbered, not citable |
 
-Examples are bare.
-No `PlotLabel`, no legend, no frame, no title above the graphic, no annotation
-restating the definition — the `Example` cell already said what this is, and the
-reader is looking at the picture, not at labels.
-A `Caption` cell exists for the case where the reader genuinely cannot tell what
-they are seeing; the default is no caption.
-Anything that can be deleted from a graphic without losing information is
-deleted.
+`Claim` is the default. Computational evidence proves nothing, so `Theorem` is
+the exception. A `Lemma` with no theorem after it is a mislabelled `Claim`.
 
-### Nontrivial objects, spread across categories
+**A claim states its own range of verification**, in the statement, with the
+numbers in it:
 
-- **One size up from the trivial case.** Not the smallest graph, not the
-  triangle, not the 4-cycle: the first size at which the quantity has room to
-  vary. Where the smallest case *is* the phenomenon, show it and the next one
-  too.
-- **Span categories, not one family.** Three objects side by side should be
-  three *kinds* — a tree, a lattice patch, a random graph; a bipartite case, a
-  dense case, a degenerate case — so the reader sees the range of the invariant
-  rather than one object at three resolutions.
+> **Claim.** Every connected graph $G$ with $|V(G)| \le 8$ satisfies
+> $\kappa(G) \ge -1$. Verified by enumeration.
 
-This does not loosen the enumeration rule in § *Canonical document order*: full
-enumeration on a small object still beats sampling on a large one when the
-question is whether a claim *holds*. That rule governs the verification's
-**scope**; this one governs which objects get **drawn**.
+A `Conjecture` carries the same: `verified up to n = 9`, `open`, or
+`proved in [Lambrechts2007]`. A conjecture that fails becomes a `Question`, and
+the smallest counterexample is kept and drawn.
 
-### Layout: a row of three, or a grid of many
+**Never assert an implication you have not checked.** Enumerate over small
+objects; full enumeration on a small object beats sampling on a large one. Some
+proposed statements will be false, and finding the counterexample is the result.
 
-- The default shape is a **`GraphicsRow` of three** graphics at one `ImageSize`,
-  so the comparison is visual and not scaled away.
-- When the point is a census over many cases, a **`GraphicsGrid` of smaller
-  graphics** — the whole battery at a glance.
-- A **single** plot is right only when the answer is one distribution or one
-  scan: a histogram, a curve against a parameter.
+**An environment is a multi-cell block, and a `Text` cell breaks it.** A body
+continuing past one cell — a paragraph after a display equation — continues in
+a cell of the **same style** with `CellDingbat -> None` and
+`CounterIncrements -> { }`. Drop to `Text` and the block breaks twice: the
+margin jumps from 130 pt to 66, and a LaTeX export emits bare prose outside the
+`\begin{definition}`. `CellGroupData` does not help.
 
-### Mechanically: an environment cell, not a subsection
+## Proofs
 
-The Example is an `Example` **environment cell** sitting above its `{2}` groups
-— not an `### Example` subsection.
+Give a proof when there is one, and write it the way the model paper writes one.
 
-Three reasons: it numbers on the shared counter, so it is citable
-(`Example 2.2`); it sits at the same structural level as the definition or claim
-it serves rather than opening a new heading; and it removes the collision
-between a subsection named "Example" and the environment of the same name.
+- Open the cell with `**Proof.**`.
+- **Step by step, one step per sentence**, in the order a reader checks them.
+- **Every step names what it uses**: "by [Def:Hodge]", "by [Eq:Cyclic]", "by
+  [Lem:HodgeType]". A step that uses nothing stated is a step the reader cannot
+  check.
+- Display the algebra. A computation running over three equalities is a
+  display, not a sentence.
+- No sentence carrying two steps of reasoning. Split it.
+- No sketches, and no "one easily sees" standing in for a real step. Where a
+  step is genuinely routine, write "One checks that" and give the one-line
+  display.
+- Where a step is computational, say what was computed and put the code in the
+  Example after the proof.
+- A proof needing more than about ten steps does not belong here. State the
+  result as a `Claim` with a citation.
 
-Every post-processing pass walks into `CellGroupData`, so markers, tagged
-equations and citations inside a fold all convert — that recursion is
-load-bearing and was added for this structure (`mapCellList` in
-`scripts/mathnotebook_post.wl`).
+The shape to copy, from `Lemma 3.9` of the model paper:
 
-## The stylesheet — Critical
+> **Proof.** Because $V$ is non-negatively graded and the pairing
+> $V^k \times V^{n-k} \rightarrow \mathbb{K}$ is nondegenerate, $V^k = 0$ for
+> $k \notin [0,n]$. Given $v \in V^n$ we have $\mathrm{d}v \in V^{n+1} = 0$,
+> hence $\mathrm{d}f(v) = f(\mathrm{d}v) = 0$. Therefore
+> $$ \varepsilon'(f(v)) = \varepsilon'_*([f(v)]) = \varepsilon_*([v]) = \varepsilon(v), $$
+> so $f$ preserves the chain-level orientation. If $f(v_1) = 0$ for some
+> $v_1 \in V^k$, then
+> $\langle v_1, v_2 \rangle = \varepsilon'(f(v_1) f(v_2)) = 0$ for all
+> $v_2 \in V^{n-k}$, so nondegeneracy gives $v_1 = 0$.
 
-**Embed `PlainArticle.nb`.**
-It is `Default.nb`'s typography with the paper's *structure* added: it declares
-25 style cells against `AMSArticle`'s 34 (AMS carries a further 26 `"Printout"`
-variants; `PlainArticle` none), drops **every explicit `FontSize` and
-`FontFamily`**, and leaves exactly six styles to `Default.nb` — `Title`, `Text`,
-`Author`, and the three `DisplayFormula` styles. What it does declare is what the
-document needs to be a document — the twelve environments, `Proof`, `Caption`,
-`Date`, `Reference`, `Hyperlink`/`Citation`/`URL`, and for the three sectioning
-levels and `Abstract` only the number or the word that prints.
+`Proof` is a style declared by `PlainArticle`, and `**Proof.**` converts like
+any other marker: it is in `$MathNotebookMarkerStyles` but not in
+`$MathNotebookEnvironmentStyles` (`scripts/mathnotebook_post.wl`), so it takes
+no number and cannot be cited. The style inherits from `Text` and supplies the
+italic `Proof.` dingbat itself; it supplies no QED mark, and none is typed.
 
-The result reads as a stock Wolfram notebook: no colour change, no font change,
-numbering and labels intact.
+## Referencing — Critical
 
-**Plain `Default.nb` is not an alternative.** Under it a reference to a
-definition renders **`2.0`** — the section counter increments and the theorem
-counter never does. `PlainArticle` is the *minimum* sheet that keeps numbering
-alive, which is why it exists.
+**Every number in the document is computed by the front end.** A number typed
+into the source is a bug: a second source of truth, stale the moment a cell
+moves.
 
-Nothing the pipeline uses falls off the end: `Default.nb` declares `Author`,
-`Title`, `Subtitle`, `Abstract`, `DisplayFormulaNumbered` and `ItemNumbered`.
-It does not declare `Caption`, which is why `PlainArticle` carries that one
-across — and since 0.1.20 `PlainArticle` declares `Reference` too, inheriting
-`Text` with a 205 pt gutter rather than deferring to `Default.nb`.
+Four things carry numbers, and all four are cited the same way — a bracketed
+tag in the prose:
 
-**One open defect on this sheet.** `PlainArticle`'s `DisplayFormula` is
-left-flush where the four journal templates centre theirs, so an equation inside
-an environment body sits 64 pt left of the block's prose (MathNotebook
-`EnvironmentBlocks` T3, open at 0.1.20).
+| Target | Source | Cited as | Renders |
+|---|---|---|---|
+| display equation | `$$…$$` with a tag | `[Eq:Cyclic]` | `(3)` |
+| statement | environment cell with a tag | `[Def:Hodge]` | `Definition 2.1` |
+| section | heading with a tag | `[Sec:Trees]` | `Section 4` |
+| bibliography entry | `Paper/references.bib` key | `[Lambrechts2007]` | `[Lambrechts2007]` |
 
-### Swapping the sheet is the reader's move, not the build's
+**The rendered form already contains the word.** Write `by [Def:Hodge]`, which
+renders "by Definition 2.1" — never `by Definition [Def:Hodge]`.
 
-The MathNotebook palette's **Apply stylesheet** menu offers all six sheets plus
-Default, so an author can retypeset the document as `AMSArticle`,
-`ArXivArticle`, `RevTeXAPS`, `SpringerJournal` or `ComplexSystems` on their own
-machine. Mention this in the Initialization section; do not do it in the build.
+### Writing a tag in the source
 
-Two reasons the build always ships `PlainArticle` embedded:
+A tag is `{#Tag}`. It sits
 
-- **A palette swap sets the sheet by name**, which replaces the embedded
-  definitions with a path into a paclet layer on the author's disk. A cloud
-  reader without the paclet then gets **zero** style definitions — no counters,
-  and no labels either, because the label *is* the `CellDingbat` the sheet
-  supplies.
-- **By-name resolution is not currently measured to work here.** The paclet's
-  own record (`BasicFunctionality` T4) has all six sheets falling back to
-  `Default.nb` for a locally installed copy — Title 45 where the embedded `Get`
-  gives 26 — before a menu reset, after `ResetMenusPacket` in the same session,
-  and with the front end freshly launched. It worked for a cloud-installed copy.
-  Treat the palette swap as a documented author action, not a verified one.
+- at the **end of the first paragraph** of the statement or heading it names;
+- on the **line after** the display equation it names.
 
-For the `[ LLM Generated ]` line use the `Author` style. `PlainArticle` leaves
-`Subtitle` to `Default.nb`, which does declare it, so `Subtitle` would work here
-— but `AMSArticle` declares no `Subtitle`, so a line written in it loses its
-typography the moment the author swaps sheets. `Author` is the one style that
-survives every swap.
+```markdown
+## Hodge decompositions {#Sec:Hodge}
+
+**Definition.** A *Hodge decomposition* of $(V, \mathrm{d}, \langle-,-\rangle)$
+is a direct sum $V = \mathcal{H} \oplus \operatorname{im}\mathrm{d} \oplus C$
+with $C \perp C \oplus \mathcal{H}$. {#Def:Hodge}
+
+The pairing satisfies
+
+$$ \langle \mathrm{d}v_1, v_2 \rangle = (-1)^{\deg v_1 + 1} \langle v_1, \mathrm{d}v_2 \rangle $$
+{#Eq:Cyclic}
+
+for all $v_1, v_2 \in V$, so a decomposition as in [Def:Hodge] is determined by
+[Eq:Cyclic].
+```
+
+The generator strips every `{#Tag}` and attaches it as `CellTags` — for an
+equation, to the `DisplayFormula` cell above it (§ *The conversion call*).
+`ConvertCitations` then turns each `[Tag]` in prose into a button resolving to
+the target's number.
+
+**Number an equation exactly when something cites it**, and tag a statement
+exactly when something cites it. `NumberTaggedFormulas` promotes only tagged
+formulas to `DisplayFormulaNumbered`; an untagged display equation prints
+without a number, which is right.
+
+**Prefix the tags** — `Def:`, `Eq:`, `Lem:`, `Prop:`, `Sec:`, `Ex:` — as the
+model paper does. It keeps them apart from bib keys, which carry no prefix.
+
+Two shapes the front end will not resolve:
+
+- **A citation must be inline `TextData`, never `BoxData`** —
+  `Cell[ BoxData[ button ], "Text" ]` renders in the code face.
+- **A compound citation is one button per key**, with literal separators
+  between them; one button carrying several keys navigates nowhere.
+
+## Graphics
+
+The notebook is mostly pictures. Never end a cell with a bare number, a boolean
+list, or a textual table:
+
+- a quantity over a family → a plot;
+- behaviour against a parameter → a curve;
+- results over many objects → `ArrayPlot` or a row of highlighted graphs, in
+  pastel colors;
+- a counterexample → the object drawn with the violating part highlighted.
+
+A short symbolic result may stand alone when that value is the point.
+
+Every graphic is bare (§ *No decoration*).
+
+## Initialization
+
+Last in the document, folded: paclet loads,
+``Needs[ "WolframInstitute`MathNotebook`" ]``, `SeedRandom`, a reproducibility
+line (paclet version, git commit, date), and the example objects the Examples
+use, copied verbatim from the project's example module so the notebook is
+self-contained. Add one Text cell noting that the stylesheet can be swapped from
+the MathNotebook palette (§ *The stylesheet*).
+
+**Initialization can sit at the bottom because the outputs are embedded.**
+Nothing above it needs evaluating to be read. An `InitializationCell` evaluates
+on open wherever it sits, so a reader who does want to compute is served too.
+
+## TeX in the sources — engine-dependent — Critical
+
+**Which rule applies depends on which parser ran.** Settle the engine first
+(§ *Pipeline*).
+
+### Rich mode (the normal path)
+
+`$…$` and `$$…$$` are the preferred form: the TeX parser produces real typeset
+boxes, `$…$` becomes a nested `InlineFormula`, `$$…$$` a `DisplayFormula`, and
+`=` survives.
+
+Three losses, measured at the pinned SHA:
+
+- **`\to` and `\mapsto` are silently dropped** — they become an empty string, so
+  `$f : V(G) \to \mathbb{R}^3$` typesets with nothing between `V(G)` and `ℝ³`.
+  Write `\rightarrow` / `\longrightarrow` / `\hookrightarrow`, or paste the
+  Unicode (`$a ↦ b$` works). `\Rightarrow`, `\circ`, `\times`, `\subset`,
+  `\in`, `\leq`, `\neq` are fine.
+- **`\tag{…}` is not understood** — it renders literally. Numbering comes from
+  `CellTags` (§ *Referencing*).
+- **A `wolfram` fence starting with `FormBox[…]` stays an `Input` cell**
+  showing the literal source. That convention is built-in-only.
+
+### Built-in fallback (no clone present)
+
+The Markdown importer **silently drops `=` and `\to`** inside `$…$`
+(`$X + Y = Y + X$` imports as "X + Y Y + X"). Relations like ≤ ≥ ∼ ⊂ ∈
+survive, which makes the failure easy to miss.
+
+- In Text cells write **plain Unicode**: `X + Y = Y + X`, `d(u, v) ≤ k`,
+  `f : V(G) → ℝ³`, `D₂∘D₁`, `ℤ₈ × ℤ₈`.
+- For display math use a `wolfram` fence whose content starts with `FormBox[…]`.
+- Never use `$…$` or `$$…$$` on this path.
 
 ## Pipeline — Critical
 
 The source of truth is `NotebooksLLM/<Topic>.md`.
-Conversion is a **two-half pipeline**, and both halves are load-bearing:
+Conversion is a **two-half pipeline**, both halves load-bearing:
 `WolframInstitute/MarkdownToNotebook` parses the Markdown, then
-`scripts/mathnotebook_post.wl` applies the environments, the numbering, and the
-citations.
-The generated `.nb` sits beside the source, gitignored, dated on first creation.
+`scripts/mathnotebook_post.wl` applies the environments, the numbering and the
+citations. The generated `.nb` sits beside the source, gitignored.
 
 The parser half is the **rich engine** documented in
 [new-notebook](../new-notebook/SKILL.md) *Conversion engine — built-in vs rich*:
-the pinned local clone, `Template: Default`, `"Evaluate" -> False`.
-A research source always carries frontmatter and LaTeX math, so that skill's
-selection rule always picks rich mode here — but the built-in importer remains
-the fallback when the clone is absent, and the fallback **changes what you may
-write in the source** (see *TeX in the sources — engine-dependent*).
-The backtick-escaping and init-cell-marking rules from `new-notebook` still
-apply; `boxifyInputCells` and the heading shift do **not** — rich mode drops
-both.
+the pinned local clone, `Template: Default`, `"Evaluate" -> False`. A research
+source always carries frontmatter and LaTeX math, so rich mode is always
+selected; the built-in importer is the fallback when the clone is absent, and it
+changes what you may write (§ *TeX in the sources*).
+The backtick-escaping and init-cell-marking rules from `new-notebook` apply;
+`boxifyInputCells` and the heading shift do **not** — rich mode drops both.
 
-The post-processing half is unchanged and still mandatory: MarkdownToNotebook
-supplies **no** environments on the `Default` path, no anchors, no
-cross-references, and no bibliography.
+**Never write `::: theorem` or `::: proof` divs.** The converter's fenced-div
+environments exist only under `Template: Chapter`; under `Default` they are
+**silently dropped entirely** — no cells, no message. Use the bold markers:
+`**Definition.**`, `**Claim.**`, `**Proof.**`, `**Remark.**`, and
+`ConvertEnvironmentCells` strips the marker and applies the style.
 
-**Never write `::: theorem` or `::: proof` divs in these sources.** The
-converter's fenced-div environments exist only under `Template: Chapter`, which
-would force the WolframBookTools stylesheet; under `Default` the divs are
-**silently dropped entirely** — no cells, no message. Use the bold environment
-markers instead: open a paragraph with `**Definition.**`, `**Claim.**`,
-`**Conjecture.**`, `**Question.**`, `**Remark.**`, and `ConvertEnvironmentCells`
-strips the marker and applies the style.
-
-### Generation is one-way; the fingerprint guards the .nb
-
-**The `.md` → `.nb` direction is the only transfer.** There is no `.nb` → `.md`
-transfer at all, in either engine — the measured evidence is in
-[fingerprint.md](fingerprint.md) § *Why there is no reverse direction*.
-
-So the working arrangement is: **the user reads the `.nb` and edits the `.md`.**
-That is only honest if the `.md` is genuinely readable, which is a live
-constraint on how you write it and a further reason rich mode matters — readable
-`$…$` LaTeX in the source instead of the built-in path's plain-Unicode and
-`FormBox` fences. Tell the user this explicitly the first time a notebook is
-generated: point at the `.md` as the file to edit, and say the `.nb` is a build
-product.
-
-**But never assume the user obeyed that.** The build stamps a per-cell
-fingerprint, and every regeneration checks it first; if any cell was added,
-deleted, or edited in the `.nb`, **the build stops** and the drift goes to the
-user — the [revise](../revise/SKILL.md) loop: transcribe it into the `.md` or
-discard it, never regenerate over it.
-The stamping and comparison procedure, with its two load-bearing details, is in
-[fingerprint.md](fingerprint.md).
-
-## Source frontmatter and the notebook head
-
-The `.md` carries YAML frontmatter.
-**Rich mode consumes it as metadata**, so there is nothing to strip — that is one
-of the reasons this skill uses the rich engine.
-The built-in importer does **not** understand it: on the fallback path, left in
-place it renders as a literal Text cell reading `notebook: X title: Y` above the
-Title, so strip it before `ImportString` there.
-Either way the keys are metadata, not content — the `Default` template emits no
-`Author` cell, so the generator inserts it from the frontmatter itself:
+### Frontmatter and the head
 
 ```markdown
 ---
@@ -456,179 +492,39 @@ author: Pavel Hajek, Claude <model name>
 ---
 ```
 
-`author:` becomes an `Author` cell directly under the Title; credit the human
-first and the model by name. The notebook opens with
+Rich mode consumes the frontmatter as metadata, so there is nothing to strip;
+the built-in importer does not, and leaves it as a literal Text cell above the
+Title. Either way the keys are metadata — the `Default` template emits no
+`Author` cell, so the generator inserts one from `author:`. Credit the human
+first and the model by name.
 
-1. `[ LLM Generated ]` — the **very first cell, above the Title**, in the
-   `Author` style,
-2. the `Title`,
-3. the `Author`,
-4. the `Abstract`.
+The notebook opens with `[ LLM Generated ]` (the very first cell, `Author`
+style), then `Title`, `Author`, `Abstract`.
 
-## TeX in the sources — engine-dependent — Critical
+### Generation is one-way; the fingerprint guards the .nb
 
-**Which rule applies depends on which parser ran.** This is the one place where
-the fallback changes what you may write, so settle the engine first.
+**The `.md` → `.nb` direction is the only transfer** — there is no reverse
+direction in either engine ([fingerprint.md](fingerprint.md) § *Why there is no
+reverse direction*).
 
-### Rich mode (the normal path)
+So: **the user reads the `.nb` and edits the `.md`.** That is only honest if the
+`.md` is readable, which is a live constraint on how you write it and a further
+reason rich mode matters. Say this to the user the first time a notebook is
+generated: point at the `.md`, and say the `.nb` is a build product.
 
-`$…$` and `$$…$$` are the **preferred** form: the TeX parser produces real
-typeset boxes, `$…$` becomes a nested `InlineFormula` cell, and `$$…$$` becomes a
-`DisplayFormula`. `=` survives, which is the built-in importer's worst defect.
-
-Three losses remain, all measured at the pinned SHA:
-
-- **`\to` and `\mapsto` are silently dropped** — they become an empty string, so
-  `$f : V(G) \to \mathbb{R}^3$` typesets with nothing between `V(G)` and `ℝ³`.
-  Write `\rightarrow` / `\longrightarrow` / `\hookrightarrow`, or paste the
-  Unicode character straight into the math (`$a ↦ b$` works). `\Rightarrow`,
-  `\circ`, `\times`, `\subset`, `\in`, `\leq`, `\neq` are all fine.
-- **`\tag{…}` is not understood** — it renders literally as `(tag)` inside the
-  formula. Numbering comes from `CellTags`, never from the TeX.
-- **A `wolfram` fence starting with `FormBox[…]` stays an `Input` cell** showing
-  the literal `FormBox` source. That convention is built-in-only; in rich mode
-  use `$$…$$`.
-
-Since `$$…$$` arrives with no `CellTags`, **the generator attaches them after
-conversion**: keep an ordered list of tags while authoring, one entry per `$$`
-block (`None` for an equation nothing cites), then apply it to the
-`DisplayFormula` cells in document order before calling `MathNotebookDocument`.
-`NumberTaggedFormulas` promotes exactly the tagged ones.
-
-**Tag before you fold.** `tagFormulas` walks a flat cell list at level `{1}`, so
-it must run *before* `foldExamples` builds the `CellGroupData` — an equation
-already inside a group is invisible to it. `withCellIDs` runs after and must
-therefore recurse into groups. The post-processing passes inside
-`MathNotebookDocument` recurse on their own (`mapCellList`); this ordering
-constraint is the generator's, not theirs.
-
-### Built-in fallback (no clone present)
-
-The Markdown importer **silently drops `=` and `\to`** inside inline `$…$` math
-(`$X + Y = Y + X$` imports as "X + Y Y + X"). Relations like ≤ ≥ ∼ ⊂ ∈ survive,
-which makes the failure easy to miss.
-
-- In Text cells write **plain Unicode**: `X + Y = Y + X`, `d(u, v) ≤ k`,
-  `f : V(G) → ℝ³`, `D₂∘D₁`, `ℤ₈ × ℤ₈`.
-- For displayed equations use a `wolfram` fence whose content starts with
-  `FormBox[…]`; post-processing turns it into a `DisplayFormula` cell with native
-  typeset boxes.
-- Never use `$…$` or `$$…$$` on this path.
-
-## Citations and References
-
-Since 0.1.20 MathNotebook **does** have a bibliography engine — it parses BibTeX,
-formats entries, sorts them (`SortBibliography`, four methods including BibTeX's
-unsrt order), audits uncited entries, and labels each `Reference` cell — but it
-is reachable only from `ImportLaTeXDocument`. There is no "import this `.bib`
-into this notebook" entry point, and nothing anywhere produces numeric `[1]`
-labels; a label is always `[key]`. So on the Markdown path the References section
-is still the generator's to build. `scripts/mathnotebook_post.wl` does it:
-
-- `BibTeXReferences[ file ]` parses a `.bib` into `<| tag -> formatted string |>`.
-  There is no `Import[ …, "BibTeX" ]` in Wolfram, so this is a small hand parser;
-  it handles the shapes `cite` emits — braced fields, quoted fields, and the bare
-  numeric `year = 2011` that Crossref returns — and links `doi` → `doi.org`,
-  else `eprint` → `arxiv.org`, else `url`.
-- `ReferenceCells[ entries ]` emits `Reference` cells tagged with the key and
-  labelled `[tag]` in the margin.
-- `ConvertCitations[ cells, bibTags ]` turns a literal `[tag]` in prose into a
-  `Citation` button. A citation whose target is a numbered cell renders as **its
-  number** — `(1)` for an equation, `Definition 2.3` for an environment,
-  `Section 4` for a section — resolved by the front end, so it follows the target
-  when cells move. A bibliography citation stays `[tag]`.
-
-Only tags that actually exist are converted: the tags of cells in the notebook,
-plus the bibliography keys passed in. Ordinary bracketed prose and Markdown links
-are left alone.
-
-Keep bib keys **under about 25 characters**. The `Reference` gutter is 205 pt
-with `ParagraphIndent -> -24` in all seven sheets since 0.1.20, sized against a
-26-character specimen key with 15 pt of clearance; a longer key is still clipped
-at the window edge.
-
-A `Reference` cell needs **both** `CellTags -> key` and the `[key]` dingbat
-(`CellDingbat -> Cell[TextData["[key]"]]`, `ParagraphIndent -> 0`), or it prints
-unlabelled and indented into an empty gutter. `ReferenceCells` writes both;
-`LabelReferences[ ]` repairs a notebook that lacks them, in place, without
-disturbing `CellID`s.
-
-Two shapes the front end will not resolve:
-
-- **A citation must be inline `TextData`, never `BoxData`** — a
-  `Cell[ BoxData[ button ], "Text" ]` renders in the code face.
-- **A compound `\cite` is one button per key**, with literal separators between
-  them; a single button carrying several keys navigates nowhere.
-
-The References section's own heading is a suppressed `Section` cell needing
-`CounterIncrements -> { }`, `CellDingbat -> None` **and**
-`TaggingRules -> <| "MathNotebook" -> <| "Suppressed" -> "True" |> |>`; with only
-the first it prints as a numbered section.
-
-## Prose style — Critical
-
-Write like a mathematics thesis, not like a product announcement. § *The
-governing rule* comes first; these are its specifics.
-
-- **Declarative "we" voice**: "We define…", "We claim…", "We ask whether…".
-- **No selling.** Banned: "exact structural facts", "the strongest", "cleanly",
-  "sharp", "fragile", "cautionary", "genuinely", "remarkable", "powerful",
-  "elegant", and any adjective asserting the work's importance. State the fact
-  and let the reader judge. Say "the bound 2 cannot be lowered, since margin 1
-  fails" — not "the margin is sharp".
-- **Name the operation, not its mechanism**, once the mechanism is in the
-  definition: "sum", "inverse" — not "bisector sum", "metric inverse".
-- **One fact per sentence**, with the qualifier attached: "verified on the 8×8
-  honeycomb patch" rather than "verified".
-- **Commentary goes in a `Remark` or `Observation`**, not in loose prose between
-  cells. A labelled aside is easier to skip than an unlabelled one.
-
-## Visual-first — Critical
-
-The notebook is **mostly pictures and plots**. Never end a cell with a bare
-number, boolean list, or textual table:
-
-- distributions of an invariant over a family → a histogram;
-- verdicts over the example battery → `ArrayPlot`/heatmap grid or a row of
-  highlighted graphs, pastel colors;
-- behaviour against a parameter → a curve, not a list of values;
-- counterexamples → the object drawn with the violating substructure
-  highlighted.
-
-A small symbolic result (a single boolean, a short set) may stand alone only
-when that value *is* the point.
-
-Every graphic is bare — no `PlotLabel`, no legend, no frame; § *Examples*
-§ *No decoration* states the rule and it holds outside Example groups too.
-
-This is the *floor* for any output cell. § *Examples* sets a higher bar for the
-Example groups specifically: there the graphic must also answer something that
-was not obvious before the computation ran, over objects one size up from
-trivial, laid out as a row of three or a grid.
-
-## Evaluate, publish, link
-
-1. **Smoke test**: evaluate every Input cell through the Wolfram MCP
-   (license-aware — see [new-notebook](../new-notebook/SKILL.md) *Kernel
-   execution*); the build must finish with **zero messages**.
-2. **Embed outputs**: the generator evaluates every Input cell and attaches its
-   Output cells, so the shipped notebook carries real results — procedure and
-   traps in [output-embedding.md](output-embedding.md).
-3. **Deploy** to the Wolfram Cloud, public, stable object name
-   `<Project>/<Topic>.nb` (matching `Scripts/publish_notebooks.wls`).
-4. **Link from the repo README** in a `## 📓 Research Notebooks` section — a
-   table `| Notebook | Description | Link |`, one row per notebook, the link
-   anchored on "Wolfram Cloud". Create the section if missing; update the row
-   in place if the notebook already has one.
+**Never assume they obeyed.** The build stamps a per-cell fingerprint and every
+regeneration checks it first; if any cell was added, deleted or edited in the
+`.nb`, **the build stops** and the drift goes to the user — the
+[revise](../revise/SKILL.md) loop: transcribe into the `.md` or discard, never
+regenerate over it. Procedure in [fingerprint.md](fingerprint.md).
 
 ## The conversion call
 
 Call the **pinned local clone**, never the deployed resource function: the
-deployed copy lives on a personal `obj/nikm/` cloud path and is unversioned
-(`ResourceObject[ url ][ "Version" ]` is `None`), so drift is undetectable. Do
-**not** vendor the repo either — it is ~13 MB — and **never clone it silently**;
-if it is absent, take the built-in fallback and say so.
-See `Wiki/Resources/MarkdownToNotebook.md` for the pin and the recovery command.
+deployed copy is unversioned (`ResourceObject[ url ][ "Version" ]` is `None`),
+so drift is undetectable. Do not vendor the repo (~13 MB) and **never clone it
+silently**; if it is absent, take the built-in fallback and say so. The pin and
+the recovery command are in `Wiki/Resources/MarkdownToNotebook.md`.
 
 ```wolfram
 Module[ { wl, nb, cells },
@@ -643,83 +539,201 @@ Module[ { wl, nb, cells },
   cells = cells /. Cell[ c_, s_String, o___ ] :>
     Cell[ c, s, Sequence @@ DeleteCases[ { o }, CellLabel -> _ ] ];
 
-  (* Author cell from the frontmatter, [ LLM Generated ] line, equation CellTags *)
-  cells = researchHead[ cells ];
-  cells = tagFormulas[ cells, eqTags ];
-  cells = foldExamples[ cells ];  (* each Input/Output pair into CellGroupData[ { … }, {2} ] *)
-  cells = withCellIDs[ cells ];   (* CreateCellID does not stamp built cells *)
+  cells = researchHead[ cells ];   (* Author cell from frontmatter, [ LLM Generated ] line *)
+  cells = readTags[ cells ];       (* strip every {#Tag}, attach it as CellTags *)
+  cells = foldExamples[ cells ];   (* each Input/Output pair into CellGroupData[ { … }, {2} ] *)
+  cells = withCellIDs[ cells ];    (* CreateCellID does not stamp built cells *)
 
   MathNotebookDocument[ cells, bibTags, CreateCellID -> True ]
 ]
 ```
 
+`readTags` is the one pass this skill owns. Walking the flat cell list, for a
+cell whose content is a `String` or a `TextData`:
+
+- a trailing `{#Tag}` in any cell — a marker cell, a heading, a paragraph →
+  strip it and add `CellTags -> "Tag"` to that cell;
+- a cell whose whole content is `{#Tag}` → delete the cell and add
+  `CellTags -> "Tag"` to the `DisplayFormula` cell **above** it.
+
+`CellTags` on a marker cell survive `ConvertEnvironmentCells`, which carries
+`opts___` through — so tagging before `MathNotebookDocument` is correct, and
+tagging after would be too late for `ConvertCitations`.
+
+**Tag before you fold.** `readTags` walks at level `{1}`, so it must run
+*before* `foldExamples` builds the `CellGroupData`; a cell already inside a
+group is invisible to it. `withCellIDs` runs after and must recurse into groups.
+The passes inside `MathNotebookDocument` recurse on their own (`mapCellList`);
+this ordering is the generator's constraint, not theirs.
+
+Check the round trip once per source: if any `{#Tag}` survives into the `.nb` as
+visible text, the converter mangled it — fall back to an ordered list of tags
+applied to the `DisplayFormula` and environment cells in document order, and say
+so.
+
 Then write the notebook, re-import it, and stamp the fingerprint — see
 [fingerprint.md](fingerprint.md) for why the fingerprint must come from the
-round-tripped cells rather than from `cells` above.
+round-tripped cells.
 
-Four things this shape gets right, each learned the hard way:
+Four things this shape gets right:
 
-- **No heading shift and no `boxifyInputCells`** — `##` is already `"Section"`,
+- **No heading shift and no `boxifyInputCells`** — `##` is already `"Section"`
   and the boxes arrive structural. Both `new-notebook` workarounds must be off.
-- **`MathNotebookDocument` last**, and it owns `StyleDefinitions`: it replaces the
-  converter's `"Default.nb"` with the *embedded* sheet named by
-  `$MathNotebookStyleSheetName` in `scripts/mathnotebook_post.wl`, which this
-  skill sets to `PlainArticle.nb`. Pass notebook options through it rather than
-  rebuilding the `Notebook` yourself — with prompt tracking on, that includes
-  `TaggingRules -> { "Provenance" -> prov }` built from the source's provenance
-  comment (stripped from the `.md` string before conversion); the fingerprint
-  stamp later merges its `"ResearchNotebook"` key alongside it.
+- **`MathNotebookDocument` last**, and it owns `StyleDefinitions`: it replaces
+  the converter's `"Default.nb"` with the *embedded* sheet named by
+  `$MathNotebookStyleSheetName`, which this skill sets to `PlainArticle.nb`.
+  Pass notebook options through it rather than rebuilding the `Notebook` — with
+  prompt tracking on, that includes `TaggingRules -> { "Provenance" -> prov }`;
+  the fingerprint stamp later merges its `"ResearchNotebook"` key alongside.
 - **`ReplacePart` is not needed here** (unlike `new-notebook`) precisely because
-  `MathNotebookDocument` rebuilds the notebook with the options you hand it.
+  `MathNotebookDocument` rebuilds the notebook with the options given.
 - `ensureParser[ ]` installs `Wolfram/Parser` on first call, so a fresh machine
   does network I/O and, on failure, degrades silently to
   `ImportString[ …, "TeX" ]` with worse math fidelity. Probe
-  `PacletFind[ "Wolfram/Parser" ]` and surface the degradation instead of
-  swallowing it.
+  `PacletFind[ "Wolfram/Parser" ]` and surface the degradation.
 
-## After publishing
+## The stylesheet — Critical
 
-- Sync the open questions to the Wiki (or the journal, when it is on) so they
-  outlive the notebook.
-- If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see
-  [provenance](../provenance/SKILL.md)), the provenance comment belongs in the
-  `.md` source **before** the build (so the `.nb` carries the `"Provenance"`
-  `TaggingRules` key next to the fingerprint — see *The conversion call*);
-  append the ledger entry to `Wiki/Prompts.md` here.
+**Embed `PlainArticle.nb`.** It is `Default.nb`'s typography with the paper's
+structure added: 25 style cells against `AMSArticle`'s 34, every explicit
+`FontSize` and `FontFamily` dropped, and six styles left to `Default.nb` —
+`Title`, `Text`, `Author` and the three `DisplayFormula` styles. What it does
+declare is what the document needs to be a document: the twelve environments,
+`Proof`, `Caption`, `Date`, `Reference`, `Hyperlink`/`Citation`/`URL`, and for
+the sectioning levels and `Abstract` only the number or word that prints.
+
+The result reads as a stock Wolfram notebook — no color change, no font change,
+numbering and labels intact.
+
+**Plain `Default.nb` is not an alternative.** Under it a reference to a
+definition renders **`2.0`** — the section counter increments and the theorem
+counter never does. `PlainArticle` is the minimum sheet that keeps numbering
+alive.
+
+Install and mechanics: [mathnotebook.md](mathnotebook.md).
+
+Numbering facts to write against:
+
+- **Statement numbers are per-section**, `⟨section⟩.⟨n⟩`, shared across all
+  twelve environments — a Claim then its Example in section 3 are 3.1 and 3.2.
+  `ComplexSystems` alone gives each environment its own counter.
+- **Equation numbers are document-global**, `(n)`; `Section` does not reset them.
+- The Plain class (`Theorem`, `Lemma`, `Proposition`, `Corollary`,
+  `Conjecture`, `Claim`) **italicises the body** — the amsthm convention. The
+  Definition class is roman.
+- **One open defect:** `PlainArticle`'s `DisplayFormula` is left-flush where the
+  journal templates centre theirs, so an equation inside an environment body
+  sits 64 pt left of the block's prose (MathNotebook `EnvironmentBlocks` T3,
+  open at 0.1.20).
+
+### Swapping the sheet is the reader's move, not the build's
+
+The MathNotebook palette's **Apply stylesheet** menu offers `AMSArticle`,
+`ArXivArticle`, `RevTeXAPS`, `SpringerJournal`, `ComplexSystems` and Default.
+Mention this in Initialization; do not do it in the build. Two reasons the build
+always ships `PlainArticle` embedded:
+
+- **A palette swap sets the sheet by name**, replacing the embedded definitions
+  with a path into a paclet layer on the author's disk. A cloud reader without
+  the paclet then gets **zero** style definitions — no counters, and no labels
+  either, because the label *is* the `CellDingbat` the sheet supplies.
+- **By-name resolution is not measured to work here.** The paclet's own record
+  (`BasicFunctionality` T4) has all six sheets falling back to `Default.nb` for
+  a locally installed copy — Title 45 where the embedded `Get` gives 26 —
+  before a menu reset, after `ResetMenusPacket`, and with the front end freshly
+  launched. It worked for a cloud-installed copy. Treat the swap as a documented
+  author action, not a verified one.
+
+Use `Author` for the `[ LLM Generated ]` line. `Subtitle` resolves under
+`PlainArticle` but `AMSArticle` declares no `Subtitle`, so a line written in it
+loses its typography on a swap. `Author` survives every swap.
+
+## References
+
+MathNotebook's bibliography engine is reachable only from
+`ImportLaTeXDocument`, so on the Markdown path the References section is the
+generator's to build. `scripts/mathnotebook_post.wl` does it:
+
+- `BibTeXReferences[ file ]` parses a `.bib` into `<| tag -> formatted |>`.
+  There is no `Import[ …, "BibTeX" ]` in Wolfram, so this is a small hand
+  parser; it handles the shapes `cite` emits — braced fields, quoted fields, and
+  the bare numeric `year = 2011` that Crossref returns — and links
+  `doi` → `doi.org`, else `eprint` → `arxiv.org`, else `url`.
+- `ReferenceCells[ entries ]` emits `Reference` cells tagged with the key and
+  labelled `[tag]` in the margin.
+- `ConvertCitations[ cells, bibTags ]` turns `[tag]` in prose into a button
+  (§ *Referencing*). Only tags that exist are converted — the cells' `CellTags`
+  plus the bib keys passed in; ordinary bracketed prose and Markdown links are
+  left alone.
+
+Keep bib keys **under about 25 characters**: the `Reference` gutter is 205 pt
+with `ParagraphIndent -> -24` in all seven sheets, sized against a 26-character
+key with 15 pt clearance.
+
+A `Reference` cell needs **both** `CellTags -> key` and the `[key]` dingbat
+(`CellDingbat -> Cell[TextData["[key]"]]`, `ParagraphIndent -> 0`), or it prints
+unlabelled and indented into an empty gutter. `ReferenceCells` writes both;
+`LabelReferences[ ]` repairs a notebook that lacks them, in place, without
+disturbing `CellID`s.
+
+The References heading is a suppressed `Section` cell needing
+`CounterIncrements -> { }`, `CellDingbat -> None` **and**
+`TaggingRules -> <| "MathNotebook" -> <| "Suppressed" -> "True" |> |>`; with only
+the first it prints as a numbered section.
+
+## Tables
+
+The converter's `2ColumnTableMod` / `TableText` / `ModInfo` styles are declared
+in no sheet, so a Markdown pipe table renders as plain monospace with no rules.
+Write a weight-bearing table as a `Grid` in a `wolfram` fence; keep pipe tables
+for throwaway comparisons.
 
 ## Checklist
 
-- [ ] Concise: every sentence defines, states, or points at evidence; no section kept for symmetry.
+**The mathematics**
+
+- [ ] Reads as a paper: mathematical section titles, sections in the order the mathematics needs, nothing used before it is defined.
+- [ ] Introduction states every result as a numbered statement saying where it is proved.
+- [ ] Abstract 2–4 sentences of results, written last.
+- [ ] No Definitions / Claims / Questions template sections, no Symbols index, no per-function demonstration sections.
+- [ ] Every sentence states a mathematical fact; facts that can be equations are equations; one statement per sentence.
+- [ ] Mathematics-paper language: none of census, sweep, battery, witness, bar, workhorse, verdict, audit, harvest; no selling adjectives.
+- [ ] Commentary in a `Remark` or `Observation`, not loose prose.
+- [ ] Definitions Lean-translatable: explicit hypotheses and quantifiers, no appeal to pictures, one object each; the computing symbol named in one sentence after, not inside.
+- [ ] `Claim` is the default; `Theorem` only for something big and proved or cited; `Lemma` only immediately before a `Theorem`.
+- [ ] Every claim and conjecture states its own range of verification, with the numbers in it; a failed conjecture becomes a `Question` with the smallest counterexample drawn.
+- [ ] Proofs step by step, one step per sentence, every step naming the definition, equation or result it uses; algebra displayed; no sketches; about ten steps maximum.
+
+**Examples**
+
+- [ ] Every definition is followed by an `Example` **environment cell**, with nothing between them.
+- [ ] Example code is 3–10 readable lines a reader can copy and change one argument in; it builds what it needs in a line or uses an Initialization object.
+- [ ] One bare graphic per Example: no `PlotLabel`, legend, frame, `Style`, `Labeled`, or restating annotation; a `Caption` cell only where the picture is otherwise unreadable.
+- [ ] The object is the smallest one in which the phenomenon appears.
+- [ ] **Code folded, graphic not**: `Cell[CellGroupData[{Input, Output}, {2}]]` — never `Closed`, never `Open`. One Output per Input. `Input` cells carry real code, not `ToBoxes` of a string.
+
+**Numbering and references**
+
+- [ ] No number typed into the source anywhere.
+- [ ] Tags written `{#Tag}` at the end of the statement or heading, or on the line after the display equation; prefixed `Def:`, `Eq:`, `Lem:`, `Sec:`.
+- [ ] Cited as a bare `[Tag]` — never `Definition [Def:X]`, since the rendered form already carries the word.
+- [ ] An equation is numbered exactly when it is cited; a statement is tagged exactly when it is cited.
+- [ ] `readTags` runs **before** `foldExamples` and before `MathNotebookDocument`; `withCellIDs` recurses into groups; no `{#Tag}` survives into the `.nb` as visible text.
+- [ ] Citations inline `TextData`, one button per key; references built with `BibTeXReferences` + `ReferenceCells`; bib keys under ~25 characters; every `Reference` cell carries `CellTags` **and** its `[key]` dingbat; References heading suppressed with all three options.
+
+**Build**
+
 - [ ] `.md` source in `NotebooksLLM/`, readable enough to edit while reading the `.nb`; the user told which file to edit.
-- [ ] `CellID`s assigned by the generator; fingerprint computed **after** the export/re-import round-trip and stored in `TaggingRules` by **merging** into the option (`stampTaggingRule`) — a `"Provenance"` key may already sit there.
-- [ ] Drift checked before every regeneration; any user edit in the `.nb` stops the build and goes to the user, never overwritten.
-- [ ] Converted with the rich engine at the pinned clone (`Template: Default`, `"Evaluate" -> False`), `CellLabel` stripped; built-in fallback only if the clone is absent, and said out loud.
-- [ ] No `::: theorem` / `::: proof` divs in the source — silently dropped under `Default`.
-- [ ] `PlainArticle.nb` **embedded** (not referenced); palette swap documented in Initialization, never done in the build.
-- [ ] `author:` rendered as an Author cell; `[ LLM Generated ]` line above Title / Author / Abstract, in the `Author` style so it survives a sheet swap.
-- [ ] Rich mode: `$…$` / `$$…$$` used freely, but no `\to` or `\mapsto` (silently empty) and no `\tag{…}`. Built-in fallback: plain Unicode in Text, `FormBox` fences for display math.
-- [ ] Weight-bearing tables written as a `Grid` in a `wolfram` fence — pipe tables render unstyled under every sheet.
-- [ ] Environments converted by `ConvertEnvironmentCells`; equation tags promoted by `NumberTaggedFormulas`; citations by `ConvertCitations`, in that order.
-- [ ] Section order: Head, Definitions, Claims and conjectures, Questions, References, Symbols, Initialization.
-- [ ] `Claim` is the default; `Theorem` only for something big and proved or cited; `Lemma` only immediately before a `Theorem`; commentary in `Remark` / `Observation`.
-- [ ] A multi-cell environment body continues in the **same style** with `CellDingbat -> None` and `CounterIncrements -> { }` — never a `Text` cell, which breaks the block's margin and its LaTeX export.
-- [ ] Definitions carry no implementation detail and name no symbol; Lean-translatable, with explicit hypotheses and quantifiers; set-valued naming decided by closure, convention stated in a `Remark`.
-- [ ] Every claim and conjecture followed by an `Example` **environment cell** and its `{2}` group — not an `### Example` subsection; conjectures carry a status marker; failures demoted to `Question`s with counterexample pictures; implication lattice stated with counterexample + census per independence.
-- [ ] Definitions carry an `Example` wherever the object has behaviour worth measuring; omitted, not padded, where it would only illustrate.
-- [ ] **Code folded, graphic not**: every computation is `Cell[CellGroupData[{Input, Output}, {2}]]` — closed on cell 2 — with the `Example` cell a sibling above it. Never `Closed` (shows the code) and never `Open` (shows both).
-- [ ] One Output per Input — a closed group can display only one cell.
-- [ ] `Input` cells carry real code (code `String` or genuine boxes) — `ToBoxes` on a code string ships a quoted string.
-- [ ] Graphics bare: no `PlotLabel`, legend, frame, title or restating annotation; a `Caption` cell only where the picture is otherwise unreadable.
-- [ ] Example objects **one size up from trivial** and spread across **categories** (tree / lattice / random, sparse / dense / degenerate), not one family at three sizes.
-- [ ] Layout is a `GraphicsRow` of three at one `ImageSize`, or a `GraphicsGrid` for a census; a lone plot only for a single distribution or scan.
-- [ ] **Every `Example` clears the bar**: computes over a *family*, answers something not obvious before it ran, and shows it as a histogram, census plot, parameter scan or comparison — never a single instance drawn with a part coloured in, never a restatement of the definition in code. A single telling picture goes in a `Remark` instead.
-- [ ] Equation `CellTags` attached after conversion, in document order, **before** `foldExamples`; `withCellIDs` recurses into groups; all before `MathNotebookDocument`.
-- [ ] Open questions live only in the Questions section, as `Question` cells, referencing definitions and claims by number.
-- [ ] Symbols index below the paper: every symbol used, grouped by role, one line each, back-referencing its definition by number.
-- [ ] Initialization last and folded: seeds, reproducibility line, example-module constructions, stylesheet-swap note.
-- [ ] No per-function demonstration sections — those belong to `new-notebook`.
-- [ ] References built with `BibTeXReferences` + `ReferenceCells` from `Paper/references.bib`; bib keys under ~25 characters; every `Reference` cell carries `CellTags` **and** its `[key]` dingbat; citations inline `TextData`, one button per key; the References heading suppressed with all three options.
-- [ ] Prose in thesis voice; abstract 2–4 sentences of claims, written last; no selling adjectives.
+- [ ] Drift checked before every regeneration; any user edit in the `.nb` stops the build and goes to the user.
+- [ ] Rich engine at the pinned clone (`Template: Default`, `"Evaluate" -> False`), `CellLabel` stripped; built-in fallback only if the clone is absent, and said out loud.
+- [ ] No `::: theorem` / `::: proof` divs — silently dropped under `Default`.
+- [ ] Rich mode: no `\to` or `\mapsto` (silently empty), no `\tag{…}`. Built-in fallback: plain Unicode in Text, `FormBox` fences for display math.
+- [ ] Multi-cell environment bodies continue in the **same style** with `CellDingbat -> None` and `CounterIncrements -> { }` — never a `Text` cell.
+- [ ] Weight-bearing tables as a `Grid` in a `wolfram` fence.
+- [ ] `PlainArticle.nb` **embedded**, not referenced; palette swap documented in Initialization, never done in the build.
+- [ ] `author:` rendered as an Author cell; `[ LLM Generated ]` line above Title / Author / Abstract, in `Author` style.
+- [ ] Initialization last and folded: paclet loads, seed, reproducibility line, example objects, stylesheet-swap note.
+- [ ] `CellID`s assigned by the generator; fingerprint computed **after** the export/re-import round trip and **merged** into `TaggingRules` (`stampTaggingRule`) — a `"Provenance"` key may already be there.
 - [ ] Zero-message evaluation; Output cells embedded (graphics live, not rasterized); `ExportString` result checked with `StringQ` and the file re-imported.
 - [ ] Deployed public; README `Research Notebooks` table updated.
 

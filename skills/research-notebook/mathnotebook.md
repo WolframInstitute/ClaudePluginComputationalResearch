@@ -54,6 +54,7 @@ Citations must come last, because a reference to an equation has to see the cell
 ## Marker mechanics
 
 `ConvertEnvironmentCells` strips the bold marker and applies the style; a bold marker naming no environment is left as a `Text` cell.
+The markers it recognises are `$MathNotebookMarkerStyles` — the twelve numbered environments plus `Proof`, which is a `PlainArticle` style that takes no number and cannot be cited, so it is deliberately absent from `$MathNotebookEnvironmentStyles` and from the reference-label spec.
 Both spellings are handled — a parsed bold run and a literal `**Definition.**` string.
 
 **The bold markers survive rich-mode conversion unchanged**, and that is what makes the two-half pipeline work: MarkdownToNotebook emits a bold run as `StyleBox[ "Definition.", FontWeight -> "Bold" ]` as the first element of the cell's `TextData`, which is exactly the shape `markerSplit` matches.

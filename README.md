@@ -75,7 +75,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **add-resource** | Add a paper, repo, or page with recovery info |
 | **cite** | BibTeX from an arXiv ID or DOI |
 | **new-notebook** | Build Wolfram notebooks from Markdown (dual-engine: auto-detects a richer converter for frontmatter/LaTeX-math sources) |
-| **research-notebook** | Research document notebook: definitions, claims and conjectures with folded evidence, open questions, literature — over an appendix of symbols and initialization |
+| **research-notebook** | A mathematics paper as a notebook: definitions each with a worked Example, claims and proofs, everything numbered and cross-referenced by the front end |
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **paclet-docs** | Generate a symbol reference page per exported paclet function |
 | **build-paclet** | Build a paclet and install it locally |

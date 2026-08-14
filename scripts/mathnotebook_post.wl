@@ -4,6 +4,10 @@ $MathNotebookEnvironmentStyles = {
   "Remark", "Question", "Observation"
 };
 
+(* Styles a bold marker can name. Proof is a PlainArticle style but takes no
+   number and is not citable, so it stays out of the environment list. *)
+$MathNotebookMarkerStyles = Append[ $MathNotebookEnvironmentStyles, "Proof" ];
+
 $MathNotebookStyleSheetName = "PlainArticle.nb";
 
 $MathNotebookReferenceLabelSpec = Join[
@@ -108,7 +112,7 @@ markerSplit[ _ ] :=
   None
 
 markerStyle[ marker_String ] :=
-  SelectFirst[ $MathNotebookEnvironmentStyles,
+  SelectFirst[ $MathNotebookMarkerStyles,
     StringMatchQ[ StringTrim @ marker, # ~~ "." ] & ]
 
 trimLeading[ { first_String, rest___ } ] :=
