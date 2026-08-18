@@ -74,6 +74,21 @@ Two rules for every edit:
 This is an active, **public** repo that carries the author's own commits and may be ahead of / behind its remote — edit the post and present changes for review, but do **not** commit or push it as part of plugin changes; the author syncs and publishes it.
 The in-project `ComputationalResearch/p135246.github.io/` clone is stale and **not** canonical.
 
+### MathNotebook — the canonical clone
+
+The paclet's source of truth is the author's **Dropbox** working copy:
+
+- `~/Library/CloudStorage/Dropbox-WolframInstitute/Pavel Hajek/WolframInstituteShared/Pavel Hajek/MathNotebook`
+
+Edits are made there and pushes to `WolframInstitute/MathNotebook` go from there.
+The in-project `MathNotebook/` clone is a **read-only reference** for audits — gitignored, never edited, never pushed from, and brought level with `git pull` before it is read.
+
+The two clones silently diverged once (2026-08-18: the Dropbox copy one commit ahead with `EditableMaTeX` T1, the in-project one at `origin/main` with 0.1.24's MaTeX work, neither holding the other's HEAD), which is why the direction is written down.
+Anything read out of the in-project copy is stale until it has been pulled.
+
+Note that git surgery inside the Dropbox folder races the sync daemon — a rebase there aborted mid-flight on files the daemon had touched.
+Where a merge or rebase is needed, do it in the reference clone, push, and fast-forward the Dropbox copy.
+
 ### Keeping the docs current
 
 When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in `ARCHITECTURE.md` and the skills table in `README.md`.

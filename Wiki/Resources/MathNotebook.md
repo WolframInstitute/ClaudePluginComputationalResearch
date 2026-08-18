@@ -235,7 +235,17 @@ Two measured facts the generator has to live with:
 - **Inline mathematics sits loose, and no box surgery fixes it.** The front end reads a letter followed by a parenthesised group as a product and sets a thin space; a script glyph adds side bearing. `𝒦(G)` at 216 dpi measures 107 px as a nested `RowBox`, **107 as a bare string**, 107 under `AutoSpacing -> False`, and 112 in the shape the MarkdownToNotebook parser writes. The remedy is the author's palette conversion, not a different box.
 - **The expression-path traps do not reach the Markdown pipeline.** `texToBoxes["K_k(G)"]` answers `BesselK` and `["T_k(G)"]` answers `ChebyshevT` — plausible-looking and wrong — but that is the paclet's LaTeX-import path. Measured 2026-08-18: the rich parser leaves both as presentation boxes with no `TemplateBox`, and `G = (V, E)` keeps its `=`.
 
-**Clone divergence, 2026-08-18.** Two clones exist and they had diverged: the in-project one at `origin/main`, and the author's Dropbox working copy one commit ahead (`63d6c28`, `EditableMaTeX` T1, `Work/Active/EditableMaTeX.md` with T2–T4 open) and one behind. The Dropbox copy is where T1 lives; `origin/main` does not carry it yet.
+### The canonical clone, and the divergence that made it necessary
+
+**The source of truth is the author's Dropbox working copy** — `~/Library/CloudStorage/Dropbox-WolframInstitute/Pavel Hajek/WolframInstituteShared/Pavel Hajek/MathNotebook` — where edits are made and from which pushes go. The in-project `MathNotebook/` clone is a read-only reference for audits, gitignored, pulled before it is read. Recorded in the plugin's `CLAUDE.md` § *MathNotebook — the canonical clone*.
+
+That direction was written down because the two silently diverged (2026-08-18): the Dropbox copy sat one commit ahead on `EditableMaTeX` T1 and one behind, the in-project copy at `origin/main` with 0.1.24's inline/multiline MaTeX, and **neither held the other's HEAD**. Both lines were MaTeX work on the same four files, so a stale read of either would have described a paclet that existed nowhere.
+
+**The merge, and what "best of both" meant.** The two sides were complementary rather than competing: 0.1.24 added *coverage* (inline islands, the generalized `$displayDelimiters` with its math-mode inner environment, `ensureMaTeX` adding mathtools for `multlined`), while T1 changed *representation* (the picture wrapped in the front end's `TeXAssistantTemplate`, the box's `"input"` slot outranking the `"SourceTeX"` rule, an edit invalidating `"LaTeXSource"`). Only `MaTeX.wl` conflicted, both hunks pure add/add.
+
+One integration no textual merge would have made: **`inlineMaTeXCell` had to wrap its island in `maTeXBox` too**, since 0.1.24 wrote that builder before the box existed — otherwise display formulas were editable and inline islands silently were not. It composes cleanly the other way as well: `maTeXBoxTeX` was written deliberately narrow because "a `Text` cell may hold several inline assistant boxes", which was hypothetical when T1 was written and is the ordinary case once islands are wrapped — each island is its own `Cell`, so `storedSourceTeX` reads it per island and an edited island exports its edit.
+
+The merged tree stays at **0.1.24**: `EditableMaTeX` is still Active with T2–T4 open, so the version bump is a release decision and not the merge's to make. Installed 0.1.24 and this working tree therefore differ by T1 — the clone/install disagreement this article has flagged before.
 
 ## Related
 
