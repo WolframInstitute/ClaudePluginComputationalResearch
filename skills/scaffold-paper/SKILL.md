@@ -3,10 +3,15 @@ name: scaffold-paper
 description: >
   Scaffold a Paper/ folder with LaTeX (amsart, biblatex) or Typst article
   templates and a shared preamble, then act as an editor on the user-owned
-  document. Use when the user says "scaffold paper", "add paper", "create paper
-  folder", "set up latex", "set up typst", or during new-project when the user
-  wants a paper. Trigger on: "paper setup", "latex template", "typst template",
-  "add Paper/", "I want to write a paper".
+  document. Prose written into the paper follows the shared writing guide in
+  research-notebook/style.md: settled statements only, experiments in a
+  Ruliology section, complete proofs, short sentences, each result stated at the
+  generality its proof reaches, and the model as sole author with a footnote
+  naming the operator and disclosing in bold how much freedom the model had. Use when the user
+  says "scaffold paper", "add paper", "create paper folder", "set up latex",
+  "set up typst", or during new-project when the user wants a paper. Trigger on:
+  "paper setup", "latex template", "typst template", "add Paper/", "I want to
+  write a paper".
 ---
 
 # Scaffold Paper
@@ -19,6 +24,23 @@ Two formats:
 
 The paper is the **user's document**.
 This skill scaffolds the structure and then acts as an *editor*, not an author (see Rules below).
+
+## Style — read this before writing any prose
+
+**[research-notebook/style.md](../research-notebook/style.md) is the writing guide, and it is canonical here.**
+It is shared so a paper reads the same whether it ships as LaTeX, Typst or a notebook.
+
+The four things it decides that this skill cannot:
+
+- **Tiers.** The paper carries only settled statements — proved in full, or cited to a source that was read. Experiments (enumeration ranges, sweeps, distributions, timings) are gathered near the end, usually a `Ruliology` section — if there are none, there is no such section. Hedged claims, heuristics, alternate proofs and failed attempts go to the [journal](../journal/SKILL.md), never the paper. Nothing is silently dropped.
+- **Length.** Abstract ≤ 4 sentences. Introduction 3 paragraphs of ≤ 6 sentences. No prose paragraph over 6 sentences and never two in a row. Sentences ≤ 25 words.
+- **Proofs.** Complete prose, one deduction per sentence, each naming what it uses through `\cref`. No *clearly*, *one easily sees*, *we omit the details*, no proof sketches. A long proof is fine when it reads clearly — never abbreviate to fit, and never break an argument into a chain of one-line lemmas.
+- **Authorship.** `\author` is the **model**; `\date` is the date; the `\thanks` footnote (Typst: a small block under the model line) names the operator, sets the freedom level in `\textbf` — Directed, Guided or Open exploration — and summarises the instructions in one sentence. The template ships this shape already.
+- **Results.** State each result at the generality the proof actually reaches — a general theorem is the goal, and the only rule is that generality is never bought with a gap. Every statement names its own hypotheses and survives being lifted out of the document. Nothing is used before it is proved. Every conjecture says what would settle it. A short paper is fine.
+- **Formalisation** is never undertaken unasked; `\cref`-able precise statements are always worth writing, a Lean development only on an explicit request.
+
+`macros.sty` / `macros.typ` is where every nontrivial symbol gets a macro, defined once.
+That rule is the LaTeX half of style.md § *Notation*.
 
 ## When to use
 
@@ -33,7 +55,9 @@ This skill scaffolds the structure and then acts as an *editor*, not an author (
    Pass `--typst` if the user wants Typst, or they say "typst".
 3. **Title** (optional) — working title.
    Default: project name.
-4. **Author** (optional) — defaults from git config.
+4. **Operator** (optional) — the person running the session; defaults from git config.
+   Not the author: the author is the model (§ *Style*).
+5. **Model, freedom level and prompt summary** — your own name and identifier, one of Directed / Guided / Open exploration, and one sentence on the instructions you worked under.
 
 If invoked from new-project, these are already known.
 
@@ -42,8 +66,12 @@ If invoked from new-project, these are already known.
 ### 1. Run the scaffold script
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] "<ProjectDir>" "<Title>" "<Author>" "<email>"
+"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] "<ProjectDir>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>"
 ```
+
+`<Operator>` is the person running the session and `<Model>` is you, by name and exact identifier.
+`<Freedom>` is one of `Directed`, `Guided`, `Open exploration` — it prints **bold** in the footnote, and between two labels you take the more open one.
+`<Prompt>` is one sentence summarising the instructions you actually worked under, including what was left unspecified.
 
 LaTeX creates:
 ```
@@ -135,14 +163,16 @@ This skill **scaffolds and edits**; it does not write the paper.
   - Keep notation consistent with macros.sty / macros.typ.
 - **macros.sty / macros.typ** can be extended freely — add macros, operators, theorem environments as needed.
 - **references.bib** — add entries when papers are downloaded or cited.
-- When you do add prose at the user's request, write in the user's voice.
+- When you do add prose at the user's request, write in the user's voice and to [style.md](../research-notebook/style.md).
+- **Move, do not drop.** Material that fails the settled tier goes to the [journal](../journal/SKILL.md) with one line saying why — never deleted, never left hedged in the paper.
 - **Source formatting.** Prose you add or rewrite in `main.tex` / `main.typ` follows the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting* (source-only; the compiled PDF is unchanged).
   Do not reflow paragraphs of existing user prose you were not asked to touch.
 
 ## Integration with other skills
 
 - `new-project` invokes this when a paper is requested; `cite` and `add-resource` feed `references.bib`.
-- `journal` is the other typeset document — append-only entries, distinct from the user-owned paper.
+- `journal` is the other typeset document — append-only entries, distinct from the user-owned paper, and the destination for everything the paper cannot carry.
+- `research-notebook` owns the shared [style.md](../research-notebook/style.md) and applies it to a `.nb`.
 - The editor role is the [revise](../revise/SKILL.md) § *Protected content* rule applied to `main.tex` / `main.typ`.
 
 ## When NOT to use

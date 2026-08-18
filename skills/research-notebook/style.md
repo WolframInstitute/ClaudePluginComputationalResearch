@@ -1,0 +1,273 @@
+# Paper style
+
+The shared writing guide.
+Canonical for [research-notebook](SKILL.md) (a paper as a `.nb`) and for [scaffold-paper](../scaffold-paper/SKILL.md) (a paper as LaTeX or Typst).
+Read this before writing a line of either.
+
+**The paper is read by a human who wants to check it.**
+Everything below follows from that: short sentences, complete arguments, and a hard separation between what is settled and what is not.
+
+## The four tiers — Critical
+
+A statement's tier decides which document it goes in.
+**The default is out.**
+A statement earns a place in the paper; it does not get one by existing.
+
+| Tier | Test | Home |
+|---|---|---|
+| **Settled** | proved here in full, or cited to a source you have read | the paper: `Definition`, `Theorem`, `Lemma`, `Proposition`, `Corollary`, `Construction`, `Example` |
+| **Open and central** | you cannot prove it, and the paper is about it | the paper, as `Conjecture` — few, each stated once, evidence with the experiments |
+| **Experimental** | numbers over a family: enumeration ranges, sweeps, distributions, timings | the *Ruliology* section |
+| **Marginal** | hedged assertions, heuristics, alternate proofs, failed attempts, unresolved `[lookup]` | the [journal](../journal/SKILL.md) — never the paper |
+
+Two consequences worth stating plainly.
+
+**"Verified by enumeration up to $n = 8$" is not a theorem, and it is not paper prose.**
+The statement goes to the journal, or — when the paper is about it — into the paper as a `Conjecture` whose evidence sits in *Ruliology*.
+It never appears as a hedge attached to a body statement.
+
+**Nothing is silently dropped.**
+A statement that fails the settled test moves to the journal with one line saying why.
+Cutting is a transfer, never a deletion.
+
+## Results — stated in full, at the generality you can reach
+
+The tier rule says what may enter. This is about how a result is stated, not about how big it is.
+
+**State the result at the generality you can actually prove.**
+A general theorem is the goal and always worth the work — generality is what makes a result useful to anyone else.
+The rule is only that generality is never bought with a gap: if the argument closes for all $n$, say so and prove it; if it closes for $n = 3$, the honest paper says $n = 3$ and puts the general statement in a `Conjecture`.
+A result is not diminished by being modest, and it is not improved by being stated wider than the proof reaches.
+
+**A short paper is fine.**
+If a session settles one thing, the honest document is short, and that is not a failure.
+Never pad to look substantial, and never promote a statement a tier to fill a section.
+
+**A statement names its own hypotheses.**
+No "under the assumptions of Section 2", no "with notation as above", no hypothesis living only in the surrounding prose.
+The test is lifting: cut the statement out, paste it into another document, and it must still mean exactly the same thing.
+That test is also what makes a result quotable in a later paper, and what makes it translatable to Lean.
+
+**Nothing is used before it is proved.**
+Not merely before it is *defined* — before it is *proved*.
+A forward reference forces the reader to hold an unverified claim in their head, which is the thing a checkable document must never ask.
+Order the sections so one linear pass verifies everything.
+
+**Every definition is used.**
+A definition that no later statement or example uses is deleted, however nice it is.
+Dead notation costs the reader more than it costs you to cut.
+
+**Every conjecture says what would settle it.**
+One sentence: what a proof would need, or where the first open case sits.
+
+> **Conjecture.** Every connected graph has $\kappa \ge -1$. A proof would need a transport bound
+> uniform in the degree; the first unchecked case is $|V| = 9$.
+
+A conjecture without that sentence is decoration.
+With it, it is the next piece of work.
+
+**Formalisation is never undertaken unasked.**
+Do not start a Lean development, and do not add formalisation as a task, unless the operator explicitly asks for it — see [lean](../lean/SKILL.md).
+Where a Lean proof already exists because it was asked for, name the file and theorem after the proof: it is the strongest verifiability signal the document can carry and it costs one clause.
+
+What *is* always worth doing is writing statements precisely enough that formalising them later is possible — explicit hypotheses, explicit quantifiers, no appeal to a picture.
+That is the same discipline as the lifting test above, and it pays off whether or not anyone formalises anything.
+
+## Length — Critical
+
+| Part | Budget |
+|---|---|
+| Abstract | ≤ 4 sentences: the problem, the result, the method, the computation |
+| Introduction | 3 paragraphs, ≤ 6 sentences each: the problem, the results, the roadmap |
+| Prose between statements | ≤ 6 sentences, and never two such paragraphs in a row |
+| Proof | complete; past about 8 sentences, factor a lemma out |
+| Conclusion | 2–3 sentences |
+| Examples | **one per result** — not one per definition |
+| Sentence | ≤ 25 words |
+
+These are the defaults that keep a document readable, not quotas to satisfy.
+A passage that genuinely needs more takes more — but the budget is what it has to argue against, and most prose loses that argument.
+
+A section is definitions and results with prose *connecting* them.
+If two paragraphs of prose sit together, one of them is usually exposition and can go.
+
+Two lines are worth their words against that budget, which would otherwise cut them.
+A sentence at the head of a section saying what it establishes is the most useful line in it for anyone scanning — worth writing wherever the section is not self-evident from its title.
+And where there is a conclusion, it says what is **open** rather than what was done: the introduction already stated every result, and a paper that summarises itself twice teaches the reader to skip both.
+
+## Sentences
+
+Short and declarative.
+One statement per sentence.
+Standard mathematical phrasing: *We define. Let $G$ be. Suppose that. Then. It follows that. Conversely. Notice that. We say that $X$ is reduced if.*
+
+Voice is the declarative "we".
+Italicise a term where it is defined and never again.
+
+**Banned — vocabulary from other fields.**
+Each reads as jargon and each has an exact replacement:
+
+| Do not write | Write |
+|---|---|
+| census, sweep, scan, battery, suite | name the range: "for all connected graphs with at most 8 vertices" |
+| witness | example, counterexample |
+| the bar, clears the bar | (delete — say what the example computes) |
+| workhorse, pipeline, harvest, probe, drill down | (delete) |
+| verdict, audit, smoke test, flag | (delete; in prose, "we verified") |
+| marker, tag | label, number |
+
+**Banned — adjectives asserting importance:** remarkable, powerful, elegant, striking, cleanly, sharp, fragile, genuinely, cautionary, deep, beautiful.
+State the fact instead.
+Write "the bound 2 cannot be lowered, since margin 1 fails" — not "the margin is sharp".
+
+Commentary belongs in a `Remark`, not in loose prose between statements.
+
+## Proofs — complete, and checkable in order — Critical
+
+**A given argument is given in full.**
+The reader checks it deduction by deduction without supplying anything.
+A gap is worse than a missing proof, because a missing proof is visible.
+
+- **Prose, not labelled steps.** No `Step 1.`, no numbered list. One deduction per sentence, in the order a reader checks them.
+- **Every deduction names what it uses** — by tag: "by [Def:Hodge]", "by [Eq:Cyclic]", "by [Lem:HodgeType]". A deduction resting on nothing stated is a gap.
+- **Display the algebra.** A computation running over three equalities is a display, not a sentence.
+- **One deduction per sentence.** Two steps in one sentence is one step hidden.
+- **A long proof is fine when it reads clearly.** Never abbreviate to hit a length, and do not shatter an argument into a chain of tiny lemmas either — a run of one-line lemmas is harder to follow than the single proof it came from. Pull a step out only when it has content of its own or gets used more than once.
+
+**Banned — every phrase that stands in for a step:** clearly, obviously, evidently, one easily sees, it is well known, a straightforward computation shows, by a similar argument, we omit the details, sketch of proof, left to the reader.
+
+*One checks that* is allowed only when the check itself follows as a display on the next line.
+
+Where a deduction is computational, say what was computed and put the code in the Example after the proof.
+Where you cannot prove the statement, do not write a partial proof — move the statement down a tier.
+
+## Examples — one per result
+
+An example shows the object.
+It is not a test, a benchmark, or a survey.
+
+- **One per result.** A definition takes one only when the object is not evident from its statement. The `Definition, Example, Definition, Example` alternation is not a requirement and usually floods the page.
+- **The answer is a picture or a small algebraic value** — the geometry illustrated, or one symbolic result that is itself the point. Never a table of numbers, never a boolean list, never a statistic. Those are *Ruliology*.
+- **Three to ten lines**, readable top to bottom, that a reader copies into a fresh document and changes one argument in.
+- **One instance.** Choose the smallest object in which the phenomenon appears — not the triangle when the triangle is degenerate.
+- **Bare.** No `PlotLabel`, legend, frame, `Style`, `Labeled`, no annotation restating the definition, no colour beyond a pastel default. Anything deletable without losing information is deleted.
+
+```wolfram
+graph = GridGraph[ { 4, 4 } ];
+HighlightGraph[ graph, FindShortestPath[ graph, 1, 16 ] ]
+```
+
+Bad — variables, options and labels carrying no mathematics:
+
+```wolfram
+Module[ { g, path, styled },
+  g = GridGraph[ { 4, 4 }, VertexSize -> Medium, GraphLayout -> "SpringEmbedding" ];
+  path = FindShortestPath[ g, 1, 16 ];
+  styled = HighlightGraph[ g, path, GraphHighlightStyle -> "Thick" ];
+  Labeled[ styled, Style[ "Shortest path in the 4×4 grid", Bold, 14 ], Top ] ]
+```
+
+## Ruliology — where the experiments go
+
+Experiments are kept out of the mathematical development, and the usual place for them is one section near the end: enumeration ranges, parameter sweeps, distributions, timings, counterexample searches.
+**If there are no experiments there is no such section** — this is where they go, not a slot to fill.
+A single stray computation can as easily sit in a `Remark`, and a large body of them belongs in the [journal](../journal/SKILL.md).
+
+- One short paragraph per entry: what was computed, over what range, what came out.
+- **And the call that reproduces it** — the function and the range, so a reader re-runs the check instead of trusting it. This is the one place code appears outside an Example, and it is what makes a computational claim verifiable at all.
+- **The decoration rules relax here.** `ArrayPlot`, histograms, a labelled table over a family — these are data and are read as data.
+- Each entry that supports a `Conjecture` in the body names its tag.
+- Past about a page, the material belongs in the journal and the section keeps a one-line summary.
+
+The name is deliberate: it marks the material as exploration, so a reader knows the mathematical development ended above it.
+
+## Citations and `[lookup]`
+
+A named theorem is cited to a source you have read, with the precise location — author, title, year, and the section or page.
+
+When you cannot verify it now, write `[lookup]` inline and log the item to the journal with the date and what you searched for.
+**`[lookup]` must not survive into a finished paper.**
+Never attach a citation you have not opened, and never state a named result from memory.
+
+## Authorship and the session footnote — Critical
+
+**The author is the model, and nothing else.**
+The document was written by the model; naming a human as author misattributes it.
+
+- **Author** — the model, by name and exact identifier: `Claude Opus 5 (claude-opus-5[1m])`.
+- **Date** — the date the document was generated.
+- **Footnote** — the operator, **how much freedom the model had**, and a one-sentence summary of the instructions it worked under.
+
+The operator is the person who ran the session, not an author.
+
+### The freedom level — Critical
+
+A reader deciding how much to trust a machine-written paper needs to know **how much of its direction was the machine's**.
+That is not the same question as whether the mathematics is right, and the document must not leave it to be guessed.
+
+So the footnote carries one of exactly three labels, **set in bold**, and the reader learns the vocabulary once:
+
+| Label | Means |
+|---|---|
+| **Directed** | the operator supplied the definitions, the statement and the method; the model executed and checked |
+| **Guided** | the operator set the question and the constraints; the model chose the route and found the results |
+| **Open exploration** | the operator named a topic; the questions, the direction and the results are the model's |
+
+**Between two labels, take the more open one.**
+The error that misleads a reader is claiming human direction the work did not have.
+
+After the label comes **one sentence summarising the instructions actually given** — the internal prompt, paraphrased, not what the document turned out to contain:
+
+> Operator: Pavel Hájek. **Open exploration** — asked whether the interior form sees anything about the boundary on trees, with no method or target statement named.
+
+> Operator: Pavel Hájek. **Directed** — supplied Definition 2.1 and the statement of Theorem 3.4, and asked for the transport-argument proof.
+
+Two rules on that sentence.
+Write what was asked, including what was *not* specified, since that is what the label is about.
+Where the instructions changed mid-session — an exploration that became a target — describe where they ended and pick the label for the work as it stands.
+
+Where the [provenance](../provenance/SKILL.md) toggle is on, this line is the reader-visible summary of what the ledger records verbatim.
+
+| Format | Author | Date | Footnote |
+|---|---|---|---|
+| notebook | `Author` cell, model name | `Date` cell | a second `Date` cell, the label in `StyleBox[…, FontWeight -> "Bold"]` |
+| LaTeX | `\author{<model>}` carrying `\thanks{…}` | `\date{…}` | the `\thanks`, the label in `\textbf{…}` |
+| Typst | the centred model line | the date line | a small block beneath it, the label in `*…*` |
+
+The notebook has no footnote style, and `Caption` is not one — it carries a `Figure ⟨n⟩.` dingbat and increments a counter.
+`Date` inherits `Text`, is centred and small, takes neither dingbat nor counter, and every MathNotebook sheet declares it, so it survives a stylesheet swap.
+
+The `[ LLM Generated ]` line stays, above the title.
+
+## Notation
+
+Introduce notation once and never redefine it.
+There is no symbol index.
+
+- **LaTeX / Typst:** every nontrivial symbol gets a macro in `macros.sty` / `macros.typ`, defined once and used everywhere.
+- **Notebook:** there is no macro mechanism, so the discipline is the same by hand — italicise the term at its definition, and use the symbol unchanged afterwards.
+
+A definition defines a mathematical object; it does not name the function computing it.
+Bind the two in one sentence after the definition, or let the Example do it by using the symbol:
+
+> We compute the interior form with `GraphInteriorForm`.
+
+## Checklist
+
+- [ ] Every body statement is proved in full or cited to a source you have read.
+- [ ] Conjectures few, each stated once, each saying what would settle it, evidence with the experiments.
+- [ ] Every result stated at the generality the proof actually reaches — no wider, and no narrower than you can prove; no statement promoted a tier to fill a section.
+- [ ] Every statement names its own hypotheses and survives the lifting test.
+- [ ] Nothing used before it is proved; every definition used by something later.
+- [ ] Where a conclusion exists it says what is open, not what was done; no section exists to fill a slot.
+- [ ] No verification ranges, hedges, heuristics or failed attempts in the body — they are in the journal.
+- [ ] Experiments in *Ruliology*, not in the development, each naming the call that reproduces it.
+- [ ] Budgets met: abstract ≤ 4 sentences, intro 3 × ≤ 6, prose paragraphs ≤ 6 sentences and never two in a row, sentences ≤ 25 words.
+- [ ] Proofs complete: every deduction present, one per sentence, each naming its tag; no *clearly*, *easily sees*, *omit the details*, *sketch*.
+- [ ] No proof abbreviated to fit, and none shattered into a chain of tiny lemmas.
+- [ ] One example per result; each answers with a picture or one small algebraic value, bare, 3–10 lines.
+- [ ] No banned vocabulary, no selling adjectives; commentary in a `Remark`.
+- [ ] No `[lookup]` left; notation introduced once; macros defined in one file (LaTeX/Typst).
+- [ ] The author is the model plus the date; no human is named as author.
+- [ ] The footnote names the operator, carries the freedom level **in bold** (Directed / Guided / Open exploration), and summarises the instructions actually given, including what was left unspecified.
+- [ ] Everything cut is in the journal with one line saying why — nothing deleted.

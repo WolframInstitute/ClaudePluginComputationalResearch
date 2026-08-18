@@ -51,7 +51,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `search_dlmf.wls` | wolframscript | search-math skill |
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
-| `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet) |
+| `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>` |
@@ -138,6 +138,9 @@ See `Wiki/Resources/MarkdownToNotebook.md` for the pin, the recovery command, an
 `research-notebook` uses the rich engine as the **parser half of a two-half pipeline**: MarkdownToNotebook produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, equation numbering, and citations.
 The split is forced, not stylistic — the converter's `::: theorem` / `::: proof` divs exist only under `Template: Chapter` (which swaps in the WolframBookTools stylesheet, absent from a stock install), are **silently dropped** under `Default`, and even under `Chapter` give one `Theorem` style for every label, colliding section-derived numbers, no anchors, no cross-references, and no citations.
 That skill generates **one-way**: the `.md` is the source of truth and the user edits it while reading the `.nb`, with a per-cell `CellID` fingerprint stored in `TaggingRules` to detect `.nb` edits and stop a regeneration rather than overwrite them.
+
+Its writing rules live in `skills/research-notebook/style.md`, which `scaffold-paper` reads too — one guide for a paper whether it ships as `.nb`, LaTeX or Typst.
+The mechanics (pipeline, conversion call, stylesheet, references) are in the `build.md` sibling, so `SKILL.md` carries authoring conventions and nothing else.
 
 ## How to Add a New Skill
 

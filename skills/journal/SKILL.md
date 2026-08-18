@@ -9,7 +9,10 @@ description: >
   when the user says "keep a journal", "scientific journal", "journal this", "turn
   the journal on/off", "journal status", or the /journal command. Distinct from the
   Wiki (deduplicated encyclopedia): the journal is the typeset, cited record of what
-  was learned and when. Other skills (update-wiki, next-session, cite) feed it when on.
+  was learned and when. It is also where everything a paper cannot carry goes —
+  hedged claims, verification ranges, heuristics, alternate proofs, failed attempts
+  and unresolved [lookup] citations — so nothing is silently dropped. Other skills
+  (research-notebook, scaffold-paper, update-wiki, next-session, cite) feed it when on.
 ---
 
 # Scientific Journal
@@ -36,6 +39,22 @@ LaTeX (default) or Typst — the format is fixed once `Journal/` is scaffolded.
 The Wiki answers *"what do we know?"* and is overwritten to stay current; the journal answers *"what did we learn, when, and from where?"* and is appended to, never rewritten.
 Record the *event of learning* (with citation) in the journal; record the *settled fact* in the Wiki.
 Do not copy Wiki prose verbatim.
+
+### And the journal versus the paper
+
+A paper carries only settled statements ([style.md](../research-notebook/style.md) § *The four tiers*).
+The journal is where the rest lands, and that makes it **part of the paper workflow rather than an optional extra**:
+
+| Material | Home |
+|---|---|
+| proved in full, or cited to a source that was read | the paper |
+| numbers over a family — enumeration ranges, sweeps, distributions, timings | the paper's `Ruliology` section |
+| verified computationally but unproved; "up to $n = 8$" | the journal, as `claim` |
+| heuristics, alternate proofs, failed attempts, dead ends | the journal |
+| a named theorem cited but not yet verified — an unresolved `[lookup]` | the journal, until resolved |
+
+**Cutting is a transfer, never a deletion.**
+Every entry that came out of a paper opens with one line saying why it is here and not there (§ *add*).
 
 ## The toggle (check this first)
 
@@ -137,6 +156,22 @@ Typst day-file (`entries/2026-06-02.typ`) — opens with the macros import (an i
 
 If `Journal/` does not exist yet, scaffold it first (default LaTeX).
 
+#### Material cut from a paper
+
+An entry that exists because a paper could not carry it opens with **one line naming the reason**, as a source comment, so a later reader knows it was a tier decision and not a stray note:
+
+```latex
+% Cut from Paper/main.tex 2026-08-18: verified, not proved.
+\begin{claim}
+Every connected graph $G$ with $|V(G)| \le 8$ satisfies $\kappa(G) \ge -1$.
+Verified by enumeration; no proof.
+\end{claim}
+```
+
+Typst uses `//` for the same line.
+Three reasons cover nearly everything: *verified, not proved*; *heuristic*; *`[lookup]` unresolved*.
+An unresolved `[lookup]` records what was searched and where, so the next session resumes the search instead of repeating it.
+
 ### Citing into the journal
 
 The journal owns `Journal/references.bib`.
@@ -166,6 +201,7 @@ When the toggle is on, these skills append to the journal in this format:
 - **update-wiki** — when a definition/theorem/claim becomes durable knowledge, appends the dated, cited entry to `Journal/` alongside the deduplicated Wiki article.
 - **next-session** — at the end of a session, appends a concise entry for what was established, citing resources used.
 - **cite** — appends generated BibTeX to `Journal/references.bib` when a `Journal/` exists.
+- **research-notebook** and **scaffold-paper** — hand over everything below the settled tier, each entry carrying its one-line reason (§ *Material cut from a paper*). This traffic is not optional: without it the material would be dropped or would flood the paper.
 
 This skill is the single source of truth for the format — the others reference it.
 

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # scaffold-paper.sh — Create Paper/ directory with LaTeX or Typst templates
 #
-# Usage: scaffold-paper.sh [--typst|--latex] <ProjectDir> [Title] [Author] [Email]
+# Usage: scaffold-paper.sh [--typst|--latex] <ProjectDir> [Title] [Operator] [Email] [Model] [Freedom] [Prompt]
+#
+# The author of the document is the MODEL. The operator is the person who ran the
+# session and is named in the footnote, not as an author, together with the
+# freedom the model had -- Directed, Guided or Open exploration, set in bold --
+# and a one-sentence summary of the instructions it worked under.
 
 set -euo pipefail
 
@@ -15,14 +20,17 @@ case "${1:-}" in
 esac
 
 if [ $# -lt 1 ]; then
-    echo "Usage: scaffold-paper.sh [--typst|--latex] <ProjectDir> [Title] [Author] [Email]" >&2
+    echo "Usage: scaffold-paper.sh [--typst|--latex] <ProjectDir> [Title] [Operator] [Email] [Model] [Freedom] [Prompt]" >&2
     exit 1
 fi
 
 PROJECT_DIR="$1"
 TITLE="${2:-Working Title}"
-AUTHOR_NAME="${3:-Pavel H\'ajek}"
-AUTHOR_EMAIL="${4:-p135246@gmail.com}"
+OPERATOR="${3:-Pavel H\'ajek}"
+OPERATOR_EMAIL="${4:-p135246@gmail.com}"
+MODEL="${5:-Claude}"
+FREEDOM="${6:-Open exploration}"
+PROMPT="${7:-TODO}"
 
 PAPER_DIR="$PROJECT_DIR/Paper"
 ABSTRACT="TODO"
@@ -39,8 +47,11 @@ if [ "$FORMAT" = "typst" ]; then
     sed \
       -e "s|{{TITLE}}|$TITLE|g" \
       -e "s|{{ABSTRACT}}|$ABSTRACT|g" \
-      -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
-      -e "s|{{EMAIL}}|$AUTHOR_EMAIL|g" \
+      -e "s|{{MODEL}}|$MODEL|g" \
+      -e "s|{{OPERATOR}}|$OPERATOR|g" \
+      -e "s|{{FREEDOM}}|$FREEDOM|g" \
+      -e "s|{{PROMPT}}|$PROMPT|g" \
+      -e "s|{{EMAIL}}|$OPERATOR_EMAIL|g" \
       "$ASSETS_DIR/main_template.typ" > "$PAPER_DIR/main.typ"
 
     echo "Created: $PAPER_DIR/ (Typst)"
@@ -55,8 +66,11 @@ else
     sed \
       -e "s|{{TITLE}}|$TITLE|g" \
       -e "s|{{ABSTRACT}}|$ABSTRACT|g" \
-      -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
-      -e "s|{{EMAIL}}|$AUTHOR_EMAIL|g" \
+      -e "s|{{MODEL}}|$MODEL|g" \
+      -e "s|{{OPERATOR}}|$OPERATOR|g" \
+      -e "s|{{FREEDOM}}|$FREEDOM|g" \
+      -e "s|{{PROMPT}}|$PROMPT|g" \
+      -e "s|{{EMAIL}}|$OPERATOR_EMAIL|g" \
       "$ASSETS_DIR/main_template.tex" > "$PAPER_DIR/main.tex"
     cp "$ASSETS_DIR/latexmkrc_template" "$PAPER_DIR/.latexmkrc"
 

@@ -65,10 +65,11 @@ Use the **new-notebook** skill: write `NotebooksLLM/<ProjectName>.md` as the not
 If the user wants a paper, use the **scaffold-paper** skill (add `--typst` for a Typst paper instead of the default LaTeX):
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] "<ProjectName>" "<Title>" "<Author>" "<email>"
+"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] "<ProjectName>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>"
 ```
 
 This creates `Paper/` with main.tex, macros.sty, references.bib, figures/, and .latexmkrc (LaTeX) or main.typ, macros.typ, references.bib, figures/ (Typst).
-See scaffold-paper skill for details.
+The document's author is the **model**; the footnote names the operator, the freedom level in bold, and the instructions in one sentence.
+See scaffold-paper skill for details, and its shared writing guide before adding any prose.
 
 Seed `Paper/references.bib` with biblatex entries from the papers downloaded in step 5.

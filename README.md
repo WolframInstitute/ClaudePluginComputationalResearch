@@ -65,8 +65,8 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | Skill / Command | Description |
 |-------|-------------|
 | **new-project** | Scaffold a new project (research, math, paclet-dev, paclet) |
-| **scaffold-paper** | Scaffold a LaTeX or Typst paper, then edit it on request |
-| **journal** | Keep an optional cited LaTeX/Typst journal (def/thm/rem), off by default |
+| **scaffold-paper** | Scaffold a LaTeX or Typst paper, then edit it on request, to the shared writing guide |
+| **journal** | Keep an optional cited LaTeX/Typst journal (def/thm/rem), and take what a paper cannot carry; off by default |
 | **init-wiki** | Create a markdown knowledge base (Wiki/) |
 | **update-wiki** | Update wiki articles, index, and backlinks |
 | **check-wiki** | Audit the wiki for staleness and gaps |
@@ -75,7 +75,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **add-resource** | Add a paper, repo, or page with recovery info |
 | **cite** | BibTeX from an arXiv ID or DOI |
 | **new-notebook** | Build Wolfram notebooks from Markdown (dual-engine: auto-detects a richer converter for frontmatter/LaTeX-math sources) |
-| **research-notebook** | A mathematics paper as a notebook: definitions each with a worked Example, claims and proofs, everything numbered and cross-referenced by the front end |
+| **research-notebook** | A mathematics paper as a notebook: settled results with complete proofs, experiments quarantined in a Ruliology section, everything numbered and cross-referenced by the front end |
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **paclet-docs** | Generate a symbol reference page per exported paclet function |
 | **build-paclet** | Build a paclet and install it locally |
