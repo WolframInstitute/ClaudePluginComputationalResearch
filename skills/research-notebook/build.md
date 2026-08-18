@@ -43,6 +43,8 @@ Three losses, measured at the pinned SHA:
 - **`\tag{…}` is not understood** — it renders literally. Numbering comes from `CellTags` (SKILL.md § *Referencing*).
 - **A `wolfram` fence starting with `FormBox[…]` stays an `Input` cell** showing the literal source. That convention is built-in-only.
 
+Measured at MathNotebook 0.1.24 (`origin/main` = `b99cde6`).
+
 ### Built-in fallback (no clone present)
 
 The Markdown importer **silently drops `=` and `\to`** inside `$…$` (`$X + Y = Y + X$` imports as "X + Y Y + X").
@@ -52,11 +54,34 @@ Relations like ≤ ≥ ∼ ⊂ ∈ survive, which makes the failure easy to miss
 - For display math use a `wolfram` fence whose content starts with `FormBox[…]`.
 - Never use `$…$` or `$$…$$` on this path.
 
-### MaTeX is an author action, not a build step
+### The expression-path traps do not reach this pipeline
 
-MathNotebook 0.1.24 renders typed LaTeX through MaTeX in both inline and display form (`ConvertToMaTeX`, `ConvertLaTeXToMaTeX`, and the reverse pair), covering `gather`, `multline`, `alignat` and `flalign`.
+The rich parser produces **presentation** boxes, not interpreted expressions.
+Measured: `$K_k(G)$` and `$T_k(G)$` come out as `SubscriptBox[ StyleBox[ "K", "TI" ], … ]` with styled parens — no `TemplateBox`, and `G = (V, E)` keeps its `=` as a plain string.
+
+That matters because the paclet's own LaTeX import goes through `texToBoxes`, which turns `K_k(G)` into `BesselK` and `T_k(G)` into `ChebyshevT` — the Bessel function and the Chebyshev polynomial, for a paper whose $K_k(G)$ is a set of cliques.
+It **renders plausibly and means something else**, so no display test and no round trip catches it.
+Read the paclet's `CLAUDE.md` warnings about that path as *its* path: on the Markdown pipeline the symbols stay presentation boxes and the trap cannot fire.
+
+### MaTeX is an author action, not a build step — and that is a decision
+
+MathNotebook renders typed LaTeX through MaTeX in both inline and display form (`ConvertToMaTeX`, `ConvertLaTeXToMaTeX`, and the reverse pair), covering `gather`, `multline`, `alignat` and `flalign`, and since `EditableMaTeX` T1 the picture rides in the front end's own `TeXAssistantTemplate` so the mathematics stays editable.
 Every entry point takes a `NotebookObject` or a list of `CellObject`s, or falls back to the input notebook — **so all of it needs a front end and none of it runs on the headless build path.**
-Offer it as a step the author takes on the open notebook when rich-mode fidelity is not enough; do not put it in the build.
+
+That is not merely a limitation to work around.
+**MaTeX is a choice and not a default** (Pavel, 2026-08-01, MathNotebook `EditableMaTeX`): native typeset boxes are what a notebook holds and what a machine with no LaTeX installed can open, and MaTeX is what an author converts a *selection* to, from the palette.
+The paclet's T3 says so of this skill by name — the generator needs no change, and it should not acquire one.
+Offer the palette conversion as a step the author may take; never put it in the build.
+
+### Inline mathematics sits loose, and no box surgery fixes it
+
+Generated inline mathematics reads more spaced out than the same formula in LaTeX.
+The cause is measured and it is not the box structure: the front end reads a letter followed by a parenthesised group as a **product** and sets a thin space, and a script glyph adds side bearing on top.
+At 216 dpi in an `InlineFormula`, `𝒦(G)` measures 107 px as a nested `RowBox`, **107 as a bare string**, 107 under `AutoSpacing -> False`, and 112 in the shape this parser writes (`SpanMaxSize -> 1` parens, `"TI"` styling) — the loosest of them.
+
+A string measuring the same as a `RowBox` is the whole finding: there is no box to fix.
+So do not try, and do not flatten or restyle the parser's output chasing it.
+The author's remedy is a palette MaTeX conversion on the selection they care about, which draws it tight; the cost is a document that needs LaTeX to render that selection.
 
 ## Frontmatter and the head
 

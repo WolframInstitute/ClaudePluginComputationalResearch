@@ -9,6 +9,8 @@ Harvested 2026-07-28 from the closed items `MathNotebookIntegration` and `Paclet
 Refreshed 2026-07-30 against `5f68f30` (**0.1.20** on `main`), which is also the installed version; clone and install now agree.
 Sections marked *0.1.20* below were re-measured then and supersede the 0.1.16/0.1.17 readings.
 
+**Read again 2026-08-18 at `b99cde6` (0.1.24 on `origin/main`).** Only the MaTeX layer moved since 0.1.20; the stylesheet, environment and bibliography readings below still hold. See § *MaTeX* at the end for what changed and what it means for this repo.
+
 ## Summary
 
 A Wolfram paclet supplying AMS-style typeset document stylesheets, numbered theorem-family environments, and cross-referencing machinery for notebooks.
@@ -214,6 +216,28 @@ git clone git@github.com:WolframInstitute/MathNotebook.git
 ```
 
 ## See also
+
+## MaTeX — *0.1.24*, and a decision that binds this repo
+
+The paclet renders typed LaTeX through MaTeX in inline and display form — `ConvertToMaTeX`, `ConvertFromMaTeX`, `ConvertLaTeXToMaTeX`, `ConvertMaTeXToLaTeX`, plus `InstallMaTeX` and `OpenMaTeXPreferences`.
+`gather`, `multline`, `alignat` and `flalign` are covered, starred and not.
+Since `EditableMaTeX` T1 the picture rides in the front end's own `TeXAssistantTemplate` — the box Ctrl+4 makes — which carries the TeX in an `"input"` slot, so the mathematics is editable in place rather than only recoverable from a palette button.
+The box is display-transparent (measured {183, 40} px and 1083 ink either way) and survives a save with all four slots intact; only `"state" -> "Boxes"` may be written from the kernel.
+
+**Every entry point takes a `NotebookObject` or a list of `CellObject`s, so the whole layer needs a front end** and none of it is reachable from the plugin's headless build.
+
+That is a decision and not just a limit.
+**MaTeX is a choice and not a default** (Pavel, 2026-08-01): native typeset boxes are what a notebook holds and what a machine without LaTeX can open, and MaTeX is what an author converts a selection *to*, from the palette.
+The item's T3 names the plugin's `research-notebook` skill and says the generator needs no change.
+
+Two measured facts the generator has to live with:
+
+- **Inline mathematics sits loose, and no box surgery fixes it.** The front end reads a letter followed by a parenthesised group as a product and sets a thin space; a script glyph adds side bearing. `𝒦(G)` at 216 dpi measures 107 px as a nested `RowBox`, **107 as a bare string**, 107 under `AutoSpacing -> False`, and 112 in the shape the MarkdownToNotebook parser writes. The remedy is the author's palette conversion, not a different box.
+- **The expression-path traps do not reach the Markdown pipeline.** `texToBoxes["K_k(G)"]` answers `BesselK` and `["T_k(G)"]` answers `ChebyshevT` — plausible-looking and wrong — but that is the paclet's LaTeX-import path. Measured 2026-08-18: the rich parser leaves both as presentation boxes with no `TemplateBox`, and `G = (V, E)` keeps its `=`.
+
+**Clone divergence, 2026-08-18.** Two clones exist and they had diverged: the in-project one at `origin/main`, and the author's Dropbox working copy one commit ahead (`63d6c28`, `EditableMaTeX` T1, `Work/Active/EditableMaTeX.md` with T2–T4 open) and one behind. The Dropbox copy is where T1 lives; `origin/main` does not carry it yet.
+
+## Related
 
 - [MarkdownToNotebook](MarkdownToNotebook.md) — the parser half of the `research-notebook` pipeline
 - [Paclet Documentation](../Concepts/PacletDocumentation.md) — the doc tree generated into this paclet, and the build/publish staging fix it forced
