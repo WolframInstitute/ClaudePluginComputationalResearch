@@ -268,6 +268,7 @@ T4 could not resolve its own situation, wrote a `needs-human:` question naming t
 ## See also
 
 - [The `/auto-run` operator runbook](AutoRunOperations.md) — the operating half of this article: what to do when a run halts, how to read a digest, and how a branch reaches `main`
+- [The headless model and effort surface](HeadlessModelSurface.md) — `--model` and `--effort` on `claude -p`, measured on 2.1.235: which aliases resolve, which bad values halt, and why `modelUsage` names a model the task did not run on
 - [The work item file format](ItemFileFormat.md) — T3: the five sections, and why `## Hand-off` is where this loop reads an item's state
 - [Session Information Budget](SessionInformationBudget.md) — T1: the fixed preamble term this loop pays per task
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: the one-destination rule the digest obeys
