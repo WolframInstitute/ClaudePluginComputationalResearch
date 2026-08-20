@@ -30,7 +30,7 @@ See [Work/README.md](../Work/README.md).
 - [The Claude Code hook contract](Concepts/HookContract.md) — hooks read JSON from stdin and block via exit 2 + stderr; a positional-args hook is silently inert
 - [The notebook TaggingRules registry](Concepts/TaggingRulesRegistry.md) — `"Provenance"` and `"ResearchNotebook"` share the one metadata slot; every writer merges by key via `stampTaggingRule`, never replaces the option
 - [Folded cell groups](Concepts/FoldedCellGroups.md) — the group state `{2}` shows the graphic and hides the code; `CellOpen` and a reordered `Closed` group both fail, and `Displacements.nb` is the precedent
-- [Running the paper style guide against a real notebook](Concepts/PaperStyleExercise.md) — the first real document written under `style.md`: two of its rules contradict each other, five fight the mathematics, and the drift fingerprint covered 8 cells of 71 until the converter's `CellID`s were stripped
+- [Running the paper style guide against a real document](Concepts/PaperStyleExercise.md) — the same mathematics written twice under `style.md`, as a notebook and as LaTeX: two of its rules contradict each other, five findings are the guide's and four the LaTeX path's, and `\cref` calls every definition a theorem until `aliascnt` and `nosort` are both set
 - [Set-valued naming in the graph-displacement theory](Concepts/DisplacementNaming.md) — domain notes evicted from `research-notebook` by AuditFixes T7; belongs in the Infrageometry home project once it has a wiki
 
 ## Resources

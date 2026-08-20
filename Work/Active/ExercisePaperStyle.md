@@ -48,21 +48,23 @@ Three numbers were left deliberately hard and are the most likely to be wrong, s
 
 ## Tasks
 
-- [ ] T2 — write and compile one scaffolded LaTeX paper under the same guide, exercising the `\thanks` footnote, `macros.sty` and the Ruliology split.
 - [ ] T3 — reconcile: correct `style.md` in place for what T1 and T2 exposed, and re-check the three suspect numbers above against real passages rather than against the flooding they were written to stop.
 - [ ] T4 (human) — the operator reads both documents end to end and rules on what remains: the three numbers, and whether the tier boundaries sit in the right place.
 
 ### Done
 
 - [x] T1 (S1) — build one real research notebook end to end under the new rules; keep a note of every passage where a rule and the mathematics disagreed.
+- [x] T2 (S2) — write and compile one scaffolded LaTeX paper under the same guide, exercising the `\thanks` footnote, `macros.sty` and the Ruliology split.
 
 ## Hand-off
 
-T1's notebook is built and **not deployed**: `NotebooksLLM/EquidistanceOddGirth.{md,nb}` sits uncommitted in the SyntheticInfrageometry dev repo, awaiting the operator's read. Deployment to the cloud, the README row there, and the commit in that repo are all held for approval — the operator ruled at the start of S1 that nothing leaves the machine unasked.
+Two documents now exist and **neither is deployed or committed in the dev repo**: the notebook at `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and the paper at `ResearchNotebooks/EquidistanceOddGirth/Paper/` (7 pages, compiles clean with `latexmk`). Both wait on the operator's read; the operator ruled at the start of S1 that nothing leaves the machine unasked.
 
-T2 writes the LaTeX paper. It does not need new mathematics: the same document can be re-set through `scaffold-paper`, which is the cheapest way to see which of T1's findings are notebook-only and which are the guide's. Read [the findings](../../Wiki/Concepts/PaperStyleExercise.md) first — three of them are about the build path rather than the writing, so T2 should not expect them to recur.
+T3 reconciles. Read [the findings](../../Wiki/Concepts/PaperStyleExercise.md) — it is now organised for exactly that: five findings that reproduce on both paths and are therefore `style.md`'s, four that only the LaTeX path exposes, and six defects in the shipped template plus one in `scaffold-paper.sh`. The three suspect numbers have a verdict from each path.
 
-The guide is **shared**, so a change to `style.md` lands on both the notebook and the paper path at once; that is the point of it, and it also means a fix aimed at one path has to be checked against the other.
+Two things T3 should not have to rediscover. The `macros_template.sty` cross-reference fix has been worked out and verified in the paper's local copy — `aliascnt` **and** `nosort`, where `nosort` alone is what stops cleveref silently dropping entries from a multi-reference list; copy that copy rather than re-deriving it. And the notebook carries one forward reference that T3's edit to `style.md` should not paper over: the fix belongs in the checklist, since the rule was already there and was simply not checked.
+
+T4 is the operator's `(human)` task and reads both documents.
 
 The blog post at `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md` carries an unstaged 4.13 entry and a bumped *Last updated*. That is deliberate: the author syncs and publishes that repo. Do not commit it.
 
@@ -75,8 +77,10 @@ The blog post at `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io
 | 2026-08-18 | No proof-length quota, and no factoring into tiny lemmas | An eight-sentence cap manufactured lemma chains that read worse than the proof they replaced — corrected by the operator |
 | 2026-08-18 | Sections are not prescribed: a head, an introduction stating the results, and the references are all a paper needs | A required section list is a slot-filling instruction, and the mathematics should decide the shape — corrected by the operator |
 | 2026-08-18 | The author is the model; the operator and the **bold** freedom level ride in a footnote | A reader of a machine-written paper asks first how much of the direction was the machine's, and that must not be left to be guessed |
+| 2026-08-20 | The exercise paper lives at `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the dev repo, not at its root | `scaffold-paper.sh` writes `<dir>/Paper/main.tex` with no collision check, and the root `Paper/` is the author's own paper; `ResearchNotebooks/` is git-ignored there and already holds an LLM-authored `.tex` |
 
 ## Progress
 
 - **S0** 2026-08-18 — item filed out of the 4.13.0 session; nothing worked yet. → [style.md](../../skills/research-notebook/style.md)
 - **S1** 2026-08-20 T1 — built the first real notebook under the 4.13.0 rules and measured it; 7 writing rules and 3 build defects recorded, 2 of the 7 being guide rules that contradict each other. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md)
+- **S2** 2026-08-20 T2 — re-set the same mathematics as a scaffolded LaTeX paper and compiled it; 5 findings confirmed as the guide's, 4 new to the LaTeX path, 7 defects in the build path, one of them silent reference loss. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md#the-latex-path--the-same-document-re-set)

@@ -119,12 +119,18 @@ T4 then ruled on the routing table and closed the item.
 The `/next-session` tier mismatch is ruled **halt, not warn** — fail-closed, matching the annotation parser and the effort validator, and already what S2 had written provisionally.
 The `opus` row is still a prior and `fable` is still untested, so the table stands at one measured row and one assumed one.
 
-The shared paper writing guide has now been run against a real document — see [Running the paper style guide against a real notebook](Concepts/PaperStyleExercise.md).
-`ExercisePaperStyle` T1 built a short paper on equidistance and odd girth from the SyntheticInfrageometry paclet's own primitives, proved in full and checked over all 995 connected graphs with at most seven vertices.
+The shared paper writing guide has now been run against a real document on both of its paths — see [Running the paper style guide against a real document](Concepts/PaperStyleExercise.md).
+`ExercisePaperStyle` T1 built a short paper on equidistance and odd girth from the SyntheticInfrageometry paclet's own primitives, proved in full and checked over all 995 connected graphs with at most seven vertices, and T2 re-set the same mathematics as a scaffolded LaTeX paper so that the two paths could be differenced.
 Two of `style.md`'s rules turn out to contradict each other: the 8-sentence proof trigger against the ban on shattering an argument into tiny lemmas, and the required 3-paragraph introduction against "never two prose paragraphs in a row".
 Five more fought the mathematics, of which the sharpest is that "one deduction per sentence" plus "name the tag it rests on" puts 14 proof sentences over the 25-word cap.
 Of the three numbers the Spec flagged as unmeasured, one example per result and 3–10 line examples both held, and the sentence cap is the one that fails.
 The build path gave up three defects too, the costly one being that the converter's 19-digit `CellID`s are dropped by `Export` — so the drift fingerprint covered 8 cells of 71 until they were stripped and reassigned after `MathNotebookDocument`.
+
+Differencing the two paths is what the re-setting bought.
+Five of T1's findings recur unchanged in LaTeX, including the two 26- and 27-word abstract sentences and the same 14 over-long proof deductions, which settles them as `style.md`'s rather than the notebook generator's.
+Four are the LaTeX path's alone, the substantive one being that the guide gives the code behind a *Ruliology* call no home: a notebook keeps it in an Initialization section, LaTeX has none, and writing it into *Ruliology* buried the four one-line calls that section exists to carry.
+Re-setting also caught a forward reference in T1's notebook that the checklist already forbade and nobody had checked, because a notebook tag is inert text while `\cref` is not.
+The LaTeX templates gave up seven defects, and two of them make a paper wrong rather than ugly: `macros_template.sty` numbers every environment on the shared `theorem` counter, so cleveref cites a definition as "by Theorem 2.4", and the `aliascnt` fix for that makes cleveref silently drop entries from a multi-reference list unless `nosort` is set with it — measured at five labels in, three out.
 
 ## Open questions
 

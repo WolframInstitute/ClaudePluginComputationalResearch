@@ -1,10 +1,13 @@
-# Running the paper style guide against a real notebook
+# Running the paper style guide against a real document
 
 *[ LLM Generated ]*
 
-What broke when [`style.md`](../../skills/research-notebook/style.md) was used for the first time on a real document.
-Measured 2026-08-20 for `ExercisePaperStyle` T1, building [EquidistanceOddGirth](#the-document-under-test) end to end.
+What broke when [`style.md`](../../skills/research-notebook/style.md) was used for the first time on real documents.
+Measured 2026-08-20 for `ExercisePaperStyle`: T1 built [EquidistanceOddGirth](#the-document-under-test) as a notebook, and T2 re-set the same mathematics as a [scaffolded LaTeX paper](#the-latex-path--the-same-document-re-set).
 The corrections themselves are T3's; this article is the evidence they have to answer to.
+
+The guide is shared by the two paths, so a finding that reproduces on both is a guide bug and a finding that appears on one is a bug in that path's generator.
+That split is the reason T2 re-set the same document instead of writing a new one.
 
 Seven of the guide's rules fought the mathematics, and two of the seven are rules of the guide fighting *each other*.
 Three defects in the build path turned up alongside them.
@@ -98,3 +101,87 @@ What this document says about them, for T3 to rule on:
 | one example per result | holds, and is if anything generous — 3 examples for 9 results read well, and the definition section needed none |
 | example length 3–10 lines | holds — all three examples are 2 lines, because the paclet's `InfraSceneHighlight` does the work |
 | sentence ≤ 25 words | fails for proofs and for the abstract; correct for connecting prose |
+
+## The LaTeX path — the same document re-set
+
+`ResearchNotebooks/EquidistanceOddGirth/Paper/` in the SyntheticInfrageometry dev repo, scaffolded by `scripts/scaffold-paper.sh` and compiled with `latexmk` to a 7-page PDF with no warnings and no overfull boxes.
+The mathematics is T1's, unchanged except where the guide's own rules forced a change; every enumeration was re-run on a live kernel and every number reproduced exactly, including the 7-cycle being the only graph with at most seven vertices whose $\sigma$ is below its $k$.
+
+### Five findings reproduce on both paths, so they are the guide's
+
+The abstract, the proof sentences, the *Ruliology* paragraph run, the 8-sentence proof trigger against the ban on shattering, and the 3-paragraph introduction against the same ban all recur unchanged.
+The two sentence-length cases are worth stating numerically, because they came out identical: the abstract's second and third sentences are 26 and 27 words in both documents, and the same fourteen proof deductions exceed 25 words.
+None of the five is a notebook artefact.
+
+### Four findings the LaTeX path exposed on its own
+
+**The guide has no home for the code that makes a *Ruliology* call runnable.**
+The notebook keeps its nine helper predicates in an *Initialization* section at the end, out of the reading path.
+LaTeX has no such section, so they were written into *Ruliology*, where a wall of wrapped code buried the four one-line calls it exists to carry.
+They now sit in an appendix, and `style.md` names neither destination.
+
+**Code in a paper is wrapped by the column, not by the source.**
+A notebook cell holding a 130-character one-liner is one line in the source and three or four on the page, broken at the listings package's continuation arrow.
+The 3–10 line budget counts source lines, which is not what the reader sees, so the long calls here were hand-wrapped to the text width — the same discipline a human author applies and one the guide does not mention.
+
+**An Example whose answer is a picture needs the picture as a file.**
+Notebook code evaluates, so the picture is the output cell; LaTeX code does not, so the Example carries the call *and* an exported graphic, and the two are only honestly linked if the graphic was produced by exactly the code shown.
+The three figures here were exported from the displayed calls on the kernel that ran them.
+The § *Examples* ban on annotation also rules out `figure` plus `\caption`, since that numbers and labels the picture, so the graphic is a non-floating centred box — against ordinary LaTeX practice, and it needs binding into an unbreakable block or the picture floats onto the next page away from the Example that owns it, which is what the first compile did.
+
+**T1's notebook contains a forward reference, and the checklist did not catch it.**
+Its § *Primitives* asserted that `FindInfraMidpoint` returns a midpoint exactly at even distance "by [Lem:Subpath]", a lemma proved one section later.
+§ *Results* forbids exactly that, and the checklist has a line for it.
+In a notebook a tag is inert text, so a forward reference is indistinguishable from any other citation; writing `\cref` made it visible.
+The claim is dropped from the paper, which now only binds the function to the definition.
+
+### The build path — six defects in the shipped template
+
+**Every `\cref` to anything but a theorem prints "Theorem".**
+`macros_template.sty` numbers all thirteen environments on the shared `theorem` counter, and cleveref takes a reference's name from its counter.
+So a definition is cited as "by Theorem 2.4", which is not a cosmetic problem: the paper tells the reader the wrong kind of thing is being invoked.
+The fix is `aliascnt`, giving each environment its own counter name aliased to `theorem`, which keeps the shared numbering.
+
+**And that fix, alone, makes a multi-reference silently drop entries.**
+With aliased counters, cleveref's default range compression reads the shared values wrongly and swallows part of the list.
+Measured on a five-label `\cref` in a two-section test file:
+
+| `macros.sty` state | renders |
+|---|---|
+| as shipped, shared counter | `Theorems 1.1 to 1.3, 2.1 and 2.2` — five entries, all misnamed |
+| `aliascnt` added | `Definitions 1.1 to 1.3` — correctly named, **two entries gone** |
+| `aliascnt` + `nosort` | `Definitions 1.1, 1.2, 1.3, 2.1 and 2.2` |
+
+The real document hit this: `\cref` over five definitions printed four numbers, one of them wrong, with no warning in the log.
+Both halves of the fix are needed, and `nosort` is the one that is easy to leave out.
+
+**`main_template.tex` emits no `[ LLM Generated ]` line.**
+§ *Authorship* requires it above the title and the notebook path produces it, so the LaTeX path silently drops the one marker that tells a reader what they are holding.
+amsart has no slot for it; it takes a hand-built two-line `\title`.
+
+**`\date{\today}` dates the compile, not the document.**
+§ *Authorship* asks for the date the document was generated.
+`\today` re-dates the paper every time anyone runs `latexmk`, and nothing in the output shows that it moved.
+
+**`\printbibliography` and `\tableofcontents` are unconditional.**
+A self-contained paper cites nothing, so `references.bib` stays empty and the template prints an empty References section; a 7-page paper does not want a table of contents.
+Both are slots filled because they are in the template, which is the failure § *Length* is written against.
+Both are commented out here.
+
+**`macros_template.sty` ships no code environment at all**, though § *Examples* and § *Ruliology* both require code.
+A `listings` setup was added to the paper's copy.
+
+One further defect is in the scaffold script rather than the templates: `scaffold-paper.sh` writes `<dir>/Paper/main.tex` with no check for an existing one, so running it at the dev repo root would have overwritten the author's own paper and `references.bib`.
+That is why the exercise paper sits under `ResearchNotebooks/` instead.
+
+### The three suspect numbers, on this path
+
+| Rule | Verdict here |
+|---|---|
+| one example per result | holds, as in T1 — 3 examples for 9 results |
+| example length 3–10 lines | holds in the source, but the budget should say it counts *rendered* lines, and that an Example is a call plus a picture on this path |
+| sentence ≤ 25 words | fails identically to T1, which settles it as a guide rule rather than a notebook artefact |
+
+A minor note on § *Notation*, which asks for one macro per nontrivial symbol.
+LaTeX's namespace is already occupied at the obvious names — `\mid` and `\d` are taken — so the macro for $M(u,v)$ ended up `\mps`, drifting from the symbol it denotes.
+The rule is right and the cost is real; it is only worth a sentence in the guide.
