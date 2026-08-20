@@ -26,7 +26,7 @@ ARCHITECTURE.md                — this file
 The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (28)
+## Scripts (29)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -54,7 +54,8 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
-| `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>` |
+| `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
+| `test-auto-run-routing.sh` | bash | nothing — run by hand after a change to `auto-run.sh`'s annotation parse; 36 assertions against fixture items and a stub `claude`, spends nothing |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |

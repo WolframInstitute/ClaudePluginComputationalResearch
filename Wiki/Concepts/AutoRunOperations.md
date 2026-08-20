@@ -11,12 +11,22 @@ Where the script and the specification disagree the script is the fact — see [
 
 ## Before a run
 
-`/auto-run <Item> --dry-run` prints the selection, the branch it would use, the next task, the caps, the digest path, and the full allowlist — and exits without creating a branch, a digest, or a process.
+`/auto-run <Item> --dry-run` prints the selection, the branch it would use, the next task, its routing, the caps, the digest path, and the full allowlist — and exits without creating a branch, a digest, or a process.
 Use it first on any item that has not run before.
 It is checked *after* the preflight rather than before it, so it still refuses a dirty working tree: `--dry-run` is a rehearsal of a real launch, not an inspection you can perform mid-edit.
 
 The defaults are three tasks, ninety minutes, and five dollars (`--max-tasks`, `--max-minutes`, `--max-cost`).
 
+There is no model or effort flag, and there is deliberately no way to route a run from the command line: each task is spawned on the model and effort its own annotation names, so changing where a task runs means editing the item file.
+The `routing   :` line of a dry run is what that parse produced —
+
+```
+next task : - [ ] T3 (model: sonnet, effort: high — ~90% mechanical) — sweep the renames.
+routing   : model sonnet, effort high
+```
+
+— and `model inherited, effort inherited` means the task carries no annotation and will run on whatever the machine's default is.
+A dry run also *fails* on a typo'd annotation, exit 2 with the field it could not parse, which is the cheapest place to find one.
 Preflight failures exit **2**, and they are the one class of failure that writes **no digest** and creates no branch: `claude` or `jq` missing from `PATH`, not inside a git repository, no `Work/` directory, a dirty working tree at the start, a named item that is not in `Work/Active/`, an item without `> Autonomous: allowed`, or zero / more than one eligible item when none was named.
 All of these are reported on stderr as `auto-run: <reason>` and are fixed before re-running.
 
@@ -57,6 +67,7 @@ The driver exits `0` for the first two rows, `130` for an interrupt, and `1` for
 | `task-gated` | 1 | The next task line contains `(human)`. Do that task yourself in an interactive `/next-session`, commit, then re-run. Nothing is broken despite the non-zero exit. |
 | `needs-human` | 1 | A session wrote a `needs-human:` question into `## Hand-off` rather than guessing. Answer it — the answer usually belongs in the Spec or a `## Decisions` row — then **overwrite `## Hand-off` to remove the marker** and commit before re-running. |
 | `dirty-tree` | 1 | Uncommitted changes appeared between tasks (`Work/Runs/` is excluded from the check). `git status`, commit or stash, re-run. |
+| `bad-annotation` | 1 | The next task's routing annotation does not parse — the verdict line names the field. Fix it in the item file and re-run; nothing was spawned and nothing was spent. |
 | `no-commit` / `no-box` | 1 | The run reported success and closed nothing — the liveness condition. See below. |
 | `permission-denied` | 1 | The run needed a tool that is not allowlisted. See [Growing the allowlist](#growing-the-allowlist). |
 | `nonzero-exit` / `is-error` / `stop-reason` / `terminal-reason` | 1 | The CLI run itself failed. The verdict line carries the `subtype`; to see the actual error, run that one task interactively. |
@@ -80,6 +91,26 @@ The driver counts `- [x]` lines only inside the `### Done` subsection, so a sess
 **The cost and wall-clock caps are checked before a task starts, not during it.**
 A run can therefore overshoot `--max-cost` and `--max-minutes` by up to one task.
 `--max-tasks` is exact.
+
+### Reading the routing on a verdict line
+
+Each verdict carries the tier the task ran on:
+
+```
+- **ok** T3 — turns 42, $2.6012, model `claude-sonnet-5` (routed `sonnet`), effort `high` requested, subtype `success` → `a1b2c3d feat(work): …`
+```
+
+`(routed X)` means the annotation asked for `X`; `(inherited)` means the task carried none and took the machine default.
+The effort says **requested**, and that word is doing work: [no output field reports the effort a run applied](HeadlessModelSurface.md#effort-is-not-reported-anywhere-in-the-output), and thinking-token counts are far too noisy to infer it, so the digest reports what was asked for and never claims to have observed it.
+
+A halt where the session ran and closed nothing adds a second line:
+
+```
+- **escalate?** T3 ran on `sonnet` — before treating this halt as a fault in the work, re-run it as `(model: opus, effort: high)`.
+```
+
+Take it or leave it, but do not simply re-run the same task at the same tier: a cheap tier fails by producing confident wrong output, so the second run tends to repeat the fault rather than expose it.
+The recommendation appears on `no-commit`, `no-box`, `stop-reason` and `terminal-reason` halts, and not on `permission-denied` or an API-level failure, which name their own cause.
 
 The driver never cleans up after a fault.
 It leaves the branch, the working tree, and any partial work exactly as they stand, because an unattended `git reset --hard` is the one action that can destroy work no human has seen.

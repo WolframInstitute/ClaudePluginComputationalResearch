@@ -73,6 +73,20 @@ It sits immediately after the task id, before the em dash that opens the body, w
 - **The parser must validate the effort, and need not validate the model.** The two halves fail in opposite directions: an unrecognised model exits 1 with `is_error` at zero cost, tripping the driver's existing stop condition, while an unrecognised effort *succeeds* at default effort and warns only on stderr. The fail-closed check therefore exists for the effort field's sake; the model field gets its check for free.
 - **A comparison is between tiers, never between id strings.** The machine default reports `claude-opus-5[1m]` and `--model opus` reports `claude-opus-5`, and both report a 1,000,000-token window: a session that string-compared its own model against `opus` would see a mismatch that is not there.
 
+### What the parser settled that the grammar had left open
+
+Written for T2, implemented in `scripts/auto-run.sh` for T3 (2026-08-20), which had to decide two cases the grammar above does not name.
+
+**A paren group carrying no `key:` is not an annotation.**
+`(human)` and the `(S2)` of a closed box sit in the same anchored position, and the parse leaves them alone rather than treating them as malformed routing.
+The converse is the fail-closed half: a group that *does* carry a `key:` must parse completely, so `(modle: sonnet)` halts the run instead of quietly inheriting the default.
+
+**The reason clause is dropped before the fields are read**, at the first em dash — an en dash or a spaced hyphen is accepted too, since the reason is prose and a writer will reach for whichever dash is to hand.
+Without that step a reason containing a comma or a colon reads as another field and trips the fail-closed check on a correct annotation.
+
+Both rules are covered by `scripts/test-auto-run-routing.sh`, which drives the real driver against fixture items and a stub `claude`.
+The regression it exists to prevent is a widened or unanchored match — the failure the anchoring was chosen against — since nothing in the item file would show that the wrong tier had been used.
+
 ### Absent means inherit, and only half of what is inherited can be observed
 
 An absent **model** inherits the tier the session is on — the operator's `/model` interactively, the machine default headless — and a session can read that back off its own system prompt, so the inheritance is observable.

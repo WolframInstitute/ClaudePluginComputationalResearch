@@ -103,6 +103,20 @@ The header line is one more `>` line above `## Spec`, so it neither adds a secti
 
 One `claude -p --output-format json "/computational-research:next-session <Item>"`, then the driver **verifies the run instead of trusting it**.
 
+The tier that process runs on comes from the task's own [routing annotation](ItemFileFormat.md#the-per-task-routing-annotation), read off the task line the loop already selected and passed through as `--model` and `--effort`; an unannotated task inherits the machine default, which is [whatever the operator last typed at `/model`](HeadlessModelSurface.md#--model-takes-aliases-and-all-four-tiers-resolve).
+The driver holds no routing policy of its own and has no model flag — the item file is the contract, so the price of a task is decided where the work was divided rather than at launch.
+
+**The parse validates the effort and not the model, and the asymmetry is measured rather than stylistic.**
+An unrecognised model exits 1 with `is_error` at zero cost and trips condition 3 for free; an unrecognised effort *succeeds* at the default effort and warns only on a stderr stream the driver captures but never reads for warnings.
+So a bad effort would otherwise produce a clean, committed, successful task that silently ran at the wrong tier of thinking — the parser checks the five levels itself, before spawning, and halts as `bad-annotation` having spent nothing.
+The same halt catches an unrecognised *field*: a group that carries a `key:` at all must parse completely, so `(modle: sonnet)` stops the run rather than inheriting the default, while a group with no field in it — `(human)`, `(S2)` — is not an annotation and passes through untouched.
+
+Two things the digest can then say per task, and one it cannot.
+It names the **model used**, taken from `.modelUsage` by [the cache-token discriminator](HeadlessModelSurface.md#the-modelusage-trap-almost-every-run-reports-a-second-model) rather than from its keys, since an auxiliary haiku call rides along on nearly every run and is frequently `keys[0]`.
+It names the effort **requested**, because no output field reports the effort applied.
+And on a halt where the session ran and closed nothing, it names the **escalation** — the annotation to raise the task to before re-running it — so that the human's one decision is yes/no rather than diagnosis.
+A cheap tier fails by producing confident wrong output, which a re-run at the same tier repeats rather than exposes.
+
 ### Stop conditions — any one halts the run
 
 1. no unchecked task remains — the item is complete, and this is the success exit;
@@ -163,6 +177,7 @@ Built by T7, 2026-07-28.
 | eligibility markers | documented in `work` § *The autonomy markers*, seeded as comments in `work_item_template.md` |
 | unconditional commit | one clause in `next-session` step 8 — the liveness check is only sound if an autonomous run always commits |
 | the autonomy signal | `--append-system-prompt`, naming the driver, the branch, and the item — see the third fact below |
+| per-task routing | `parse_routing` in the same script, from the annotation `work` writes and `next-session` checks; `scripts/test-auto-run-routing.sh` is its regression test, run by hand and spending nothing |
 
 ### Stop reasons
 
@@ -179,6 +194,7 @@ The preflight group — a missing `claude` or `jq`, no git repository, no `Work/
 | `dirty-tree` | condition 4 — someone is mid-edit |
 | `no-commit` / `no-box` | condition 5, liveness — the run reported success and closed nothing |
 | `nonzero-exit` / `is-error` / `stop-reason` / `terminal-reason` / `permission-denied` | condition 3 |
+| `bad-annotation` | the next task's routing annotation names an effort outside `low\|medium\|high\|xhigh\|max`, or a field that is neither `model:` nor `effort:` — checked before the spawn, so it costs nothing |
 | `unparseable-output` | the run's stdout was not JSON; the digest quotes the first 1 kB of stdout and the first 1 kB of stderr |
 | `item-vanished` | the item file is in neither `Work/Active/<Item>.md` nor `Work/Done/*-<Item>.md` — a session moved or renamed it, and the loop can no longer read its state |
 | `interrupted` | `SIGINT` or `SIGTERM`; the digest is still written and the tree is left exactly as it stands |

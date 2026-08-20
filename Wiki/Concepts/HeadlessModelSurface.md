@@ -96,6 +96,7 @@ Thinking-token counts cannot recover it either — within a single condition the
 
 The consequence for T3: **a digest can name the effort requested, never the effort used.**
 The Spec's line that "the digest's per-task table names the model used" is achievable for the model and not for the effort, and the table should say *requested* for the latter rather than implying an observation.
+It does — the driver's verdict lines read `effort \`high\` requested` since T3 (2026-08-20).
 
 ## The `modelUsage` trap: almost every run reports a second model
 
@@ -112,6 +113,7 @@ The discriminator that held across all five runs measured:
 This composes with, rather than contradicts, the driver's existing rule to read `.usage` alone for the numbers.
 `scripts/auto-run.sh:311` already carries the comment explaining why a recursive sum over `.modelUsage` double-counts every figure.
 T3 therefore reads `.modelUsage` for the **name** and continues to take the **numbers** from `.usage` — two fields, two purposes, and the existing comment stays true.
+That is what shipped: the driver selects the entry with non-zero cache tokens, falls through to the single entry when there is only one, and prints `?` rather than guessing when neither holds.
 
 ## Two adjacent flags found while measuring
 
