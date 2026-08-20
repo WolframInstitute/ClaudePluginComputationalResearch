@@ -124,12 +124,18 @@ The shared paper writing guide has now been run against a real document on both 
 Two of `style.md`'s rules turn out to contradict each other: the 8-sentence proof trigger against the ban on shattering an argument into tiny lemmas, and the required 3-paragraph introduction against "never two prose paragraphs in a row".
 Five more fought the mathematics, of which the sharpest is that "one deduction per sentence" plus "name the tag it rests on" puts 14 proof sentences over the 25-word cap.
 Of the three numbers the Spec flagged as unmeasured, one example per result and 3–10 line examples both held, and the sentence cap is the one that fails.
-The build path gave up three defects too, the costly one being that the converter's 19-digit `CellID`s are dropped by `Export` — so the drift fingerprint covered 8 cells of 71 until they were stripped and reassigned after `MathNotebookDocument`.
+The build path gave up three defects too, the costly one being that the converter's 19-digit `CellID`s are dropped by `Export` — so the drift fingerprint covered 8 cells of 71 until they were stripped and reassigned.
 
 Differencing the two paths is what the re-setting bought.
 Five of T1's findings recur unchanged in LaTeX, including the two 26- and 27-word abstract sentences and the same 14 over-long proof deductions, which settles them as `style.md`'s rather than the notebook generator's.
 Four are the LaTeX path's alone, the substantive one being that the guide gives the code behind a *Ruliology* call no home: a notebook keeps it in an Initialization section, LaTeX has none, and writing it into *Ruliology* buried the four one-line calls that section exists to carry.
 Re-setting also caught a forward reference in T1's notebook that the checklist already forbade and nobody had checked, because a notebook tag is inert text while `\cref` is not.
+
+T3 has now answered all of it in the shipped files — see [what T3 corrected](Concepts/PaperStyleExercise.md#what-t3-corrected).
+Nothing that failed was a threshold: on both paths it was a rule's **scope**, so the 25-word cap is now a rule about connecting prose, the never-two-paragraphs rule is one about prose between statements, and the proof trigger counts a run of deductions rather than a proof.
+The three numbers the Spec flagged therefore stand unchanged for the operator's read, one of them corrected in meaning — the example budget counts rendered lines, which is what a reader sees.
+Two of T1's findings changed under re-measurement: `Export` turns out to drop a *19-digit* `CellID` and keep a small one, and the `AssignCellIDs` pass order is immaterial (measured identical), so the real defect there was that the order `mathnotebook_post.wl` documents did not evaluate at all.
+The template fixes are compiled rather than reasoned: scaffolded from the corrected assets, LaTeX and Typst both build clean, and the five-label `\cref` that silently lost two entries now prints all five with the right names.
 The LaTeX templates gave up seven defects, and two of them make a paper wrong rather than ugly: `macros_template.sty` numbers every environment on the shared `theorem` counter, so cleveref cites a definition as "by Theorem 2.4", and the `aliascnt` fix for that makes cleveref silently drop entries from a multi-reference list unless `nosort` is set with it — measured at five labels in, three out.
 
 ## Open questions

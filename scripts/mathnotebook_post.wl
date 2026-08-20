@@ -292,6 +292,15 @@ inputOutputGroupQ[ _ ] :=
 AssignCellIDs[ cells_List ] :=
   Block[ { $cellIDCounter = 0 }, assignCellIDs @ cells ]
 
+(* Runs on the notebook MathNotebookDocument returns, which is where the pass
+   order above puts it. Measured 2026-08-20: the two orders give an identical
+   notebook, so this overload exists to keep the documented order callable --
+   without it AssignCellIDs[ MathNotebookDocument[ ... ] ] does not evaluate
+   and the build exports the unevaluated expression.                        *)
+
+AssignCellIDs[ Notebook[ cells_List, opts___ ] ] :=
+  Notebook[ AssignCellIDs @ cells, opts ]
+
 assignCellIDs[ cells_List ] :=
   Replace[ cells, {
     Cell[ CellGroupData[ group_List, state___ ], opts___ ] :>

@@ -53,6 +53,9 @@ Not merely before it is *defined* — before it is *proved*.
 A forward reference forces the reader to hold an unverified claim in their head, which is the thing a checkable document must never ask.
 Order the sections so one linear pass verifies everything.
 
+On a typeset path `\cref` prints the number and a forward reference is visible on the page.
+In a notebook a tag is inert text, so nothing shows and the citation reads like any other: the order has to be checked by reading the citations in sequence.
+
 **Every definition is used.**
 A definition that no later statement or example uses is deleted, however nice it is.
 Dead notation costs the reader more than it costs you to cut.
@@ -80,13 +83,29 @@ That is the same discipline as the lifting test above, and it pays off whether o
 | Abstract | ≤ 4 sentences: the problem, the result, the method, the computation |
 | Introduction | 3 paragraphs, ≤ 6 sentences each: the problem, the results, the roadmap |
 | Prose between statements | ≤ 6 sentences, and never two such paragraphs in a row |
-| Proof | complete; past about 8 sentences, factor a lemma out |
+| Proof | complete; one run of deductions past about 8 sentences wants a lemma factored out |
 | Conclusion | 2–3 sentences |
 | Examples | **one per result** — not one per definition |
-| Sentence | ≤ 25 words |
+| Sentence of connecting prose | ≤ 25 words |
 
 These are the defaults that keep a document readable, not quotas to satisfy.
 A passage that genuinely needs more takes more — but the budget is what it has to argue against, and most prose loses that argument.
+
+Three of those budgets have a scope, and [the first documents written under this guide](../../Wiki/Concepts/PaperStyleExercise.md) found each one by breaking it.
+
+**The 25-word cap is a rule about prose.**
+In connecting prose a long sentence is usually two sentences, and cutting it costs nothing.
+A proof deduction is governed by *one deduction per sentence* instead: what makes it long is the premises it uses and the tags it rests on, so splitting it hides which of them the step used.
+An abstract sentence is the same case — four sentences carry the problem, the result, the method and the computation, and the one stating the result is often a formula.
+There the sentence *count* is the budget and the word cap is not.
+
+**Never two prose paragraphs in a row is a rule about prose between statements.**
+The abstract, the introduction and the *Ruliology* entries are prose by construction and cannot interleave statements, so the rule does not reach them.
+A code block between two paragraphs is not a statement and does not reset the run, which is why *Ruliology* has to be named here.
+
+**The proof trigger counts one run of deductions, not a proof.**
+A two-part proof — an equivalence, a two-sided bound, an induction with a base case — is counted part by part, and a proof of four two-sentence parts is not long.
+Where the trigger and § *Proofs* disagree, § *Proofs* wins: a lemma factored out to satisfy a count, and used exactly once, is the shattering that section forbids.
 
 A section is definitions and results with prose *connecting* them.
 If two paragraphs of prose sit together, one of them is usually exposition and can go.
@@ -94,6 +113,10 @@ If two paragraphs of prose sit together, one of them is usually exposition and c
 Two lines are worth their words against that budget, which would otherwise cut them.
 A sentence at the head of a section saying what it establishes is the most useful line in it for anyone scanning — worth writing wherever the section is not self-evident from its title.
 And where there is a conclusion, it says what is **open** rather than what was done: the introduction already stated every result, and a paper that summarises itself twice teaches the reader to skip both.
+
+The rule against filling a slot reaches the apparatus a template ships.
+An empty References section in a paper that cites nothing, and a table of contents on a paper of a few pages, are both there because the file had a line for them.
+Delete the line, or comment it out.
 
 ## Sentences
 
@@ -131,8 +154,8 @@ A gap is worse than a missing proof, because a missing proof is visible.
 - **Prose, not labelled steps.** No `Step 1.`, no numbered list. One deduction per sentence, in the order a reader checks them.
 - **Every deduction names what it uses** — by tag: "by [Def:Hodge]", "by [Eq:Cyclic]", "by [Lem:HodgeType]". A deduction resting on nothing stated is a gap.
 - **Display the algebra.** A computation running over three equalities is a display, not a sentence.
-- **One deduction per sentence.** Two steps in one sentence is one step hidden.
-- **A long proof is fine when it reads clearly.** Never abbreviate to hit a length, and do not shatter an argument into a chain of tiny lemmas either — a run of one-line lemmas is harder to follow than the single proof it came from. Pull a step out only when it has content of its own or gets used more than once.
+- **One deduction per sentence.** Two steps in one sentence is one step hidden. This rule, not the 25-word cap, is what governs the length of a proof sentence (§ *Length*).
+- **A long proof is fine when it reads clearly.** Never abbreviate to hit a length, and do not shatter an argument into a chain of tiny lemmas either — a run of one-line lemmas is harder to follow than the single proof it came from. Pull a step out only when it has content of its own or gets used more than once. § *Length*'s trigger counts one run of deductions, so a two-part proof is counted part by part and this rule wins where the two disagree.
 
 **Banned — every phrase that stands in for a step:** clearly, obviously, evidently, one easily sees, it is well known, a straightforward computation shows, by a similar argument, we omit the details, sketch of proof, left to the reader.
 
@@ -148,9 +171,10 @@ It is not a test, a benchmark, or a survey.
 
 - **One per result.** A definition takes one only when the object is not evident from its statement. The `Definition, Example, Definition, Example` alternation is not a requirement and usually floods the page.
 - **The answer is a picture or a small algebraic value** — the geometry illustrated, or one symbolic result that is itself the point. Never a table of numbers, never a boolean list, never a statistic. Those are *Ruliology*.
-- **Three to ten lines**, readable top to bottom, that a reader copies into a fresh document and changes one argument in.
+- **Three to ten lines as the reader sees them**, readable top to bottom, that a reader copies into a fresh document and changes one argument in. A 130-character one-liner is one line in a notebook cell and three or four in a printed column, so on a typeset path the call is wrapped to the text width by hand before it is counted.
 - **One instance.** Choose the smallest object in which the phenomenon appears — not the triangle when the triangle is degenerate.
 - **Bare.** No `PlotLabel`, legend, frame, `Style`, `Labeled`, no annotation restating the definition, no colour beyond a pastel default. Anything deletable without losing information is deleted.
+- **Unlabelled unless something cites it.** An example is almost never cited, because the sentence above it already points at it; the same holds for a closing question. Tag or `\label` it only when a citation exists.
 
 ```wolfram
 graph = GridGraph[ { 4, 4 } ];
@@ -167,6 +191,12 @@ Module[ { g, path, styled },
   Labeled[ styled, Style[ "Shortest path in the 4×4 grid", Bold, 14 ], Top ] ]
 ```
 
+**On a typeset path the picture is a file.**
+Notebook code evaluates, so the picture is the Output cell under the call.
+LaTeX and Typst do not evaluate, so the Example carries the call *and* an exported graphic — and the two are honestly linked only if the graphic came from exactly the code shown, on the kernel that ran it.
+The ban on annotation rules out `figure` with a `\caption`, which numbers and labels the picture: use a centred non-floating box.
+Bind it to the call in one unbreakable block (`minipage`), or the picture floats to the next page, away from the Example that owns it.
+
 ## Ruliology — where the experiments go
 
 Experiments are kept out of the mathematical development, and the usual place for them is one section near the end: enumeration ranges, parameter sweeps, distributions, timings, counterexample searches.
@@ -178,6 +208,11 @@ A single stray computation can as easily sit in a `Remark`, and a large body of 
 - **The decoration rules relax here.** `ArrayPlot`, histograms, a labelled table over a family — these are data and are read as data.
 - Each entry that supports a `Conjecture` in the body names its tag.
 - Past about a page, the material belongs in the journal and the section keeps a one-line summary.
+
+**The code that makes those calls runnable does not live here.**
+An entry is one paragraph and one call, and the predicates and helpers the call needs are not part of the mathematics: a wall of them buries the calls the section exists to carry.
+In a notebook they belong in the folded *Initialization* section at the end, out of the reading path.
+In LaTeX or Typst they belong in an appendix, named once from *Ruliology* so a reader knows where to look.
 
 The name is deliberate: it marks the material as exploration, so a reader knows the mathematical development ended above it.
 
@@ -195,7 +230,7 @@ Never attach a citation you have not opened, and never state a named result from
 The document was written by the model; naming a human as author misattributes it.
 
 - **Author** — the model, by name and exact identifier: `Claude Opus 5 (claude-opus-5[1m])`.
-- **Date** — the date the document was generated.
+- **Date** — the date the document was generated, written out. Never `\today` or `datetime.today()`: those re-date the paper on every compile, and nothing in the output shows that it moved.
 - **Footnote** — the operator, **how much freedom the model had**, and a one-sentence summary of the instructions it worked under.
 
 The operator is the person who ran the session, not an author.
@@ -237,14 +272,16 @@ Where the [provenance](../provenance/SKILL.md) toggle is on, this line is the re
 The notebook has no footnote style, and `Caption` is not one — it carries a `Figure ⟨n⟩.` dingbat and increments a counter.
 `Date` inherits `Text`, is centred and small, takes neither dingbat nor counter, and every MathNotebook sheet declares it, so it survives a stylesheet swap.
 
-The `[ LLM Generated ]` line stays, above the title.
+The `[ LLM Generated ]` line stays, above the title, on every path.
+Neither amsart nor a plain Typst document has a slot for it, so it is built into the title itself — in LaTeX the first line of `\title`, set `\normalfont\normalsize` above a `\\[0.8ex]` break, with a short `\title[…]` for the running head; in Typst a small line above the title text.
+It is the one marker that tells a reader what they are holding, and the LaTeX path dropped it until it was built by hand.
 
 ## Notation
 
 Introduce notation once and never redefine it.
 There is no symbol index.
 
-- **LaTeX / Typst:** every nontrivial symbol gets a macro in `macros.sty` / `macros.typ`, defined once and used everywhere.
+- **LaTeX / Typst:** every nontrivial symbol gets a macro in `macros.sty` / `macros.typ`, defined once and used everywhere. The namespace is already occupied at many of the obvious names — `\mid` and `\d` both exist — so a macro sometimes drifts from the symbol it denotes (`\mps` for $M(u,v)$). Take the shortest free name and use it everywhere; never redefine an existing command to get a nicer one.
 - **Notebook:** there is no macro mechanism, so the discipline is the same by hand — italicise the term at its definition, and use the symbol unchanged afterwards.
 
 A definition defines a mathematical object; it does not name the function computing it.
@@ -258,16 +295,16 @@ Bind the two in one sentence after the definition, or let the Example do it by u
 - [ ] Conjectures few, each stated once, each saying what would settle it, evidence with the experiments.
 - [ ] Every result stated at the generality the proof actually reaches — no wider, and no narrower than you can prove; no statement promoted a tier to fill a section.
 - [ ] Every statement names its own hypotheses and survives the lifting test.
-- [ ] Nothing used before it is proved; every definition used by something later.
-- [ ] Where a conclusion exists it says what is open, not what was done; no section exists to fill a slot.
+- [ ] Nothing used before it is proved — every citation read in order and its target checked to sit above it; every definition used by something later.
+- [ ] Where a conclusion exists it says what is open, not what was done; no section exists to fill a slot, including the template's own empty References and its table of contents.
 - [ ] No verification ranges, hedges, heuristics or failed attempts in the body — they are in the journal.
-- [ ] Experiments in *Ruliology*, not in the development, each naming the call that reproduces it.
-- [ ] Budgets met: abstract ≤ 4 sentences, intro 3 × ≤ 6, prose paragraphs ≤ 6 sentences and never two in a row, sentences ≤ 25 words.
+- [ ] Experiments in *Ruliology*, not in the development, each naming the call that reproduces it; the code those calls need is in Initialization (notebook) or an appendix (LaTeX/Typst), not in the section.
+- [ ] Budgets met: abstract ≤ 4 sentences, intro 3 × ≤ 6, prose between statements ≤ 6 sentences and never two in a row, connecting sentences ≤ 25 words — proof deductions and abstract sentences are not word-capped.
 - [ ] Proofs complete: every deduction present, one per sentence, each naming its tag; no *clearly*, *easily sees*, *omit the details*, *sketch*.
-- [ ] No proof abbreviated to fit, and none shattered into a chain of tiny lemmas.
-- [ ] One example per result; each answers with a picture or one small algebraic value, bare, 3–10 lines.
+- [ ] No proof abbreviated to fit, none shattered into a chain of tiny lemmas, and no lemma existing only to satisfy the length trigger.
+- [ ] One example per result; each answers with a picture or one small algebraic value, bare, 3–10 rendered lines, labelled only if cited; on a typeset path the graphic is exported from exactly the call shown and bound to it in one unbreakable block.
 - [ ] No banned vocabulary, no selling adjectives; commentary in a `Remark`.
 - [ ] No `[lookup]` left; notation introduced once; macros defined in one file (LaTeX/Typst).
-- [ ] The author is the model plus the date; no human is named as author.
+- [ ] The author is the model plus the generation date — never the compile date — with `[ LLM Generated ]` above the title on every path; no human is named as author.
 - [ ] The footnote names the operator, carries the freedom level **in bold** (Directed / Guided / Open exploration), and summarises the instructions actually given, including what was left unspecified.
 - [ ] Everything cut is in the journal with one line saying why — nothing deleted.

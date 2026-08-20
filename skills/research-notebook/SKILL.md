@@ -77,7 +77,7 @@ Sections carry mathematical titles ("Hodge decompositions", "Curvature on trees"
 Three things a paper does need:
 
 - a **head** — `[ LLM Generated ]`, `Title`, the model as `Author`, the date, the footnote naming the operator with the **bold freedom level** and a one-sentence prompt summary ([style.md](style.md) § *Authorship*), and an `Abstract`;
-- an **introduction** that states the results, each as a numbered statement whose body says where it is proved ("this is [Prop:Extension]"), so a reader who stops there knows what the paper claims;
+- an **introduction** that states the results in prose, each sentence citing the tag where the result is proved ("by [Prop:Extension]"), so a reader who stops there knows what the paper claims. Not as numbered statements: numbering is per section, so a result announced as its own statement numbers 1.1 while the theorem it announces numbers 5.2, and the reader meets one result under two numbers;
 - the **references**, and after them `Initialization`, folded (§ *Initialization*).
 
 Between the introduction and the references, the shape follows the mathematics.
@@ -196,8 +196,11 @@ Three consequences:
 - **An `Input` cell must carry real code** — a code `String` or genuine boxes. `ToBoxes` applied to a code *string* ships a cell displaying the quoted string; the failure is silent and visible only on screen.
 
 The `Example` environment cell is a **sibling above** the group, not its head.
-It numbers on the shared counter, so it is citable as `Example 2.2`.
+It numbers on the shared counter, like every other environment.
 An `### Example` subsection is wrong on all three counts.
+
+**Do not tag it** unless something cites it (§ *Referencing*).
+An example is almost never cited: the sentence above it already points at it, and the same holds for a closing `Question`.
 
 ## Initialization
 
@@ -214,7 +217,7 @@ Run [style.md](style.md)'s checklist first — it covers tiers, budgets, proofs,
 Then these, which are this skill's own:
 
 - [ ] Reads as a paper: mathematical section titles, sections in the order the mathematics needs, nothing used before it is defined.
-- [ ] Introduction states every result as a numbered statement saying where it is proved; abstract written last.
+- [ ] Introduction states every result in prose, each citing the tag where it is proved — not as numbered statements of its own; abstract written last.
 - [ ] Body carries no `Claim`, no verification range, no experiment; the experiments sit together near the end if there are any; everything cut is in the journal.
 - [ ] Definitions precise enough to formalise, though no formalisation attempted unasked; the computing symbol named in one sentence after the statement, not inside it.
 - [ ] One statement per cell — no continuation cells, since Markdown cannot express one.

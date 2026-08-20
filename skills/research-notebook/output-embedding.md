@@ -6,6 +6,7 @@ How the generator evaluates every Input cell and attaches real Output cells, hea
 Evaluate in the kernel and build the Output cells yourself — the approach proven in [`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook) (`captureCellRun` / `outputBoxes`; nothing to install):
 
 1. Parse each cell's source with `ToExpression[code, InputForm, Hold]` to get the top-level statements, and evaluate them **in document order**, threading kernel state across cells.
+   **The source string, never the cell's boxes.** A multi-statement `Input` cell holds its lines in one `RowBox` with `"\n"` as an ordinary element, and `ToExpression[boxes, StandardForm, Hold]` does not read that newline as a statement separator: the first build to try it multiplied a `;`-terminated assignment by the call below it, and a second box shape collapses the two lines into a single `CompoundExpression` instead (measured 2026-08-20). Either way the statement boundaries are gone, so one Output per statement is no longer computable.
 2. A statement whose held form is `CompoundExpression[___, Null]` — a `;`-terminated line — evaluates for its side effect and emits **no** Output, matching notebook semantics.
    Every other statement contributes one Output.
 3. Wrap the result with `ToBoxes`, which keeps graphics **live** as `GraphicsBox`/`Graphics3DBox` rather than rasterizing.

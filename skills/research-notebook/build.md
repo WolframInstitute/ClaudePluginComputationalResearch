@@ -108,6 +108,10 @@ A missing `prompt` degrades to the label alone; a missing `freedom` degrades to 
 `ResearchHeadCells[ meta ]` emits, in order: `[ LLM Generated ]` (`Author`), `Title`, the model (`Author`), the date (`Date`), the footnote (`Date`).
 A missing key drops its cell rather than printing an empty one.
 
+**The source carries no `#` heading.**
+The head is built from the frontmatter, so a Markdown H1 — the natural thing to write in a `.md` — ships a second `Title` cell under the first.
+Sections start at `##`.
+
 ## The conversion call
 
 Call the **pinned local clone**, never the deployed resource function: the deployed copy is unversioned (`ResourceObject[ url ][ "Version" ]` is `None`), so drift is undetectable.
@@ -123,9 +127,9 @@ Module[ { nb, cells },
   nb    = MarkdownToNotebook[ "NotebooksLLM/<Topic>.md", "Evaluate" -> False ];
   cells = First[ nb ];
 
-  (* the converter stamps In[n]:= even under "Evaluate" -> False *)
+  (* the converter stamps In[n]:= even under "Evaluate" -> False, and a 19-digit CellID on every cell *)
   cells = cells /. Cell[ c_, s_String, o___ ] :>
-    Cell[ c, s, Sequence @@ DeleteCases[ { o }, CellLabel -> _ ] ];
+    Cell[ c, s, Sequence @@ DeleteCases[ { o }, ( CellLabel | CellID ) -> _ ] ];
 
   cells = Join[ ResearchHeadCells[ meta ], ReadCellTags[ cells ] ];
   cells = FoldExampleGroups[ cells ];                             (* after outputs are embedded *)
@@ -139,10 +143,16 @@ The order is a real constraint:
 
 - **`ReadCellTags` before `FoldExampleGroups`.** It walks the flat list, so a cell already inside a group is invisible to it. It strips every `{#Tag}` and attaches it as `CellTags`: a trailing tag to its own cell, a cell that is *only* a tag to the cell above (that is how a display equation is tagged).
 - **`FoldExampleGroups` after the outputs are embedded** ([output-embedding.md](output-embedding.md)). It accepts either a bare `Input` followed by an `Output` or an already-grouped pair, and sets the group state to `{2}`. A **second** `Output` lands outside the group — the visible symptom of a violated one-Output-per-Input rule.
-- **`AssignCellIDs` last**, and it recurses into groups. `CreateCellID -> True` instructs the front end and does not stamp cells built in the kernel, while the drift fingerprint keys on `CellID`.
+- **`AssignCellIDs` after the ids are stripped**, and it recurses into groups. `CreateCellID -> True` instructs the front end and does not stamp cells built in the kernel, while the drift fingerprint keys on `CellID`. Whether it runs on the cell list or on the notebook `MathNotebookDocument` returns is immaterial — measured 2026-08-20, the two orders give an identical notebook — and both are callable.
 - **`MathNotebookDocument` outermost.** It runs environments → equation numbering → citations, in the one order that works (a citation to an equation must see the cell as `DisplayFormulaNumbered`), and owns `StyleDefinitions`. Pass notebook options through it rather than rebuilding the `Notebook`; with prompt tracking on, that includes `TaggingRules -> { "Provenance" -> prov }`, and the fingerprint stamp later merges its `"ResearchNotebook"` key alongside. `ReplacePart` is not needed here — unlike `new-notebook` — precisely because it rebuilds the notebook with the options given.
 
 `CellTags` on a marker cell survive `ConvertEnvironmentCells`, which carries `opts___` through, so tagging before `MathNotebookDocument` is correct and tagging after would be too late for `ConvertCitations`.
+
+**Why the converter's `CellID`s are stripped rather than kept.**
+`MarkdownToNotebook` stamps every cell with a 19-digit `CellID`, and `AssignCellIDs` skips a cell that already has one — so with them kept, nothing is renumbered.
+Then `Export[ …, "NB" ]` drops a 19-digit id and keeps a small one (measured 2026-08-20: `CellID -> 7` survives the round trip, `CellID -> 1234567890123456789` is gone from the file body), and the fingerprint keys on `CellID`.
+The first build under this pipeline therefore shipped 8 fingerprinted cells out of 71 — only the head and output cells the generator had stamped itself — with no error anywhere.
+Stripping restores the generator's small sequential ids, which survive, and gives full coverage.
 
 Check the round trip once per source: if any `{#Tag}` survives into the `.nb` as visible text, the converter mangled it — fall back to an ordered list of tags applied to the `DisplayFormula` and environment cells in document order, and say so.
 

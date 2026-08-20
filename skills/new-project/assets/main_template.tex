@@ -9,17 +9,27 @@
 % The author is the model. The operator ran the session and is named in the
 % footnote -- not as an author -- with the freedom the model had (Directed /
 % Guided / Open exploration, in bold) and the instructions it worked under.
-\title{{{TITLE}}}
+%
+% amsart has no slot for the [ LLM Generated ] marker, so it is the first line
+% of the title. The optional argument is the running head.
+%
+% The date is the date the document was GENERATED. Never \today: it re-dates the
+% paper on every compile and nothing in the output shows that it moved.
+\title[{{TITLE}}]{%
+  {\normalfont\normalsize [ LLM Generated ]}\\[0.8ex]
+  {{TITLE}}}
 \author{{{MODEL}}}
 \thanks{Operator: {{OPERATOR}} (\texttt{{{EMAIL}}}). \textbf{{{FREEDOM}}} --- {{PROMPT}}}
-\date{\today}
+\date{{{DATE}}}
 
 \begin{abstract}
 {{ABSTRACT}}
 \end{abstract}
 
 \maketitle
-\tableofcontents
+
+% Uncomment only if the paper is long enough to need one.
+% \tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}\label{sec:intro}
@@ -28,7 +38,9 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\printbibliography
+% Uncomment once references.bib has an entry the paper cites. A self-contained
+% paper cites nothing and prints no References section.
+% \printbibliography
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}

@@ -33,7 +33,9 @@
 ]{hyperref}
 
 % ── Smart references (after hyperref) ──
-\RequirePackage[nameinlink,capitalize]{cleveref}
+% nosort is required, not cosmetic: with the aliased counters below, cleveref's
+% default range compression silently DROPS entries from a multi-reference list.
+\RequirePackage[nameinlink,capitalize,nosort]{cleveref}
 
 % ── Bibliography ──
 \RequirePackage[
@@ -52,23 +54,38 @@
 \setlist{leftmargin=5.5mm}
 
 % ── Theorem environments ──
+% One shared counter, but each environment needs its OWN counter name or
+% cleveref reads the counter and calls every reference a "Theorem".
+% aliascnt gives each an alias of the theorem counter, which keeps the shared
+% numbering and lets cleveref name the environment.
+\RequirePackage{aliascnt}
+
+\newcommand{\sharedtheorem}[3]{%
+  \newaliascnt{#1}{theorem}%
+  \newtheorem{#1}[#1]{#2}%
+  \aliascntresetthe{#1}%
+  \crefname{#1}{#2}{#3}%
+  \Crefname{#1}{#2}{#3}}
+
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{conjecture}[theorem]{Conjecture}
-\newtheorem{claim}[theorem]{Claim}
+\crefname{theorem}{Theorem}{Theorems}
+\Crefname{theorem}{Theorem}{Theorems}
+\sharedtheorem{corollary}{Corollary}{Corollaries}
+\sharedtheorem{proposition}{Proposition}{Propositions}
+\sharedtheorem{lemma}{Lemma}{Lemmas}
+\sharedtheorem{conjecture}{Conjecture}{Conjectures}
+\sharedtheorem{claim}{Claim}{Claims}
 
 \theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{construction}[theorem]{Construction}
+\sharedtheorem{definition}{Definition}{Definitions}
+\sharedtheorem{example}{Example}{Examples}
+\sharedtheorem{construction}{Construction}{Constructions}
 
 \theoremstyle{remark}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{question}[theorem]{Question}
-\newtheorem{observation}[theorem]{Observation}
+\sharedtheorem{remark}{Remark}{Remarks}
+\sharedtheorem{question}{Question}{Questions}
+\sharedtheorem{observation}{Observation}{Observations}
 
 % ── Operators ──
 \DeclareMathOperator{\dist}{dist}
@@ -87,3 +104,22 @@
 \newcommand{\RR}{\mathbb{R}}
 \newcommand{\CC}{\mathbb{C}}
 \newcommand{\FF}{\mathbb{F}}
+
+% ── Code listings (Wolfram Language) ──
+% style.md § Examples and § Ruliology both require the call that reproduces a
+% computation, so the paper needs a verbatim environment a reader copies from.
+\RequirePackage{listings}
+\lstdefinestyle{wolframstyle}{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  breakindent=0pt,
+  breakatwhitespace=true,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+  showstringspaces=false,
+  aboveskip=1.4ex,
+  belowskip=1.4ex,
+  xleftmargin=1em
+}
+\lstnewenvironment{wolfram}{\lstset{style=wolframstyle}}{}

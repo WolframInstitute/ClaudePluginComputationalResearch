@@ -34,7 +34,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `scaffold-math-project.sh` | bash | new-project (math-research type) |
 | `scaffold-paclet-dev.sh` | bash | new-project (paclet-dev type) |
 | `scaffold-paclet.sh` | bash | new-project (paclet type) |
-| `scaffold-paper.sh` | bash | scaffold-paper skill (`--typst` for Typst) |
+| `scaffold-paper.sh` | bash | scaffold-paper skill (`--typst` for Typst; refuses to overwrite an existing paper without `--force`) |
 | `scaffold-journal.sh` | bash | journal skill (`--typst` for Typst) |
 | `build_paclet.wls` | wolframscript | build-paclet skill |
 | `publish_paclet.wls` | wolframscript | publish-paclet skill |

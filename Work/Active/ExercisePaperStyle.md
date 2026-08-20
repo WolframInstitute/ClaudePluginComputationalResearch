@@ -48,25 +48,33 @@ Three numbers were left deliberately hard and are the most likely to be wrong, s
 
 ## Tasks
 
-- [ ] T3 — reconcile: correct `style.md` in place for what T1 and T2 exposed, and re-check the three suspect numbers above against real passages rather than against the flooding they were written to stop.
 - [ ] T4 (human) — the operator reads both documents end to end and rules on what remains: the three numbers, and whether the tier boundaries sit in the right place.
 
 ### Done
 
+- [x] T3 (S3) — reconcile: correct `style.md` in place for what T1 and T2 exposed, and re-check the three suspect numbers above against real passages rather than against the flooding they were written to stop.
 - [x] T1 (S1) — build one real research notebook end to end under the new rules; keep a note of every passage where a rule and the mathematics disagreed.
 - [x] T2 (S2) — write and compile one scaffolded LaTeX paper under the same guide, exercising the `\thanks` footnote, `macros.sty` and the Ruliology split.
 
 ## Hand-off
 
-Two documents now exist and **neither is deployed or committed in the dev repo**: the notebook at `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and the paper at `ResearchNotebooks/EquidistanceOddGirth/Paper/` (7 pages, compiles clean with `latexmk`). Both wait on the operator's read; the operator ruled at the start of S1 that nothing leaves the machine unasked.
+T4 is the operator's `(human)` task: read both documents end to end and rule on the three numbers and the tier boundaries.
+The documents are where T1 and T2 left them — the notebook at `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and the paper at `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the SyntheticInfrageometry dev repo — **neither deployed and neither committed**, per the operator's ruling that nothing leaves the machine unasked.
 
-T3 reconciles. Read [the findings](../../Wiki/Concepts/PaperStyleExercise.md) — it is now organised for exactly that: five findings that reproduce on both paths and are therefore `style.md`'s, four that only the LaTeX path exposes, and six defects in the shipped template plus one in `scaffold-paper.sh`. The three suspect numbers have a verdict from each path.
+T3 answered every finding in the shipped files; [what it corrected](../../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected) is a table of finding → fix.
+Three things T4 should know before reading.
 
-Two things T3 should not have to rediscover. The `macros_template.sty` cross-reference fix has been worked out and verified in the paper's local copy — `aliascnt` **and** `nosort`, where `nosort` alone is what stops cleveref silently dropping entries from a multi-reference list; copy that copy rather than re-deriving it. And the notebook carries one forward reference that T3's edit to `style.md` should not paper over: the fix belongs in the checklist, since the rule was already there and was simply not checked.
+**Nothing that failed was a threshold.**
+On both paths it was a rule's *scope*, so the three numbers stand unchanged for the ruling, with the example budget corrected in meaning only: it counts rendered lines, not source lines.
 
-T4 is the operator's `(human)` task and reads both documents.
+**One known defect is still in the notebook T4 reads.**
+`NotebooksLLM/EquidistanceOddGirth.md:37` cites `[Lem:Subpath]` six lines before the lemma is stated — the forward reference T2 found and dropped from the paper.
+It was left in place deliberately: the rule was already in the checklist and went unchecked, so T3's fix is the checklist line, and editing the `.md` would leave the generated `.nb` stale until a full regeneration.
+Fixing the document is the operator's call at T4.
 
-The blog post at `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md` carries an unstaged 4.13 entry and a bumped *Last updated*. That is deliberate: the author syncs and publishes that repo. Do not commit it.
+**The plugin is not bumped and the marketplace is not synced.**
+The guide is still under test until T4 rules, so shipping it as a release would ship rules nobody has signed off.
+A `chore(release)` commit after T4 is the right place.
 
 ## Decisions
 
@@ -84,3 +92,4 @@ The blog post at `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io
 - **S0** 2026-08-18 — item filed out of the 4.13.0 session; nothing worked yet. → [style.md](../../skills/research-notebook/style.md)
 - **S1** 2026-08-20 T1 — built the first real notebook under the 4.13.0 rules and measured it; 7 writing rules and 3 build defects recorded, 2 of the 7 being guide rules that contradict each other. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md)
 - **S2** 2026-08-20 T2 — re-set the same mathematics as a scaffolded LaTeX paper and compiled it; 5 findings confirmed as the guide's, 4 new to the LaTeX path, 7 defects in the build path, one of them silent reference loss. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md#the-latex-path--the-same-document-re-set)
+- **S3** 2026-08-20 T3 — reconciled every T1/T2 finding into the shipped guide, generators and templates; the three numbers keep their values and gain a scope, and two findings changed under re-measurement. → [what T3 corrected](../../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected)

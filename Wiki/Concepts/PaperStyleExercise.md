@@ -185,3 +185,58 @@ That is why the exercise paper sits under `ResearchNotebooks/` instead.
 A minor note on § *Notation*, which asks for one macro per nontrivial symbol.
 LaTeX's namespace is already occupied at the obvious names — `\mid` and `\d` are taken — so the macro for $M(u,v)$ ended up `\mps`, drifting from the symbol it denotes.
 The rule is right and the cost is real; it is only worth a sentence in the guide.
+
+## What T3 corrected
+
+Every finding above is now answered in the shipped files (2026-08-20).
+The guide's own rules were corrected in place, as the item's Spec requires; the generator and template defects were fixed where the finding named them.
+
+| Finding | Correction |
+|---|---|
+| 25-word cap fails for proofs and the abstract | the cap is scoped to connecting prose; a proof deduction is governed by *one deduction per sentence* and an abstract sentence by the sentence count — `style.md` § *Length*, § *Proofs* |
+| 8-sentence proof trigger against the ban on shattering | the trigger counts one **run** of deductions, so a two-part proof is counted part by part, and § *Proofs* wins where the two disagree |
+| 3-paragraph introduction against "never two prose paragraphs in a row" | that rule governs prose *between statements*; the abstract, the introduction and the *Ruliology* entries are exempt, and a code block does not reset a run |
+| *Ruliology* has no home for its supporting code | notebook: the folded *Initialization* section; LaTeX/Typst: an appendix named once from *Ruliology* — `style.md` § *Ruliology*, `scaffold-paper` |
+| example budget counts source lines, not rendered ones | "three to ten lines **as the reader sees them**", wrapped to the text width by hand on a typeset path |
+| an Example answering with a picture, on a typeset path | the call plus a graphic exported from exactly that call, no `figure`/`\caption`, bound to the call in one unbreakable block |
+| the SKILL invited tagging examples | an `Example` is tagged only when something cites it, which is rare — `research-notebook` § *Examples and the fold* |
+| the introduction cannot state results as numbered statements | it states them in prose, each citing the tag where the result is proved — `research-notebook` § *Structure* |
+| a forward reference is invisible in a notebook | the checklist line now says to read every citation in order and check its target sits above it |
+| macros drift from the symbol they denote | one sentence in § *Notation*: take the shortest free name, never redefine an existing command |
+| `\cref` names everything "Theorem"; `nosort` missing | `macros_template.sty` ships `aliascnt` + `nosort`, copied from the paper's verified copy |
+| no code environment in the template | the same copy's `wolfram` listings environment, wrapped at the column |
+| no `[ LLM Generated ]` line on the LaTeX path | built into `\title` as a `\normalfont\normalsize` first line, with a short running head; the Typst template gains the same line |
+| `\date{\today}` dates the compile | the date is a scaffold argument, defaulting to today and baked in |
+| unconditional `\printbibliography` and `\tableofcontents` | both ship commented out, with the reason in the comment; `style.md` § *Length* names template apparatus as a slot |
+| `scaffold-paper.sh` overwrites an existing paper | it refuses when `main.tex`, `main.typ`, `macros.*` or `references.bib` exists, unless `--force` |
+| converter `CellID`s blind the fingerprint | `build.md` strips `CellID` alongside `CellLabel`; see the sharper measurement below |
+| boxes read as a product | `output-embedding.md` now carries why the source string is parsed, not the cell's boxes |
+| a Markdown H1 gives two `Title` cells | `build.md` says the source carries no `#` heading; sections start at `##` |
+
+### Two findings changed under re-measurement
+
+**`Export` drops a 19-digit `CellID` and keeps a small one.**
+Measured directly: a notebook holding `CellID -> 1234567890123456789`, `CellID -> 7` and no id at all round-trips through `Export[…, "NB"]` with only the `7` still in the file body.
+That is why stripping the converter's ids and letting `AssignCellIDs` restamp with small sequential ones works, rather than merely being tidier.
+
+**The pass order is immaterial, so the stripping is the whole fix.**
+T1 recorded the order — `AssignCellIDs` before `MathNotebookDocument` — as part of the defect.
+Measured on a fixture with a tagged statement, a tagged display equation, a citation, a bib key and a folded example group, the two orders return an **identical** notebook: `MathNotebookDocument` converts cells and carries their options through, and emits none of its own.
+What was really wrong is that the order `mathnotebook_post.wl` documents was not callable: `AssignCellIDs` took only a cell list, so `AssignCellIDs[ MathNotebookDocument[ … ] ]` did not evaluate and a build following the comment would have exported the unevaluated expression.
+It now has a `Notebook` overload, and `build.md` says the orders are equivalent.
+
+### The three suspect numbers, as T3 leaves them for T4
+
+| Rule | T3's ruling |
+|---|---|
+| one example per result | unchanged — both paths found it generous rather than tight |
+| example length 3–10 lines | unchanged in magnitude, corrected in meaning: rendered lines, not source lines |
+| sentence ≤ 25 words | scoped rather than moved: it governs connecting prose, and proofs and abstracts are out of its reach |
+
+None of the three is re-numbered, because on both paths what failed was a rule's *scope* and not its threshold.
+
+### The corrections are compiled, not just written
+
+`scaffold-paper.sh` was run from the corrected assets into a scratch directory, both formats, and both compiled clean — `latexmk` for LaTeX, `typst compile` for Typst.
+On the LaTeX side the five-label `\cref` that silently lost two entries now prints `Definitions 1.1, 1.2, 1.3, 2.1 and 2.2`, a mixed reference prints `Definition 1.1, Lemma 1.4, and Theorem 2.3`, the `[ LLM Generated ]` line sits above the title, the date is the baked one, and there is no table of contents and no empty References section.
+The overwrite guard refuses a second scaffold into the same directory and exits 1.
