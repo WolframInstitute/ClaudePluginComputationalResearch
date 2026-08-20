@@ -10,6 +10,8 @@ $MathNotebookMarkerStyles = Append[ $MathNotebookEnvironmentStyles, "Proof" ];
 
 $MathNotebookStyleSheetName = "PlainArticle.nb";
 
+$MathNotebookQEDBox = StyleBox[ "\[EmptySquare]", "QED" ];
+
 $MathNotebookReferenceLabelSpec = Join[
   <| "DisplayFormulaNumbered" -> { "(", { "DisplayFormulaNumbered" }, ")" },
      "Section" -> { "Section ", { "Section" }, "" },
@@ -20,7 +22,7 @@ $MathNotebookReferenceLabelSpec = Join[
 
 MathNotebookDocument[ cells_List, bibTags_List : { }, opts : OptionsPattern[ Notebook ] ] :=
   Notebook[
-    ConvertCitations[ NumberTaggedFormulas @ ConvertEnvironmentCells @ cells, bibTags ],
+    ConvertCitations[ NumberTaggedFormulas @ AppendProofQED @ ConvertEnvironmentCells @ cells, bibTags ],
     opts, StyleDefinitions -> MathNotebookStyleSheet[ ] ]
 
 (* Every pass walks INTO CellGroupData. A research notebook folds each Example under the claim
@@ -53,6 +55,18 @@ ConvertEnvironmentCells[ Notebook[ cells_List, opts___ ] ] :=
 
 ConvertEnvironmentCells[ cells_List ] :=
   mapCellList[ convertEnvironmentCell, cells ]
+
+AppendProofQED[ Notebook[ cells_List, opts___ ] ] :=
+  Notebook[ AppendProofQED @ cells, opts ]
+
+AppendProofQED[ cells_List ] :=
+  mapCellList[ appendProofQED, cells ]
+
+appendProofQED[ Cell[ TextData[ content_ ], "Proof", opts___ ] ] /; FreeQ[ content, $MathNotebookQEDBox ] :=
+  Cell[ TextData @ Join[ Flatten @ { content }, { " ", $MathNotebookQEDBox } ], "Proof", opts ]
+
+appendProofQED[ cell_ ] :=
+  cell
 
 MathNotebookStyleSheet[ ] :=
   Get @ FileNameJoin @ {

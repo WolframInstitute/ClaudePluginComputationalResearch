@@ -136,6 +136,12 @@ Nothing that failed was a threshold: on both paths it was a rule's **scope**, so
 The three numbers the Spec flagged therefore stand unchanged for the operator's read, one of them corrected in meaning — the example budget counts rendered lines, which is what a reader sees.
 Two of T1's findings changed under re-measurement: `Export` turns out to drop a *19-digit* `CellID` and keep a small one, and the `AssignCellIDs` pass order is immaterial (measured identical), so the real defect there was that the order `mathnotebook_post.wl` documents did not evaluate at all.
 The template fixes are compiled rather than reasoned: scaffolded from the corrected assets, LaTeX and Typst both build clean, and the five-label `\cref` that silently lost two entries now prints all five with the right names.
+The operator's read at T4 has since produced two build-path defects of its own — see [what the T4 read found](Concepts/PaperStyleExercise.md#what-the-t4-read-found).
+The QED square was the `Proof` style's right-hand cell frame label, which the front end centres vertically, so it sat at mid-height on every proof past one line in all seven MathNotebook stylesheets; it is now a `QED` character style written at the end of the proof's last paragraph, which is what the paclet's own Complex Systems templates already did.
+The sheets turned out to be generated, so the fix went into `Scripts/BuildStyleSheets.wls` and all seven were regenerated from it.
+Fixing it surfaced the sharper one: three of the notebook's fingerprint entries were stale, and since a false positive in the drift gate is indistinguishable from a real edit and the documented response is to stop, any research notebook carrying a picture would have refused to regenerate.
+The ruling T4 exists for — the three numbers and the tier boundaries — is still open.
+
 The LaTeX templates gave up seven defects, and two of them make a paper wrong rather than ugly: `macros_template.sty` numbers every environment on the shared `theorem` counter, so cleveref cites a definition as "by Theorem 2.4", and the `aliascnt` fix for that makes cleveref silently drop entries from a multi-reference list unless `nosort` is set with it — measured at five labels in, three out.
 
 ## Open questions

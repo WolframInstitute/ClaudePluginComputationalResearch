@@ -240,3 +240,50 @@ None of the three is re-numbered, because on both paths what failed was a rule's
 `scaffold-paper.sh` was run from the corrected assets into a scratch directory, both formats, and both compiled clean — `latexmk` for LaTeX, `typst compile` for Typst.
 On the LaTeX side the five-label `\cref` that silently lost two entries now prints `Definitions 1.1, 1.2, 1.3, 2.1 and 2.2`, a mixed reference prints `Definition 1.1, Lemma 1.4, and Theorem 2.3`, the `[ LLM Generated ]` line sits above the title, the date is the baked one, and there is no table of contents and no empty References section.
 The overwrite guard refuses a second scaffold into the same directory and exits 1.
+
+## What the T4 read found
+
+T4 is the operator's own task: read both documents end to end and rule on the three numbers and the tier boundaries.
+The reading is still in progress; two defects surfaced from the notebook before any ruling, both in the build path rather than in the guide.
+
+### The QED square was cell furniture
+
+The `Proof` style carried the □ as a right-hand `CellFrameLabels`, and the front end centres a frame label vertically against the whole cell.
+So on a five-line proof the square sat beside line three, and only a one-line proof looked correct — which is why neither T1 nor T3 caught it, and why the operator did on a continuous read.
+All **seven** MathNotebook stylesheets carried the same three lines, so every proof in every sheet was affected.
+
+Three placements were rendered and compared:
+
+| Placement | Result |
+|---|---|
+| frame label, as shipped | □ at mid-height on any proof past one line |
+| its own right-aligned cell | flush right like LaTeX, at the cost of one extra cell per proof |
+| □ ending the last paragraph | correct at any length, no extra cell |
+| frame label inside a bottom-aligned `Pane` | dead end — the Pane's fixed height inflates every proof cell |
+
+The separate cell was built first, on the operator's choice, and then rejected on sight of it: the square hung a line below the prose with white space around it.
+The last row is what shipped, and it is what the paclet already did everywhere else — `Resources/ComplexSystems.nb` declares a `QED` character style and the journal's author templates write `StyleBox["\[EmptySquare]", "QED"]` at the end of the proof's last paragraph, as do Wolfram's own `Article/JournalArticle.nb` and `PublicationDefault.nb`.
+Reading the paclet's own precedent before choosing would have skipped a round.
+
+The stylesheets are **generated** by `Scripts/BuildStyleSheets.wls`, which the first pass missed: seven hand-edited sheets would have been silently reverted by the next build.
+The fix is in the generator, and the sheets are regenerated from it — semantically diffed against the previous seven to confirm the only changes are the frame label leaving `Proof` and the `QED` style arriving.
+
+Because the square is content rather than a cell, the pass adds no cell, so the `AssignCellIDs` order T3 measured stays immaterial after all.
+It matches the `"Proof"` style, so a proof split across cells by a display equation gets its square at the end of the first paragraph rather than the proof; the rule that keeps a proof in one cell was already in the guide, and this is a second reason for it.
+
+The generated path is fixed; **the interactive path is not**, and that is the open half of this fix.
+Two places in the paclet's kernel read the square as cell furniture and are now inert: `Referencing.wl`'s `continueEnvironment` explicitly clears the frame label from the cell a proof used to end on, and `Document.wl`'s importer suppresses it on every cell of a multi-cell block but the last.
+So the palette's *Proof* button inserts a `Cell["", "Proof"]` that now carries no square at all, and an imported `\begin{proof}` gets none either.
+The palette tooltip and the tutorial both still say the style ends with the square.
+None of that is testable headlessly — it is front-end behaviour — and where the square should land when a block is continued is a design call, so it is left for the paclet's own session.
+The paclet's suite otherwise passes on the regenerated sheets: `StyleSheets`, `Document`, `Referencing` and `Palette` all green, with `FrontEnd.wlt`'s three failures reproduced on a clean tree and therefore not this change's.
+
+### Three fingerprint entries were stale, and the drift gate would have blocked on them
+
+Re-checking the notebook before regenerating reported three cells as user-edited on a file nobody had opened — the three graphics `Output` cells, and nothing else.
+Measured: the hash is stable across three separate kernels, and `Export`/`Import` is a fixed point for those cells, so neither the mechanism nor the round trip is at fault.
+The recorded entries simply did not match the file that shipped, which means the outputs were re-evaluated between fingerprinting and the final write — floats from a layout differ in their last digits while the picture looks identical.
+
+The consequence is the part that matters: a false positive in the drift gate is indistinguishable from a real operator edit, and the documented response to drift is to **stop**.
+Any research notebook carrying a picture would therefore have refused to regenerate.
+The rebuild re-stamped all 74 cells and the gate now reports zero drift; what has *not* been done is to make the build stamp from the final file by construction, so the defect can recur.

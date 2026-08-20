@@ -143,8 +143,8 @@ The order is a real constraint:
 
 - **`ReadCellTags` before `FoldExampleGroups`.** It walks the flat list, so a cell already inside a group is invisible to it. It strips every `{#Tag}` and attaches it as `CellTags`: a trailing tag to its own cell, a cell that is *only* a tag to the cell above (that is how a display equation is tagged).
 - **`FoldExampleGroups` after the outputs are embedded** ([output-embedding.md](output-embedding.md)). It accepts either a bare `Input` followed by an `Output` or an already-grouped pair, and sets the group state to `{2}`. A **second** `Output` lands outside the group — the visible symptom of a violated one-Output-per-Input rule.
-- **`AssignCellIDs` after the ids are stripped**, and it recurses into groups. `CreateCellID -> True` instructs the front end and does not stamp cells built in the kernel, while the drift fingerprint keys on `CellID`. Whether it runs on the cell list or on the notebook `MathNotebookDocument` returns is immaterial — measured 2026-08-20, the two orders give an identical notebook — and both are callable.
-- **`MathNotebookDocument` outermost.** It runs environments → equation numbering → citations, in the one order that works (a citation to an equation must see the cell as `DisplayFormulaNumbered`), and owns `StyleDefinitions`. Pass notebook options through it rather than rebuilding the `Notebook`; with prompt tracking on, that includes `TaggingRules -> { "Provenance" -> prov }`, and the fingerprint stamp later merges its `"ResearchNotebook"` key alongside. `ReplacePart` is not needed here — unlike `new-notebook` — precisely because it rebuilds the notebook with the options given.
+- **`AssignCellIDs` after the ids are stripped**, and it recurses into groups. `CreateCellID -> True` instructs the front end and does not stamp cells built in the kernel, while the drift fingerprint keys on `CellID`. Whether it runs on the cell list or on the notebook `MathNotebookDocument` returns is immaterial — measured 2026-08-20, the two orders give an identical notebook — and both are callable. `AppendProofQED` does not disturb this: it rewrites a proof cell's content and adds no cell.
+- **`MathNotebookDocument` outermost.** It runs environments → proof QED → equation numbering → citations, in the one order that works (`AppendProofQED` matches the `"Proof"` style, so it has to follow `ConvertEnvironmentCells`, which is what applies it; and a citation to an equation must see the cell as `DisplayFormulaNumbered`), and owns `StyleDefinitions`. Pass notebook options through it rather than rebuilding the `Notebook`; with prompt tracking on, that includes `TaggingRules -> { "Provenance" -> prov }`, and the fingerprint stamp later merges its `"ResearchNotebook"` key alongside. `ReplacePart` is not needed here — unlike `new-notebook` — precisely because it rebuilds the notebook with the options given.
 
 `CellTags` on a marker cell survive `ConvertEnvironmentCells`, which carries `opts___` through, so tagging before `MathNotebookDocument` is correct and tagging after would be too late for `ConvertCitations`.
 
@@ -164,9 +164,19 @@ Then write the notebook, re-import it, and stamp the fingerprint — see [finger
 ## The stylesheet
 
 **Embed `PlainArticle.nb`.**
-It is `Default.nb`'s typography with the paper's structure added: 25 style cells against `AMSArticle`'s 34, every explicit `FontSize` and `FontFamily` dropped, and six styles left to `Default.nb` — `Title`, `Text`, `Author` and the three `DisplayFormula` styles.
+It is `Default.nb`'s typography with the paper's structure added: 26 style cells against `AMSArticle`'s 35, every explicit `FontSize` and `FontFamily` dropped, and six styles left to `Default.nb` — `Title`, `Text`, `Author` and the three `DisplayFormula` styles.
 The result reads as a stock Wolfram notebook: no colour change, no font change, numbering and labels intact.
 Install and mechanics: [mathnotebook.md](mathnotebook.md).
+
+**The QED square is a character, not cell furniture.**
+Every MathNotebook sheet used to carry it as the `Proof` style's right-hand `CellFrameLabels`, and the front end centres a frame label vertically against the whole cell — so on a five-line proof the □ sat beside line three, and only a one-line proof looked right (found on the T4 read of `EquidistanceOddGirth`, 2026-08-20).
+The sheets now declare a `QED` character style, and `AppendProofQED` writes `StyleBox[ "\[EmptySquare]", "QED" ]` at the end of each `Proof` cell's last paragraph — where a reader looks for it.
+That is the paclet's own convention: `Resources/ComplexSystems.nb` declares the same style and the journal's author templates use it exactly this way, as do Wolfram's `Article/JournalArticle.nb` and `PublicationDefault.nb`.
+The pass is idempotent — a cell whose content already ends in the square is left alone — so a rebuild does not double it.
+
+**A proof split across cells gets its □ at the end of the first cell.**
+`AppendProofQED` matches the `"Proof"` style, and a proof whose middle holds a display equation converts to a `Proof` cell, a `DisplayFormula` and a trailing `Text` cell — the square then closes the first paragraph instead of the proof.
+Keeping a proof in one cell is already the rule (§ *One cell per statement*); this is a second reason for it, and the trailing cell needs the `Proof` style if a proof must be split.
 
 **Plain `Default.nb` is not an alternative.**
 Under it a reference to a definition renders **`2.0`** — the section counter increments and the theorem counter never does.

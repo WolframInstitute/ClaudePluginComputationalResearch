@@ -157,6 +157,8 @@ A gap is worse than a missing proof, because a missing proof is visible.
 - **One deduction per sentence.** Two steps in one sentence is one step hidden. This rule, not the 25-word cap, is what governs the length of a proof sentence (§ *Length*).
 - **A long proof is fine when it reads clearly.** Never abbreviate to hit a length, and do not shatter an argument into a chain of tiny lemmas either — a run of one-line lemmas is harder to follow than the single proof it came from. Pull a step out only when it has content of its own or gets used more than once. § *Length*'s trigger counts one run of deductions, so a two-part proof is counted part by part and this rule wins where the two disagree.
 
+- **Do not type the closing □.** Both paths supply it — a `QED` character style ending the last paragraph on the notebook path, `amsthm`'s own on the typeset one. A hand-typed square doubles it.
+
 **Banned — every phrase that stands in for a step:** clearly, obviously, evidently, one easily sees, it is well known, a straightforward computation shows, by a similar argument, we omit the details, sketch of proof, left to the reader.
 
 *One checks that* is allowed only when the check itself follows as a display on the next line.

@@ -62,7 +62,15 @@ T4 is the operator's `(human)` task: read both documents end to end and rule on 
 The documents are where T1 and T2 left them — the notebook at `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and the paper at `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the SyntheticInfrageometry dev repo — **neither deployed and neither committed**, per the operator's ruling that nothing leaves the machine unasked.
 
 T3 answered every finding in the shipped files; [what it corrected](../../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected) is a table of finding → fix.
-Three things T4 should know before reading.
+
+**The read has started and is not finished.**
+It produced two build-path defects, [both now fixed](../../Wiki/Concepts/PaperStyleExercise.md#what-the-t4-read-found): the QED square was centred vertically against the whole proof cell in all seven MathNotebook stylesheets, and three of the notebook's fingerprint entries were stale in a way that would have made the drift gate refuse to regenerate any notebook carrying a picture.
+The notebook was rebuilt and carries the square inline at the end of each proof's last paragraph, 74 cells, zero drift.
+The stylesheets turned out to be **generated** by the paclet's `Scripts/BuildStyleSheets.wls`, so the fix sits there and all seven were regenerated from it.
+One half is deliberately unfinished: the palette's *Proof* button and the LaTeX importer still read the square as cell furniture, so an interactively inserted proof now carries none — front-end behaviour, untestable headlessly, and left for the paclet's own session.
+What T4 still owes is the ruling it exists for — **the three numbers and the tier boundaries** — on which nothing has been decided.
+
+Three things T4 should know before reading on.
 
 **Nothing that failed was a threshold.**
 On both paths it was a rule's *scope*, so the three numbers stand unchanged for the ruling, with the example budget corrected in meaning only: it counts rendered lines, not source lines.
@@ -85,6 +93,7 @@ A `chore(release)` commit after T4 is the right place.
 | 2026-08-18 | No proof-length quota, and no factoring into tiny lemmas | An eight-sentence cap manufactured lemma chains that read worse than the proof they replaced — corrected by the operator |
 | 2026-08-18 | Sections are not prescribed: a head, an introduction stating the results, and the references are all a paper needs | A required section list is a slot-filling instruction, and the mathematics should decide the shape — corrected by the operator |
 | 2026-08-18 | The author is the model; the operator and the **bold** freedom level ride in a footnote | A reader of a machine-written paper asks first how much of the direction was the machine's, and that must not be left to be guessed |
+| 2026-08-20 | The proof's closing □ is a `QED` character style ending the last paragraph, not cell furniture and not its own cell | A frame label is centred vertically by the front end, so it sat mid-proof; a separate right-aligned cell was tried first and rejected on sight, leaving the paclet's own Complex Systems convention — inline at the end — which is also Wolfram's |
 | 2026-08-20 | The exercise paper lives at `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the dev repo, not at its root | `scaffold-paper.sh` writes `<dir>/Paper/main.tex` with no collision check, and the root `Paper/` is the author's own paper; `ResearchNotebooks/` is git-ignored there and already holds an LLM-authored `.tex` |
 
 ## Progress
@@ -93,3 +102,4 @@ A `chore(release)` commit after T4 is the right place.
 - **S1** 2026-08-20 T1 — built the first real notebook under the 4.13.0 rules and measured it; 7 writing rules and 3 build defects recorded, 2 of the 7 being guide rules that contradict each other. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md)
 - **S2** 2026-08-20 T2 — re-set the same mathematics as a scaffolded LaTeX paper and compiled it; 5 findings confirmed as the guide's, 4 new to the LaTeX path, 7 defects in the build path, one of them silent reference loss. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md#the-latex-path--the-same-document-re-set)
 - **S3** 2026-08-20 T3 — reconciled every T1/T2 finding into the shipped guide, generators and templates; the three numbers keep their values and gain a scope, and two findings changed under re-measurement. → [what T3 corrected](../../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected)
+- **S4** 2026-08-20 T4 — the operator's read found the QED square centred vertically in every proof; fixed in all seven MathNotebook stylesheets plus a new generator pass, and the notebook rebuilt. Three stale fingerprint entries turned up on the way. → [what the T4 read found](../../Wiki/Concepts/PaperStyleExercise.md#what-the-t4-read-found)
