@@ -34,11 +34,10 @@ The item's value is the run; its tasks are deliberately small, textual, and chea
 
 ## Tasks
 
-- [ ] T2 (model: sonnet, effort: high — one paragraph of judgement over T1's bullet) — Append to `Wiki/Concepts/RoutingTrial.md` the same bullet for `T2`, then one short paragraph stating whether the two sessions ran on different tiers and therefore whether the driver routed per task rather than per run. If T1's bullet is missing or names the same tier as this session, say so plainly rather than reconciling it.
-
 ### Done
 
 - [x] T1 (S1) (model: haiku, effort: high) — created `Wiki/Concepts/RoutingTrial.md` with the tier this session read off its own system prompt. The deliverable was right; the box was ticked in place instead of moved here, which halted the run as `no-box`, and the recovery below is the operator's.
+- [x] T2 (S2) (model: sonnet, effort: high — one paragraph of judgement over T1's bullet) — appended the `T2` bullet (`sonnet`, read off this session's own system prompt) and a paragraph confirming T1 and T2 ran on different tiers, so the driver routed per task rather than per run.
 
 ## Hand-off
 
@@ -58,3 +57,4 @@ T2 is unstarted.
 
 - 2026-08-20 — item drafted by `ModelRouting` S3 for T3's live run.
 - **S1** 2026-08-20 T1 — the haiku session wrote its own tier into the scratch article, then halted the run on the bookkeeping. → [RoutingTrial](../../Wiki/Concepts/RoutingTrial.md)
+- **S2** 2026-08-20 T2 — sonnet session appended its own tier and confirmed T1/T2 ran on different tiers, so the driver routed per task. → [RoutingTrial](../../Wiki/Concepts/RoutingTrial.md)
