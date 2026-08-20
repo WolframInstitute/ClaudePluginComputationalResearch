@@ -34,14 +34,17 @@ The item's value is the run; its tasks are deliberately small, textual, and chea
 
 ## Tasks
 
-- [x] T1 (model: haiku, effort: high — a fixed outline, no judgement) — Create `Wiki/Concepts/RoutingTrial.md` with a `# Routing trial` title, the `*[ LLM Generated ]*` marker, one sentence saying what the file is for (scratch evidence for `ModelRouting` T3, to be harvested and deleted), and one bullet: the date, `T1`, the model tier this session is running on as its own system prompt names it, and the effort its task annotation requested.
 - [ ] T2 (model: sonnet, effort: high — one paragraph of judgement over T1's bullet) — Append to `Wiki/Concepts/RoutingTrial.md` the same bullet for `T2`, then one short paragraph stating whether the two sessions ran on different tiers and therefore whether the driver routed per task rather than per run. If T1's bullet is missing or names the same tier as this session, say so plainly rather than reconciling it.
 
 ### Done
 
+- [x] T1 (S1) (model: haiku, effort: high) — created `Wiki/Concepts/RoutingTrial.md` with the tier this session read off its own system prompt. The deliverable was right; the box was ticked in place instead of moved here, which halted the run as `no-box`, and the recovery below is the operator's.
+
 ## Hand-off
 
-Nothing yet — the item has not run.
+T1 ran on `haiku` and cost $0.0687 in 8 turns — it produced the deliverable and committed, then ticked its box in place rather than moving it into `### Done`, halting the run as `no-box`.
+The box was moved here by hand (`ModelRouting` S3), which is the runbook's documented recovery; nothing else was changed.
+T2 is unstarted.
 
 ## Decisions
 
@@ -54,4 +57,4 @@ Nothing yet — the item has not run.
 ## Progress
 
 - 2026-08-20 — item drafted by `ModelRouting` S3 for T3's live run.
-- 2026-08-20 — T1 completed (haiku session): created `Wiki/Concepts/RoutingTrial.md` with model tier and effort recorded.
+- **S1** 2026-08-20 T1 — the haiku session wrote its own tier into the scratch article, then halted the run on the bookkeeping. → [RoutingTrial](../../Wiki/Concepts/RoutingTrial.md)
