@@ -24,8 +24,8 @@ The item's value is the run; its tasks are deliberately small, textual, and chea
 ### Design / risks
 
 - T1 runs on `haiku`, whose context window is a fifth of the others' against a repo whose cold start alone was measured at ~31 k tokens.
-  A halt there is a result, not a failure of the trial: it prices the cheap end of the routing table, which is [so far a prior rather than a measurement](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-is-a-prior-not-a-result).
-- `Wiki/Concepts/RoutingTrial.md` is scratch. `ModelRouting` T3 harvests it into the pipeline article and deletes it; it is not a permanent article and is deliberately not linked from `Wiki/Index.md`.
+  A halt there is a result, not a failure of the trial: it prices the cheap end of the routing table, which is [then a prior rather than a measurement](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-and-what-ruling-on-it-settled).
+- `Wiki/Concepts/RoutingTrial.md` was scratch, never linked from `Wiki/Index.md`. `ModelRouting` T3 harvested it into [the pipeline article](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) and it was deleted when this branch merged on 2026-08-20.
 
 ### Edge cases & out of scope
 
@@ -43,7 +43,8 @@ The item's value is the run; its tasks are deliberately small, textual, and chea
 
 T1 ran on `haiku` and cost $0.0687 in 8 turns — it produced the deliverable and committed, then ticked its box in place rather than moving it into `### Done`, halting the run as `no-box`.
 The box was moved here by hand (`ModelRouting` S3), which is the runbook's documented recovery; nothing else was changed.
-T2 is unstarted.
+T2 then ran on `sonnet` and closed cleanly, which is the comparison the item existed to make.
+The item is complete and merged to `main`; the scratch article it produced has been harvested and deleted.
 
 ## Decisions
 
@@ -56,5 +57,5 @@ T2 is unstarted.
 ## Progress
 
 - 2026-08-20 — item drafted by `ModelRouting` S3 for T3's live run.
-- **S1** 2026-08-20 T1 — the haiku session wrote its own tier into the scratch article, then halted the run on the bookkeeping. → [RoutingTrial](../../Wiki/Concepts/RoutingTrial.md)
-- **S2** 2026-08-20 T2 — sonnet session appended its own tier and confirmed T1/T2 ran on different tiers, so the driver routed per task. → [RoutingTrial](../../Wiki/Concepts/RoutingTrial.md)
+- **S1** 2026-08-20 T1 — the haiku session wrote its own tier into the scratch article, then halted the run on the bookkeeping. → [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke)
+- **S2** 2026-08-20 T2 — sonnet session appended its own tier and confirmed T1/T2 ran on different tiers, so the driver routed per task. → [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke)
