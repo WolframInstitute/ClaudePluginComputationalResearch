@@ -106,7 +106,15 @@ The headless model/effort surface is measured — see [The headless model and ef
 The annotation that carries those facts into the item file is now a format rule — see [The per-task routing annotation](Concepts/ItemFileFormat.md#the-per-task-routing-annotation).
 A task box may name `(model: …, effort: … — reason)` immediately after its id; `/work` routes each task as it writes it and presents the routing table with the breakdown, and `/next-session` states the annotation, compares tiers rather than id strings, and halts on an effort outside the five levels.
 The anchoring is load-bearing: extracted as the first `([^)]*)` group after the task id it parses with `sed`, leaves the driver's existing task selection and `(human)` gate untouched, and cannot be widened by a `)` in the task body.
-`/auto-run` still ignores the annotation — that is `ModelRouting` T3.
+`/auto-run` now acts on it: each task is spawned with the `--model` and `--effort` its own annotation names, the parse validates the effort itself (a bad model already halts for free, a bad effort would succeed silently at the default), and a typo halts the run as `bad-annotation` before anything is spawned.
+Each digest verdict names the model **used** and the effort **requested**, and a halt where the session ran and closed nothing carries an escalation recommendation.
+
+That was trialled live on two tiers — see [the routing trial](Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke).
+The annotation reaches a real headless session: each task recorded the tier off its own system prompt and agreed with the driver's reading of `modelUsage`.
+The economics are now measured rather than assumed — `sonnet` closed a real task for $0.64 against $1.54–$4.09 on the default tier, and `haiku` ran one for $0.07.
+The cheap tier's failure mode is the finding: haiku produced its deliverable correctly, committed it, and then ticked its box in place instead of moving it into `### Done`, halting as `no-box`.
+So the liveness pair guards more than harness faults after all, and it is what makes cheap routing safe to try.
+What remains open is the routing table itself, which `ModelRouting` T4 is the operator's call on.
 
 ## Open questions
 

@@ -107,8 +107,10 @@ The two markers stay separate groups, `(human)` first, and in practice a `(human
 
 Which tier suffices for which class of task is the routing decision's central claim, and it is so far an assumption written down.
 The table lives in [`work` § step 3](../../skills/work/SKILL.md#3-decompose-into-tasks), because that is where tasks are written, and it is presented with every breakdown so the human rules on it instead of inheriting it.
-The one measurement that touches it cuts against the cheap end rather than for it: at `low` effort, sonnet answered a two-step arithmetic question wrong in two of three runs.
-Cheap tier and cheap effort are separate decisions, and the table pairs the cheap tiers with a high effort for that reason.
+Two measurements touch it, and both cut against the cheap end rather than for it.
+At `low` effort, sonnet answered a two-step arithmetic question wrong in two of three runs — cheap tier and cheap effort are separate decisions, and the table pairs the cheap tiers with a high effort for that reason.
+And in [the routing trial](AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke), a `haiku` task at `high` effort produced its deliverable correctly for $0.07 and then failed the session protocol, while the same shape of task on `sonnet` closed cleanly for $0.64 against $1.54–$4.09 on the default tier.
+So the table's middle row has support and its cheapest row has a counterexample: what a cheap tier costs is not the price of the task but the price of the task plus the chance of a halt on the bookkeeping.
 
 ### No new section, and nothing machine-only
 

@@ -270,10 +270,41 @@ Three findings, in ascending order of consequence.
 That last one also demonstrated the deferred gate working as designed.
 T4 could not resolve its own situation, wrote a `needs-human:` question naming the two options it could see, and halted — and the operator answered with a third the session had not: trip the condition on an official-Wolfram MCP tool the settings do not name, needing neither a settings change nor a destructive command.
 
+### The routing trial — what two tiers cost, and what the cheap one broke
+
+`ModelRouting` T3, 2026-08-20, against the throwaway `ModelRoutingTrial`, whose two tasks were annotated to two different tiers and whose deliverable was for each session to record the tier it read off **its own system prompt**.
+That is the trial's instrument: the session's report and the driver's `modelUsage` are independent views of the same fact, and they agreed on both tasks.
+
+| | T1 | T2 |
+|---|---|---|
+| routed | `haiku`, effort `high` | `sonnet`, effort `high` |
+| stop reason | `no-box`, exit 1 | `item-complete`, exit 0 |
+| turns / wall clock | 8 / 38 s | 23 / 4 min 22 s |
+| cost | **$0.0687** | **$0.6438** |
+| input tokens | 232 k (60 uncached) | 1.14 M (42 uncached) |
+
+Against the [supervised trial](#the-supervised-trial--what-two-real-runs-cost-and-changed)'s $1.54–$2.60 and the [failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed)'s $1.71–$4.09 on the default tier, sonnet did a real task for **a quarter to a tenth** of the price and closed it correctly, and haiku for about a hundredth of it.
+That is the item's economic claim, measured for the first time rather than assumed.
+
+**The cheap tier failed on the bookkeeping, not on the work.**
+Haiku produced the article its task specified, correctly, and committed it — then ticked its box *in place* instead of moving it into `### Done`, and wrote a Progress line in the wrong format.
+`no-box` caught exactly that, which is the condition's documented shape; what is new is the cause.
+The [failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed) had concluded that `no-commit` and `no-box` "cannot be provoked by a well-behaved session" and therefore guard harness faults and malformed item files rather than misjudgement.
+That conclusion needs one word added: they also catch a session that is well-behaved *about the work* and sloppy about the protocol, which is what a cheap tier looks like when it fails.
+The liveness pair is therefore the mechanism that makes cheap routing safe to try at all — without it, T1 would have reported success, and a later session would have found the box already ticked.
+
+Two things the trial rules out as explanations, and one it does not.
+Haiku's 200 k context window was **not** the constraint: 8 turns against 216 k of cache reads is about 29 k per turn, nowhere near it.
+Nor was effort — the task ran at `high`, the same level as T2.
+What is left is a hypothesis the trial did not test: haiku spent 8 turns where sonnet spent 23, and the protocol it skipped is in files a session has to choose to read.
+
+The run also cost one **operator** finding, recorded in [the runbook](AutoRunOperations.md#landing-autoitem-on-main): the driver checks out `auto/<Item>` and never returns, so the repository is left on that branch and the next thing the operator commits lands there rather than on `main`.
+
 ## What this does not settle
 
 - **All four failure conditions have now fired live** — see [the failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed). What remains stub-tested is the *harness*-fault group: `unparseable-output` and the three `condition 3` reasons (`nonzero-exit`, `is-error`, `stop-reason`/`terminal-reason`). Those fire on a CLI-level failure — a rejected flag, an expired login — rather than on anything a session does, so a stub is a closer model of them than it was of the four above, and provoking them live would mean breaking the CLI rather than the work.
-- **Nothing but wiki prose has run unattended.** The trial item was chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `revise` does not exempt from sign-off.
+- **Nothing but wiki prose has run unattended.** Both trial items were chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `revise` does not exempt from sign-off. The routing trial does not change this: it priced two tiers on prose, not on the work the routing table's expensive half is written for.
+- **The routing trial is two tasks, one of each tier, on one repo.** It shows that a cheap tier *can* fail the protocol while doing the work, not how often; and it says nothing about `fable`, nor about either tier on a paclet or notebook task, where an MCP-heavy preamble is in play.
 - **The `(human)` marker and `> Autonomous: allowed` both work.** `AutoRunTrial` carries them; selection accepted the item and the gate halted on the marked task, as specified.
 - **Nothing has yet run unattended that needed a tool the environment did not already allow.** The defaults now carry the Wolfram MCP set, but that was written from `CLAUDE.md`'s policy rather than from a run demanding it, because in this environment a run cannot demand it. Whether the set is *sufficient* for a real notebook or paclet task is unmeasured, and no halt will tell you here — only a narrow settings file elsewhere would.
 - **Whether the driver should isolate itself from the user's settings is open.** Passing a minimal `--settings` file, or otherwise refusing to inherit 248 blanket allow rules, would make `--allowedTools` mean what this specification originally claimed. It would also be a change in the pipeline's security posture rather than a correction, so `HardenAutoRun` left it alone: its Spec forbade redesign, and the branch-plus-merge gate is doing the containment meanwhile.

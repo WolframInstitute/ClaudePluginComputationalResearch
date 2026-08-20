@@ -134,6 +134,8 @@ Turn counts were 16–21 and per-task cost $1.71–$4.09, in line with the trial
 
 Two of these were harder to trip than the runbook implied, and both taught something.
 `no-commit` and `no-box` cannot be provoked by a well-behaved session at all — they had to be *instructed*, which is itself the finding: these conditions catch harness faults and malformed item files, not misjudgement.
+That held until a task was routed to a cheap tier: on 2026-08-20 a `haiku` session produced its deliverable correctly, committed it, and then ticked its box in place — `no-box`, uninstructed, from a session that was well-behaved about the work and sloppy about the protocol.
+On a cheap tier, read the halt as a question about the tier before reading it as a question about the work, which is what the digest's `**escalate?**` line is telling you.
 `permission-denied` took two attempts, and the first failure is the more important result — see below.
 
 ## Growing the allowlist
@@ -172,6 +174,11 @@ A denied `Bash` call appears as bare `Bash`, so the command has to be inferred f
 When that is not obvious, run the task once interactively and watch what it reaches for.
 
 ## Landing `auto/<Item>` on `main`
+
+**First, check what branch you are on.**
+The driver checks out `auto/<Item>` and never returns to the ref it was launched from, so a run leaves the repository *on that branch* — including a run that halted in its first minute.
+Anything committed afterwards lands there rather than on `main`, silently and with no conflict to notice, which is how `ModelRouting` T3 stranded a commit on 2026-08-20.
+`git branch --show-current` before committing after a run.
 
 The merge is the approval step — `revise` § *Autonomous mode* defers the human gate to exactly this point, and nothing autonomous is meant to reach `main` any other way.
 

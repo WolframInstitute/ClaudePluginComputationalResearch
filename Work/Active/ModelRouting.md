@@ -42,35 +42,31 @@ This item turns that hand convention into a format rule and closes the loop head
 
 ## Tasks
 
-- [ ] T3 — `auto-run.sh`: parse the annotation (validating effort itself — the CLI does not), pass `--model` and `--effort`, name the model used and the effort requested in the digest per task, add the escalation recommendation on halt; stub-test the parse, then one live mixed-model run on a cheap two-task item.
 - [ ] T4 (human) — the operator rules on the routing table defaults and on warn-vs-halt for `/next-session` mismatch.
 
 ### Done
 
+- [x] T3 (S3) — the driver routes each task from its annotation, validates the effort itself, names the model used and the effort requested per verdict, and recommends the escalation on a halt; [stub-tested](../../scripts/test-auto-run-routing.sh) in 44 assertions and [trialled live on two tiers](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke).
 - [x] T2 (S2) — the annotation grammar written into [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation); `/work` routes and presents the table, `/next-session` compares tiers.
 - [x] T1 (S1) — measured the headless surface; facts in [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md), Spec corrected in four places.
 
 ## Hand-off
 
-The annotation is a format rule as of S2 — grammar and rationale in [ItemFileFormat § *The per-task routing annotation*](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation), normative form in `work` § *The routing annotation*, comparison step in `next-session` step 3.
-T3 implements the driver half; nothing is in flight.
-Read `Wiki/Concepts/AutonomousPipeline.md` and `AutoRunOperations.md` before touching the driver, and [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md) instead of re-measuring the flags.
+The feature is complete and shipped as 4.14.0 (marketplace mirrored, blog entry drafted in the author's live clone, unpushed).
+Only **T4** remains, and it is `(human)`: the operator rules on the routing table's defaults and on warn-vs-halt for a `/next-session` tier mismatch.
 
-Three things S2 settled that T3 should not re-derive.
+Two of T4's inputs are no longer priors.
+[The routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) priced the table's middle and cheapest rows on real tasks: `sonnet` closed one for $0.64 against $1.54–$4.09 on the default tier, and `haiku` produced a correct deliverable for $0.07 and then failed the session protocol, ticking its box in place.
+So the case for routing mechanical work to `sonnet` is now evidence, and the case against `haiku` for anything that must drive `next-session` is a live counterexample rather than a worry.
+The `fable` row and the expensive half of the table are still untested.
 
-**Extraction is anchored, and the anchoring is the whole trick.**
-Take the first `([^)]*)` group after the task id, then read `model:` and `effort:` out of that group.
-Checked against the driver's own idioms on a fixture: the existing `awk` selection and the `TASK_ID` `sed` at `scripts/auto-run.sh:270` are unaffected, and `(human)` still matches.
-A greedy `(\(.*\))` breaks on a `)` in the task body, and an unanchored match reads an `effort:` mentioned in the body's prose as a field.
+Three things are left over for whoever takes T4 or files what follows it.
 
-**Only the effort needs validating** — the five levels, before spawning.
-A bad model is already the driver's condition 3, for free.
+**The merge is outstanding.** `auto/ModelRoutingTrial` carries the trial's four commits, including one of S3's own — the driver leaves the repo on `auto/<Item>` and never returns, so a commit made after a run lands there. After merging, `Wiki/Concepts/RoutingTrial.md` is scratch that has been harvested and should be deleted.
 
-**The version bump and the blog post belong to T3, not to S2.**
-Both would have described a feature `/auto-run` still ignores.
-When T3 lands: bump `.claude-plugin/plugin.json` and mirror it to the marketplace, and give the blog post a one-paragraph ideas-only entry — the idea is that a spec now prices the work it divides, not that two flags got passed.
+**Neither repo is pushed.** `main` is five commits ahead of `origin`, and the marketplace clone one.
 
-`/next-session`'s mismatch behaviour is provisionally **warn and stop**; T4 rules on it, and flipping it is a two-line edit in step 3.
+**A per-task cost ceiling is now buyable and was not before.** `--max-budget-usd` is a per-process dollar cap, so a cheap tier could carry a cheap ceiling; the driver's `--max-cost` is still a whole-run cap, which is a routing decision left unenforced. Not filed as a task — it is a new idea rather than a gap in this Spec.
 
 ## Decisions
 
@@ -80,6 +76,8 @@ When T3 lands: bump `.claude-plugin/plugin.json` and mirror it to the marketplac
 | 2026-08-19 | Aliases (`sonnet`, `opus`) in annotations, never dated model ids | Ids rot with every release; aliases track the current tier |
 | 2026-08-19 | (open — T4) `/next-session` on model mismatch: warn and stop, or warn and proceed | S2 wrote warn-and-stop provisionally, so the skill is coherent today; stopping costs a restart; proceeding silently burns the wrong tier |
 | 2026-08-20 | The annotation is plain parens anchored after the task id, not italics after the task title as the precedent had it | Anchored there it extracts as one `[^)]*` group, so a `)` or an `effort:` in the task body can neither widen it nor fake a field; the italic mid-prose form cannot be parsed that way |
+| 2026-08-20 (S3) | The driver validates the effort and passes the model through unchecked | The two halves fail in opposite directions: an unrecognised model exits 1 with `is_error` at zero cost and trips condition 3, while an unrecognised effort succeeds at the default and warns only on stderr — so the check exists for the effort's sake and the model's is free |
+| 2026-08-20 (S3) | A paren group with no `key:` in it is not an annotation; one that has a `key:` must parse completely | `(human)` and a closed box's `(S2)` sit in the same anchored position and must pass through, while `(modle: sonnet)` must halt rather than inherit the default silently |
 | 2026-08-20 | The routing table pairs the cheap tiers with a **high** effort, never a cheap one | Tier and effort are separate decisions, and the only measurement on the cheap end is sonnet answering a two-step arithmetic question wrong in two of three runs at `low` |
 
 ## Progress
@@ -87,3 +85,4 @@ When T3 lands: bump `.claude-plugin/plugin.json` and mirror it to the marketplac
 - 2026-08-19 — item filed from the SyntheticInfrageometry walk-family session (operator request).
 - **S1** 2026-08-19 T1 — measured `--model` and `--effort` on `claude -p`; both work, and the two fail in opposite directions. → [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md)
 - **S2** 2026-08-20 T2 — the routing annotation became a format rule, with the grammar anchored so it parses with `sed`. → [the per-task routing annotation](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation)
+- **S3** 2026-08-20 T3 — the driver reads the annotation and spawns each task on the tier it names; trialled live, where the cheap tier did the work and fumbled the bookkeeping. → [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke), [the routing table's first datum](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-is-a-prior-not-a-result)
