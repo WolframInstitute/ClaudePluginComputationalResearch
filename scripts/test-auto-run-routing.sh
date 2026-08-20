@@ -131,6 +131,30 @@ git init -q . && git config user.email t@t && git config user.name t
 cat > "$BIN/claude" <<'STUB'
 #!/usr/bin/env bash
 printf '%s\n' "$@" > "$ARGV_FILE"
+{ printf '=== spawn ===\n'; printf '%s\n' "$@"; } >> "$ARGV_LOG"
+
+# With STUB_CLOSES_TASK=1 the stub plays a well-behaved session — it moves the
+# first unchecked box into `### Done` and commits — so the loop advances and a
+# single run can be watched routing a second task differently from the first.
+if [ "${STUB_CLOSES_TASK:-0}" = 1 ]; then
+  awk '
+    /^- \[ \]/ && !moved { held=$0; sub(/^- \[ \]/, "- [x]", held); moved=1; next }
+    /^### Done/ { print; if (moved) { print ""; print held } ; next }
+    { print }' "$ITEM_PATH" > "$ITEM_PATH.tmp" && mv "$ITEM_PATH.tmp" "$ITEM_PATH"
+  git add -A >/dev/null && git commit -qm "stub: closed a task" >/dev/null
+fi
+
+# Echo back the tier it was asked for, so the digest's per-task model line is
+# about this spawn rather than about a constant.
+MODEL=default; while [ $# -gt 0 ]; do [ "$1" = --model ] && MODEL="$2"; shift; done
+case "$MODEL" in
+  haiku)  ID=claude-haiku-4-5-20251001 ;;
+  sonnet) ID=claude-sonnet-5 ;;
+  opus)   ID=claude-opus-5 ;;
+  fable)  ID=claude-fable-5 ;;
+  *)      ID="claude-opus-5[1m]" ;;
+esac
+
 cat <<JSON
 {"is_error": false, "subtype": "success", "stop_reason": "end_turn",
  "terminal_reason": "completed", "num_turns": 12, "permission_denials": [],
@@ -141,13 +165,13 @@ cat <<JSON
    "claude-haiku-4-5-20251001": {"inputTokens": 900, "outputTokens": 40,
                                  "cacheReadInputTokens": 0, "cacheCreationInputTokens": 0,
                                  "costUSD": 0.0009},
-   "claude-sonnet-5": {"inputTokens": 30, "outputTokens": 900,
-                       "cacheReadInputTokens": 990000, "cacheCreationInputTokens": 14000,
-                       "costUSD": 0.42}}}
+   "$ID": {"inputTokens": 30, "outputTokens": 900,
+           "cacheReadInputTokens": 990000, "cacheCreationInputTokens": 14000,
+           "costUSD": 0.42}}}
 JSON
 STUB
 chmod +x "$BIN/claude"
-export PATH="$BIN:$PATH" ARGV_FILE="$STUBDIR/argv.txt"
+export PATH="$BIN:$PATH" ARGV_FILE="$STUBDIR/argv.txt" ARGV_LOG="$STUBDIR/argv-log.txt"
 
 echo "the spawn — a routed task"
 item Routed '- [ ] T1 (model: sonnet, effort: high — mechanical) — do the thing.'
@@ -171,8 +195,9 @@ ARGV=$(tr '\n' ' ' < "$ARGV_FILE")
 wantnot "no --model when unannotated"  "$ARGV" "--model"
 wantnot "no --effort when unannotated" "$ARGV" "--effort"
 DIGEST=$(cat Work/Runs/*Plain.md)
-want "digest says inherited"                   "$DIGEST" '(inherited), effort inherited'
-want "escalation inferred from the model used" "$DIGEST" '**escalate?** T1 ran on `sonnet`'
+want "digest says inherited"          "$DIGEST" '(inherited), effort inherited'
+want "digest names the default model" "$DIGEST" 'model `claude-opus-5[1m]` (inherited)'
+wantnot "no escalation from the top tier" "$DIGEST" '**escalate?**'
 
 echo "fail closed — the halt lands before the spawn"
 rm -rf Work/Runs; rm -f "$ARGV_FILE"; item BadEffort '- [ ] T1 (model: sonnet, effort: hgih) — do the thing.'
@@ -183,6 +208,32 @@ DIGEST=$(cat Work/Runs/*BadEffort.md)
 want "stop reason"     "$DIGEST" 'Stop reason | **bad-annotation**'
 want "names the fault" "$DIGEST" "effort 'hgih' is not one of low|medium|high|xhigh|max"
 want "no cost charged" "$DIGEST" 'Cost | $0.0000'
+
+echo "one run, two tiers — the claim that routing is per task and not per run"
+rm -rf Work/Runs; rm -f "$ARGV_LOG"
+item Mixed '- [ ] T1 (model: haiku, effort: high — mechanical) — the cheap half.'
+cat >> Work/Active/Mixed.md <<'EXTRA'
+EXTRA
+python3 - <<'PY'
+import pathlib
+p = pathlib.Path("Work/Active/Mixed.md"); s = p.read_text()
+s = s.replace("- [ ] T1 (model: haiku, effort: high — mechanical) — the cheap half.",
+              "- [ ] T1 (model: haiku, effort: high — mechanical) — the cheap half.\n"
+              "- [ ] T2 (model: opus, effort: max — decides something) — the dear half.")
+p.write_text(s)
+PY
+git add -A >/dev/null && git commit -qm "fixture: Mixed second task" >/dev/null
+STUB_CLOSES_TASK=1 ITEM_PATH="$PWD/Work/Active/Mixed.md" bash "$DRIVER" Mixed >/dev/null 2>&1; RC=$?
+SPAWN1=$(awk '/^=== spawn ===$/{n++} n==1' "$ARGV_LOG" | tr '\n' ' ')
+SPAWN2=$(awk '/^=== spawn ===$/{n++} n==2' "$ARGV_LOG" | tr '\n' ' ')
+[ "$RC" = 0 ] && ok "exit 0 — the item completed" || bad "exit $RC, want 0"
+want "first task spawned on haiku"  "$SPAWN1" "--model haiku"
+want "second task spawned on opus"  "$SPAWN2" "--model opus"
+want "second task spawned at max"   "$SPAWN2" "--effort max"
+DIGEST=$(cat Work/Runs/*Mixed.md)
+want "T1 verdict names haiku" "$DIGEST" 'T1 — turns 12, $0.4200, model `claude-haiku-4-5-20251001` (routed `haiku`)'
+want "T2 verdict names opus"  "$DIGEST" 'T2 — turns 12, $0.4200, model `claude-opus-5` (routed `opus`)'
+want "stop reason"            "$DIGEST" 'Stop reason | **item-complete**'
 
 echo
 echo "$PASS passed, $FAIL failed"
