@@ -49,7 +49,7 @@ A task box may name the model tier and the reasoning effort that task wants:
 - [ ] T3 (model: sonnet, effort: high — ~90 % mechanical) — sweep the renames through `Tools.wl`.
 ```
 
-Added 2026-08-20 for [`ModelRouting`](../../Work/Active/ModelRouting.md) T2, from a hand convention that had already run once in another repo.
+Added 2026-08-20 for [`ModelRouting`](../../Work/Done/2026-08-20-ModelRouting.md) T2, from a hand convention that had already run once in another repo.
 It is a contract about **price**, written in the file where the work was divided: the human who split the Spec into sessions is the one who knows which of them needs a frontier tier, and that knowledge used to be thrown away.
 An unannotated headless task runs on whatever the operator last typed at `/model` — [measured](HeadlessModelSurface.md#--model-takes-aliases-and-all-four-tiers-resolve) — which is not a property of the task at all.
 
@@ -103,14 +103,20 @@ Not because the grammar demands it — the fields stay independent, so a task ma
 Writing `(model: opus, human)` would therefore remove the gate while looking like it keeps it — a fail-open change of meaning in the one marker whose whole job is to fail closed.
 The two markers stay separate groups, `(human)` first, and in practice a `(human)` task carries no routing at all: no unattended run reaches it, and the human at the keyboard picks the tier.
 
-### The routing table is a prior, not a result
+### The routing table, and what ruling on it settled
 
-Which tier suffices for which class of task is the routing decision's central claim, and it is so far an assumption written down.
+Which tier suffices for which class of task is the routing decision's central claim, and it began as an assumption written down.
 The table lives in [`work` § step 3](../../skills/work/SKILL.md#3-decompose-into-tasks), because that is where tasks are written, and it is presented with every breakdown so the human rules on it instead of inheriting it.
-Two measurements touch it, and both cut against the cheap end rather than for it.
+Two measurements touched it, and both cut against the cheap end rather than for it.
 At `low` effort, sonnet answered a two-step arithmetic question wrong in two of three runs — cheap tier and cheap effort are separate decisions, and the table pairs the cheap tiers with a high effort for that reason.
 And in [the routing trial](AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke), a `haiku` task at `high` effort produced its deliverable correctly for $0.07 and then failed the session protocol, while the same shape of task on `sonnet` closed cleanly for $0.64 against $1.54–$4.09 on the default tier.
-So the table's middle row has support and its cheapest row has a counterexample: what a cheap tier costs is not the price of the task but the price of the task plus the chance of a halt on the bookkeeping.
+So the table's middle row had support and its cheapest row had a counterexample: what a cheap tier costs is not the price of the task but the price of the task plus the chance of a halt on the bookkeeping.
+
+The operator ruled on 2026-08-20 (`ModelRouting` T4) and that asymmetry decided it: **`haiku` loses its default row** and joins `fable` as explicit-request-only.
+The reasoning is that the pipeline has no cheap tasks in the relevant sense — every task it routes runs through `/next-session`, which always ends in bookkeeping, so the tier that reliably does the work and unreliably does the paperwork saves $0.57 and risks a halt costing a human round-trip.
+haiku's context window being a fifth of the others' against a ~31 kB cold start makes that structural rather than unlucky.
+What the ruling did **not** settle is the expensive half: the `opus` row is still a prior, and `fable` remains untested, so the table is now one measured row, one assumed row, and two tiers available only when asked for by name.
+The same ruling made `/next-session`'s [tier comparison](../../skills/next-session/SKILL.md#3-pick-the-task) halt rather than warn — fail-closed, matching the annotation parser and the effort validator.
 
 ### No new section, and nothing machine-only
 

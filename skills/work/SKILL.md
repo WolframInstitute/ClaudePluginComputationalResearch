@@ -75,13 +75,14 @@ Route each task as you write it with a [routing annotation](#the-routing-annotat
 |---|---|---|
 | a mechanical sweep — rename, doc pass, index update, scripted edit | `sonnet` | `high` |
 | design-critical semantics, a cross-cutting refactor, a proof, an API contract | `opus` | `xhigh` |
-| bulk trivial classification or extraction, with nothing to design | `haiku` | `medium` |
 | whatever the user names explicitly | as asked | as asked |
 
-`fable` only on explicit request.
-`haiku`'s context window is a fifth of the others', so it is the wrong tier for a task that has to read a large tree, however trivial the work is once read.
+`haiku` and `fable` only on explicit request.
+`haiku` held a default row until 2026-08-20, when [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) had it produce a correct deliverable for $0.07 and then fail the session protocol, ticking its box in place instead of moving it into `### Done`.
+Every task the pipeline routes runs through `/next-session`, which always ends in bookkeeping, so the cheapest tier's saving is set against a halt costing a human round-trip — a bad trade for the $0.57 it saves against `sonnet`.
+Its context window is also a fifth of the others', against a repo whose cold start alone is ~31 k tokens, so treat the failure as structural rather than one unlucky run.
 Never pair a cheap tier with a cheap effort by reflex: at `low` effort sonnet answered a two-step arithmetic question wrong in two of three runs, at full confidence, with nothing in the output to flag it ([measured](../../Wiki/Concepts/HeadlessModelSurface.md#it-bites-and-the-evidence-is-the-answer-and-not-the-token-count)).
-Say when presenting it that the table is a **prior, not a measurement**, and leave a task unannotated when its tier is part of what the task measures.
+The `sonnet` row is measured and the `opus` row is still a prior, so say which is which when presenting it, and leave a task unannotated when its tier is part of what the task measures.
 
 To start work now, `git mv` the file into `Active/` (it is now the approved contract) and add it to the index in `Work/README.md`.
 To queue it for later, leave it in `Backlog/`.

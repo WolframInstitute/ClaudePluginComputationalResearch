@@ -114,7 +114,10 @@ The annotation reaches a real headless session: each task recorded the tier off 
 The economics are now measured rather than assumed — `sonnet` closed a real task for $0.64 against $1.54–$4.09 on the default tier, and `haiku` ran one for $0.07.
 The cheap tier's failure mode is the finding: haiku produced its deliverable correctly, committed it, and then ticked its box in place instead of moving it into `### Done`, halting as `no-box`.
 So the liveness pair guards more than harness faults after all, and it is what makes cheap routing safe to try.
-What remains open is the routing table itself, which `ModelRouting` T4 is the operator's call on.
+T4 then ruled on the routing table and closed the item.
+`haiku` loses its default row and joins `fable` as explicit-request-only: every task the pipeline routes runs through `/next-session`, which always ends in bookkeeping, so a tier that does the work well and the paperwork badly saves $0.57 and risks a halt costing a human round-trip.
+The `/next-session` tier mismatch is ruled **halt, not warn** — fail-closed, matching the annotation parser and the effort validator, and already what S2 had written provisionally.
+The `opus` row is still a prior and `fable` is still untested, so the table stands at one measured row and one assumed one.
 
 ## Open questions
 

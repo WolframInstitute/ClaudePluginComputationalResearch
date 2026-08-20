@@ -139,5 +139,5 @@ A per-task ceiling scaled to the routed tier was not available when that cap was
 - [The autonomous next-session pipeline](AutonomousPipeline.md) — the loop these flags are for, its stop conditions, and the earlier `claude -p` measurements
 - [The `/auto-run` operator runbook](AutoRunOperations.md) — what the operator does when a run halts
 - [The work item file format](ItemFileFormat.md#the-per-task-routing-annotation) — where the per-task annotation lives, and why it has that shape
-- `Work/Active/ModelRouting.md` — the item this serves
+- `Work/Done/2026-08-20-ModelRouting.md` — the item this serves
 - [Status](../Status.md)

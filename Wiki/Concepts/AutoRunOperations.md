@@ -180,6 +180,28 @@ The driver checks out `auto/<Item>` and never returns to the ref it was launched
 Anything committed afterwards lands there rather than on `main`, silently and with no conflict to notice, which is how `ModelRouting` T3 stranded a commit on 2026-08-20.
 `git branch --show-current` before committing after a run.
 
+**Second, check that git can see the whole repository.**
+This repo lives in OneDrive, whose files-on-demand leaves unread files as `compressed,dataless` placeholders that hydrate only on first read.
+When `.git` is in that state git does not fail loudly — it fails *plausibly*.
+On 2026-08-20 a `/next-session` found 2009 dataless files under `.git`: `git log`, `git show` and `git rev-list` aborted with `fatal: mmap failed: Operation timed out`, while `git branch -a` returned a clean four-line listing that simply **omitted** `auto/ModelRoutingTrial`.
+The branch existed — its ref under `.git/refs/heads/auto/` was a placeholder, so git read past it and reported the rest as if that were all.
+A merge decided from that listing would have been taken against a repository git could only half see.
+
+```bash
+find .git -type f -flags +dataless | wc -l
+```
+
+Zero means git is trustworthy.
+Anything else, hydrate first — reading a placeholder is what materializes it:
+
+```bash
+find .git -type f -flags +dataless -exec cat {} + > /dev/null
+```
+
+Repeat until the count reaches zero.
+It took four passes and about twenty minutes for those 2009 files, because a cold read can time out on its first attempt and because git writes fresh objects while the sweep runs, so the check belongs before the review rather than in the middle of one.
+`Work/` and `Wiki/` behave the same way: a `cat` that times out once is not evidence the file is empty, and a retry usually succeeds.
+
 The merge is the approval step — `revise` § *Autonomous mode* defers the human gate to exactly this point, and nothing autonomous is meant to reach `main` any other way.
 
 ```bash

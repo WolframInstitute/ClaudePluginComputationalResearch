@@ -42,29 +42,23 @@ This item turns that hand convention into a format rule and closes the loop head
 
 ## Tasks
 
-- [ ] T4 (human) — the operator rules on the routing table defaults and on warn-vs-halt for `/next-session` mismatch.
-
 ### Done
 
+- [x] T4 (S4) — the operator ruled: `haiku` off the default table, and the `/next-session` tier mismatch halts rather than warns; propagated to [`work` § step 3](../../skills/work/SKILL.md#3-decompose-into-tasks) and [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-and-what-ruling-on-it-settled).
 - [x] T3 (S3) — the driver routes each task from its annotation, validates the effort itself, names the model used and the effort requested per verdict, and recommends the escalation on a halt; [stub-tested](../../scripts/test-auto-run-routing.sh) in 44 assertions and [trialled live on two tiers](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke).
 - [x] T2 (S2) — the annotation grammar written into [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation); `/work` routes and presents the table, `/next-session` compares tiers.
 - [x] T1 (S1) — measured the headless surface; facts in [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md), Spec corrected in four places.
 
 ## Hand-off
 
-The feature is complete and shipped as 4.14.0 (marketplace mirrored, blog entry drafted in the author's live clone, unpushed).
-Only **T4** remains, and it is `(human)`: the operator rules on the routing table's defaults and on warn-vs-halt for a `/next-session` tier mismatch.
+The item is complete: the feature shipped as 4.14.0 and T4's two rulings are in force and propagated.
+Nothing here blocks, but four things outlive the item and belong to whoever picks up the pipeline next.
 
-Two of T4's inputs are no longer priors.
-[The routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) priced the table's middle and cheapest rows on real tasks: `sonnet` closed one for $0.64 against $1.54–$4.09 on the default tier, and `haiku` produced a correct deliverable for $0.07 and then failed the session protocol, ticking its box in place.
-So the case for routing mechanical work to `sonnet` is now evidence, and the case against `haiku` for anything that must drive `next-session` is a live counterexample rather than a worry.
-The `fable` row and the expensive half of the table are still untested.
+**The merge is outstanding.** `auto/ModelRoutingTrial` carries the trial's four commits, including one of S3's own — the driver leaves the repo on `auto/<Item>` and never returns, so a commit made after a run lands there. After merging, `Wiki/Concepts/RoutingTrial.md` is scratch that has been harvested and should be deleted, and `ModelRoutingTrial.md`'s Spec carries one link to this session's renamed anchor (`#the-routing-table-is-a-prior-not-a-result` → `#the-routing-table-and-what-ruling-on-it-settled`) that was deliberately left for the merge rather than fixed on `main`. Check `find .git -type f -flags +dataless | wc -l` reads 0 first — S4 found 2009 dataless placeholders under `.git`, where `git branch -a` silently omitted this very branch ([runbook](../../Wiki/Concepts/AutoRunOperations.md#landing-autoitem-on-main)).
 
-Three things are left over for whoever takes T4 or files what follows it.
+**Neither repo is pushed.** `main` is ahead of `origin` (6 commits as of S4), and the marketplace clone one.
 
-**The merge is outstanding.** `auto/ModelRoutingTrial` carries the trial's four commits, including one of S3's own — the driver leaves the repo on `auto/<Item>` and never returns, so a commit made after a run lands there. After merging, `Wiki/Concepts/RoutingTrial.md` is scratch that has been harvested and should be deleted.
-
-**Neither repo is pushed.** `main` is five commits ahead of `origin`, and the marketplace clone one.
+**Two rows of the routing table are still unmeasured.** The ruling retired the cheap end on evidence; the `opus` row remains a prior and `fable` has never been run. Pricing the expensive half needs a task whose tier is what is being measured, which is a new item rather than a gap in this Spec.
 
 **A per-task cost ceiling is now buyable and was not before.** `--max-budget-usd` is a per-process dollar cap, so a cheap tier could carry a cheap ceiling; the driver's `--max-cost` is still a whole-run cap, which is a routing decision left unenforced. Not filed as a task — it is a new idea rather than a gap in this Spec.
 
@@ -74,15 +68,18 @@ Three things are left over for whoever takes T4 or files what follows it.
 |---|---|---|
 | 2026-08-19 | Model routing is an item-file annotation, not a driver flag | The item is the contract the human writes; the driver and the skills both read it, so specs stay the single place where work is divided and priced |
 | 2026-08-19 | Aliases (`sonnet`, `opus`) in annotations, never dated model ids | Ids rot with every release; aliases track the current tier |
-| 2026-08-19 | (open — T4) `/next-session` on model mismatch: warn and stop, or warn and proceed | S2 wrote warn-and-stop provisionally, so the skill is coherent today; stopping costs a restart; proceeding silently burns the wrong tier |
+| 2026-08-20 (T4) | `/next-session` on model mismatch **halts**, it does not warn and proceed | Ratifies what S2 wrote provisionally. Fail-closed is already the rule for the annotation parser and the effort validator, so warn-and-proceed would make the tier the one routing field that fails open; a restart is cheaper than the wrong-tier run the item exists to prevent |
 | 2026-08-20 | The annotation is plain parens anchored after the task id, not italics after the task title as the precedent had it | Anchored there it extracts as one `[^)]*` group, so a `)` or an `effort:` in the task body can neither widen it nor fake a field; the italic mid-prose form cannot be parsed that way |
 | 2026-08-20 (S3) | The driver validates the effort and passes the model through unchecked | The two halves fail in opposite directions: an unrecognised model exits 1 with `is_error` at zero cost and trips condition 3, while an unrecognised effort succeeds at the default and warns only on stderr — so the check exists for the effort's sake and the model's is free |
 | 2026-08-20 (S3) | A paren group with no `key:` in it is not an annotation; one that has a `key:` must parse completely | `(human)` and a closed box's `(S2)` sit in the same anchored position and must pass through, while `(modle: sonnet)` must halt rather than inherit the default silently |
 | 2026-08-20 | The routing table pairs the cheap tiers with a **high** effort, never a cheap one | Tier and effort are separate decisions, and the only measurement on the cheap end is sonnet answering a two-step arithmetic question wrong in two of three runs at `low` |
+| 2026-08-20 (T4) | `haiku` loses its default row and joins `fable` as explicit-request-only; `sonnet` and `opus` are the whole default table | The pipeline has no cheap tasks in the relevant sense — every routed task runs through `/next-session`, which always ends in bookkeeping. haiku did the work correctly for $0.07 and then failed the protocol, so its saving of $0.57 against sonnet is set against a halt costing a human round-trip. Its context window being a fifth of the others' against a ~31 kB cold start makes that structural, not unlucky |
+| 2026-08-20 (T4) | The haiku row's `medium` effort was a defect, not a position | It contradicted this table's own high-effort rule three rows above it; removing the row retires the contradiction with it |
 
 ## Progress
 
 - 2026-08-19 — item filed from the SyntheticInfrageometry walk-family session (operator request).
 - **S1** 2026-08-19 T1 — measured `--model` and `--effort` on `claude -p`; both work, and the two fail in opposite directions. → [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md)
 - **S2** 2026-08-20 T2 — the routing annotation became a format rule, with the grammar anchored so it parses with `sed`. → [the per-task routing annotation](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation)
-- **S3** 2026-08-20 T3 — the driver reads the annotation and spawns each task on the tier it names; trialled live, where the cheap tier did the work and fumbled the bookkeeping. → [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke), [the routing table's first datum](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-is-a-prior-not-a-result)
+- **S3** 2026-08-20 T3 — the driver reads the annotation and spawns each task on the tier it names; trialled live, where the cheap tier did the work and fumbled the bookkeeping. → [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke), [the routing table's first datum](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-and-what-ruling-on-it-settled)
+- **S4** 2026-08-20 T4 — the operator ruled on the routing table and the mismatch rule; `haiku` is off the default table and a tier mismatch now halts. → [the routing table ruling](../../Wiki/Concepts/ItemFileFormat.md#the-routing-table-and-what-ruling-on-it-settled), [the OneDrive placeholder hazard](../../Wiki/Concepts/AutoRunOperations.md#landing-autoitem-on-main)
