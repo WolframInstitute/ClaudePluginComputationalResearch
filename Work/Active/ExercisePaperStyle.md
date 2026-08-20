@@ -48,19 +48,19 @@ Three numbers were left deliberately hard and are the most likely to be wrong, s
 
 ## Tasks
 
-- [ ] T1 — build one real research notebook end to end under the new rules; keep a note of every passage where a rule and the mathematics disagreed.
 - [ ] T2 — write and compile one scaffolded LaTeX paper under the same guide, exercising the `\thanks` footnote, `macros.sty` and the Ruliology split.
 - [ ] T3 — reconcile: correct `style.md` in place for what T1 and T2 exposed, and re-check the three suspect numbers above against real passages rather than against the flooding they were written to stop.
 - [ ] T4 (human) — the operator reads both documents end to end and rules on what remains: the three numbers, and whether the tier boundaries sit in the right place.
 
 ### Done
 
-(completed tasks move here with the session that closed them)
+- [x] T1 (S1) — build one real research notebook end to end under the new rules; keep a note of every passage where a rule and the mathematics disagreed.
 
 ## Hand-off
 
-Nothing half-finished — 4.13.0 is shipped, pushed, and the marketplace is synced.
-Two things the next session should know rather than rediscover.
+T1's notebook is built and **not deployed**: `NotebooksLLM/EquidistanceOddGirth.{md,nb}` sits uncommitted in the SyntheticInfrageometry dev repo, awaiting the operator's read. Deployment to the cloud, the README row there, and the commit in that repo are all held for approval — the operator ruled at the start of S1 that nothing leaves the machine unasked.
+
+T2 writes the LaTeX paper. It does not need new mathematics: the same document can be re-set through `scaffold-paper`, which is the cheapest way to see which of T1's findings are notebook-only and which are the guide's. Read [the findings](../../Wiki/Concepts/PaperStyleExercise.md) first — three of them are about the build path rather than the writing, so T2 should not expect them to recur.
 
 The guide is **shared**, so a change to `style.md` lands on both the notebook and the paper path at once; that is the point of it, and it also means a fix aimed at one path has to be checked against the other.
 
@@ -79,3 +79,4 @@ The blog post at `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io
 ## Progress
 
 - **S0** 2026-08-18 — item filed out of the 4.13.0 session; nothing worked yet. → [style.md](../../skills/research-notebook/style.md)
+- **S1** 2026-08-20 T1 — built the first real notebook under the 4.13.0 rules and measured it; 7 writing rules and 3 build defects recorded, 2 of the 7 being guide rules that contradict each other. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md)

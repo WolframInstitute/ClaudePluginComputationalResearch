@@ -119,6 +119,13 @@ T4 then ruled on the routing table and closed the item.
 The `/next-session` tier mismatch is ruled **halt, not warn** — fail-closed, matching the annotation parser and the effort validator, and already what S2 had written provisionally.
 The `opus` row is still a prior and `fable` is still untested, so the table stands at one measured row and one assumed one.
 
+The shared paper writing guide has now been run against a real document — see [Running the paper style guide against a real notebook](Concepts/PaperStyleExercise.md).
+`ExercisePaperStyle` T1 built a short paper on equidistance and odd girth from the SyntheticInfrageometry paclet's own primitives, proved in full and checked over all 995 connected graphs with at most seven vertices.
+Two of `style.md`'s rules turn out to contradict each other: the 8-sentence proof trigger against the ban on shattering an argument into tiny lemmas, and the required 3-paragraph introduction against "never two prose paragraphs in a row".
+Five more fought the mathematics, of which the sharpest is that "one deduction per sentence" plus "name the tag it rests on" puts 14 proof sentences over the 25-word cap.
+Of the three numbers the Spec flagged as unmeasured, one example per result and 3–10 line examples both held, and the sentence cap is the one that fails.
+The build path gave up three defects too, the costly one being that the converter's 19-digit `CellID`s are dropped by `Export` — so the drift fingerprint covered 8 cells of 71 until they were stripped and reassigned after `MathNotebookDocument`.
+
 ## Open questions
 
 - Upstream `MarkdownToNotebook` has no `LICENSE` file and no tags.
