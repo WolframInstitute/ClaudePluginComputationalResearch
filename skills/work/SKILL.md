@@ -69,6 +69,20 @@ A spec in `Backlog/` is still a malleable draft; approval is the gate to startin
 ### 3. Decompose into tasks
 
 Derive `## Tasks` from the approved Spec — each unchecked box should be one focused session.
+Route each task as you write it with a [routing annotation](#the-routing-annotation), and present the routing together with the breakdown so the user rules on it (revise loop):
+
+| the task is… | model | effort |
+|---|---|---|
+| a mechanical sweep — rename, doc pass, index update, scripted edit | `sonnet` | `high` |
+| design-critical semantics, a cross-cutting refactor, a proof, an API contract | `opus` | `xhigh` |
+| bulk trivial classification or extraction, with nothing to design | `haiku` | `medium` |
+| whatever the user names explicitly | as asked | as asked |
+
+`fable` only on explicit request.
+`haiku`'s context window is a fifth of the others', so it is the wrong tier for a task that has to read a large tree, however trivial the work is once read.
+Never pair a cheap tier with a cheap effort by reflex: at `low` effort sonnet answered a two-step arithmetic question wrong in two of three runs, at full confidence, with nothing in the output to flag it ([measured](../../Wiki/Concepts/HeadlessModelSurface.md#it-bites-and-the-evidence-is-the-answer-and-not-the-token-count)).
+Say when presenting it that the table is a **prior, not a measurement**, and leave a task unannotated when its tier is part of what the task measures.
+
 To start work now, `git mv` the file into `Active/` (it is now the approved contract) and add it to the index in `Work/README.md`.
 To queue it for later, leave it in `Backlog/`.
 
@@ -130,6 +144,23 @@ Both are opt-in and fail closed — an unmarked item is never picked.
 
 Neither adds a section, so the five-section rule holds.
 The driver, the stop conditions, and why the `revise` gate survives this: [Wiki/Concepts/AutonomousPipeline.md](../../Wiki/Concepts/AutonomousPipeline.md).
+
+### The routing annotation
+
+A task box may also name the model tier and reasoning effort that task wants, immediately after the task id and before the em dash:
+
+```
+- [ ] T3 (model: sonnet, effort: high — ~90% mechanical) — sweep the renames through `Tools.wl`.
+```
+
+- **`model:`** one of `haiku`, `sonnet`, `opus`, `fable` — CLI **aliases**, never dated model ids, which rot with every release.
+- **`effort:`** one of `low`, `medium`, `high`, `xhigh`, `max`.
+- Both fields are optional and `model` comes first when both appear; a dash-clause after them carries the reason, which is part of the annotation rather than a comment on it.
+- **Absent means inherit** — the tier the session is on. Route a task and you should name both fields: no output field reports the effort a run used, so an inherited effort can be checked neither before nor after.
+- **Never fold `human` into these parens.** `(human)` gates a task by that literal substring, so `(model: opus, human)` would silently un-gate it. The two are separate groups, `(human)` first — and a `(human)` task needs no routing, since no unattended run reaches it.
+
+`next-session` compares the annotation against the tier it is running on; `/auto-run` passes it to that task's headless spawn.
+The grammar and the measurements behind it: [Wiki/Concepts/ItemFileFormat.md § *The per-task routing annotation*](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation).
 
 ## Updating the spec later
 

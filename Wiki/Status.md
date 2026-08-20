@@ -103,7 +103,10 @@ The 30.9-vs-53 kB gap is deduplication, dropped narration, and collapsed contrad
 
 The headless model/effort surface is measured — see [The headless model and effort surface](Concepts/HeadlessModelSurface.md).
 `--model` takes all four tier aliases and `--effort` takes the five levels, both on `claude -p`, so per-task routing is buildable; but the two flags fail in opposite directions, a bad effort value being accepted silently, and no output field reports the effort a run actually applied.
-`ModelRouting` T2 and T3 build on those facts.
+The annotation that carries those facts into the item file is now a format rule — see [The per-task routing annotation](Concepts/ItemFileFormat.md#the-per-task-routing-annotation).
+A task box may name `(model: …, effort: … — reason)` immediately after its id; `/work` routes each task as it writes it and presents the routing table with the breakdown, and `/next-session` states the annotation, compares tiers rather than id strings, and halts on an effort outside the five levels.
+The anchoring is load-bearing: extracted as the first `([^)]*)` group after the task id it parses with `sed`, leaves the driver's existing task selection and `(human)` gate untouched, and cannot be widened by a `)` in the task body.
+`/auto-run` still ignores the annotation — that is `ModelRouting` T3.
 
 ## Open questions
 
@@ -120,4 +123,5 @@ The headless model/effort surface is measured — see [The headless model and ef
   Meanwhile an unattended session can run any shell command not on the settings' 17-entry `ask` list, and the `auto/<Item>` branch plus the human merge is what actually contains it.
 - Is `effortLevel` in `~/.claude/settings.json` inherited by a headless `claude -p` run?
   It is `xhigh` on this machine, so if it is inherited then every unattended task run so far has been at `xhigh` rather than at a default, and `ModelRouting`'s "absent means inherit" has to name what it inherits.
+  The grammar's answer meanwhile is that a routed task names both fields, so nothing depends on the inherited value.
   Thinking-token counts are the only available instrument and are too noisy to answer it — the same prompt with no effort flag produced 0, 74, and 172 thinking tokens across three runs.

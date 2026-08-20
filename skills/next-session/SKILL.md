@@ -39,7 +39,12 @@ An item that predates the format carries multi-paragraph Progress blocks — rea
 ### 3. Pick the task
 
 Take the first unchecked box in `## Tasks`.
-State it back to the user.
+State it back to the user, with its [routing annotation](../work/SKILL.md#the-routing-annotation) if it has one.
+Compare the annotated model against the tier you are running on — by tier, never by id string, since the same tier reports different ids — and on a mismatch state both and stop for the user's call: one `/model` and a fresh session cost less than a task run on the wrong tier, and a cheap tier returns a confident wrong answer with nothing in the output to flag it.
+If they say proceed, name the tier you actually ran on in the Progress line.
+Effort cannot be self-checked, since nothing reports it — state the requested level and let the operator set it.
+An unparseable annotation, or an effort outside `low|medium|high|xhigh|max`, halts here rather than defaulting silently.
+In an autonomous run the driver set the model from this same annotation, so a mismatch there is a driver bug: write it into `## Hand-off` with `needs-human:` instead of proceeding.
 
 ### 4. Do exactly one task
 

@@ -26,11 +26,11 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
-| [ModelRouting](Active/ModelRouting.md) | T2 — write the annotation grammar into `Wiki/Concepts/ItemFileFormat.md`; teach `/work` the routing table and `/next-session` the parse-and-compare step |
+| [ModelRouting](Active/ModelRouting.md) | T3 — `auto-run.sh`: parse the annotation, pass `--model` / `--effort`, name the tier used and the effort requested in the digest, recommend the escalation on halt |
 
 `Backlog/` holds two items filed out of the 4.13.0 paper-readability work (2026-08-18): `ExercisePaperStyle`, which runs the new shared writing guide against a real notebook and a real paper for the first time, and `JournalAsPaperSink`, which resolves the tier rules depending on a journal that is off by default.
 One more sits there from an operator session on 2026-08-19: `WorkDashboard`, a read-only local web dashboard over a project's `Wiki/` + `Work/` trees.
-`ModelRouting` was filed the same day and started immediately — it is active above, with T1's [headless measurements](../Wiki/Concepts/HeadlessModelSurface.md) done.
+`ModelRouting` was filed the same day and started immediately — it is active above, with T1's [headless measurements](../Wiki/Concepts/HeadlessModelSurface.md) done and T2's [annotation grammar](../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation) now a format rule — `/work` routes each task and `/next-session` checks it, and T3 gives the driver its half.
 The one thing left open by the items below is whether `/auto-run` should stop inheriting the user's `~/.claude/settings.json` allow rules — recorded as an open question in [Wiki/Status.md](../Wiki/Status.md#open-questions), not yet filed as an item, because it changes the pipeline's security posture rather than fixing it.
 
 `AuditFixes` completed on 2026-07-28 after ten tasks: the inert `.nb`-read hook fixed, the cross-skill contradictions and duplicated policy prose removed, three oversized skills split into cores plus read-on-demand siblings, `research-notebook` restructured to the user-mandated canonical order, the `revise` protocol made reachable, the standard skill skeleton applied to all 21 skills, and the plugin bumped to 4.9.0 with the marketplace synced.

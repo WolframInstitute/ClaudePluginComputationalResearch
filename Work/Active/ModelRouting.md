@@ -42,29 +42,35 @@ This item turns that hand convention into a format rule and closes the loop head
 
 ## Tasks
 
-- [ ] T2 — write the annotation grammar into `Wiki/Concepts/ItemFileFormat.md`; teach `/work` the routing table (presented with every task breakdown) and `/next-session` the parse-and-compare step.
 - [ ] T3 — `auto-run.sh`: parse the annotation (validating effort itself — the CLI does not), pass `--model` and `--effort`, name the model used and the effort requested in the digest per task, add the escalation recommendation on halt; stub-test the parse, then one live mixed-model run on a cheap two-task item.
 - [ ] T4 (human) — the operator rules on the routing table defaults and on warn-vs-halt for `/next-session` mismatch.
 
 ### Done
 
+- [x] T2 (S2) — the annotation grammar written into [ItemFileFormat](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation); `/work` routes and presents the table, `/next-session` compares tiers.
 - [x] T1 (S1) — measured the headless surface; facts in [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md), Spec corrected in four places.
 
 ## Hand-off
 
-Nothing in flight.
-Read `Wiki/Concepts/AutonomousPipeline.md` and `AutoRunOperations.md` before touching the driver — the failure semantics there were bought with live halts, and the annotation must compose with them, not around them.
-T1's measurements are in [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md); read it before T2 or T3 rather than re-measuring.
+The annotation is a format rule as of S2 — grammar and rationale in [ItemFileFormat § *The per-task routing annotation*](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation), normative form in `work` § *The routing annotation*, comparison step in `next-session` step 3.
+T3 implements the driver half; nothing is in flight.
+Read `Wiki/Concepts/AutonomousPipeline.md` and `AutoRunOperations.md` before touching the driver, and [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md) instead of re-measuring the flags.
 
-Three things it settled that change the remaining tasks.
+Three things S2 settled that T3 should not re-derive.
 
-**The parser owns effort validation, and only effort.** A bad model alias is caught by the CLI and by the driver's existing condition 3, for free. A bad effort is caught by nothing at all. So T2's grammar and T3's parse must treat the two fields asymmetrically, and the fail-closed check exists for the effort field's sake.
+**Extraction is anchored, and the anchoring is the whole trick.**
+Take the first `([^)]*)` group after the task id, then read `model:` and `effort:` out of that group.
+Checked against the driver's own idioms on a fixture: the existing `awk` selection and the `TASK_ID` `sed` at `scripts/auto-run.sh:270` are unaffected, and `(human)` still matches.
+A greedy `(\(.*\))` breaks on a `)` in the task body, and an unanchored match reads an `effort:` mentioned in the body's prose as a field.
 
-**T3 cannot report the effort a task actually ran at.** No output field carries it, and thinking-token counts are far too noisy to infer it. The digest column has to read *requested*.
+**Only the effort needs validating** — the five levels, before spawning.
+A bad model is already the driver's condition 3, for free.
 
-**T3 must filter `modelUsage` before naming a model.** An auxiliary `claude-haiku-4-5` entry rides along on nearly every run, so `keys[0]` is often not the task's model; the entry with non-zero cache tokens is. The numbers still come from `.usage` alone, per the existing comment at `scripts/auto-run.sh:311`.
+**The version bump and the blog post belong to T3, not to S2.**
+Both would have described a feature `/auto-run` still ignores.
+When T3 lands: bump `.claude-plugin/plugin.json` and mirror it to the marketplace, and give the blog post a one-paragraph ideas-only entry — the idea is that a spec now prices the work it divides, not that two flags got passed.
 
-One question T1 could not answer with the instruments available: whether `effortLevel` in `~/.claude/settings.json` (`xhigh` on this machine) is inherited by a headless run. If it is, every unannotated autonomous task so far has been running at `xhigh`, and T2's "absent means inherit" needs to say inherit *what*.
+`/next-session`'s mismatch behaviour is provisionally **warn and stop**; T4 rules on it, and flipping it is a two-line edit in step 3.
 
 ## Decisions
 
@@ -72,9 +78,12 @@ One question T1 could not answer with the instruments available: whether `effort
 |---|---|---|
 | 2026-08-19 | Model routing is an item-file annotation, not a driver flag | The item is the contract the human writes; the driver and the skills both read it, so specs stay the single place where work is divided and priced |
 | 2026-08-19 | Aliases (`sonnet`, `opus`) in annotations, never dated model ids | Ids rot with every release; aliases track the current tier |
-| 2026-08-19 | (open — T4) `/next-session` on model mismatch: warn and stop, or warn and proceed | Stopping costs a restart; proceeding silently burns the wrong tier |
+| 2026-08-19 | (open — T4) `/next-session` on model mismatch: warn and stop, or warn and proceed | S2 wrote warn-and-stop provisionally, so the skill is coherent today; stopping costs a restart; proceeding silently burns the wrong tier |
+| 2026-08-20 | The annotation is plain parens anchored after the task id, not italics after the task title as the precedent had it | Anchored there it extracts as one `[^)]*` group, so a `)` or an `effort:` in the task body can neither widen it nor fake a field; the italic mid-prose form cannot be parsed that way |
+| 2026-08-20 | The routing table pairs the cheap tiers with a **high** effort, never a cheap one | Tier and effort are separate decisions, and the only measurement on the cheap end is sonnet answering a two-step arithmetic question wrong in two of three runs at `low` |
 
 ## Progress
 
 - 2026-08-19 — item filed from the SyntheticInfrageometry walk-family session (operator request).
 - **S1** 2026-08-19 T1 — measured `--model` and `--effort` on `claude -p`; both work, and the two fail in opposite directions. → [HeadlessModelSurface](../../Wiki/Concepts/HeadlessModelSurface.md)
+- **S2** 2026-08-20 T2 — the routing annotation became a format rule, with the grammar anchored so it parses with `sed`. → [the per-task routing annotation](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation)

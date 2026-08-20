@@ -41,6 +41,66 @@ Not a style guideline: a one-line entry *cannot* be a précis.
 T2 found that the three sessions which did file to `Wiki/` re-narrated 33 % and 83 % of what they had just filed, so an instruction to "write pointers" was already available and already ignored.
 The line limit is the enforcement.
 
+## The per-task routing annotation
+
+A task box may name the model tier and the reasoning effort that task wants:
+
+```text
+- [ ] T3 (model: sonnet, effort: high — ~90 % mechanical) — sweep the renames through `Tools.wl`.
+```
+
+Added 2026-08-20 for [`ModelRouting`](../../Work/Active/ModelRouting.md) T2, from a hand convention that had already run once in another repo.
+It is a contract about **price**, written in the file where the work was divided: the human who split the Spec into sessions is the one who knows which of them needs a frontier tier, and that knowledge used to be thrown away.
+An unannotated headless task runs on whatever the operator last typed at `/model` — [measured](HeadlessModelSurface.md#--model-takes-aliases-and-all-four-tiers-resolve) — which is not a property of the task at all.
+
+The normative grammar is in [`work` § *The routing annotation*](../../skills/work/SKILL.md#the-routing-annotation).
+What follows is why it has that shape.
+
+### The grammar, and what each part of it defends against
+
+```text
+annotation := "(" [ "model:" alias ] [ "," ] [ "effort:" level ] [ "—" reason ] ")"
+alias      := haiku | sonnet | opus | fable
+level      := low | medium | high | xhigh | max
+```
+
+It sits immediately after the task id, before the em dash that opens the body, with `model` first when both fields are present — one fixed order, so a reader and a `sed` see the same thing.
+
+- **Aliases, never dated ids.** `haiku` is the instance that makes the rule concrete: it resolves to `claude-haiku-4-5-20251001`, so an id written into a Spec pins a release date the Spec outlives. The other three currently resolve to undated ids, which is exactly why the rule could not have been inferred from them.
+- **The anchoring is load-bearing, not aesthetic.** Extracted as the first `([^)]*)` group after the task id, the annotation cannot be widened by a `)` in the body, and an `effort:` mentioned in the body's prose is not mistaken for a field. Anchored anywhere else, or matched greedily, both happen.
+- **The reason is inside the parens, not a comment beside them.** A tier with no reason is a price nobody can audit; the annotation doubles as the documentation of why the task is routed where it is.
+- **The five effort levels are the CLI's own** — `low`, `medium`, `high`, `xhigh`, `max` — so the annotation is passed through rather than translated.
+- **The parser must validate the effort, and need not validate the model.** The two halves fail in opposite directions: an unrecognised model exits 1 with `is_error` at zero cost, tripping the driver's existing stop condition, while an unrecognised effort *succeeds* at default effort and warns only on stderr. The fail-closed check therefore exists for the effort field's sake; the model field gets its check for free.
+- **A comparison is between tiers, never between id strings.** The machine default reports `claude-opus-5[1m]` and `--model opus` reports `claude-opus-5`, and both report a 1,000,000-token window: a session that string-compared its own model against `opus` would see a mismatch that is not there.
+
+### Absent means inherit, and only half of what is inherited can be observed
+
+An absent **model** inherits the tier the session is on — the operator's `/model` interactively, the machine default headless — and a session can read that back off its own system prompt, so the inheritance is observable.
+
+An absent **effort** inherits something no available instrument can name.
+Whether `effortLevel` in `~/.claude/settings.json` (`xhigh` on this machine) reaches a headless run is [unresolved](HeadlessModelSurface.md#what-this-does-not-settle), no output field reports the effort a run used, and thinking-token counts are far too noisy to infer it.
+
+Hence a practical asymmetry on top of a symmetric grammar: a routed task should name **both** fields.
+Not because the grammar demands it — the fields stay independent, so a task may be routed to a tier without a claim about effort — but because an inherited effort is unobservable before and after the fact, and a task silently running at `low` is the failure mode that returns a confident wrong answer.
+
+### It must not fold into `(human)`
+
+`(human)` gates a task against unattended runs, and the driver matches it as a **literal substring**.
+Writing `(model: opus, human)` would therefore remove the gate while looking like it keeps it — a fail-open change of meaning in the one marker whose whole job is to fail closed.
+The two markers stay separate groups, `(human)` first, and in practice a `(human)` task carries no routing at all: no unattended run reaches it, and the human at the keyboard picks the tier.
+
+### The routing table is a prior, not a result
+
+Which tier suffices for which class of task is the routing decision's central claim, and it is so far an assumption written down.
+The table lives in [`work` § step 3](../../skills/work/SKILL.md#3-decompose-into-tasks), because that is where tasks are written, and it is presented with every breakdown so the human rules on it instead of inheriting it.
+The one measurement that touches it cuts against the cheap end rather than for it: at `low` effort, sonnet answered a two-step arithmetic question wrong in two of three runs.
+Cheap tier and cheap effort are separate decisions, and the table pairs the cheap tiers with a high effort for that reason.
+
+### No new section, and nothing machine-only
+
+The annotation lives inside `## Tasks`, so [the closed section list](#the-section-list-is-closed) holds.
+It stays hand-writable plain markdown, like `(human)` and `> Autonomous: allowed` before it, and an item with no annotations behaves exactly as it did.
+
 ## Why Progress leaves the read path
 
 T2 classified every claim-line of every Progress block by destination and found four classes: durable (→ `Wiki/`), decision (→ `## Decisions`), hand-off (live for exactly one session), and narration (nowhere).
@@ -169,5 +229,6 @@ It prints the per-section byte counts, the read path with and without `## Progre
 
 - [Session Information Budget](SessionInformationBudget.md) — T1: what a session reads, and the 27.7 kB fixed term
 - [Progress vs Wiki](ProgressWikiSplit.md) — T2: what is in Progress that should not be
+- [The headless model and effort surface](HeadlessModelSurface.md) — the measurements the routing annotation is built on
 - `Work/Done/2026-07-28-EvaluateWorkItemsEfficiency.md` — the item this serves; T4 specifies the autonomous loop against this format
 - [Status](../Status.md)

@@ -31,8 +31,11 @@ Function signatures, data shapes, theorem statements — the contract to build a
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T1 — ...
-- [ ] T2 — ...    <!-- append `(human)` to a task /auto-run must not run unattended -->
+<!-- Route each task: (model: haiku|sonnet|opus|fable, effort: low|medium|high|xhigh|max — reason).
+     Both fields optional, model first; absent means inherit. See work § The routing annotation. -->
+
+- [ ] T1 (model: opus, effort: xhigh — design-critical) — ...
+- [ ] T2 (model: sonnet, effort: high — mechanical) — ...    <!-- append `(human)` to a task /auto-run must not run unattended; keep it outside the routing parens -->
 
 
 ### Done
