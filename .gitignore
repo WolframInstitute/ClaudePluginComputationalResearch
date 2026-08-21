@@ -23,3 +23,6 @@ p135246.github.io/
 
 # Autonomous run digests — a human review surface, read once, off every read path
 Work/Runs/
+
+# Generated research notebooks — built one-way from the .md beside them
+NotebooksLLM/*.nb

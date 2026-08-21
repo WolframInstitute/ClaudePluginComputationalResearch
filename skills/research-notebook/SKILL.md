@@ -59,13 +59,13 @@ The other four are read on demand, only what the current step needs:
 ## Steps
 
 1. Write or update `NotebooksLLM/<Topic>.md` in paper order (§ *Structure*), following [style.md](style.md) throughout.
-2. **Sort by tier before writing a line of it** ([style.md](style.md) § *The four tiers*). What is settled goes in the body; experiments to *Ruliology*; everything else to the [journal](../journal/SKILL.md), with one line saying why.
+2. **Sort by tier before writing a line of it** ([style.md](style.md) § *The four tiers*). What is settled goes in the body; experiments to *Ruliology*; everything else to the [journal](../journal/SKILL.md), with one line saying why. **With the journal off, take the ruling here** — stop, list what has no home, and put the three options to the operator ([style.md](style.md) § *When the journal is off*). Nothing below is built until it is answered, because option 2 changes the source.
 3. If a generated `.nb` exists, run the drift check first ([fingerprint.md](fingerprint.md)); stop on any drift.
 4. Convert ([build.md](build.md)), evaluate and embed outputs ([output-embedding.md](output-embedding.md)), stamp the fingerprint.
 5. **Smoke test**: every Input cell evaluates through the Wolfram MCP (license-aware — see [new-notebook](../new-notebook/SKILL.md) *Kernel execution*) with **zero messages**.
 6. **Deploy** to the Wolfram Cloud, public, stable object name `<Project>/<Topic>.nb` (matching `scripts/publish_notebooks.wls`).
 7. **Link from the repo README** in a `## 📓 Research Notebooks` section — a table `| Notebook | Description | Link |`, one row per notebook, the link anchored on "Wolfram Cloud". Create the section if missing; update the row in place if the notebook already has one.
-8. Hand the open questions and everything cut in step 2 to the journal. With the journal off there is no honest destination, so **do not cut silently**: stop, list what has no home, and let the operator turn the journal on, keep the material marked in the paper, or drop it explicitly ([style.md](style.md) § *When the journal is off*). Unattended, keep it and report the list in the run digest.
+8. Hand the open questions and everything cut in step 2 to the journal. With the journal off the ruling was already taken in step 2 and this step only carries it out — the retained block went into the source before the build, or the material was dropped on an explicit instruction ([style.md](style.md) § *When the journal is off*). Unattended, keep it and write the list into the item's `## Hand-off`, which is the channel the run digest quotes.
 9. If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see [provenance](../provenance/SKILL.md)), the provenance comment belongs in the `.md` **before** the build; append the ledger entry to `Wiki/Prompts.md` here.
 
 ## Structure — an ordinary paper
@@ -236,7 +236,7 @@ Then these, which are this skill's own:
 
 - `new-notebook` supplies the base pipeline conventions (backtick escaping, init-cell marking, engine selection) and owns every per-function demonstration notebook; this skill layers the rich engine + MathNotebook post-processing on top.
 - `scaffold-paper` shares [style.md](style.md), so a LaTeX or Typst paper reads the same as a notebook one.
-- `journal` is where everything below the settled tier goes. It is off by default, and that is the one case the tier rule cannot resolve on its own: with no journal there is no destination, so the generator stops and puts the cut list to the operator rather than choosing for them ([style.md](style.md) § *When the journal is off*).
+- `journal` is where everything below the settled tier goes. It is off by default, and that is the one case the tier rule cannot resolve on its own: with no journal there is no destination, so the generator stops **at the tier sort** and puts the cut list to the operator rather than choosing for them ([style.md](style.md) § *When the journal is off*).
 - `cite` produces the bibliography entries; `provenance` stamps the `"Provenance"` key when its toggle is on; `lean` can pick up the statements, but only when the operator asks for a formalisation.
 
 ## When NOT to use

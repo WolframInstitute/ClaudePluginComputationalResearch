@@ -49,9 +49,31 @@ Two things this deliberately is not.
 It is not the journal asking to be turned on — that skill stays silent when off, and the prompt comes from the paper generator, which has material in hand and nowhere to put it.
 And it is not a decision the generator may take on the operator's behalf, in either direction: it neither writes the toggle nor floods the paper.
 
+**The ruling is taken at the tier sort, before anything is built.**
+It is not a closing step.
+Option 2 changes the document, and by the end of a build the document has been converted, evaluated, deployed and linked from the README — a ruling taken there arrives after the thing it rules on was published.
+So the prompt fires where the cut is made: [research-notebook](SKILL.md) step 2, and the moment material is set aside on the typeset path.
+The hand-off step at the end only carries out a ruling already taken.
+
+#### The retained block
+
+Option 2 needs a fixed form, or retained material is indistinguishable from paper content and no later pass can find it again.
+
+- **One terminal section**, after the outlook and before *Initialization*, titled to say what it is — *Retained material (no journal)*.
+- **One `Remark` per item**, each opening with the literal marker `[ Retained — no journal ]` and one clause naming the tier it failed.
+- The section's first sentence states that the material is not paper content and that the block is removable in one pass once a journal exists.
+
+**A retained block is not the body.**
+The bans on hedges, verification ranges and `[lookup]` are bans on *body* content, and a retained item is by construction one of those things — the marker is what holds the two apart.
+It is the one place in a paper where `[lookup]` may stand, and it stands only until there is a journal to move it to.
+
+This is the only section this guide prescribes, and it is prescribed because it is build metadata rather than mathematics: it is written in order to be deleted.
+
 **Unattended, retain and report.**
-An [autonomous run](../revise/SKILL.md#autonomous-mode--the-gate-is-deferred-not-dropped) has no one to ask, so the choice is fixed to (2) — the material stays in the paper, marked — and the list goes in the run digest.
-The operator meets it at the merge, which is where that mode already defers every other gate.
+An [autonomous run](../revise/SKILL.md#autonomous-mode--the-gate-is-deferred-not-dropped) has no one to ask, so the choice is fixed to (2) — the material stays in the paper as a retained block — and **the list goes into the item's `## Hand-off`**.
+That is not a paraphrase of "the digest": the session cannot write the digest at all.
+`scripts/auto-run.sh` builds it from the driver's own variables, and the one thing it prints from the session is `## Hand-off`, before and after, as the *Hand-off delta*.
+A list written anywhere else does not reach the operator, who meets it at the merge — where that mode already defers every other gate.
 
 ## Results — stated in full, at the generality you can reach
 
@@ -256,6 +278,7 @@ A named theorem is cited to a source you have read, with the precise location �
 
 When you cannot verify it now, write `[lookup]` inline and log the item to the journal with the date and what you searched for.
 **`[lookup]` must not survive into a finished paper.**
+The one exception is a retained block written under § *When the journal is off*, which is not body content and is deleted the moment a journal exists.
 Never attach a citation you have not opened, and never state a named result from memory.
 
 ## Authorship and the session footnote — Critical
@@ -331,7 +354,7 @@ Bind the two in one sentence after the definition, or let the Example do it by u
 - [ ] Every statement names its own hypotheses and survives the lifting test.
 - [ ] Nothing used before it is proved — every citation read in order and its target checked to sit above it; every definition used by something later.
 - [ ] The ending is an outlook of open statements, not a summary of what was done; no section exists to fill a slot, including the template's own empty References and its table of contents.
-- [ ] No verification ranges, hedges, heuristics or failed attempts in the body — they are in the journal.
+- [ ] No verification ranges, hedges, heuristics or failed attempts in the body — they are in the journal, or in a marked retained block if the journal is off (§ *When the journal is off*).
 - [ ] Experiments in *Ruliology*, not in the development, each naming the call that reproduces it; the code those calls need is in Initialization (notebook) or an appendix (LaTeX/Typst), not in the section.
 - [ ] Budgets met: abstract ≤ 4 sentences, intro 3 × ≤ 6, prose between statements ≤ 6 sentences and never two in a row, connecting sentences ≤ 25 words — proof deductions and abstract sentences are not word-capped.
 - [ ] Proofs complete: every deduction present, one per sentence, each naming its tag; no *clearly*, *easily sees*, *omit the details*, *sketch*.
@@ -341,4 +364,4 @@ Bind the two in one sentence after the definition, or let the Example do it by u
 - [ ] No `[lookup]` left; notation introduced once; macros defined in one file (LaTeX/Typst).
 - [ ] The author is the model plus the generation date — never the compile date — with `[ LLM Generated ]` above the title on every path; no human is named as author.
 - [ ] The footnote names the operator, carries the freedom level **in bold** (Directed / Guided / Open exploration), and summarises the instructions actually given, including what was left unspecified.
-- [ ] Everything cut is in the journal with one line saying why — nothing deleted; with the journal off, the cut list was put to the operator (§ *When the journal is off*) and nothing was dropped without a ruling.
+- [ ] Everything cut is in the journal with one line saying why — nothing deleted; with the journal off, the cut list was put to the operator **at the tier sort** (§ *When the journal is off*), nothing was dropped without a ruling, and retained material carries the `[ Retained — no journal ]` marker.
