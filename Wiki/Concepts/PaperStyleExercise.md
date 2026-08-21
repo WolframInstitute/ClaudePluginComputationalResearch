@@ -325,3 +325,38 @@ Both belong to an **outlook** at the end of the paper — gathered there rather 
 The two exercise documents no longer satisfy the guide they corrected: § *Primitives* has five definitions and no example on either path.
 They were the instrument, not a deliverable, and neither is deployed; bringing them into line is a fresh item's work, not a correction to this one.
 The forward reference at `EquidistanceOddGirth.md:37` is still there for the same reason.
+
+## Exercising the corrected rule
+
+The ruling left both exercise documents failing the rule they had produced — five definitions with no example in § *Primitives*, two more in § *Radius* — so `ExampleEveryDefinition` put six examples into each path the same day (2026-08-21).
+The six instances were verified on a kernel and rendered onto one contact sheet for the operator before a line of either document was touched, which is the cheapest order: a picture that shows nothing is visible in two seconds and costs a rebuild to find out later.
+
+Six for seven definitions.
+The base *substrate* definition takes none, because a picture of a graph illustrates nothing about the definition of a graph.
+The Petersen graph carries two definitions on one pair — the equidistant set, then the midpoint — so the second picture is visibly the first minus the vertices that are not between, which two different graphs would have lost.
+
+The notebook came out at 84 top-level cells with 9 example groups, 93 cells fingerprinted, zero drift; the paper at 9 pages from 7, no unresolved references, and one underfull vbox where it had none — the cost of six more unbreakable example blocks.
+
+### Three findings, all of them the build path's
+
+**A highlight can hide the thing it highlights.**
+The first example computed the between-set honestly, which includes the pair itself, so the green set was drawn over the red pair and the picture no longer showed *which* pair the example was about.
+Nothing in the guide caught it and nothing could: it is visible only by looking at the render.
+§ *Examples* now says to render the picture and look at it, and the example excludes the endpoints and says *strictly between*.
+
+**The stale fingerprint has a mechanism, and it is the stamping order.**
+The three graphics outputs came out stale again on this build's predecessor, exactly as [S4 predicted they could](#three-fingerprint-entries-were-stale-and-the-drift-gate-would-have-blocked-on-them).
+Measured: `Export`/`Import` is a fixed point for those cells, so the round trip is not the problem — the problem is writing a stamp taken from the round trip back onto the **in-memory** notebook, whose graphics boxes `Export` then normalises differently.
+The build now stamps `Notebook[ First[ imported ], … ]` and re-imports to confirm the drift report is empty before declaring the build good; 93 of 93 cells match on the first check.
+`fingerprint.md` carries the rule.
+
+**Which fences get an Output was undocumented, and the obvious test silently embeds nothing.**
+Only an `Input` directly under an `Example` is evaluated and folded; the *Ruliology* calls and the Initialization cells are shown, not run.
+`build.md` said none of that, and the natural implementation — test the preceding cell for the `Example` style — matches nothing, because `ConvertEnvironmentCells` runs later inside `MathNotebookDocument`, so at embedding time an Example is still a `Text` cell whose content begins `Example.`.
+The failure is silent: the build reports zero outputs and writes a notebook with nine bare `Input` cells.
+Both facts are now in `build.md`.
+
+A fourth thing is worth recording as a kernel-session trap rather than a guide finding.
+A cell is **parsed before it is evaluated**, so a `Needs` at the top of a cell does not put its context on the path in time for the symbols further down that same cell: they resolve into the current context instead.
+Six figures were exported from `Sessions`…`InfraSceneHighlight` — unevaluated, and `Export` reported success on every one, at seven times the byte size of a real picture.
+The check that caught it is `Head` on the expression before exporting it, which is now what the export loop prints.

@@ -13,6 +13,11 @@ This mechanism guards the one-way `.md` → `.nb` pipeline — the working arran
 
    The fingerprint is `<| CellID -> Hash[ { content, style } ] |>` over level `{1}`.
    Two details are load-bearing: **assign the `CellID`s yourself** — `CreateCellID -> True` is an instruction to the front end and does **not** stamp programmatically built cells — and **fingerprint after the round-trip**, never the in-memory expression, because `Export` normalises cell content and an in-memory fingerprint reports every cell as edited.
+   **Stamp the round-tripped notebook, never the in-memory one.**
+   Writing a stamp taken from the round trip back onto the in-memory expression describes cells the file does not hold: `Export` normalises a `GraphicsBox`, so every graphics output comes out reported as edited on the next check.
+   That is the mechanism behind the three stale entries the T4 read of `EquidistanceOddGirth` found (2026-08-20) and behind their recurrence on the next build (2026-08-21) — measured both times as exactly the three graphics `Output` cells, with `Export`/`Import` itself a fixed point.
+   Build the final notebook as `Notebook[ First[ imported ], <options>, TaggingRules -> … ]` and export *that*, then re-import and confirm the drift report is empty before declaring the build good.
+
    The stamp must **merge** into any `TaggingRules` already on the notebook — with prompt tracking on, the build has put a `"Provenance"` key there — so write it through the `stampTaggingRule` helper in the [provenance](../provenance/SKILL.md) skill, never as a literal `TaggingRules -> {...}` that replaces the option.
    Stamping only touches options, so the just-computed cell fingerprint stays valid.
 2. **Before regenerating**, re-import and compare.
