@@ -82,6 +82,8 @@ grep -qiE 'scientific journal:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || ech
 - **off** (default, or section absent): do nothing.
   Never scaffold `Journal/`, never append.
   Stay silent — do not nag the user to turn it on.
+  The one place the toggle may be raised while off is not this skill's doing: a paper or notebook that has material below the settled tier has nowhere honest to put it, so its generator stops and offers turning the journal on as one of three rulings ([style.md](../research-notebook/style.md) § *When the journal is off*).
+  That is the generator reporting homeless material, not the journal advertising itself, and it fires only when something is actually being cut.
 - **on**: at each natural checkpoint — a definition is settled, a theorem or claim is established or refuted, a resource is used — append **one very concise** dated entry, citing resources used.
   Mention it in passing ("logged to the journal"); do not present it for sign-off.
 - **on (verbose)**: same, but capture per datum with fuller statements.

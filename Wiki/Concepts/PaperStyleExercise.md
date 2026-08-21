@@ -72,7 +72,7 @@ The banned-vocabulary list cost nothing — zero hits in a document that names r
 The freedom footnote rendered as designed, and **Open exploration** is the honest label for a session whose mathematics the operator did not direct.
 
 Two more findings, both negative and both useful.
-The journal never came up: nothing in the session fell below the settled tier, so the gap [JournalAsPaperSink](../../Work/Backlog/JournalAsPaperSink.md) is filed against did not bite.
+The journal never came up: nothing in the session fell below the settled tier, so the gap [JournalAsPaperSink](../../Work/Active/JournalAsPaperSink.md) is filed against did not bite.
 And semantic line breaks are safe in these sources — measured: a statement split across two source lines still converts to exactly one cell, and a trailing `{#Tag}` still attaches.
 
 ## Three defects in the build path
@@ -371,3 +371,12 @@ A fourth thing is worth recording as a kernel-session trap rather than a guide f
 A cell is **parsed before it is evaluated**, so a `Needs` at the top of a cell does not put its context on the path in time for the symbols further down that same cell: they resolve into the current context instead.
 Six figures were exported from `Sessions`…`InfraSceneHighlight` — unevaluated, and `Export` reported success on every one, at seven times the byte size of a real picture.
 The check that caught it is `Head` on the expression before exporting it, which is now what the export loop prints.
+
+## The documents are gone; this article is the record
+
+Both exercise documents were deleted on 2026-08-21, once `JournalAsPaperSink` T1 had finished with them — `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the SyntheticInfrageometry dev repo, together with nine exported figure PDFs.
+Both trees were gitignored there, so nothing is recoverable and nothing was tracked that referenced them.
+
+They were the instrument, never a deliverable, and every finding they produced is above.
+So the paths this article names no longer resolve, which is the intended end state rather than rot: the documents' whole job was to be read once and to expose what the guide got wrong, and keeping a corrected copy would have created a second thing to maintain against a guide that has since moved.
+The forward reference at `EquidistanceOddGirth.md:37`, left open by the T4 ruling, went with the file.

@@ -18,7 +18,7 @@ A statement earns a place in the paper; it does not get one by existing.
 | **Settled** | proved here in full, or cited to a source you have read | the paper: `Definition`, `Theorem`, `Lemma`, `Proposition`, `Corollary`, `Construction`, `Example` |
 | **Open and central** | you cannot prove it, and the paper is about it | the paper's outlook, as `Conjecture` or `Question` — few, each stated once, evidence with the experiments |
 | **Experimental** | numbers over a family: enumeration ranges, sweeps, distributions, timings | the *Ruliology* section |
-| **Marginal** | hedged assertions, heuristics, alternate proofs, failed attempts, unresolved `[lookup]` | the [journal](../journal/SKILL.md) — never the paper |
+| **Marginal** | hedged assertions, heuristics, alternate proofs, failed attempts, unresolved `[lookup]` | the [journal](../journal/SKILL.md) — never the paper; when the journal is off, § *When the journal is off* |
 
 Two consequences worth stating plainly.
 
@@ -29,6 +29,29 @@ It never appears as a hedge attached to a body statement.
 **Nothing is silently dropped.**
 A statement that fails the settled test moves to the journal with one line saying why.
 Cutting is a transfer, never a deletion.
+
+### When the journal is off — refuse to cut silently
+
+The tier rules name the journal as the home of everything marginal, and the journal is [off by default](../journal/SKILL.md#the-toggle-check-this-first).
+With it off there is no honest destination: the Wiki is a deduplicated encyclopedia, which is the wrong shape for a dated record of what did not make the paper.
+So the generator does not decide.
+
+**It stops, lists what has no home, and asks** — one prompt, once per document, and only when something is actually below the settled tier:
+
+1. turn the journal on now (it scaffolds `Journal/` and the material transfers as usual);
+2. keep this material in the paper for now, marked;
+3. drop it, explicitly.
+
+The third option is the only route to a deletion, and it needs the operator to say so.
+That is what makes *cutting is a transfer, never a deletion* true rather than aspirational: silence cannot delete anything.
+
+Two things this deliberately is not.
+It is not the journal asking to be turned on — that skill stays silent when off, and the prompt comes from the paper generator, which has material in hand and nowhere to put it.
+And it is not a decision the generator may take on the operator's behalf, in either direction: it neither writes the toggle nor floods the paper.
+
+**Unattended, retain and report.**
+An [autonomous run](../revise/SKILL.md#autonomous-mode--the-gate-is-deferred-not-dropped) has no one to ask, so the choice is fixed to (2) — the material stays in the paper, marked — and the list goes in the run digest.
+The operator meets it at the merge, which is where that mode already defers every other gate.
 
 ## Results — stated in full, at the generality you can reach
 
@@ -318,4 +341,4 @@ Bind the two in one sentence after the definition, or let the Example do it by u
 - [ ] No `[lookup]` left; notation introduced once; macros defined in one file (LaTeX/Typst).
 - [ ] The author is the model plus the generation date — never the compile date — with `[ LLM Generated ]` above the title on every path; no human is named as author.
 - [ ] The footnote names the operator, carries the freedom level **in bold** (Directed / Guided / Open exploration), and summarises the instructions actually given, including what was left unspecified.
-- [ ] Everything cut is in the journal with one line saying why — nothing deleted.
+- [ ] Everything cut is in the journal with one line saying why — nothing deleted; with the journal off, the cut list was put to the operator (§ *When the journal is off*) and nothing was dropped without a ruling.

@@ -65,7 +65,7 @@ The other four are read on demand, only what the current step needs:
 5. **Smoke test**: every Input cell evaluates through the Wolfram MCP (license-aware — see [new-notebook](../new-notebook/SKILL.md) *Kernel execution*) with **zero messages**.
 6. **Deploy** to the Wolfram Cloud, public, stable object name `<Project>/<Topic>.nb` (matching `scripts/publish_notebooks.wls`).
 7. **Link from the repo README** in a `## 📓 Research Notebooks` section — a table `| Notebook | Description | Link |`, one row per notebook, the link anchored on "Wolfram Cloud". Create the section if missing; update the row in place if the notebook already has one.
-8. Hand the open questions and everything cut in step 2 to the journal (or the Wiki when the journal is off).
+8. Hand the open questions and everything cut in step 2 to the journal. With the journal off there is no honest destination, so **do not cut silently**: stop, list what has no home, and let the operator turn the journal on, keep the material marked in the paper, or drop it explicitly ([style.md](style.md) § *When the journal is off*). Unattended, keep it and report the list in the run digest.
 9. If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see [provenance](../provenance/SKILL.md)), the provenance comment belongs in the `.md` **before** the build; append the ledger entry to `Wiki/Prompts.md` here.
 
 ## Structure — an ordinary paper
@@ -218,7 +218,7 @@ Then these, which are this skill's own:
 
 - [ ] Reads as a paper: mathematical section titles, sections in the order the mathematics needs, nothing used before it is defined.
 - [ ] Introduction states every result in prose, each citing the tag where it is proved — not as numbered statements of its own; abstract written last.
-- [ ] Body carries no `Claim`, no verification range, no experiment; the experiments sit together near the end if there are any; everything cut is in the journal.
+- [ ] Body carries no `Claim`, no verification range, no experiment; the experiments sit together near the end if there are any; everything cut is in the journal, or — with the journal off — was put to the operator rather than dropped.
 - [ ] Definitions precise enough to formalise, though no formalisation attempted unasked; the computing symbol named in one sentence after the statement, not inside it.
 - [ ] One statement per cell — no continuation cells, since Markdown cannot express one.
 - [ ] No number typed into the source anywhere; tags written `{#Tag}`, prefixed, cited bare as `[Tag]`.
@@ -236,7 +236,7 @@ Then these, which are this skill's own:
 
 - `new-notebook` supplies the base pipeline conventions (backtick escaping, init-cell marking, engine selection) and owns every per-function demonstration notebook; this skill layers the rich engine + MathNotebook post-processing on top.
 - `scaffold-paper` shares [style.md](style.md), so a LaTeX or Typst paper reads the same as a notebook one.
-- `journal` is where everything below the settled tier goes — it is part of the workflow, not an optional extra.
+- `journal` is where everything below the settled tier goes. It is off by default, and that is the one case the tier rule cannot resolve on its own: with no journal there is no destination, so the generator stops and puts the cut list to the operator rather than choosing for them ([style.md](style.md) § *When the journal is off*).
 - `cite` produces the bibliography entries; `provenance` stamps the `"Provenance"` key when its toggle is on; `lean` can pick up the statements, but only when the operator asks for a formalisation.
 
 ## When NOT to use
