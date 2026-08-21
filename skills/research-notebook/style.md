@@ -16,7 +16,7 @@ A statement earns a place in the paper; it does not get one by existing.
 | Tier | Test | Home |
 |---|---|---|
 | **Settled** | proved here in full, or cited to a source you have read | the paper: `Definition`, `Theorem`, `Lemma`, `Proposition`, `Corollary`, `Construction`, `Example` |
-| **Open and central** | you cannot prove it, and the paper is about it | the paper, as `Conjecture` — few, each stated once, evidence with the experiments |
+| **Open and central** | you cannot prove it, and the paper is about it | the paper's outlook, as `Conjecture` or `Question` — few, each stated once, evidence with the experiments |
 | **Experimental** | numbers over a family: enumeration ranges, sweeps, distributions, timings | the *Ruliology* section |
 | **Marginal** | hedged assertions, heuristics, alternate proofs, failed attempts, unresolved `[lookup]` | the [journal](../journal/SKILL.md) — never the paper |
 
@@ -62,12 +62,18 @@ Dead notation costs the reader more than it costs you to cut.
 
 **Every conjecture says what would settle it.**
 One sentence: what a proof would need, or where the first open case sits.
+A `Question` carries the same sentence and is the honest form where you cannot say which way it goes — a conjecture asserts, a question asks, and guessing in order to assert is worse than asking.
 
 > **Conjecture.** Every connected graph has $\kappa \ge -1$. A proof would need a transport bound
 > uniform in the degree; the first unchecked case is $|V| = 9$.
 
 A conjecture without that sentence is decoration.
 With it, it is the next piece of work.
+
+**The paper ends on an outlook.**
+The open statements — the conjectures and the questions — are gathered at the end rather than left where they arose, so a reader who wants the next piece of work finds it in one place.
+It has no prescribed title and no prescribed length: a paper that settles one thing may close on a single `Question`.
+What it is not is a summary of what was done (§ *Length*).
 
 **Formalisation is never undertaken unasked.**
 Do not start a Lean development, and do not add formalisation as a task, unless the operator explicitly asks for it — see [lean](../lean/SKILL.md).
@@ -85,7 +91,7 @@ That is the same discipline as the lifting test above, and it pays off whether o
 | Prose between statements | ≤ 6 sentences, and never two such paragraphs in a row |
 | Proof | complete; one run of deductions past about 8 sentences wants a lemma factored out |
 | Conclusion | 2–3 sentences |
-| Examples | **one per result** — not one per definition |
+| Examples | **one per statement** — every definition and every result |
 | Sentence of connecting prose | ≤ 25 words |
 
 These are the defaults that keep a document readable, not quotas to satisfy.
@@ -166,15 +172,15 @@ A gap is worse than a missing proof, because a missing proof is visible.
 Where a deduction is computational, say what was computed and put the code in the Example after the proof.
 Where you cannot prove the statement, do not write a partial proof — move the statement down a tier.
 
-## Examples — one per result
+## Examples — one per statement
 
 An example shows the object.
 It is not a test, a benchmark, or a survey.
 
-- **One per result.** A definition takes one only when the object is not evident from its statement. The `Definition, Example, Definition, Example` alternation is not a requirement and usually floods the page.
+- **One per statement.** A definition earns an example as much as a result does: the reader meets a new object there, and a picture of it is what makes the definition checkable rather than merely readable. A section of definitions with no example among them is the one shape to avoid.
 - **The answer is a picture or a small algebraic value** — the geometry illustrated, or one symbolic result that is itself the point. Never a table of numbers, never a boolean list, never a statistic. Those are *Ruliology*.
-- **Three to ten lines as the reader sees them**, readable top to bottom, that a reader copies into a fresh document and changes one argument in. A 130-character one-liner is one line in a notebook cell and three or four in a printed column, so on a typeset path the call is wrapped to the text width by hand before it is counted.
-- **One instance.** Choose the smallest object in which the phenomenon appears — not the triangle when the triangle is degenerate.
+- **At most ten lines as the reader sees them**, and there is no floor: two lines is a good example when two lines answer, which is the usual case where a paclet function does the work. Readable top to bottom, and a reader copies it into a fresh document and changes one argument in. A 130-character one-liner is one line in a notebook cell and three or four in a printed column, so on a typeset path the call is wrapped to the text width by hand before it is counted.
+- **One instance, and the picture shows something.** Choose the smallest object in which the phenomenon is *visible* — not the smallest one satisfying the definition, and not the triangle when the triangle is degenerate. A picture in which the phenomenon cannot be seen costs the reader the same space as one in which it can.
 - **Bare.** No `PlotLabel`, legend, frame, `Style`, `Labeled`, no annotation restating the definition, no colour beyond a pastel default. Anything deletable without losing information is deleted.
 - **Unlabelled unless something cites it.** An example is almost never cited, because the sentence above it already points at it; the same holds for a closing question. Tag or `\label` it only when a citation exists.
 
@@ -294,17 +300,17 @@ Bind the two in one sentence after the definition, or let the Example do it by u
 ## Checklist
 
 - [ ] Every body statement is proved in full or cited to a source you have read.
-- [ ] Conjectures few, each stated once, each saying what would settle it, evidence with the experiments.
+- [ ] Conjectures and questions few, gathered in the outlook, each stated once, each saying what would settle it, evidence with the experiments.
 - [ ] Every result stated at the generality the proof actually reaches — no wider, and no narrower than you can prove; no statement promoted a tier to fill a section.
 - [ ] Every statement names its own hypotheses and survives the lifting test.
 - [ ] Nothing used before it is proved — every citation read in order and its target checked to sit above it; every definition used by something later.
-- [ ] Where a conclusion exists it says what is open, not what was done; no section exists to fill a slot, including the template's own empty References and its table of contents.
+- [ ] The ending is an outlook of open statements, not a summary of what was done; no section exists to fill a slot, including the template's own empty References and its table of contents.
 - [ ] No verification ranges, hedges, heuristics or failed attempts in the body — they are in the journal.
 - [ ] Experiments in *Ruliology*, not in the development, each naming the call that reproduces it; the code those calls need is in Initialization (notebook) or an appendix (LaTeX/Typst), not in the section.
 - [ ] Budgets met: abstract ≤ 4 sentences, intro 3 × ≤ 6, prose between statements ≤ 6 sentences and never two in a row, connecting sentences ≤ 25 words — proof deductions and abstract sentences are not word-capped.
 - [ ] Proofs complete: every deduction present, one per sentence, each naming its tag; no *clearly*, *easily sees*, *omit the details*, *sketch*.
 - [ ] No proof abbreviated to fit, none shattered into a chain of tiny lemmas, and no lemma existing only to satisfy the length trigger.
-- [ ] One example per result; each answers with a picture or one small algebraic value, bare, 3–10 rendered lines, labelled only if cited; on a typeset path the graphic is exported from exactly the call shown and bound to it in one unbreakable block.
+- [ ] One example per statement — every definition and every result; each answers with a picture that shows the phenomenon or one small algebraic value, bare, at most 10 rendered lines, labelled only if cited; on a typeset path the graphic is exported from exactly the call shown and bound to it in one unbreakable block.
 - [ ] No banned vocabulary, no selling adjectives; commentary in a `Remark`.
 - [ ] No `[lookup]` left; notation introduced once; macros defined in one file (LaTeX/Typst).
 - [ ] The author is the model plus the generation date — never the compile date — with `[ LLM Generated ]` above the title on every path; no human is named as author.

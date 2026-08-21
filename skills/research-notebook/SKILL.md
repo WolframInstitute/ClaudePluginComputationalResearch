@@ -9,9 +9,9 @@ description: >
   claims, heuristics and failed attempts go to the journal, never the paper. Each
   result is stated at the generality its proof actually reaches. Proofs are
   complete prose with no gaps and no step left to the reader, never abbreviated
-  to fit and never shattered into a chain of tiny lemmas. One example per result,
-  not one per definition, answering with a geometry illustration or one small
-  algebraic value. Statements, equations and
+  to fit and never shattered into a chain of tiny lemmas. One example per statement — every
+  definition and every result — answering with a geometry illustration that
+  shows the phenomenon, or one small algebraic value. Statements, equations and
   sections are numbered by the front end and cited by tag, never by a number
   typed into the source. The author is the model plus the date, with the
   operator, a one-sentence summary of the instructions, and — set in bold — how
@@ -81,7 +81,7 @@ Three things a paper does need:
 - the **references**, and after them `Initialization`, folded (§ *Initialization*).
 
 Between the introduction and the references, the shape follows the mathematics.
-The usual shape is sections mixing `Definition`, `Theorem`, `Lemma`, `Proof`, `Example` and `Remark`, with nothing used before it is proved, the experiments gathered near the end ([style.md](style.md) § *Ruliology*) and a short conclusion on what is open.
+The usual shape is sections mixing `Definition`, `Theorem`, `Lemma`, `Proof`, `Example` and `Remark`, with nothing used before it is proved, the experiments gathered near the end ([style.md](style.md) § *Ruliology*) and an outlook holding the conjectures and questions.
 Every part of that is a default, not a requirement: no experiments means no such section, and a paper that ends on its last proof needs no conclusion.
 
 What to avoid, unless the topic really wants it:
@@ -170,7 +170,7 @@ Two shapes the front end will not resolve: a citation must be inline `TextData`,
 
 ## Examples and the fold
 
-What an example *is* — one per result, a picture or one small algebraic value, three to ten lines, bare — is in [style.md](style.md) § *Examples*.
+What an example *is* — one per statement, definitions included, a picture that shows the phenomenon or one small algebraic value, at most ten rendered lines with no floor, bare — is in [style.md](style.md) § *Examples*.
 The mechanism is here.
 
 **The fold hides the code, never the result.**

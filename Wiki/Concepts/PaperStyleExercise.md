@@ -244,7 +244,8 @@ The overwrite guard refuses a second scaffold into the same directory and exits 
 ## What the T4 read found
 
 T4 is the operator's own task: read both documents end to end and rule on the three numbers and the tier boundaries.
-The reading is still in progress; two defects surfaced from the notebook before any ruling, both in the build path rather than in the guide.
+It produced two build-path defects before any ruling — recorded below — and then the ruling itself, which is [at the end of this section](#the-ruling).
+The two defects are in the build path rather than in the guide.
 
 ### The QED square was cell furniture
 
@@ -287,3 +288,40 @@ The recorded entries simply did not match the file that shipped, which means the
 The consequence is the part that matters: a false positive in the drift gate is indistinguishable from a real operator edit, and the documented response to drift is to **stop**.
 Any research notebook carrying a picture would therefore have refused to regenerate.
 The rebuild re-stamped all 74 cells and the gate now reports zero drift; what has *not* been done is to make the build stamp from the final file by construction, so the defect can recur.
+
+### The ruling
+
+Four passages were read, chosen so that each one carried a number or a boundary the guide had never had tested against a page.
+The operator's four answers (2026-08-21) settle the item.
+
+| Read | Question | Ruling |
+|---|---|---|
+| § *Primitives*, five definitions with no example among them | is a definitions-only section right bare? | **no** — definitions get examples, with pictures |
+| the Example after `Prop:Tree`, two lines and a picture | is that enough of an example? | **yes**, unchanged |
+| the abstract, two of four sentences at 26–27 words | do they read long? | **no** — fine as they are |
+| § *What is open*, closing on a `Question` | right choice? | **yes**, and the section itself is not required — but an outlook carrying questions and conjectures is |
+
+**One rule was overturned, not rescoped.**
+Every other finding of this exercise came out as a rule whose *scope* was wrong.
+§ *Examples* held that a definition takes an example "only when the object is not evident from its statement", and called the `Definition, Example, Definition, Example` alternation a thing that "usually floods the page".
+That was written from the flooding diagnosis this whole item came out of, and it is wrong: the reader meets a new object at a definition, and a picture is what makes the definition checkable rather than merely readable.
+The guide now asks for one example per **statement** — definitions included — and names a definitions-only section as the shape to avoid.
+The anti-flooding guard did not move: still no tables of numbers, still nothing decorative, still one instance.
+
+The instruction came with its own limit — *nontrivial pictures, but simple pictures, no overstyling* — which is two rules, and both are now in § *Examples*.
+The picture must show the phenomenon, so the object is the smallest one in which it is **visible** rather than the smallest one satisfying the definition; and the drawing stays bare, which § *Examples* already required.
+A picture in which the phenomenon cannot be seen costs the reader the same space as one in which it can.
+
+**The example floor is gone.**
+Every example on both paths was two lines, because `InfraSceneHighlight` does the work, and the operator approved them.
+A budget no approved instance has ever satisfied is not a budget: the range is now a ceiling of ten rendered lines with no floor, and the guide says two lines is a good example where two lines answer.
+
+**The other two numbers stand as T3 left them.**
+The abstract's long sentences read fine, which confirms the 25-word cap belongs to connecting prose alone — where it binds twice in 31 sentences, both at 26–28 words, against a mean of 17.
+The tier boundaries hold, with one addition: *Open and central* now names `Question` alongside `Conjecture`, since a question is the honest form where you cannot say which way it goes, and guessing in order to assert is worse than asking.
+Both belong to an **outlook** at the end of the paper — gathered there rather than left where they arose, with no prescribed title and no prescribed length.
+
+**What the ruling leaves.**
+The two exercise documents no longer satisfy the guide they corrected: § *Primitives* has five definitions and no example on either path.
+They were the instrument, not a deliverable, and neither is deployed; bringing them into line is a fresh item's work, not a correction to this one.
+The forward reference at `EquidistanceOddGirth.md:37` is still there for the same reason.

@@ -140,7 +140,11 @@ The operator's read at T4 has since produced two build-path defects of its own �
 The QED square was the `Proof` style's right-hand cell frame label, which the front end centres vertically, so it sat at mid-height on every proof past one line in all seven MathNotebook stylesheets; it is now a `QED` character style written at the end of the proof's last paragraph, which is what the paclet's own Complex Systems templates already did.
 The sheets turned out to be generated, so the fix went into `Scripts/BuildStyleSheets.wls` and all seven were regenerated from it.
 Fixing it surfaced the sharper one: three of the notebook's fingerprint entries were stale, and since a false positive in the drift gate is indistinguishable from a real edit and the documented response is to stop, any research notebook carrying a picture would have refused to regenerate.
-The ruling T4 exists for — the three numbers and the tier boundaries — is still open.
+[The ruling T4 exists for](Concepts/PaperStyleExercise.md#the-ruling) then closed the item, from four read passages chosen to put a number or a boundary in front of a page.
+Exactly one rule was overturned rather than rescoped, and it is the one the whole exercise was written to enforce: § *Examples* had definitions rarely taking an example and called the `Definition, Example` alternation a source of flooding, and a continuous read of a five-definition section with no picture in it says otherwise — a definition gets an example, whose picture shows the phenomenon and stays bare.
+The example budget lost its floor, since every example on both paths is two lines and every one was approved; a budget no approved instance satisfies is not a budget.
+The 25-word cap stands as T3 scoped it — the abstract's long sentences read fine — and so do the four tiers, with `Question` joining `Conjecture` in *Open and central* and both gathered in an outlook at the end of the paper.
+Both exercise documents now fail the rule they produced, which is a fresh item's work rather than a correction to this one.
 
 The LaTeX templates gave up seven defects, and two of them make a paper wrong rather than ugly: `macros_template.sty` numbers every environment on the shared `theorem` counter, so cleveref cites a definition as "by Theorem 2.4", and the `aliascnt` fix for that makes cleveref silently drop entries from a multi-reference list unless `nosort` is set with it — measured at five labels in, three out.
 

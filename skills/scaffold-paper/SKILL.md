@@ -45,7 +45,7 @@ That rule is the LaTeX half of style.md § *Notation*, and the namespace is alre
 Three things a typeset paper has to do that a notebook does not, all of them measured on [the first paper written under the guide](../../Wiki/Concepts/PaperStyleExercise.md#four-findings-the-latex-path-exposed-on-its-own):
 
 - **An Example's picture is a file.** The code does not evaluate, so the Example carries the call *and* a graphic exported from exactly that call. No `figure`, no `\caption` — that numbers and labels the picture, which § *Examples* bans — so a centred non-floating box, bound to the call inside one `minipage` or the picture floats away from the Example that owns it.
-- **Code is wrapped by the column, not by the source.** The 3–10 line budget counts rendered lines; wrap a long call to the text width by hand before counting it.
+- **Code is wrapped by the column, not by the source.** The ten-line example budget counts rendered lines; wrap a long call to the text width by hand before counting it.
 - **The code behind the *Ruliology* calls goes in an appendix**, named once from *Ruliology*. A notebook hides it in *Initialization*; LaTeX has no such section, and left inline it buries the one-line calls the section exists to carry.
 
 ## When to use

@@ -48,41 +48,31 @@ Three numbers were left deliberately hard and are the most likely to be wrong, s
 
 ## Tasks
 
-- [ ] T4 (human) — the operator reads both documents end to end and rules on what remains: the three numbers, and whether the tier boundaries sit in the right place.
+All done.
 
 ### Done
 
+- [x] T4 (S5, human) — the operator read both documents and ruled: definitions get examples with pictures, the example floor goes, the abstract and the tier boundaries stand, and an open statement may be a `Question` sitting in an outlook.
 - [x] T3 (S3) — reconcile: correct `style.md` in place for what T1 and T2 exposed, and re-check the three suspect numbers above against real passages rather than against the flooding they were written to stop.
 - [x] T1 (S1) — build one real research notebook end to end under the new rules; keep a note of every passage where a rule and the mathematics disagreed.
 - [x] T2 (S2) — write and compile one scaffolded LaTeX paper under the same guide, exercising the `\thanks` footnote, `macros.sty` and the Ruliology split.
 
 ## Hand-off
 
-T4 is the operator's `(human)` task: read both documents end to end and rule on the three numbers and the tier boundaries.
-The documents are where T1 and T2 left them — the notebook at `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and the paper at `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the SyntheticInfrageometry dev repo — **neither deployed and neither committed**, per the operator's ruling that nothing leaves the machine unasked.
+The item is complete: the guide has been run against a real document on both paths, corrected for everything the two documents exposed, and signed off by the operator at T4.
+[The ruling](../../Wiki/Concepts/PaperStyleExercise.md#the-ruling) is the record of what was decided and why.
 
-T3 answered every finding in the shipped files; [what it corrected](../../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected) is a table of finding → fix.
+Three things it leaves for whoever picks up next.
 
-**The read has started and is not finished.**
-It produced two build-path defects, [both now fixed](../../Wiki/Concepts/PaperStyleExercise.md#what-the-t4-read-found): the QED square was centred vertically against the whole proof cell in all seven MathNotebook stylesheets, and three of the notebook's fingerprint entries were stale in a way that would have made the drift gate refuse to regenerate any notebook carrying a picture.
-The notebook was rebuilt and carries the square inline at the end of each proof's last paragraph, 74 cells, zero drift.
-The stylesheets turned out to be **generated** by the paclet's `Scripts/BuildStyleSheets.wls`, so the fix sits there and all seven were regenerated from it.
-One half is deliberately unfinished: the palette's *Proof* button and the LaTeX importer still read the square as cell furniture, so an interactively inserted proof now carries none — front-end behaviour, untestable headlessly, and left for the paclet's own session.
-What T4 still owes is the ruling it exists for — **the three numbers and the tier boundaries** — on which nothing has been decided.
-
-Three things T4 should know before reading on.
-
-**Nothing that failed was a threshold.**
-On both paths it was a rule's *scope*, so the three numbers stand unchanged for the ruling, with the example budget corrected in meaning only: it counts rendered lines, not source lines.
-
-**One known defect is still in the notebook T4 reads.**
-`NotebooksLLM/EquidistanceOddGirth.md:37` cites `[Lem:Subpath]` six lines before the lemma is stated — the forward reference T2 found and dropped from the paper.
-It was left in place deliberately: the rule was already in the checklist and went unchecked, so T3's fix is the checklist line, and editing the `.md` would leave the generated `.nb` stale until a full regeneration.
-Fixing the document is the operator's call at T4.
+**The two exercise documents no longer satisfy the guide they corrected.**
+§ *Primitives* carries five definitions and no example, on both paths, which is exactly the shape the new § *Examples* rule names as the one to avoid.
+They were the instrument rather than a deliverable and neither is deployed, so bringing them into line — plus the forward reference at `EquidistanceOddGirth.md:37` — is a fresh item, not a correction to this one.
 
 **The plugin is not bumped and the marketplace is not synced.**
-The guide is still under test until T4 rules, so shipping it as a release would ship rules nobody has signed off.
-A `chore(release)` commit after T4 is the right place.
+The guide is signed off now, so shipping it is appropriate; it had to wait for T4 and did.
+
+**One half of the QED fix is still open in the paclet.**
+The palette's *Proof* button and the LaTeX importer read the square as cell furniture, so an interactively inserted proof carries none — front-end behaviour, untestable headlessly, [described here](../../Wiki/Concepts/PaperStyleExercise.md#the-qed-square-was-cell-furniture) and left for the paclet's own session.
 
 ## Decisions
 
@@ -94,6 +84,9 @@ A `chore(release)` commit after T4 is the right place.
 | 2026-08-18 | Sections are not prescribed: a head, an introduction stating the results, and the references are all a paper needs | A required section list is a slot-filling instruction, and the mathematics should decide the shape — corrected by the operator |
 | 2026-08-18 | The author is the model; the operator and the **bold** freedom level ride in a footnote | A reader of a machine-written paper asks first how much of the direction was the machine's, and that must not be left to be guessed |
 | 2026-08-20 | The proof's closing □ is a `QED` character style ending the last paragraph, not cell furniture and not its own cell | A frame label is centred vertically by the front end, so it sat mid-proof; a separate right-aligned cell was tried first and rejected on sight, leaving the paclet's own Complex Systems convention — inline at the end — which is also Wolfram's |
+| 2026-08-21 | A definition gets an example, and its picture shows the phenomenon | The guide had definitions taking one "only when the object is not evident", written from the flooding diagnosis; a continuous read of a five-definition section with no picture in it overturned that — the reader meets the object at the definition |
+| 2026-08-21 | The example budget is a ceiling of ten rendered lines with no floor | Every example on both paths is two lines and every one was approved, so the floor of 3 was a budget no approved instance had ever satisfied |
+| 2026-08-21 | An open statement may be a `Question`, and the open statements are gathered in an outlook | A question is the honest form where you cannot say which way it goes, and guessing in order to assert is worse than asking; the tier table named only `Conjecture` while the templates shipped both |
 | 2026-08-20 | The exercise paper lives at `ResearchNotebooks/EquidistanceOddGirth/Paper/` in the dev repo, not at its root | `scaffold-paper.sh` writes `<dir>/Paper/main.tex` with no collision check, and the root `Paper/` is the author's own paper; `ResearchNotebooks/` is git-ignored there and already holds an LLM-authored `.tex` |
 
 ## Progress
@@ -103,3 +96,4 @@ A `chore(release)` commit after T4 is the right place.
 - **S2** 2026-08-20 T2 — re-set the same mathematics as a scaffolded LaTeX paper and compiled it; 5 findings confirmed as the guide's, 4 new to the LaTeX path, 7 defects in the build path, one of them silent reference loss. → [the findings](../../Wiki/Concepts/PaperStyleExercise.md#the-latex-path--the-same-document-re-set)
 - **S3** 2026-08-20 T3 — reconciled every T1/T2 finding into the shipped guide, generators and templates; the three numbers keep their values and gain a scope, and two findings changed under re-measurement. → [what T3 corrected](../../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected)
 - **S4** 2026-08-20 T4 — the operator's read found the QED square centred vertically in every proof; fixed in all seven MathNotebook stylesheets plus a new generator pass, and the notebook rebuilt. Three stale fingerprint entries turned up on the way. → [what the T4 read found](../../Wiki/Concepts/PaperStyleExercise.md#what-the-t4-read-found)
+- **S5** 2026-08-21 T4 — the operator's ruling on four read passages closed the item: one rule overturned (definitions get examples), the example floor cut, the abstract and tier boundaries confirmed, `Question` given a tier and an outlook. → [the ruling](../../Wiki/Concepts/PaperStyleExercise.md#the-ruling)
