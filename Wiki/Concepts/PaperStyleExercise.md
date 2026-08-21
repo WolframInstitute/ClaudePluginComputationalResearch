@@ -272,11 +272,22 @@ The fix is in the generator, and the sheets are regenerated from it — semantic
 Because the square is content rather than a cell, the pass adds no cell, so the `AssignCellIDs` order T3 measured stays immaterial after all.
 It matches the `"Proof"` style, so a proof split across cells by a display equation gets its square at the end of the first paragraph rather than the proof; the rule that keeps a proof in one cell was already in the guide, and this is a second reason for it.
 
-The generated path is fixed; **the interactive path is not**, and that is the open half of this fix.
+The generated path was fixed first and the interactive path a day later (2026-08-21, paclet commit `662a480`); what follows is the shape of the second half.
 Two places in the paclet's kernel read the square as cell furniture and are now inert: `Referencing.wl`'s `continueEnvironment` explicitly clears the frame label from the cell a proof used to end on, and `Document.wl`'s importer suppresses it on every cell of a multi-cell block but the last.
 So the palette's *Proof* button inserts a `Cell["", "Proof"]` that now carries no square at all, and an imported `\begin{proof}` gets none either.
 The palette tooltip and the tutorial both still say the style ends with the square.
-None of that is testable headlessly — it is front-end behaviour — and where the square should land when a block is continued is a design call, so it is left for the paclet's own session.
+Where the square should land when a block is continued is a design call, and the answer is the one the square's new nature forces: **being content, it has to be written by whoever writes the last cell of a proof.**
+The importer appends it to the last prose cell of a proof block; `InsertEnvironment["Proof"]` writes it into a fresh cell and puts the cursor *in front of* it, which is amsthm's behaviour and what the palette tooltip already promised, so the tooltip needed no rewrite after all; and continuing a proof strips it from the cell that is no longer last so the continuation can carry it.
+
+**The half that had to exist for any of it to be safe is the export.**
+The square is content in a notebook and a command in LaTeX, so a paper carrying one exported the entire `Cell` expression into the `.tex` as literal text — visible only because the four `Sample-*.tex` round trips turned byte-inexact the moment the importer started appending it.
+The exporter now drops the square at any depth and right-trims the run before it, and the round trips are exact again.
+
+Two mechanics of that repo are worth carrying away.
+Each file in the paclet has **its own** private context, so a helper shared between `Document.wl` and `Referencing.wl` has to be declared `PackageScope` and not merely defined — defined only, it silently splits into two undefined symbols.
+And the MCP's "sessions" share one kernel, so a paclet already loaded is **not** reloaded by `Needs` in a later session: the first test run measured the old code, which is what made a pre-existing `Caption` failure look like a new one until a forced `Get` of the loader cleared it.
+
+What remains is three clicks no headless test reaches — insert a proof, type in front of the square, continue the block.
 The paclet's suite otherwise passes on the regenerated sheets: `StyleSheets`, `Document`, `Referencing` and `Palette` all green, with `FrontEnd.wlt`'s three failures reproduced on a clean tree and therefore not this change's.
 
 ### Three fingerprint entries were stale, and the drift gate would have blocked on them
