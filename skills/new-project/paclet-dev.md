@@ -40,10 +40,12 @@ Each kernel module:
 ```wolfram
 Package["OrgName`PacletName`"]
 
-PackageScope[helperName]
-
 (* definitions *)
 ```
+
+`PackageScope` is the exception, not the pattern.
+Every exported function is written to stand on its own — liftable out of the paclet and publishable to the Wolfram Function Repository unchanged — and a private helper shared between two of them breaks that for both.
+The rule and what it forbids are in the generated `CLAUDE.md` § *Exported functions*.
 
 Usage.wl — all `::usage` strings, also starts with `Package["OrgName`PacletName`"]`.
 

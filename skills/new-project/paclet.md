@@ -19,6 +19,7 @@ If the user wants wiki support, run **init-wiki** inside `<PacletName>/`.
 ## 3. Create initial kernel module
 
 Create at least one kernel module, add `PackageExport` declarations and `::usage` messages.
+Each exported function is written to stand on its own — liftable out of the paclet and publishable to the Wolfram Function Repository unchanged, with no private helper it cannot do without; see the generated `CLAUDE.md` § *Exported functions*.
 Present for review.
 
 ## 4. Create initial tests

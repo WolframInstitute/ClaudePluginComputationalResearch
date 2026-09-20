@@ -132,6 +132,7 @@ The `new-project` skill asks users which type of project to create:
   Optional Wiki/.
 
 All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not BeginPackage/EndPackage) for paclet code.
+Every exported function is written to stand on its own — liftable out of the paclet and publishable to the Wolfram Function Repository unchanged, which is what rules out the private helper shared between two of them; the rule ships to projects in `code_style_template.md` § *Exported functions*.
 
 ## Notebook conversion engines
 

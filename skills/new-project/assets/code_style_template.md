@@ -19,6 +19,7 @@ Code should read like a mathematician at a blackboard, not production software.
 - **Crash on the boundary, not inside.** Only the outermost user-facing signature pattern-matches for dispatch (`f[g_Graph, v_, ...]`); helpers below it trust their inputs and let inner built-ins raise their own errors.
 - **Main functions first, helpers second — but prefer no helpers at all.** Inline the body unless the helper genuinely earns its name (reused at multiple call sites, or captures a single substantial idea).
   Resist splitting a long body into a chain of one-line helpers; compose at the call site with `Map`, `Fold`, `KeyValueMap`, `Thread`, etc. Option dispatchers (public signature handing off to a private worker) are an accepted exception.
+  For an exported symbol the bar is higher still — § *Exported functions*.
 - **Functional style; loops only when they earn it.** Default to `Map` / `Fold` / `Nest` / `Apply` / `Select` / `KeyValueMap` / `Thread`.
   Reach for `Do` / `While` / `For` only when (a) you have a mutable accumulator, (b) you need early termination on a non-trivial condition, or (c) the functional form measurably hurts speed or memory.
   When you use a loop, the body should be doing the substantive work — not setting up state for the next pipeline stage.
@@ -33,6 +34,23 @@ Code should read like a mathematician at a blackboard, not production software.
   `Module` is for genuinely mutable accumulators; everything else is `With`.
 - **No nested `With`.** `With[{a = ...}, With[{b = ...}, body]]` must be written as the multi-clause form `With[{a = ...}, {b = ...}, body]` (an undocumented but supported syntax).
   Later clauses see earlier bindings, so this is exactly the staged-binding behavior of nested `With` without the visual nesting.
+
+### Exported functions
+
+**Every exported function stands on its own.**
+The test it has to pass — whether or not it is ever submitted — is that it could be lifted out of the paclet and published to the Wolfram Function Repository unchanged.
+A function that only works with the rest of the package around it is a fragment, not a function.
+
+- **No private helpers unless the definition cannot be read without one.**
+  This is § *Code style* applied at the package level: a `PackageScope` helper shared by two exported functions makes both of them unpublishable.
+  If the shared thing is worth a name, export it and let it be a function in its own right; if it is needed in exactly one place, it is a `With` or `Module` binding inside the body, not a symbol in the private context.
+- **Everything it needs arrives through its arguments and options.**
+  No package-scoped mutable state, no `$Globals` set at load time, no memoized cache living outside the body, no dependence on another module having been loaded first.
+- **One symbol, one interface.**
+  Dispatch happens in the exported signature, options are declared on it with `Options[f] = {...}` and read with `OptionValue`, and anything else a caller must know goes in `::usage`.
+- **Call built-ins, or other exported functions.**
+  A repository function may call another `ResourceFunction`, so a cross-call between two exported symbols is fine; a call into the private context is not.
+- **Tests go through the public signature only** (§ *Testing*) — which is how a repository submission is tested too.
 
 ### Comments
 
