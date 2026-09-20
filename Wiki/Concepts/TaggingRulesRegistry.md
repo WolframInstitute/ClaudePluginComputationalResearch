@@ -9,8 +9,8 @@ The rule is: **merge by key, never replace the option.**
 
 | Key | Written by | Content |
 |---|---|---|
-| `"Provenance"` | `new-notebook` / `research-notebook` at build (MCP path), or `Scripts/generate_notebooks.wls` (batch fallback) | association of provenance fields parsed from the source's leading `<!-- provenance: ... -->` comment |
-| `"ResearchNotebook"` | `research-notebook` after the export/re-import round-trip | `{ "Cells" -> <\| CellID -> Hash[ { content, style } ] \|> }`, the per-cell drift fingerprint |
+| `"Provenance"` | `new-notebook` / `new-research-notebook` at build (MCP path), or `Scripts/generate_notebooks.wls` (batch fallback) | association of provenance fields parsed from the source's leading `<!-- provenance: ... -->` comment |
+| `"ResearchNotebook"` | `new-research-notebook` after the export/re-import round-trip | `{ "Cells" -> <\| CellID -> Hash[ { content, style } ] \|> }`, the per-cell drift fingerprint |
 
 Both writers can touch the same notebook: with prompt tracking on, a research notebook is built with `"Provenance"` (passed through `MathNotebookDocument`) and then stamped with `"ResearchNotebook"` — in that order, since the fingerprint must come from the round-tripped file.
 

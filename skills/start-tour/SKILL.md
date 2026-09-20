@@ -164,4 +164,4 @@ After each section interaction, update:
 ## When NOT to use
 
 - The wiki is empty — run `init-wiki` and populate it first.
-- A publishable write-up of results — that is `research-notebook`, not a tour.
+- A publishable write-up of results — that is `new-research-notebook`, not a tour.

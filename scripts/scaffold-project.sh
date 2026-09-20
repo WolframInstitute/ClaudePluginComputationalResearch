@@ -35,11 +35,33 @@ cd "$OUTPUT_DIR"
 
 # ── 1. Directories ─────────────────────────────────────────────────────────
 
-mkdir -p "$PROJECT_NAME/$CODE_DIR"
+mkdir -p "$PROJECT_NAME/$CODE_DIR/Artifacts"
+mkdir -p "$PROJECT_NAME/Research/Artifacts"
 mkdir -p "$PROJECT_NAME/Resources"
 mkdir -p "$PROJECT_NAME/Scripts"
 mkdir -p "$PROJECT_NAME/Work"
-echo "Created directories: $PROJECT_NAME/{$CODE_DIR,Resources,Scripts,Work}"
+echo "Created directories: $PROJECT_NAME/{$CODE_DIR/Artifacts,Research/Artifacts,Resources,Scripts,Work}"
+
+# Artifacts index: the model writes here, and only here.
+write_artifacts_index() {
+cat > "$1" << 'EOF'
+# Artifacts
+
+Everything the model produces lands here, and everything outside an `Artifacts/` folder is yours.
+
+An artifact is one stem — `<WhatItSettles>_YYMMDD` — shared by whatever files it needs, flat in this folder.
+It becomes a folder of its own name only once it carries its own code, data, bibliography or build script, and then the files inside it go bare.
+Every file of an artifact is tracked, `.nb` included; build litter (`.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`) is not.
+Nothing here is uploaded to the Wolfram Cloud unless you ask for it.
+
+| Artifact | What it settles | State |
+|---|---|---|
+EOF
+}
+
+write_artifacts_index "$PROJECT_NAME/$CODE_DIR/Artifacts/README.md"
+write_artifacts_index "$PROJECT_NAME/Research/Artifacts/README.md"
+echo "Created: Artifacts indexes"
 
 sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
   "$ASSETS_DIR/work_readme_template.md" > "$PROJECT_NAME/Work/README.md"

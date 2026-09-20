@@ -143,11 +143,11 @@ The script parses ## Recover sections from Wiki/Resources/*.md.
 
 ### Notebooks
 
-LLM notebook artifacts live in NotebooksLLM/: the .md source (tracked) and the
-generated .nb (gitignored via NotebooksLLM/*.nb) sit side by side. The plain
-Notebooks/ folder is reserved for user-authored notebooks and is never touched
-by the LLM. Scripts convert .md → .nb and optionally publish to Wolfram Cloud.
-These are generated artifacts, not wiki articles — they do not go in Wiki/.
+Notebooks about the code are artifacts: they live in Code/Artifacts/, the .md
+source and the generated .nb sharing one dated stem, both tracked. Research
+documents go in Research/Artifacts/ the same way. Everything outside an
+Artifacts/ folder is yours and is never written or overwritten.
+These are artifacts, not wiki articles — they do not go in Wiki/.
 
 ### Guided Tour
 
@@ -197,13 +197,12 @@ Add these entries if not already present:
 ```
 Tour/
 Resources/
-NotebooksLLM/*.nb
 ```
 
 Exceptions: if the project has git submodules in `Resources/`, preserve them with lines like `!Resources/SubmoduleName/`.
 
 `Wiki/` itself is tracked.
-`Tour/`, `Resources/` (binary files), and generated `.nb` files are gitignored.
+`Tour/` and `Resources/` (binary files) are gitignored. Artifacts are tracked in full, `.nb` included — an artifact is a deliverable, not a build product.
 
 ### 7. Scan and seed articles
 

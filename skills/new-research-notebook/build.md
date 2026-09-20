@@ -1,13 +1,13 @@
-# research-notebook: the build
+# new-research-notebook: the build
 
 Everything mechanical: which parser runs, what you may write in the source, the conversion call, the stylesheet, the references.
 The writing rules are in [style.md](style.md); the authoring conventions in [SKILL.md](SKILL.md).
 
 ## Pipeline
 
-The source of truth is `NotebooksLLM/<Topic>.md`.
+The source of truth is `Research/Artifacts/<Topic>_<YYMMDD>.md` ([artifacts.md](../new-notebook/artifacts.md)).
 Conversion is a **two-half pipeline**, both halves load-bearing: `WolframInstitute/MarkdownToNotebook` parses the Markdown, then `scripts/mathnotebook_post.wl` applies the environments, the numbering and the citations.
-The generated `.nb` sits beside the source, gitignored.
+The generated `.nb` sits beside the source, sharing its stem, and is tracked — an artifact is a deliverable, not a build product.
 
 The parser half is the **rich engine** documented in [new-notebook](../new-notebook/SKILL.md) *Conversion engine — built-in vs rich*: the pinned local clone, `Template: Default`, `"Evaluate" -> False`.
 A research source always carries frontmatter and LaTeX math, so rich mode is always selected; the built-in importer is the fallback when the clone is absent, and it changes what you may write (§ *TeX in the sources*).
@@ -124,7 +124,7 @@ Module[ { nb, cells },
   Get[ "MarkdownToNotebook/MarkdownToNotebook.wl" ];              (* pinned clone, project root *)
   Get[ "${CLAUDE_PLUGIN_ROOT}/scripts/mathnotebook_post.wl" ];
 
-  nb    = MarkdownToNotebook[ "NotebooksLLM/<Topic>.md", "Evaluate" -> False ];
+  nb    = MarkdownToNotebook[ "Research/Artifacts/<Topic>_<YYMMDD>.md", "Evaluate" -> False ];
   cells = First[ nb ];
 
   (* the converter stamps In[n]:= even under "Evaluate" -> False, and a 19-digit CellID on every cell *)

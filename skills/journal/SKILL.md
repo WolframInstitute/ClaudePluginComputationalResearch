@@ -12,7 +12,7 @@ description: >
   was learned and when. It is also where everything a paper cannot carry goes —
   hedged claims, verification ranges, heuristics, alternate proofs, failed attempts
   and unresolved [lookup] citations — so nothing is silently dropped. Other skills
-  (research-notebook, scaffold-paper, update-wiki, next-session, cite) feed it when on.
+  (new-research-notebook, new-paper, update-wiki, next-session, cite) feed it when on.
 ---
 
 # Scientific Journal
@@ -42,7 +42,7 @@ Do not copy Wiki prose verbatim.
 
 ### And the journal versus the paper
 
-A paper carries only settled statements ([style.md](../research-notebook/style.md) § *The four tiers*).
+A paper carries only settled statements ([style.md](../new-research-notebook/style.md) § *The four tiers*).
 The journal is where the rest lands, and that makes it **part of the paper workflow rather than an optional extra**:
 
 | Material | Home |
@@ -82,7 +82,7 @@ grep -qiE 'scientific journal:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || ech
 - **off** (default, or section absent): do nothing.
   Never scaffold `Journal/`, never append.
   Stay silent — do not nag the user to turn it on.
-  The one place the toggle may be raised while off is not this skill's doing: a paper or notebook that has material below the settled tier has nowhere honest to put it, so its generator stops and offers turning the journal on as one of three rulings ([style.md](../research-notebook/style.md) § *When the journal is off*).
+  The one place the toggle may be raised while off is not this skill's doing: a paper or notebook that has material below the settled tier has nowhere honest to put it, so its generator stops and offers turning the journal on as one of three rulings ([style.md](../new-research-notebook/style.md) § *When the journal is off*).
   That is the generator reporting homeless material, not the journal advertising itself, and it fires only when something is actually being cut.
 - **on**: at each natural checkpoint — a definition is settled, a theorem or claim is established or refuted, a resource is used — append **one very concise** dated entry, citing resources used.
   Mention it in passing ("logged to the journal"); do not present it for sign-off.
@@ -113,7 +113,7 @@ The master carries an end-marker where those include lines go, newest first:
 - Typst: `// === day-files below — newest first; LLM adds #include "entries/YYYY-MM-DD.typ" lines here ===`
 
 Scaffold **lazily** — `Journal/` is never pre-created by `new-project`; create it (default LaTeX) the first time the toggle goes on or the first `add`.
-If `Journal/` is tracked (not gitignored), add the same build-artifact patterns as `scaffold-paper`, scoped to `Journal/`.
+If `Journal/` is tracked (not gitignored), add the same build-artifact patterns as `new-paper`, scoped to `Journal/`.
 
 ### add "<topic / content>"
 
@@ -203,7 +203,7 @@ When the toggle is on, these skills append to the journal in this format:
 - **update-wiki** — when a definition/theorem/claim becomes durable knowledge, appends the dated, cited entry to `Journal/` alongside the deduplicated Wiki article.
 - **next-session** — at the end of a session, appends a concise entry for what was established, citing resources used.
 - **cite** — appends generated BibTeX to `Journal/references.bib` when a `Journal/` exists.
-- **research-notebook** and **scaffold-paper** — hand over everything below the settled tier, each entry carrying its one-line reason (§ *Material cut from a paper*). This traffic is not optional: without it the material would be dropped or would flood the paper.
+- **new-research-notebook** and **new-paper** — hand over everything below the settled tier, each entry carrying its one-line reason (§ *Material cut from a paper*). This traffic is not optional: without it the material would be dropped or would flood the paper.
 
 This skill is the single source of truth for the format — the others reference it.
 

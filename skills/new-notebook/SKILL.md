@@ -3,8 +3,8 @@ name: new-notebook
 description: >
   Create or modify Wolfram Notebooks (.nb) from structured Markdown content
   using the Wolfram MCP. This is the unified notebook skill — use it for
-  creating new notebooks, editing existing ones, or converting NotebooksLLM/
-  markdown sources into .nb files. Triggers on: "create notebook", "make a
+  creating new notebooks, editing existing ones, or converting a Markdown
+  source in Code/Artifacts/ into an .nb. Triggers on: "create notebook", "make a
   notebook", "notebook about X", "edit notebook", "update notebook",
   "put this in a notebook", "generate .nb". Also used by other skills
   (new-project, start-tour) when they produce notebooks.
@@ -50,47 +50,50 @@ The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` hel
 
 ## Where notebooks live — Critical
 
-All LLM notebook artifacts live in `NotebooksLLM/`.
-The plain `Notebooks/` folder is reserved for user-authored notebooks — protected content per [revise](../revise/SKILL.md) § *Protected content*: **never read, write, or overwrite anything in `Notebooks/`.** Within `NotebooksLLM/` you may freely create and overwrite.
+A notebook about the project's code is an artifact, and it goes in `Code/Artifacts/`.
+Everything outside an `Artifacts/` folder is the human's and is never written or overwritten — that is the whole of [revise](../revise/SKILL.md) § *Protected content* as it applies here.
+The full convention — the rule, the shape, the naming, the index, git and the Cloud — is [artifacts.md](artifacts.md); read it before creating one.
 
 ## Two-layer architecture (co-located)
 
-Source and output live side by side in `NotebooksLLM/`:
+Source and output share one stem, side by side:
 
 ```
-NotebooksLLM/Name.md              ← tracked in git, source of truth
-NotebooksLLM/Name_YYYY-MM-DD.nb   ← gitignored (NotebooksLLM/*.nb), generated from the .md
-Notebooks/                        ← user-authored notebooks; LLM never touches these
+Code/Artifacts/README.md               the index
+Code/Artifacts/Name_YYMMDD.md          the source of truth
+Code/Artifacts/Name_YYMMDD.nb          generated from it
 ```
 
-The `.md` source is the durable, hand-editable artifact; the `.nb` is regenerated from it.
-These are **not** wiki articles — they do not go in `Wiki/`.
+The `.md` source is the durable, hand-editable half; the `.nb` is regenerated from it.
+Both are tracked — an artifact is a deliverable, not a build product.
+These are **not** wiki articles: they do not go in `Wiki/`.
 
-The generated `.nb` filename carries the source's **first-creation date** as a `_YYYY-MM-DD` suffix.
-The date is stamped once, when the notebook is first generated, and **preserved on every later regeneration** — `generate_notebooks.wls` reuses the earliest date already present in the folder and deletes any other-dated or legacy un-dated copy, so exactly one `.nb` survives per source.
+The stem carries the date the notebook was settled, `YYMMDD`, and it is stamped once and **preserved on every later regeneration** — a rebuild overwrites the same two files rather than adding a second date.
 The date lives only in the filename; **do not** put it inside the notebook (the `[ LLM Generated ]` subtitle stays undated).
+A later pass that supersedes the notebook rather than correcting it is a new artifact with a new date, per [artifacts.md](artifacts.md) § *One artifact, one date*.
 
 When to use the source layer:
 
-- Creating a notebook intended to persist across sessions → write `NotebooksLLM/Name.md` as the source, then generate the `.nb`
-- Quick one-off exploration → generate `NotebooksLLM/Name_YYYY-MM-DD.nb` directly, skip the `.md` source
+- A notebook meant to persist across sessions → write `Code/Artifacts/Name_YYMMDD.md` as the source, then generate the `.nb`
+- Quick one-off exploration → generate `Code/Artifacts/Name_YYMMDD.nb` directly, skip the `.md` source
 
 The source is a structured Markdown file following [markdown-mapping.md](markdown-mapping.md): one `# Title`, a `## Setup` section for package loads (becomes InitializationCells), `wolfram`-tagged fences for evaluatable Input cells, plain text for Text cells.
 
-To generate: read `NotebooksLLM/Name.md`, pass its content through the MCP pipeline, write the result to `NotebooksLLM/Name_YYYY-MM-DD.nb`.
-Use the first-creation date: if a `Name_*.nb` already exists, reuse its date and overwrite that file; otherwise use today's date.
-Only as the license-gated fallback, run the batch scripts (`wolframscript -file Scripts/generate_notebooks.wls`, plus `publish_notebooks.wls` for cloud publishing) — they do the date bookkeeping automatically.
+To generate: read `Code/Artifacts/Name_YYMMDD.md`, pass its content through the MCP pipeline, write the result to `Code/Artifacts/Name_YYMMDD.nb`.
+Reuse the stem of an existing source rather than minting a new date for a correction.
+Add the artifact's row to `Code/Artifacts/README.md` in the same step.
+Only as the license-gated fallback, run the batch scripts (`wolframscript -file Scripts/generate_notebooks.wls`, plus `publish_notebooks.wls` for cloud publishing).
 
 ## Provenance (optional)
 
 If the project has prompt tracking on (a `Prompt tracking: **on**` line in `CLAUDE.md` — see the [provenance](../provenance/SKILL.md) skill), record the originating prompt/intent for the notebook:
 
-1. Write a leading `<!-- provenance: ... -->` comment at the top of the `NotebooksLLM/Name.md` source.
+1. Write a leading `<!-- provenance: ... -->` comment at the top of the `Code/Artifacts/Name_YYMMDD.md` source.
 2. Inject it into the `.nb` on the MCP path yourself:
    build `prov = <| "intent" -> ..., "date" -> ..., ... |>` from the comment's fields,
    strip the comment from the markdown string before conversion (the built-in importer drops HTML comments, but the rich parser is not guaranteed to),
    and stamp the notebook expression just before `ExportString` with the `stampTaggingRule` merge helper from the [provenance](../provenance/SKILL.md) skill.
-   `TaggingRules` is a shared slot — `research-notebook`'s fingerprint key lives there too — so merge by key; never write a literal `TaggingRules -> {...}` that replaces the option.
+   `TaggingRules` is a shared slot — `new-research-notebook`'s fingerprint key lives there too — so merge by key; never write a literal `TaggingRules -> {...}` that replaces the option.
    In the built-in call this wraps the final expression: `ExportString[ stampTaggingRule[ Notebook[cells], "Provenance" -> prov ], "NB" ]`;
    in the rich-mode call apply it to `ReplacePart[nb, 1 -> cells]`, which it leaves option-complete (the helper preserves `CreateCellID` and `StyleDefinitions`).
 3. On the batch fallback path only, skip step 2: `generate_notebooks.wls` strips the comment and injects the `TaggingRules` itself.
@@ -221,13 +224,13 @@ The `.md` source name is undated; the generated `.nb` appends the first-creation
 
 ## Integration with other skills
 
-- `research-notebook` builds on this pipeline (rich engine + MathNotebook post-processing) for research documents.
+- `new-research-notebook` builds on this pipeline (rich engine + MathNotebook post-processing) for research documents.
 - `new-project` and `start-tour` generate their notebooks through it.
 - `paclet-docs` does **not** — documentation pages go through the official MCP doc tools.
 - `provenance` defines the `stampTaggingRule` helper used in the *Provenance* step.
 
 ## When NOT to use
 
-- Research documents with definitions/theorems/conjectures — that is `research-notebook`.
+- Research documents with definitions/theorems/conjectures — that is `new-research-notebook`.
 - Paclet documentation pages — that is `paclet-docs`.
-- Anything in the user-authored `Notebooks/` folder — protected, never touched.
+- Anything outside an `Artifacts/` folder — that is the human's, and it is never written or overwritten.

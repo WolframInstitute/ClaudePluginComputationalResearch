@@ -1,4 +1,4 @@
-# research-notebook: embedding evaluated outputs
+# new-research-notebook: embedding evaluated outputs
 
 How the generator evaluates every Input cell and attaches real Output cells, headless.
 

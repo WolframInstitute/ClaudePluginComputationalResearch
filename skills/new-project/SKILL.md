@@ -152,9 +152,9 @@ Tell the user:
     with `Lean/`)
   - `new-notebook` — create/edit notebooks (supports a `theorem-proof`
     template for math-research projects)
-  - `research-notebook` — cloud-published research document
+  - `new-research-notebook` — cloud-published research document
     (definitions → theorems → symbols/functions → code calls)
-  - `scaffold-paper` — add a LaTeX/Typst `Paper/` later
+  - `new-paper` — add a LaTeX/Typst `Paper/` later
   - `check-wiki` — wiki health check (stale articles, broken links)
   - `build-paclet` / `publish-paclet` / `paclet-docs` — build, publish,
     and document paclets (paclet types)
@@ -169,10 +169,10 @@ Tell the user:
 
 ## Integration with other skills
 
-- `init-wiki`, `add-resource`, `new-notebook`, and `scaffold-paper` are invoked by the type procedures; `search-wolfram` / `search-math` gather resources during setup.
+- `init-wiki`, `add-resource`, `new-notebook`, and `new-paper` are invoked by the type procedures; `search-wolfram` / `search-math` gather resources during setup.
 - `provenance` and `journal` own the two optional toggles this skill asks about.
 
 ## When NOT to use
 
-- The project already exists — use the specific skill (`init-wiki`, `scaffold-paper`, `work`, …) for the missing piece.
+- The project already exists — use the specific skill (`init-wiki`, `new-paper`, `work`, …) for the missing piece.
 - A quick one-off computation — no scaffolding needed; just compute.

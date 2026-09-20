@@ -1,12 +1,15 @@
 #!/usr/bin/env wolframscript
 
-(* generate_notebooks.wls — Build .nb files from NotebooksLLM/*.md sources.
-   Source .md and generated .nb are co-located in NotebooksLLM/; .md is
-   tracked, .nb is gitignored. Notebooks/ (hand-authored) is never touched. *)
+(* generate_notebooks.wls — Build .nb files from the .md sources of an
+   Artifacts folder. Source and output share one dated stem and sit side by
+   side; both are tracked. Pass the folder as the first argument to override
+   the default Code/Artifacts. *)
 
 (* Scripts live in <root>/Scripts/, so climb one level for the project root. *)
 root = ParentDirectory[DirectoryName[$ScriptCommandLine[[1]]]];
-nbDir = FileNameJoin[{root, "NotebooksLLM"}];
+nbDir = If[Length[$ScriptCommandLine] > 1,
+	ExpandFileName[$ScriptCommandLine[[2]]],
+	FileNameJoin[{root, "Code", "Artifacts"}]];
 
 mdFiles = FileNames["*.md", nbDir];
 
@@ -43,22 +46,6 @@ addLLMSubtitle[cellList_List] :=
 			Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
 			Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]
 		]
-	]
-
-(* The generated .nb carries the source's first-creation date in its filename:
-   <base>_YYYY-MM-DD.nb. The date is stamped once, on first generation, and
-   preserved on every later run by reusing the earliest date already present in
-   the folder. Returns {outFile, staleFiles} — staleFiles are prior outputs for
-   this base (the legacy un-dated <base>.nb and any other-dated copies) to remove
-   after a successful write, so exactly one .nb survives per source. *)
-plannedOutput[base_String] :=
-	Module[{prior, dates, date, out},
-		prior = FileNames[{base <> ".nb", base <> "_*.nb"}, nbDir];
-		dates = Flatten @ StringCases[FileNameTake /@ prior,
-			base ~~ "_" ~~ d : (DigitCharacter .. ~~ "-" ~~ DigitCharacter .. ~~ "-" ~~ DigitCharacter ..) ~~ ".nb" :> d];
-		date = If[dates === {}, DateString["ISODate"], First @ Sort @ dates];
-		out = FileNameJoin[{nbDir, base <> "_" <> date <> ".nb"}];
-		{out, DeleteCases[prior, out]}
 	]
 
 (* Boxifying a cell whose code builds Graphics (Plot, HighlightGraph,
@@ -115,7 +102,7 @@ results = {};
 
 Do[
 	baseName = FileBaseName[mdFile];
-	{outFile, staleFiles} = plannedOutput[baseName];
+	outFile = FileNameJoin[{nbDir, baseName <> ".nb"}];
 	Print["[", baseName, "] Converting..."];
 
 	md = Import[mdFile, "Text"];
@@ -151,7 +138,6 @@ Do[
 	];
 	nbString = ExportString[nbExpr, "NB"];
 	Export[outFile, nbString, "Text"];
-	DeleteFile /@ staleFiles;
 
 	Print["[", baseName, "] Written: ", outFile];
 	Print[""];

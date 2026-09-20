@@ -1,6 +1,5 @@
 Paper/
 Resources/
-NotebooksLLM/*.nb
 Tour/
 Work/Runs/
 .claude/settings.local.json

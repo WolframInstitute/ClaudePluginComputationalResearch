@@ -14,7 +14,7 @@ Sections marked *0.1.20* below were re-measured then and supersede the 0.1.16/0.
 ## Summary
 
 A Wolfram paclet supplying AMS-style typeset document stylesheets, numbered theorem-family environments, and cross-referencing machinery for notebooks.
-It is the styling and referencing half of `research-notebook`; [MarkdownToNotebook](MarkdownToNotebook.md) is the parsing half.
+It is the styling and referencing half of `new-research-notebook`; [MarkdownToNotebook](MarkdownToNotebook.md) is the parsing half.
 
 The clone at the project root is a **dev repo**, not the paclet: it follows the triple-nesting convention, so the paclet is at `MathNotebook/MathNotebook/` with `PacletInfo.wl`, `Kernel/` (`Package[]` format), `FrontEnd/`, `Assets/`, `Tests/`, and — since `PacletDocumentation` T4 — `Documentation/` carrying 21 generated symbol pages.
 **Seven** stylesheets ship under `FrontEnd/StyleSheets/MathNotebook/`: the shared base `LaTeXBase.nb`, the five journal templates `AMSArticle.nb`, `ArXivArticle.nb`, `RevTeXAPS.nb`, `SpringerJournal.nb`, `ComplexSystems.nb`, and `PlainArticle.nb`.
@@ -26,7 +26,7 @@ The repo's own `CLAUDE.md` is the densest source of front-end knowledge in it an
 
 `PlainArticle.nb` is **deliberately not a sixth template**: it exists to declare *fewer* styles.
 It is `Default.nb`'s typography with the paper's *structure* added, and it is what `ImportLaTeXDocument` falls back to when the `\documentclass` names no journal with a template.
-[research-notebook](../../skills/research-notebook/SKILL.md) sets it as `$MathNotebookStyleSheetName` in `scripts/mathnotebook_post.wl`.
+[new-research-notebook](../../skills/new-research-notebook/SKILL.md) sets it as `$MathNotebookStyleSheetName` in `scripts/mathnotebook_post.wl`.
 
 **Bare `Default.nb` is not an alternative.** Under it a reference to a definition renders `2.0` — the section counter increments and the theorem counter never does — and that is invisible to the kernel, to a round trip, and to the resolved counter values.
 `PlainArticle` is the minimum sheet that keeps numbering alive.
@@ -129,7 +129,7 @@ A citation to a numbered environment is a `CounterBox[counter, tag]` resolved at
 **There is now a bibliography engine**, added across `ImportDisplayDefects`, `PaletteAndViewUX` and `BibliographyDisplay` (0.1.17 → 0.1.20).
 It parses BibTeX (`bibliographyDatabase` and friends in `Document.wl`, brace-depth field splitting, TeX accents decoded), formats an entry by riffling fields in a fixed order (no bibliography style is emulated), sorts by `"FirstUse"` / `"Key"` / `"Entry"` / `"Uncited"` (`SortBibliography`), audits never-cited entries and dangling citations, and labels every `Reference` cell through `LabelReferences`.
 
-Three things it still does not do, which is why `research-notebook` keeps building its References section itself:
+Three things it still does not do, which is why `new-research-notebook` keeps building its References section itself:
 
 - **It is reachable only from `ImportLaTeXDocument`.** There is no exported "import this `.bib` into this notebook" entry point.
 - **Nothing numbers.** A label is always `[key]` — `referenceLabel[tag] = "[" <> tag <> "]"` — and the citation buttons render `[key]` to match, so writing `[1] [2] [3]` by hand breaks the pairing.
@@ -172,7 +172,7 @@ Documentation is deployed publicly at
 
 ## Use in this project
 
-`scripts/mathnotebook_post.wl` is the post-processing half of [research-notebook](../../skills/research-notebook/SKILL.md).
+`scripts/mathnotebook_post.wl` is the post-processing half of [new-research-notebook](../../skills/new-research-notebook/SKILL.md).
 It exports `$MathNotebookEnvironmentStyles` (all 12), `$MathNotebookStyleSheetName`, `ConvertEnvironmentCells`, `MathNotebookStyleSheet[]`, `NumberTaggedFormulas`, `ConvertCitations`, `CitationTargets`, `ReferenceCells`, `BibTeXReferences`, and `MathNotebookDocument[cells]`, which wraps converted cells with the **embedded** sheet.
 
 **`MathNotebookDocument` owns the pass order** — environments → equation numbering → citations — rather than the skill documenting it.
@@ -181,7 +181,7 @@ An order that fails silently should not be the caller's responsibility.
 
 **Every pass walks into `CellGroupData`, and none of them did until 2026-07-29.**
 All four — `ConvertEnvironmentCells`, `NumberTaggedFormulas`, `ConvertCitations` and `CitationTargets` — operated at level `{1}`, so anything inside a fold was skipped **silently**: a `**Example.**` marker stayed a `Text` cell with its marker still spelled out in the prose, a tagged equation never became `DisplayFormulaNumbered`, and a `[tag]` never became a button.
-Nothing detected it while the document order put no content inside a group; the restructured `research-notebook`, which folds every claim's evidence under an `Example`, put the whole evidence half of the document there at once.
+Nothing detected it while the document order put no content inside a group; the restructured `new-research-notebook`, which folds every claim's evidence under an `Example`, put the whole evidence half of the document there at once.
 The fix is one shared walker, `mapCellList[ f, cells ]`, recursing through groups and preserving each group's `Open`/`Closed` state, plus `documentCells` for the target scan.
 Verified two levels deep: `Example`, a numbered equation, and a `Remark` nested inside a second group all convert, and both folds stay `Closed`.
 
@@ -228,7 +228,7 @@ The box is display-transparent (measured {183, 40} px and 1083 ink either way) a
 
 That is a decision and not just a limit.
 **MaTeX is a choice and not a default** (Pavel, 2026-08-01): native typeset boxes are what a notebook holds and what a machine without LaTeX can open, and MaTeX is what an author converts a selection *to*, from the palette.
-The item's T3 names the plugin's `research-notebook` skill and says the generator needs no change.
+The item's T3 names the plugin's `new-research-notebook` skill and says the generator needs no change.
 
 Two measured facts the generator has to live with:
 
@@ -249,7 +249,7 @@ The merged tree stays at **0.1.24**: `EditableMaTeX` is still Active with T2–T
 
 ## Related
 
-- [MarkdownToNotebook](MarkdownToNotebook.md) — the parser half of the `research-notebook` pipeline
+- [MarkdownToNotebook](MarkdownToNotebook.md) — the parser half of the `new-research-notebook` pipeline
 - [Paclet Documentation](../Concepts/PacletDocumentation.md) — the doc tree generated into this paclet, and the build/publish staging fix it forced
 - [Progress Harvest](../Concepts/ProgressHarvest.md) — where this article came from
 - [Folded cell groups](../Concepts/FoldedCellGroups.md) — the `{2}` group state a generated notebook uses to hide code under these stylesheets

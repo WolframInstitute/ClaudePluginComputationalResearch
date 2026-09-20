@@ -33,7 +33,7 @@ Five `> Superseded:` markers were added where a closed item states something fal
 | `EvaluateMarkdownToNotebook` S1 | "actively-moving target", daily commits | an artefact of June; July is bursty |
 | `EvaluateMarkdownToNotebook` Recommendation | rewrite `PacletDocumentation` as "drive theirs" | not taken; official MCP tools chosen |
 | `AdoptMarkdownToNotebook` S1 | expect T2's measurement to be materially stale | wrong; the commits predated the evaluated tip |
-| `AdoptMarkdownToNotebook` S3 | `research-notebook`'s sync uses `ExportString[Import[…]]` | there is no sync; generation is one-way |
+| `AdoptMarkdownToNotebook` S3 | `new-research-notebook`'s sync uses `ExportString[Import[…]]` | there is no sync; generation is one-way |
 | `MathNotebookIntegration` S1 | the publish-staging defect is "worth its own work item" | fixed inside `PacletDocumentation` T5 |
 
 The two `AdoptMarkdownToNotebook` markers and the third `EvaluateMarkdownToNotebook` one are the cases T2 predicted structurally: the refutation already existed in a later Progress block of the same item, or in another item entirely, and a reader had to reconstruct the order to know which won.

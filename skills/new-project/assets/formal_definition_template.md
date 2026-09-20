@@ -55,7 +55,7 @@ Prefer one degenerate and one canonical.
 
 If a Wolfram computation can verify these, link the relevant notebook:
 
-- See `NotebooksLLM/<TermName>.md` for computed examples.
+- See `Code/Artifacts/<TermName>_<YYMMDD>.md` for computed examples.
 
 ## Non-examples
 

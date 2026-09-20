@@ -88,7 +88,7 @@ The Spec's worry was that a fact in Session 2's "Learned" is invisible to a tail
 
 **~8.7 kB is a second copy of something the same session wrote elsewhere.**
 14.3 % of the `Did` sample restates what that session had just put into `CLAUDE.md`, a skill file, or a wiki article — `AdoptMarkdownToNotebook` S4 spends four of twelve lines describing the two `SKILL.md` sections, the wiki article, and the `CLAUDE.md` section it had just written.
-The duplicate is not free, and it is the copy that rots: that item's S3 records that `research-notebook`'s md↔nb sync "uses `ExportString[Import[path], "Markdown"]`", which its own T5 then replaced with one-way generation plus a fingerprint.
+The duplicate is not free, and it is the copy that rots: that item's S3 records that `new-research-notebook`'s md↔nb sync "uses `ExportString[Import[path], "Markdown"]`", which its own T5 then replaced with one-way generation plus a fingerprint.
 The sentence is false today and still sits in `Work/Done/`.
 
 ## The destination did not exist for 21 of the 24 committed blocks
@@ -102,7 +102,7 @@ On the three blocks that *could* harvest, it did, every time:
 | block | wrote to `Wiki/` | also wrote |
 |---|---|---|
 | `AdoptMarkdownToNotebook` S4 | `Index.md`, `Status.md`, `Resources/MarkdownToNotebook.md` (+63) | `CLAUDE.md`, `skills/new-notebook/SKILL.md` |
-| `AdoptMarkdownToNotebook` S5 | `Resources/MarkdownToNotebook.md` (+18), `Status.md` | `CLAUDE.md`, `skills/research-notebook/SKILL.md` |
+| `AdoptMarkdownToNotebook` S5 | `Resources/MarkdownToNotebook.md` (+18), `Status.md` | `CLAUDE.md`, `skills/new-research-notebook/SKILL.md` |
 | `EvaluateWorkItemsEfficiency` S1 | `Concepts/SessionInformationBudget.md` (+132), `Index.md`, `Status.md` | — |
 
 Three for three.
@@ -129,7 +129,7 @@ Two things follow for T3, in this order:
 S1 concluded that upstream commit `afd7c1e` postdated the evaluated tip and told T2 to expect a stale measurement.
 S2 established it was two commits *below* the pin, and spent four lines saying so.
 Both the wrong claim and its refutation are in the file, permanently, and a reader must reconstruct the order to know which won.
-The same pattern recurs at S4 → S3 ("dropped `research-notebook`" meant dropped as an adoption surface, not deleted) and S5 → S4 (the `::: theorem numbered` spelling S4's own Spec text got wrong).
+The same pattern recurs at S4 → S3 ("dropped `new-research-notebook`" meant dropped as an adoption surface, not deleted) and S5 → S4 (the `::: theorem numbered` spelling S4's own Spec text got wrong).
 
 Had those facts been in `Wiki/Resources/MarkdownToNotebook.md`, S2 would have **edited the line** and the wrong version would have left the read path entirely — the `revise` protocol explicitly allows this: "if an article becomes wrong because code changed, just fix it."
 This is the structural argument, independent of byte counts: **`## Progress` is append-only, so it can only accumulate contradictions, while `Wiki/` is the one surface in the system where a fact can be corrected rather than debated.**

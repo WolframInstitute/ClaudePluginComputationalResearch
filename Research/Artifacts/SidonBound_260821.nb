@@ -1,0 +1,1975 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     66868,       1966]
+NotebookOptionsPosition[     50920,       1622]
+NotebookOutlinePosition[     61381,       1855]
+CellTagsIndexPosition[     61190,       1846]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["[ LLM Generated ]", "Author",
+ CellID->1,ExpressionUUID->"c284c064-d24e-49d3-8338-7b7efc9fe713"],
+
+Cell["\<\
+The counting bound for Sidon sets in cyclic groups, and where it is attained\
+\>", "Title",
+ CellID->2,ExpressionUUID->"86a927af-db40-460a-8063-ba7b0c7e728c"],
+
+Cell["Claude Opus 5 (claude-opus-5[1m])", "Author",
+ CellID->3,ExpressionUUID->"6fe01f1c-d90d-4ff6-b895-f2fe892e17b2"],
+
+Cell["2026-08-21", "Date",
+ CellID->4,ExpressionUUID->"c55feab4-866c-4e0c-a3fb-55a14656634f"],
+
+Cell[TextData[{
+ "Operator: Pavel H\[AAcute]jek. ",
+ StyleBox["Open exploration",
+  FontWeight->"Bold"],
+ " \[LongDash] asked for a short paper carrying material below the settled \
+tier, so that the tier rules could be exercised with the journal off; no \
+topic, method or target statement was named."
+}], "Date",
+ CellID->5,ExpressionUUID->"0747cf5b-f872-4ed4-b44a-2de08e419c02"],
+
+Cell["Abstract", "Section",
+ CellID->6,ExpressionUUID->"fb8fb42a-011e-4250-b7d9-46fffb2de5f7"],
+
+Cell[TextData[{
+ "A Sidon set in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "11febe2c-b0c8-4b4c-a81e-6e2df42a9795"],
+ " has all of its nonzero differences distinct, which bounds its size by \
+roughly ",
+ Cell[BoxData[
+  FormBox[
+   SqrtBox[
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "3d71a059-7d1f-4916-9e51-4f5c09febfd9"],
+ ". We prove that bound by counting differences, and we determine the first \
+cyclic group in which it is not attained. The bound holds for every ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "9e2df34d-fbc9-4433-8513-f7ed5b1885f7"],
+ ", and it is attained for every ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "4baa895d-efbc-4cdf-bab5-c623ae7c5237"],
+ " with ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "21"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c650b7ca-a69e-4a18-ba74-07e306023a85"],
+ " and not for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "22"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "55f660b7-50bc-4e1d-868c-5d2dccf4bf83"],
+ ". The search that settles the negative half is a finite enumeration and is \
+reproduced below."
+}], "Text",
+ CellID->7,ExpressionUUID->"bc29f15f-f7c0-4367-8d8d-479c74ff84fc"],
+
+Cell["Introduction", "Section",
+ CellID->8,ExpressionUUID->"3222dddd-50a4-464f-9ebf-14a014fd7727"],
+
+Cell[TextData[{
+ "A set of integers is a Sidon set when its pairwise differences are \
+distinct, and the cyclic version of the condition asks for the differences to \
+be distinct modulo ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "e319c7dc-ab70-427b-839b-9b93cd1153af"],
+ ". The condition is restrictive: distinct differences cannot repeat and \
+there are only ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "-", "1"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "461631c0-a8ff-4776-8208-70a22d2ea2bc"],
+ " nonzero residues to hold them, so a Sidon set in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f372eabe-47a4-45c0-8692-0beac25fed31"],
+ " has about ",
+ Cell[BoxData[
+  FormBox[
+   SqrtBox[
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "e2aec536-05cd-45e4-9ece-fc919abc5464"],
+ " elements at most. This paper writes that counting argument out and then \
+asks whether the resulting bound is met."
+}], "Text",
+ CellID->9,ExpressionUUID->"ffa14c84-640d-45d1-9f36-31d3fe296639"],
+
+Cell[TextData[{
+ "The bound is ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LessEqual]", 
+    RowBox[{"\[LeftFloor]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        SqrtBox[
+         RowBox[{"4", 
+          StyleBox["n", "TI"], "-", "3"}]]}], ")"}], "/", "2"}], 
+     "\[RightFloor]"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c97ecfd6-291d-4c70-ba69-461863aecad1"],
+ ", where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], "(", 
+    StyleBox["n", "TI"], ")"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "b3e6fd30-f782-41e4-8f9d-04b2920e4935"],
+ " is the largest size of a Sidon set in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "8f50b07a-7456-45c1-8aab-d5ecd233d2c5"],
+ ", and it is proved in ",
+ ButtonBox["(",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[
+ CounterBox["DisplayFormulaNumbered", "Thm:Bound"],
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[")",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ". It is attained for every ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "35d48827-26c7-4283-9f63-6251f274b9d3"],
+ " from ",
+ Cell[BoxData[
+  FormBox["3", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "88aa9313-d640-40ef-bf87-137e253cd8ae"],
+ " to ",
+ Cell[BoxData[
+  FormBox["21", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "abb76272-5a27-4011-99a6-05c062a6d839"],
+ ", and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", "22", ")"}], "\[LongEqual]", "4"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c6cdf595-dfc4-4391-b68b-8b23d34368a5"],
+ " while the bound at ",
+ Cell[BoxData[
+  FormBox["22", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "e37b1c79-2a85-4c47-9aeb-210b8725b7f8"],
+ " is ",
+ Cell[BoxData[
+  FormBox["5", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "4401ba1c-5a67-4acd-8f86-8cb0fd3db5b8"],
+ ", by ",
+ ButtonBox["Proposition ",
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ButtonBox[
+ CounterBox["Section", "Prop:First"],
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ButtonBox[
+ CounterBox["Theorem", "Prop:First"],
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ". The negative half of that statement is a finite check rather than an \
+argument, and the enumeration behind it is stated in ",
+ StyleBox["Ruliology", "TI"],
+ "."
+}], "Text",
+ CellID->10,ExpressionUUID->"6fd85ab3-ad97-4ca5-9776-97168bb9d3ab"],
+
+Cell["\<\
+Section 2 fixes the definitions and proves the bound. Section 3 settles \
+attainment up to the first failure. The closing question asks whether \
+failures continue.\
+\>", "Text",
+ CellID->11,ExpressionUUID->"81ec73fa-828d-48bf-80d6-8168cff85588"],
+
+Cell["The counting bound", "Section",
+ CellID->12,ExpressionUUID->"8675231f-afa6-41c4-9458-022c36858efb"],
+
+Cell["\<\
+This section fixes the two objects the paper is about and bounds one by the \
+other.\
+\>", "Text",
+ CellID->13,ExpressionUUID->"b373cca3-56e4-4605-a0de-3819953d4faf"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[GreaterEqual]", "2"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "bc7c1912-69f1-42f4-a297-ac905b268bca"],
+ ". A subset ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["A", "TI"], "\[SubsetEqual]", 
+    SubscriptBox[
+     StyleBox["Z",
+      FontSlant->"Plain"], 
+     StyleBox["n", "TI"]]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "1ca939ce-b449-4ca9-a0cf-59dbe5722fab"],
+ " is a ",
+ StyleBox["Sidon set", "TI"],
+ " if the differences ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["a", "TI"], "-", 
+    SuperscriptBox[
+     StyleBox["a", "TI"], "\[Prime]"]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "384d0b36-b1de-46bf-b45e-ef39e5fecb4a"],
+ ", taken over all ordered pairs of distinct ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["a", "TI"], ",", 
+    SuperscriptBox[
+     StyleBox["a", "TI"], "\[Prime]"], "\[Element]", 
+    StyleBox["A", "TI"]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f47fe777-989d-4c17-9cc5-928537f8e464"],
+ ", are pairwise distinct in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "80de4ca5-2526-44a8-b118-2e42e316094b"],
+ "."
+}], "Definition",
+ CellTags->"Def:Sidon",
+ CellID->14,ExpressionUUID->"1db97989-7838-4c1e-862a-94a16a2ab58f"],
+
+Cell[TextData[{
+ "In ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], "7"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "e716ba91-e462-4bc1-bd52-11f073f50b01"],
+ " the set ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "3"}], "}"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "b838ffc8-f04b-4291-83f9-9679fbc8271b"],
+ " is a Sidon set: its six differences are the six nonzero residues, each \
+once."
+}], "Example",
+ CellID->15,ExpressionUUID->"329bb9af-54d3-42cf-b9f7-6c19447f2ad5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Sort", "[", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Mod", "[", " ", 
+     RowBox[{
+      RowBox[{"#1", " ", "-", " ", "#2"}], ",", " ", "7"}], " ", "]"}], " ", 
+    "&"}], " ", "@@@", " ", 
+   RowBox[{"Select", "[", " ", 
+    RowBox[{
+     RowBox[{"Tuples", "[", " ", 
+      RowBox[{
+       RowBox[{"{", " ", 
+        RowBox[{"0", ",", " ", "1", ",", " ", "3"}], " ", "}"}], ",", " ", 
+       "2"}], " ", "]"}], ",", " ", 
+     RowBox[{"Apply", "[", " ", "Unequal", " ", "]"}]}], " ", "]"}]}], " ", 
+  "]"}]], "Input",
+ CellID->16,ExpressionUUID->"d4d70a25-5e81-489d-b9de-65ce2c5107d6"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "5", ",", "6"}], 
+  "}"}]], "Output",
+ CellID->17,ExpressionUUID->"048c5307-d43f-4f23-9bd3-70c8de6cae4a"]
+}, {2}]],
+
+Cell[TextData[{
+ "For ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[GreaterEqual]", "2"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "2e4ab13a-9176-44fe-a59e-e5de9ef6c426"],
+ " let ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], "(", 
+    StyleBox["n", "TI"], ")"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "438ebcff-3767-49b3-8697-dba047056723"],
+ " denote the largest size of a Sidon set in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "61aba322-603a-45cf-806d-7186469defe9"],
+ "."
+}], "Definition",
+ CellTags->"Def:MaxSize",
+ CellID->18,ExpressionUUID->"0fc5397c-b728-413c-b26a-64f5f7ba23a7"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", "7", ")"}], "\[LongEqual]", "3"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "00334869-3cab-4ca0-9dd7-bf7819e94dcc"],
+ ", the set of the previous example being one of the largest."
+}], "Example",
+ CellID->19,ExpressionUUID->"526037db-05c8-4e03-ad6a-decd3797f07e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"maxSidon", "[", " ", "7", " ", "]"}]], "Input",
+ CellID->20,ExpressionUUID->"cf675117-87a1-43de-ae17-8a671d7fe655"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"3", ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "3"}], "}"}]}], "}"}]], "Output",
+ CellID->21,ExpressionUUID->"e58e832c-1ff1-4934-874a-1202fe35093c"]
+}, {2}]],
+
+Cell[TextData[{
+ "For every ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[GreaterEqual]", "2"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "74d797ce-3295-4186-9533-6d34c94b00d3"],
+ ","
+}], "Theorem",
+ CellID->22,ExpressionUUID->"df5ad583-2206-493e-8187-b4a8e539595d"],
+
+Cell[BoxData[
+ PaneBox[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LessEqual]", 
+    FractionBox[
+     RowBox[{"1", "+", 
+      SqrtBox[
+       RowBox[{"4", 
+        StyleBox["n", "TI"], "-", "3"}]]}], "2"], "."}],
+   TraditionalForm],
+  Alignment->Center,
+  ImageSize->Full]], "DisplayFormulaNumbered",
+ CellTags->"Thm:Bound",
+ CellID->23,ExpressionUUID->"9e985f2c-1b84-42d8-82e1-dd75f08b5b92"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["A", "TI"], "\[SubsetEqual]", 
+    SubscriptBox[
+     StyleBox["Z",
+      FontSlant->"Plain"], 
+     StyleBox["n", "TI"]]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "95b0befc-de28-4947-b6bd-c3c0491aedf9"],
+ " be a Sidon set and put ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "\[LongEqual]", "|", 
+    StyleBox["A", "TI"], "|"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "cd697976-d8fa-4136-a2dc-ca1c2fc27c35"],
+ ". There are ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "(", 
+    RowBox[{
+     StyleBox["k", "TI"], "-", "1"}], ")"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "b200b92e-05cf-4b58-8f6a-52d75c04a2b2"],
+ " ordered pairs of distinct elements of ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["A", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ed5db679-fcd5-4bf6-948b-e6903d7cd9da"],
+ ", and each contributes a difference ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["a", "TI"], "-", 
+    SuperscriptBox[
+     StyleBox["a", "TI"], "\[Prime]"]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "3f857961-a2b6-4b8f-bf44-201648c28730"],
+ ". Each such difference is nonzero, since ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["a", "TI"], "\[NotEqual]", 
+    SuperscriptBox[
+     StyleBox["a", "TI"], "\[Prime]"]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "11ddcfe7-4d64-4993-a697-d050437bf63f"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "3a6845ee-1840-4464-bebe-562e80cc7974"],
+ ". The ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "(", 
+    RowBox[{
+     StyleBox["k", "TI"], "-", "1"}], ")"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "90ce6874-2dc8-4250-93f6-fc60614965bb"],
+ " differences are pairwise distinct by ",
+ ButtonBox["Definition ",
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[
+ CounterBox["Section", "Def:Sidon"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[
+ CounterBox["Theorem", "Def:Sidon"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ", so they are ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "(", 
+    RowBox[{
+     StyleBox["k", "TI"], "-", "1"}], ")"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "9fb62778-d9e2-4854-8384-35082cafb597"],
+ " distinct nonzero elements of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    StyleBox["n", "TI"]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "758b793f-faee-4a46-8d22-a47ba0ff6afb"],
+ ". There are exactly ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "-", "1"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f70fd470-503c-45dd-a03c-c7d373ce05b9"],
+ " nonzero elements available, whence ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], 
+    RowBox[{"(", 
+     RowBox[{
+      StyleBox["k", "TI"], "-", "1"}], ")"}], "\[LessEqual]", 
+    StyleBox["n", "TI"], "-", "1"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "0ff1e0b4-f283-43a3-8abf-9de547f4a5fd"],
+ ". So ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["k", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ce831cb8-4c01-4e39-bee1-c74162ff449d"],
+ " satisfies ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox[
+     StyleBox["k", "TI"], "2"], "-", 
+    StyleBox["k", "TI"], "-", 
+    RowBox[{"(", 
+     RowBox[{
+      StyleBox["n", "TI"], "-", "1"}], ")"}], "\[LessEqual]", "0"}], 
+   TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "db523112-1264-42f2-a0b1-06bd400c51aa"],
+ ", and since ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "\[GreaterEqual]", "0"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "2061ef71-6f67-4f20-a326-02091bace576"],
+ " this holds precisely when ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["k", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "25224532-26b7-4d5b-9742-61ff636d693e"],
+ " is at most the positive root ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      SqrtBox[
+       RowBox[{"4", 
+        StyleBox["n", "TI"], "-", "3"}]]}], ")"}], "/", "2"}], 
+   TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "9f8cde34-7812-45e4-8dcf-c5bcaeca9d76"],
+ ". Taking the largest such ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["k", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "df26def7-bab4-47cc-b94c-4b34abfafe97"],
+ " over all Sidon sets gives [Eq:Bound] by ",
+ ButtonBox["Definition ",
+  BaseStyle->"Citation",
+  ButtonData->"Def:MaxSize"],
+ ButtonBox[
+ CounterBox["Section", "Def:MaxSize"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:MaxSize"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Def:MaxSize"],
+ ButtonBox[
+ CounterBox["Theorem", "Def:MaxSize"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:MaxSize"],
+ ".",
+ " ",
+ StyleBox["\[EmptySquare]", "QED"]
+}], "Proof",
+ CellID->24,ExpressionUUID->"209cd4e8-86eb-4587-b800-b57abaf60e52"],
+
+Cell[TextData[{
+ "Since ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], "(", 
+    StyleBox["n", "TI"], ")"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "46905b49-2f30-4879-a074-4a7d1cc6c828"],
+ " is an integer, ",
+ ButtonBox["(",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[
+ CounterBox["DisplayFormulaNumbered", "Thm:Bound"],
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[")",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ " gives ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LessEqual]", 
+    StyleBox["b", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "6a86a9ff-c163-49ca-b9bf-46c7ffab5a3f"],
+ " with ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["b", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LongEqual]", 
+    RowBox[{"\[LeftFloor]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        SqrtBox[
+         RowBox[{"4", 
+          StyleBox["n", "TI"], "-", "3"}]]}], ")"}], "/", "2"}], 
+     "\[RightFloor]"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "affc3bf0-096b-4a0b-a5b8-edc8bec2aea3"],
+ ", and it is this integer form that the next section tests."
+}], "Remark",
+ CellID->25,ExpressionUUID->"e587699e-49ed-4c25-a3cc-a31bd9e61184"],
+
+Cell[TextData[{
+ "At ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "22"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "bc4bed01-efc7-4446-87c6-352d480d3948"],
+ " the bound is ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["b", "TI"], 
+    RowBox[{"(", "22", ")"}], "\[LongEqual]", "5"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f940eb99-1c6a-4d9a-a020-9d84db38171a"],
+ "."
+}], "Example",
+ CellID->26,ExpressionUUID->"a8bc003e-5c3a-4108-91e8-037132fb91cb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Floor", "[", " ", 
+  RowBox[{
+   RowBox[{"(", " ", 
+    RowBox[{"1", " ", "+", " ", 
+     RowBox[{"Sqrt", "[", " ", 
+      RowBox[{
+       RowBox[{"4", "*", "22"}], " ", "-", " ", "3"}], " ", "]"}]}], " ", 
+    ")"}], "/", "2"}], " ", "]"}]], "Input",
+ CellID->27,ExpressionUUID->"23c7df99-f3b7-4806-857f-de8deb0e3bc7"],
+
+Cell[BoxData["5"], "Output",
+ CellID->28,ExpressionUUID->"7735f932-6baf-4be0-b2a4-3e4309e13b8a"]
+}, {2}]],
+
+Cell["Attainment, and the first failure", "Section",
+ CellID->29,ExpressionUUID->"64fec44c-9c98-48b2-aed7-3bf9089047ac"],
+
+Cell[TextData[{
+ "The bound of ",
+ ButtonBox["(",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[
+ CounterBox["DisplayFormulaNumbered", "Thm:Bound"],
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[")",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ " is met by every small cyclic group but not by all of them."
+}], "Text",
+ CellID->30,ExpressionUUID->"42851880-8414-4af5-997d-ccb8a081e500"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LongEqual]", 
+    StyleBox["b", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "d64d1821-8fe2-4813-9f2a-9f03b419c2a2"],
+ " for every ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c1a684a6-cd5b-4a41-a36f-ec77c3018975"],
+ " with ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "21"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "dd1a6d89-0a0a-4383-b924-8c62b2737c1a"],
+ ", and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", "22", ")"}], "\[LongEqual]", "4", "<", "5", "\[LongEqual]", 
+    StyleBox["b", "TI"], 
+    RowBox[{"(", "22", ")"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "a6d1b28a-a955-48e1-9666-5adf8de69971"],
+ "."
+}], "Proposition",
+ CellTags->"Prop:First",
+ CellID->31,ExpressionUUID->"6822087e-b801-46f7-811b-640d9f0e516a"],
+
+Cell[TextData[{
+ "The inequality ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LessEqual]", 
+    StyleBox["b", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "3d566691-e957-45ea-8ab7-7856da336b5d"],
+ " holds for all ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "51c5bc91-d507-4d09-b380-6163abb22e89"],
+ " by ",
+ ButtonBox["(",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[
+ CounterBox["DisplayFormulaNumbered", "Thm:Bound"],
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ ButtonBox[")",
+  BaseStyle->"Citation",
+  ButtonData->"Thm:Bound"],
+ " and the remark above it. For the positive half it therefore suffices to \
+exhibit, for each ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c7f25c44-2b9f-462d-a57f-e667b6d78d39"],
+ " with ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "21"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "31a02159-385b-4285-95b8-e601194fe75d"],
+ ", one Sidon set of size ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["b", "TI"], "(", 
+    StyleBox["n", "TI"], ")"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "6b7e9064-16f4-41d2-a099-987c7f61f553"],
+ ", and the nineteen sets are listed in ",
+ StyleBox["Ruliology", "TI"],
+ ". For the negative half we must rule out a Sidon set of size ",
+ Cell[BoxData[
+  FormBox["5", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "5282581a-0f25-424b-931d-e2a1d8a1ddc4"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], "22"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "285743d2-fc03-40a0-bff5-014e76e319d0"],
+ ". If ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["A", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "0bbf0479-85b1-48d9-af55-08feca2103d9"],
+ " is a Sidon set then so is ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["A", "TI"], "+", 
+    StyleBox["t", "TI"]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "bbb29be6-4685-497c-94ae-5f9df6e30fd0"],
+ " for every ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["t", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "700c6366-8649-4079-9149-a103d61e1f4d"],
+ ", since translation leaves every difference unchanged by ",
+ ButtonBox["Definition ",
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[
+ CounterBox["Section", "Def:Sidon"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[
+ CounterBox["Theorem", "Def:Sidon"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ", so we may assume ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"0", "\[Element]", 
+    StyleBox["A", "TI"]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "4e63f937-a91c-4a9c-a5a9-23ab04e4b5ee"],
+ ". There are ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"21", "4"},
+     "Binomial"], "\[LongEqual]", "5985"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ac001e07-e301-4df9-a950-511a9b0dad25"],
+ " five-element subsets of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], "22"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "b56a06f4-b1af-46b9-a890-29f8dcb7d409"],
+ " containing ",
+ Cell[BoxData[
+  FormBox["0", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "deaa162c-c6c0-4caa-9b3b-dac7a2507cae"],
+ ", and testing each against ",
+ ButtonBox["Definition ",
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[
+ CounterBox["Section", "Def:Sidon"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ ButtonBox[
+ CounterBox["Theorem", "Def:Sidon"],
+  BaseStyle->"Citation",
+  ButtonData->"Def:Sidon"],
+ " finds none that is Sidon; the function ",
+ Cell[BoxData["maxSidon"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f801c6aa-1c12-41c4-94a1-fa03fd94e0ee"],
+ " of the Initialization section performs that enumeration and returns ",
+ Cell[BoxData[
+  FormBox["4", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "7c4fc682-931a-43a2-9a36-d08db6525508"],
+ ". Since a Sidon set of size ",
+ Cell[BoxData[
+  FormBox["4", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "1d008bb4-c1ba-41ea-a48d-9db36f79d7cb"],
+ " exists, namely ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "3", ",", "7"}], "}"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "c1564344-de6c-4dbe-b4ba-9e255b5d6f5d"],
+ ", we get ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", "22", ")"}], "\[LongEqual]", "4"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "a18f1a42-b490-4b23-aaa8-1535004e65e8"],
+ ".",
+ " ",
+ StyleBox["\[EmptySquare]", "QED"]
+}], "Proof",
+ CellID->32,ExpressionUUID->"7c753926-0e5b-4f0a-bdfb-6de0781d80e9"],
+
+Cell[TextData[{
+ "The maximum at ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "21"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "1598015d-70a3-41c1-9142-d57a92163f08"],
+ " is ",
+ Cell[BoxData[
+  FormBox["5", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "667da138-55f6-462b-83eb-1430a0331d7e"],
+ ", attained by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "4", ",", "14", ",", "16"}], "}"}], 
+   TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "1de33016-2318-4da2-b39d-7cfc891f6cc2"],
+ "; the maximum at ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "22"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "fd038b06-e754-4521-b21f-4931a0792990"],
+ " is ",
+ Cell[BoxData[
+  FormBox["4", TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "245c1cd1-2993-40e0-b8f2-67bf48097f9e"],
+ "."
+}], "Example",
+ CellID->33,ExpressionUUID->"d0bfe683-df90-4f61-85a0-a33074396640"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"{", " ", 
+  RowBox[{
+   RowBox[{"maxSidon", "[", " ", "21", " ", "]"}], ",", " ", 
+   RowBox[{"maxSidon", "[", " ", "22", " ", "]"}]}], " ", "}"}]], "Input",
+ CellID->34,ExpressionUUID->"bb64a251-acd0-4402-9f43-28363f305ab4"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"5", ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1", ",", "4", ",", "14", ",", "16"}], "}"}]}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1", ",", "3", ",", "7"}], "}"}]}], "}"}]}], 
+  "}"}]], "Output",
+ CellID->35,ExpressionUUID->"413ac63c-ec7d-4cc4-9706-d44704c24cd1"]
+}, {2}]],
+
+Cell["Ruliology", "Section",
+ CellID->36,ExpressionUUID->"50b0ccef-117b-40b7-adf0-6486bce80aed"],
+
+Cell[TextData[{
+ "The values of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], "(", 
+    StyleBox["n", "TI"], ")"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "397c514f-66f3-40e6-b21b-3a6de41679c4"],
+ " for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "40"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "9608e738-6f12-4c3b-82ee-d56577356c54"],
+ " were computed twice, by two searches written independently: a direct \
+enumeration of subsets in decreasing size, and a backtracking search that \
+extends a partial set only while its differences stay distinct. The two agree \
+on ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "26"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "72753d77-0582-4147-848d-600aa4caf28d"],
+ ", where the direct enumeration is still cheap, and the backtracking search \
+alone carries ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"27", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "40"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "1afba1d6-8434-4a2f-a27a-76c36badcdc9"],
+ ". Over that range ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}], "\[LongEqual]", 
+    StyleBox["b", "TI"], 
+    RowBox[{"(", 
+     StyleBox["n", "TI"], ")"}]}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "a1451d13-c954-4602-a277-fe13f475cc48"],
+ " except at ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "22", ",", "32", ",", "33", ",", 
+    "34"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "0975e789-c6ae-4c2f-94e5-67166cc1e58d"],
+ ", which is the evidence behind ",
+ ButtonBox["Question ",
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ ButtonBox[
+ CounterBox["Section", "Q:Finite"],
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ ButtonBox[
+ CounterBox["Theorem", "Q:Finite"],
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ "; the nineteen maximum sets used by ",
+ ButtonBox["Proposition ",
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ButtonBox[
+ CounterBox["Section", "Prop:First"],
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ ButtonBox[
+ CounterBox["Theorem", "Prop:First"],
+  BaseStyle->"Citation",
+  ButtonData->"Prop:First"],
+ " are the witnesses returned for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["n", "TI"], "\[LessEqual]", "21"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "d6b324df-adf7-4ed4-ad5e-29bb06279e37"],
+ "."
+}], "Text",
+ CellID->37,ExpressionUUID->"8c5c6b87-c75e-447f-b7d9-a04c43212a02"],
+
+Cell[BoxData[
+ RowBox[{"Grid", "[", " ", 
+  RowBox[{"Table", "[", " ", 
+   RowBox[{
+    RowBox[{"{", " ", 
+     RowBox[{"n", ",", " ", 
+      RowBox[{"bound", "[", " ", "n", " ", "]"}], ",", " ", 
+      RowBox[{"maxSidonBT", "[", " ", "n", " ", "]"}]}], " ", "}"}], ",", " ", 
+    RowBox[{"{", " ", 
+     RowBox[{"n", ",", " ", "3", ",", " ", "40"}], " ", "}"}]}], " ", "]"}], 
+  " ", "]"}]], "Input",
+ CellID->38,ExpressionUUID->"55a62512-f61a-4272-a2ba-62747e6c9df9"],
+
+Cell["Outlook", "Section",
+ CellID->39,ExpressionUUID->"4adbe4aa-84d1-49ef-bf3f-6f36397fc02f"],
+
+Cell[TextData[{
+ "Is the set ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     StyleBox["n", "TI"], ":", 
+     StyleBox["s", "TI"], 
+     RowBox[{"(", 
+      StyleBox["n", "TI"], ")"}], "<", 
+     StyleBox["b", "TI"], 
+     RowBox[{"(", 
+      StyleBox["n", "TI"], ")"}]}], "}"}], TraditionalForm]], "InlineFormula",
+  
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "a3c4acf5-96c9-47c1-b1a0-0dc49d7c53d4"],
+ " finite?"
+}], "Question",
+ CellTags->"Q:Finite",
+ CellID->40,ExpressionUUID->"cb80f915-9092-4630-8b5b-bd8d048d826f"],
+
+Cell[TextData[{
+ "A single construction attaining ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["b", "TI"], "(", 
+    StyleBox["n", "TI"], ")"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "22388c33-014d-4a4c-85a2-5234fd6bda6b"],
+ " for all ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "4ac7afc8-ebe2-44df-a992-deccc3eeab8f"],
+ " beyond some point would settle it one way, and an infinite family of \
+failures the other; the first unchecked case is ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "41"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "55f43e4e-d2c8-4a27-92fe-d2b06816ed49"],
+ "."
+}], "Text",
+ CellID->41,ExpressionUUID->"505d53a7-c62c-4ece-a243-fd83b9eb5789"],
+
+Cell["Retained material (no journal)", "Section",
+ CellID->42,ExpressionUUID->"6219ea40-9b5d-4a6f-b887-bfc61663c587"],
+
+Cell[TextData[{
+ StyleBox["[ Retained \[LongDash] no journal ]", "TI"],
+ " The material below is not paper content. It fails the settled tier and its \
+home is the journal, which is off in this project, so it was retained here on \
+the operator's ruling rather than dropped. Each item is removable in one pass \
+once a journal exists."
+}], "Text",
+ CellID->43,ExpressionUUID->"4aea8971-26de-4e1e-838f-738736699f28"],
+
+Cell[TextData[{
+ StyleBox["[ Retained \[LongDash] no journal ]", "TI"],
+ " Hedged claim. For every ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "\[GreaterEqual]", "3"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ed88bbc0-e0d0-44ca-89b4-9d3095299427"],
+ " the bound ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["b", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "5c604912-d325-4f7f-b2d5-cc1618b86b39"],
+ " appears to be attained at ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", 
+    SuperscriptBox[
+     StyleBox["k", "TI"], "2"], "-", 
+    StyleBox["k", "TI"], "+", "1"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "d852ad85-fec1-4fe1-9773-a0cb501b77f4"],
+ " exactly when ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["k", "TI"], "-", "1"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "71e1d7a1-6d12-4b98-b496-dfd73dea92bf"],
+ " is a prime power, the first failure of that form being ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "43"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "f48bca79-1cb1-4e52-be15-5e600679c27f"],
+ ", where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["s", "TI"], 
+    RowBox[{"(", "43", ")"}], "\[LongEqual]", "6", "<", "7"}], 
+   TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "060ad8e6-0133-442f-99b8-23d9b2fe014c"],
+ ". Checked for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"3", "\[LessEqual]", 
+    StyleBox["k", "TI"], "\[LessEqual]", "7"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "d6405dbb-a145-402c-9566-c217580f8fa1"],
+ " only, and unproved for every ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["k", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ea509922-b461-474a-b2d5-f87766664f85"],
+ "."
+}], "Remark",
+ CellID->44,ExpressionUUID->"ceb5ebaf-f04c-4f2f-a530-af8ecc50d1ce"],
+
+Cell[TextData[{
+ StyleBox["[ Retained \[LongDash] no journal ]", "TI"],
+ " Failed attempt. To prove attainment in general we tried the greedy Mian\
+\[Dash]Chowla prefixes ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "1", ",", "3", ",", "7", ",", "12", ",", "20", ",", 
+     "\[Ellipsis]"}], "}"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "cd050e07-a43d-4279-a257-0e666483dfdd"],
+ " reduced modulo ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ebf73b7f-71f1-4c17-b76f-dba1adb9892a"],
+ ", which are the maximum sets returned at ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "25"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "764b0b44-6b7a-4327-b6e5-f0902cfd2cc8"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["n", "TI"], "\[LongEqual]", "26"}], TraditionalForm]], 
+  "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "1743db34-12a7-442a-9e0b-ee97cf46d4db"],
+ ". The route is dead: the prefix ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "3", ",", "7", ",", "12"}], "}"}], 
+   TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "08ad4636-1021-452e-977b-b505c809d6a9"],
+ " is not a Sidon set in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], "21"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "4327ede4-307c-4af3-b290-6913c407379a"],
+ ", where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "4", ",", "14", ",", "16"}], "}"}], 
+   TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "774c8299-f77e-40e1-a5e4-054ce3b024b9"],
+ " is."
+}], "Remark",
+ CellID->45,ExpressionUUID->"f8a4a87a-61f2-4a10-84f9-b1724f2e0f76"],
+
+Cell[TextData[{
+ StyleBox["[ Retained \[LongDash] no journal ]", "TI"],
+ " Unresolved [lookup]. Singer's theorem is said to give a Sidon set of size ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["q", "TI"], "+", "1"}], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "fca8180d-ee65-4ef9-9c04-c2b0327b3345"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["Z",
+     FontSlant->"Plain"], 
+    RowBox[{
+     SuperscriptBox[
+      StyleBox["q", "TI"], "2"], "+", 
+     StyleBox["q", "TI"], "+", "1"}]], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "b657fd71-7517-448c-80f2-942446973b2d"],
+ " for every prime power ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["q", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "bb4a1798-53f3-4c70-93a8-cef3603e3923"],
+ ", which would attain the bound at those ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["n", "TI"], TraditionalForm]], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ab24917f-df2e-4d89-8a40-07aa2f9bcd02"],
+ ". No source was read, so the statement is unverified here, and the hedged \
+claim above and ",
+ ButtonBox["Question ",
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ ButtonBox[
+ CounterBox["Section", "Q:Finite"],
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ ButtonBox[".",
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ ButtonBox[
+ CounterBox["Theorem", "Q:Finite"],
+  BaseStyle->"Citation",
+  ButtonData->"Q:Finite"],
+ " both lean on it."
+}], "Remark",
+ CellID->46,ExpressionUUID->"f8f66bb1-4482-47ba-a7f4-67e77fc6fe99"],
+
+Cell[CellGroupData[{
+
+Cell["Initialization", "Section",
+ CellID->47,ExpressionUUID->"e6771e66-8542-46c3-8e5e-81b1dc6454bc"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"bound", "[", " ", "n_", " ", "]"}], " ", ":=", " ", 
+    RowBox[{"Floor", "[", " ", 
+     RowBox[{
+      RowBox[{"(", " ", 
+       RowBox[{"1", " ", "+", " ", 
+        RowBox[{"Sqrt", "[", " ", 
+         RowBox[{
+          RowBox[{"4", " ", "n"}], " ", "-", " ", "3"}], " ", "]"}]}], " ", 
+       ")"}], "/", "2"}], " ", "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"sidonQ", "[", " ", 
+     RowBox[{"a_List", ",", " ", "n_"}], " ", "]"}], " ", ":=", " ", 
+    RowBox[{"With", "[", " ", 
+     RowBox[{
+      RowBox[{"{", " ", 
+       RowBox[{"d", " ", "=", " ", 
+        RowBox[{"Mod", "[", " ", 
+         RowBox[{
+          RowBox[{"Flatten", " ", "@", " ", 
+           RowBox[{"Table", "[", " ", 
+            RowBox[{
+             RowBox[{"x", " ", "-", " ", "y"}], ",", " ", 
+             RowBox[{"{", " ", 
+              RowBox[{"x", ",", " ", "a"}], " ", "}"}], ",", " ", 
+             RowBox[{"{", " ", 
+              RowBox[{"y", ",", " ", "a"}], " ", "}"}]}], " ", "]"}]}], ",", 
+          " ", "n"}], " ", "]"}]}], " ", "}"}], ",", "\n", "  ", 
+      RowBox[{
+       RowBox[{"DuplicateFreeQ", "[", " ", 
+        RowBox[{"DeleteCases", "[", " ", 
+         RowBox[{"d", ",", " ", "0"}], " ", "]"}], " ", "]"}], " ", "&&", " ", 
+       RowBox[{
+        RowBox[{"Count", "[", " ", 
+         RowBox[{"d", ",", " ", "0"}], " ", "]"}], " ", "==", " ", 
+        RowBox[{"Length", "[", " ", "a", " ", "]"}]}]}]}], " ", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"maxSidon", "[", " ", "n_", " ", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", " ", 
+     RowBox[{
+      RowBox[{"{", " ", 
+       RowBox[{"k", ",", " ", "s"}], " ", "}"}], ",", "\n", "  ", 
+      RowBox[{"Do", "[", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"s", " ", "=", " ", 
+          RowBox[{"SelectFirst", "[", " ", 
+           RowBox[{
+            RowBox[{"Subsets", "[", " ", 
+             RowBox[{
+              RowBox[{"Range", "[", " ", 
+               RowBox[{"n", " ", "-", " ", "1"}], " ", "]"}], ",", " ", 
+              RowBox[{"{", " ", 
+               RowBox[{"k", " ", "-", " ", "1"}], " ", "}"}]}], " ", "]"}], ",",
+             " ", 
+            RowBox[{
+             RowBox[{"sidonQ", "[", " ", 
+              RowBox[{
+               RowBox[{"Prepend", "[", " ", 
+                RowBox[{"#", ",", " ", "0"}], " ", "]"}], ",", " ", "n"}], 
+              " ", "]"}], " ", "&"}]}], " ", "]"}]}], ";", "\n", "      ", 
+         RowBox[{"If", "[", " ", 
+          RowBox[{
+           RowBox[{"s", " ", "=!=", " ", 
+            RowBox[{"Missing", "[", " ", "\"\<NotFound\>\"", " ", "]"}]}], ",",
+            " ", 
+           RowBox[{"Return", "[", " ", 
+            RowBox[{
+             RowBox[{"{", " ", 
+              RowBox[{"k", ",", " ", 
+               RowBox[{"Prepend", "[", " ", 
+                RowBox[{"s", ",", " ", "0"}], " ", "]"}]}], " ", "}"}], ",", 
+             " ", "Module"}], " ", "]"}]}], " ", "]"}]}], ",", "\n", "      ", 
+        RowBox[{"{", " ", 
+         RowBox[{"k", ",", " ", 
+          RowBox[{"bound", "[", " ", "n", " ", "]"}], ",", " ", "1", ",", " ", 
+          RowBox[{"-", "1"}]}], " ", "}"}]}], " ", "]"}]}], " ", "]"}]}], 
+   ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"hasSidonK", "[", " ", 
+     RowBox[{"n_", ",", " ", "k_"}], " ", "]"}], " ", ":=", " ", 
+    RowBox[{"Module", "[", " ", 
+     RowBox[{
+      RowBox[{"{", " ", 
+       RowBox[{
+        RowBox[{"res", " ", "=", " ", "False"}], ",", " ", "ext"}], " ", 
+       "}"}], ",", "\n", "  ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"ext", "[", " ", 
+         RowBox[{"a_", ",", " ", "used_"}], " ", "]"}], " ", ":=", " ", 
+        RowBox[{"Module", "[", " ", 
+         RowBox[{
+          RowBox[{"{", " ", "d", " ", "}"}], ",", "\n", "    ", 
+          RowBox[{
+           RowBox[{"If", "[", " ", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Length", "[", " ", "a", " ", "]"}], " ", "==", " ", 
+              "k"}], ",", " ", 
+             RowBox[{
+              RowBox[{"res", " ", "=", " ", "True"}], ";", " ", 
+              RowBox[{"Return", "[", " ", "]"}]}]}], " ", "]"}], ";", "\n", 
+           "    ", 
+           RowBox[{"Do", "[", " ", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"d", " ", "=", " ", 
+               RowBox[{"Join", "[", " ", 
+                RowBox[{
+                 RowBox[{"Mod", "[", " ", 
+                  RowBox[{
+                   RowBox[{"c", " ", "-", " ", "a"}], ",", " ", "n"}], " ", 
+                  "]"}], ",", " ", 
+                 RowBox[{"Mod", "[", " ", 
+                  RowBox[{
+                   RowBox[{"a", " ", "-", " ", "c"}], ",", " ", "n"}], " ", 
+                  "]"}]}], " ", "]"}]}], ";", "\n", "        ", 
+              RowBox[{"If", "[", " ", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"DuplicateFreeQ", "[", " ", "d", " ", "]"}], " ", "&&",
+                  " ", 
+                 RowBox[{
+                  RowBox[{"Intersection", "[", " ", 
+                   RowBox[{"used", ",", " ", "d"}], " ", "]"}], " ", "===", 
+                  " ", 
+                  RowBox[{"{", " ", "}"}]}]}], ",", " ", 
+                RowBox[{"ext", "[", " ", 
+                 RowBox[{
+                  RowBox[{"Append", "[", " ", 
+                   RowBox[{"a", ",", " ", "c"}], " ", "]"}], ",", " ", 
+                  RowBox[{"Join", "[", " ", 
+                   RowBox[{"used", ",", " ", "d"}], " ", "]"}]}], " ", 
+                 "]"}]}], " ", "]"}], ";", "\n", "        ", 
+              RowBox[{"If", "[", " ", 
+               RowBox[{"res", ",", " ", 
+                RowBox[{"Return", "[", " ", "]"}]}], " ", "]"}]}], ",", " ", 
+             RowBox[{"{", " ", 
+              RowBox[{"c", ",", " ", 
+               RowBox[{
+                RowBox[{"Last", "[", " ", "a", " ", "]"}], " ", "+", " ", 
+                "1"}], ",", " ", 
+               RowBox[{"n", " ", "-", " ", "1"}]}], " ", "}"}]}], " ", 
+            "]"}]}]}], " ", "]"}]}], ";", "\n", "  ", 
+       RowBox[{"ext", "[", " ", 
+        RowBox[{
+         RowBox[{"{", " ", "0", " ", "}"}], ",", " ", 
+         RowBox[{"{", " ", "}"}]}], " ", "]"}], ";", " ", "res"}]}], " ", 
+     "]"}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"maxSidonBT", "[", " ", "n_", " ", "]"}], " ", ":=", " ", 
+   RowBox[{"SelectFirst", "[", " ", 
+    RowBox[{
+     RowBox[{"Range", "[", " ", 
+      RowBox[{
+       RowBox[{"bound", "[", " ", "n", " ", "]"}], ",", " ", "1", ",", " ", 
+       RowBox[{"-", "1"}]}], " ", "]"}], ",", " ", 
+     RowBox[{
+      RowBox[{"hasSidonK", "[", " ", 
+       RowBox[{"n", ",", " ", "#"}], " ", "]"}], " ", "&"}]}], " ", "]"}]}], 
+  ";"}]}], "Input",
+ InitializationCell->True,
+ CellID->48,ExpressionUUID->"c4a7f3a8-09e3-42fa-8c3f-e14b14f4a7c4"],
+
+Cell[TextData[{
+ "The MathNotebook palette's ",
+ StyleBox["Apply stylesheet",
+  FontWeight->"Bold"],
+ " menu offers ",
+ Cell[BoxData["AMSArticle"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "d8a80607-da12-48df-95f3-c05977fa233a"],
+ ", ",
+ Cell[BoxData["ArXivArticle"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "53bb717f-19b7-4168-8cdf-d193dee3b315"],
+ ", ",
+ Cell[BoxData["RevTeXAPS"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "4a6fba43-9f81-4ec9-b505-e5b70119187c"],
+ ", ",
+ Cell[BoxData["SpringerJournal"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "ba49e58e-ba63-4577-badf-64e4359da7bb"],
+ ", ",
+ Cell[BoxData["ComplexSystems"], "InlineFormula",
+  FontSize->0.9 Inherited,ExpressionUUID->
+  "49642dc4-74fb-493a-9214-8f2d0d2ccd9b"],
+ " and Default, and a selection can be converted to MaTeX from the same \
+palette."
+}], "Text",
+ CellID->49,ExpressionUUID->"7c29f169-6713-4227-b0dc-fff78e27c13d"]
+}, Closed]]
+},
+TaggingRules->{
+ "ResearchNotebook" -> {
+   "Cells" -> <|
+     1 -> 8939979907893027907, 2 -> 1425157638030259069, 3 -> 
+      5611597507529589631, 4 -> 5811274368648501447, 5 -> 5017910707931143078,
+       6 -> 5409360195012720559, 7 -> 3096106290152882221, 8 -> 
+      2223597502948640693, 9 -> 116232367398814713, 10 -> 4683258183613162698,
+       11 -> 3400353207648214247, 12 -> 7245344988027202681, 13 -> 
+      8995559002288114235, 14 -> 8926006256235383050, 15 -> 
+      7022326768587611065, 18 -> 5978817072235783766, 19 -> 
+      3477735260858291167, 22 -> 5155181578444586632, 23 -> 
+      2715872051693393677, 24 -> 5900204272531604401, 25 -> 
+      6331222377627959390, 26 -> 3196226475224923459, 29 -> 
+      4786371626837321364, 30 -> 1499245493407331535, 31 -> 
+      3539540773947357407, 32 -> 400847916592215577, 33 -> 
+      4343566147144758019, 36 -> 7568071028775884111, 37 -> 
+      3818595663201977394, 38 -> 3692175526859032143, 39 -> 
+      6343454480258411381, 40 -> 2197107931985566040, 41 -> 
+      1324533666962708386, 42 -> 126112823577870382, 43 -> 
+      1455656855535342690, 44 -> 3123312689964282797, 45 -> 
+      5348261046985349521, 46 -> 4836438848597630175|>}},
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (July 2, 2026)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[StyleDefinitions -> "Default.nb"]], 
+   Cell[
+    StyleData["Notebook"], CreateCellID -> True, DefaultNewCellStyle -> 
+    "Text"], 
+   Cell[
+    StyleData["Section"], CellDingbat -> Cell[
+      TextData[{
+        CounterBox["Section"], "."}]], CounterIncrements -> "Section", 
+    CounterAssignments -> {{"Item", 0}, {"ItemNumbered", 0}, {"Subitem", 0}, {
+      "SubitemNumbered", 0}, {"Subsection", 0}, {"Subsubitem", 0}, {
+      "SubsubitemNumbered", 0}, {"Subsubsection", 0}, {"Theorem", 0}}], 
+   Cell[
+    StyleData["Subsection"], CellDingbat -> Cell[
+      TextData[{
+        CounterBox["Section"], ".", 
+        CounterBox["Subsection"], "."}]], CounterIncrements -> "Subsection", 
+    CounterAssignments -> {{"Item", 0}, {"ItemNumbered", 0}, {"Subitem", 0}, {
+      "SubitemNumbered", 0}, {"Subsubitem", 0}, {"SubsubitemNumbered", 0}, {
+      "Subsubsection", 0}}], 
+   Cell[
+    StyleData["Subsubsection"], CellDingbat -> Cell[
+      TextData[{
+        CounterBox["Section"], ".", 
+        CounterBox["Subsection"], ".", 
+        CounterBox["Subsubsection"], "."}]], CounterIncrements -> 
+    "Subsubsection", 
+    CounterAssignments -> {{"Item", 0}, {"ItemNumbered", 0}, {"Subitem", 0}, {
+      "SubitemNumbered", 0}, {"Subsubitem", 0}, {"SubsubitemNumbered", 0}, {
+      "Subsubsubsection", 0}}], 
+   Cell[
+    StyleData["Abstract"], CellDingbat -> Cell[
+      TextData["Abstract. "], FontWeight -> "Bold", FontSlant -> "Plain"]], 
+   Cell[
+    StyleData["Reference", StyleDefinitions -> StyleData["Text"]], 
+    CellMargins -> {{205, 10}, {3, 3}}, ParagraphIndent -> -24], 
+   Cell[
+    StyleData["Date", StyleDefinitions -> StyleData["Text"]], 
+    CellMargins -> {{80, 80}, {4, 8}}, TextAlignment -> Center, 
+    ParagraphIndent -> 0, MenuSortingValue -> 1260, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Theorem", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Theorem ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2610, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Lemma", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Lemma ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2620, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Proposition", StyleDefinitions -> StyleData["Text"]], 
+    CellDingbat -> Cell[
+      TextData[{"Proposition ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2630, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Corollary", StyleDefinitions -> StyleData["Text"]], 
+    CellDingbat -> Cell[
+      TextData[{"Corollary ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2640, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Conjecture", StyleDefinitions -> StyleData["Text"]], 
+    CellDingbat -> Cell[
+      TextData[{"Conjecture ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2650, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Claim", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Claim ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2660, FontSlant -> "Italic"], 
+   Cell[
+    StyleData["Definition", StyleDefinitions -> StyleData["Text"]], 
+    CellDingbat -> Cell[
+      TextData[{"Definition ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2670, FontSlant -> "Plain"], 
+   Cell[
+    StyleData["Example", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Example ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2680, FontSlant -> "Plain"], 
+   Cell[
+    StyleData["Construction", StyleDefinitions -> StyleData["Text"]], 
+    CellDingbat -> Cell[
+      TextData[{"Construction ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Bold", FontSlant -> 
+      "Plain"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2690, FontSlant -> "Plain"], 
+   Cell[
+    StyleData["Remark", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Remark ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Plain", FontSlant -> 
+      "Italic"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2700, FontSlant -> "Plain"], 
+   Cell[
+    StyleData["Question", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Question ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Plain", FontSlant -> 
+      "Italic"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2710, FontSlant -> "Plain"], 
+   Cell[
+    StyleData["Observation", StyleDefinitions -> StyleData["Text"]], 
+    CellDingbat -> Cell[
+      TextData[{"Observation ", 
+        CounterBox["Section"], ".", 
+        CounterBox["Theorem"], "."}], FontWeight -> "Plain", FontSlant -> 
+      "Italic"], CellMargins -> {{130, 10}, {8, 8}}, CounterIncrements -> 
+    "Theorem", MenuSortingValue -> 2720, FontSlant -> "Plain"], 
+   Cell[
+    StyleData["Proof", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData["Proof."], FontSlant -> "Italic", FontWeight -> "Plain"], 
+    CellMargins -> {{130, 10}, {8, 8}}, MenuSortingValue -> 2740], 
+   Cell[
+    StyleData["QED"], StyleMenuListing -> None], 
+   Cell[
+    StyleData["Hyperlink", StyleDefinitions -> StyleData["Link"]], 
+    ContextMenu -> FEPrivate`FrontEndResource["ContextMenus", "Hyperlink"], 
+    FontColor -> RGBColor[0, 0, 0.7], 
+    ButtonBoxOptions -> {
+     ButtonFunction :> ((
+       WolframInstitute`MathNotebook`$LastHyperlinkCell = First[
+          SelectedCells[], None]; FrontEndExecute[{
+          
+          NotebookLocate[#2, "OpenInNewWindow" -> 
+           CurrentValue["HyperlinkModifierKey"]]}])& ), Evaluator -> "Local", 
+      Method -> "Queued"}], 
+   Cell[
+    StyleData["Citation", StyleDefinitions -> StyleData["Hyperlink"]], 
+    FontColor -> RGBColor[0.7, 0, 0]], 
+   Cell[
+    StyleData["URL", StyleDefinitions -> StyleData["Hyperlink"]], FontColor -> 
+    RGBColor[0.8, 0, 0.8]], 
+   Cell[
+    StyleData["Caption", StyleDefinitions -> StyleData["Text"]], CellDingbat -> 
+    Cell[
+      TextData[{"Figure ", 
+        CounterBox["Caption"], "."}], FontWeight -> "Bold"], 
+    CellMargins -> {{130, 110}, {4, 14}}, ParagraphIndent -> 0, 
+    CounterIncrements -> "Caption", MenuSortingValue -> 1280, FontSlant -> 
+    "Plain"]}, Visible -> False, FrontEndVersion -> 
+  "15.0 for Mac OS X ARM (64-bit) (July 2, 2026)", StyleDefinitions -> 
+  "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"71a91e66-bac2-477a-9bd1-08eebd65d30c"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "Def:Sidon"->{
+  Cell[8290, 259, 1593, 53, 70, "Definition",ExpressionUUID->"1db97989-7838-4c1e-862a-94a16a2ab58f",
+   CellTags->"Def:Sidon",
+   CellID->14]},
+ "Def:MaxSize"->{
+  Cell[11354, 364, 872, 29, 70, "Definition",ExpressionUUID->"0fc5397c-b728-413c-b26a-64f5f7ba23a7",
+   CellTags->"Def:MaxSize",
+   CellID->18]},
+ "Thm:Bound"->{
+  Cell[13345, 435, 455, 16, 70, "DisplayFormulaNumbered",ExpressionUUID->"9e985f2c-1b84-42d8-82e1-dd75f08b5b92",
+   CellTags->"Thm:Bound",
+   CellID->23]},
+ "Prop:First"->{
+  Cell[22699, 761, 1230, 39, 70, "Proposition",ExpressionUUID->"6822087e-b801-46f7-811b-640d9f0e516a",
+   CellTags->"Prop:First",
+   CellID->31]},
+ "Q:Finite"->{
+  Cell[35133, 1167, 538, 19, 70, "Question",ExpressionUUID->"cb80f915-9092-4630-8b5b-bd8d048d826f",
+   CellTags->"Q:Finite",
+   CellID->40]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"Def:Sidon", 60366, 1823},
+ {"Def:MaxSize", 60528, 1827},
+ {"Thm:Bound", 60690, 1831},
+ {"Prop:First", 60863, 1835},
+ {"Q:Finite", 61025, 1839}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 102, 1, 70, "Author",ExpressionUUID->"c284c064-d24e-49d3-8338-7b7efc9fe713",
+ CellID->1],
+Cell[659, 23, 168, 3, 70, "Title",ExpressionUUID->"86a927af-db40-460a-8063-ba7b0c7e728c",
+ CellID->2],
+Cell[830, 28, 118, 1, 70, "Author",ExpressionUUID->"6fe01f1c-d90d-4ff6-b895-f2fe892e17b2",
+ CellID->3],
+Cell[951, 31, 93, 1, 70, "Date",ExpressionUUID->"c55feab4-866c-4e0c-a3fb-55a14656634f",
+ CellID->4],
+Cell[1047, 34, 381, 8, 70, "Date",ExpressionUUID->"0747cf5b-f872-4ed4-b44a-2de08e419c02",
+ CellID->5],
+Cell[1431, 44, 94, 1, 70, "Section",ExpressionUUID->"fb8fb42a-011e-4250-b7d9-46fffb2de5f7",
+ CellID->6],
+Cell[1528, 47, 1723, 50, 70, "Text",ExpressionUUID->"bc29f15f-f7c0-4367-8d8d-479c74ff84fc",
+ CellID->7],
+Cell[3254, 99, 98, 1, 70, "Section",ExpressionUUID->"3222dddd-50a4-464f-9ebf-14a014fd7727",
+ CellID->8],
+Cell[3355, 102, 1341, 36, 70, "Text",ExpressionUUID->"ffa14c84-640d-45d1-9f36-31d3fe296639",
+ CellID->9],
+Cell[4699, 140, 3042, 101, 70, "Text",ExpressionUUID->"6fd85ab3-ad97-4ca5-9776-97168bb9d3ab",
+ CellID->10],
+Cell[7744, 243, 256, 5, 70, "Text",ExpressionUUID->"81ec73fa-828d-48bf-80d6-8168cff85588",
+ CellID->11],
+Cell[8003, 250, 105, 1, 70, "Section",ExpressionUUID->"8675231f-afa6-41c4-9458-022c36858efb",
+ CellID->12],
+Cell[8111, 253, 176, 4, 70, "Text",ExpressionUUID->"b373cca3-56e4-4605-a0de-3819953d4faf",
+ CellID->13],
+Cell[8290, 259, 1593, 53, 70, "Definition",ExpressionUUID->"1db97989-7838-4c1e-862a-94a16a2ab58f",
+ CellTags->"Def:Sidon",
+ CellID->14],
+Cell[9886, 314, 632, 20, 70, "Example",ExpressionUUID->"329bb9af-54d3-42cf-b9f7-6c19447f2ad5",
+ CellID->15],
+Cell[CellGroupData[{
+Cell[10543, 338, 612, 17, 70, "Input",ExpressionUUID->"d4d70a25-5e81-489d-b9de-65ce2c5107d6",
+ CellID->16],
+Cell[11158, 357, 184, 4, 70, "Output",ExpressionUUID->"048c5307-d43f-4f23-9bd3-70c8de6cae4a",
+ CellID->17]
+}, {2}]],
+Cell[11354, 364, 872, 29, 70, "Definition",ExpressionUUID->"0fc5397c-b728-413c-b26a-64f5f7ba23a7",
+ CellTags->"Def:MaxSize",
+ CellID->18],
+Cell[12229, 395, 402, 11, 70, "Example",ExpressionUUID->"526037db-05c8-4e03-ad6a-decd3797f07e",
+ CellID->19],
+Cell[CellGroupData[{
+Cell[12656, 410, 139, 2, 70, "Input",ExpressionUUID->"cf675117-87a1-43de-ae17-8a671d7fe655",
+ CellID->20],
+Cell[12798, 414, 200, 5, 70, "Output",ExpressionUUID->"e58e832c-1ff1-4934-874a-1202fe35093c",
+ CellID->21]
+}, {2}]],
+Cell[13010, 422, 332, 11, 70, "Theorem",ExpressionUUID->"df5ad583-2206-493e-8187-b4a8e539595d",
+ CellID->22],
+Cell[13345, 435, 455, 16, 70, "DisplayFormulaNumbered",ExpressionUUID->"9e985f2c-1b84-42d8-82e1-dd75f08b5b92",
+ CellTags->"Thm:Bound",
+ CellID->23],
+Cell[13803, 453, 5770, 195, 70, "Proof",ExpressionUUID->"209cd4e8-86eb-4587-b800-b57abaf60e52",
+ CellID->24],
+Cell[19576, 650, 1500, 51, 70, "Remark",ExpressionUUID->"e587699e-49ed-4c25-a3cc-a31bd9e61184",
+ CellID->25],
+Cell[21079, 703, 584, 20, 70, "Example",ExpressionUUID->"a8bc003e-5c3a-4108-91e8-037132fb91cb",
+ CellID->26],
+Cell[CellGroupData[{
+Cell[21688, 727, 343, 9, 70, "Input",ExpressionUUID->"23c7df99-f3b7-4806-857f-de8deb0e3bc7",
+ CellID->27],
+Cell[22034, 738, 96, 1, 70, "Output",ExpressionUUID->"7735f932-6baf-4be0-b2a4-3e4309e13b8a",
+ CellID->28]
+}, {2}]],
+Cell[22142, 742, 120, 1, 70, "Section",ExpressionUUID->"64fec44c-9c98-48b2-aed7-3bf9089047ac",
+ CellID->29],
+Cell[22265, 745, 431, 14, 70, "Text",ExpressionUUID->"42851880-8414-4af5-997d-ccb8a081e500",
+ CellID->30],
+Cell[22699, 761, 1230, 39, 70, "Proposition",ExpressionUUID->"6822087e-b801-46f7-811b-640d9f0e516a",
+ CellTags->"Prop:First",
+ CellID->31],
+Cell[23932, 802, 5634, 181, 70, "Proof",ExpressionUUID->"7c753926-0e5b-4f0a-bdfb-6de0781d80e9",
+ CellID->32],
+Cell[29569, 985, 1147, 37, 70, "Example",ExpressionUUID->"d0bfe683-df90-4f61-85a0-a33074396640",
+ CellID->33],
+Cell[CellGroupData[{
+Cell[30741, 1026, 249, 5, 70, "Input",ExpressionUUID->"bb64a251-acd0-4402-9f43-28363f305ab4",
+ CellID->34],
+Cell[30993, 1033, 404, 13, 70, "Output",ExpressionUUID->"413ac63c-ec7d-4cc4-9706-d44704c24cd1",
+ CellID->35]
+}, {2}]],
+Cell[31409, 1049, 96, 1, 70, "Section",ExpressionUUID->"50b0ccef-117b-40b7-adf0-6486bce80aed",
+ CellID->36],
+Cell[31508, 1052, 3053, 97, 70, "Text",ExpressionUUID->"8c5c6b87-c75e-447f-b7d9-a04c43212a02",
+ CellID->37],
+Cell[34564, 1151, 469, 11, 70, "Input",ExpressionUUID->"55a62512-f61a-4272-a2ba-62747e6c9df9",
+ CellID->38],
+Cell[35036, 1164, 94, 1, 70, "Section",ExpressionUUID->"4adbe4aa-84d1-49ef-bf3f-6f36397fc02f",
+ CellID->39],
+Cell[35133, 1167, 538, 19, 70, "Question",ExpressionUUID->"cb80f915-9092-4630-8b5b-bd8d048d826f",
+ CellTags->"Q:Finite",
+ CellID->40],
+Cell[35674, 1188, 883, 26, 70, "Text",ExpressionUUID->"505d53a7-c62c-4ece-a243-fd83b9eb5789",
+ CellID->41],
+Cell[36560, 1216, 117, 1, 70, "Section",ExpressionUUID->"6219ea40-9b5d-4a6f-b887-bfc61663c587",
+ CellID->42],
+Cell[36680, 1219, 415, 7, 70, "Text",ExpressionUUID->"4aea8971-26de-4e1e-838f-738736699f28",
+ CellID->43],
+Cell[37098, 1228, 2132, 66, 70, "Remark",ExpressionUUID->"ceb5ebaf-f04c-4f2f-a530-af8ecc50d1ce",
+ CellID->44],
+Cell[39233, 1296, 1977, 60, 70, "Remark",ExpressionUUID->"f8a4a87a-61f2-4a10-84f9-b1724f2e0f76",
+ CellID->45],
+Cell[41213, 1358, 1640, 51, 70, "Remark",ExpressionUUID->"f8f66bb1-4482-47ba-a7f4-67e77fc6fe99",
+ CellID->46],
+Cell[CellGroupData[{
+Cell[42878, 1413, 101, 1, 70, "Section",ExpressionUUID->"e6771e66-8542-46c3-8e5e-81b1dc6454bc",
+ CellID->47],
+Cell[42982, 1416, 6939, 174, 70, "Input",ExpressionUUID->"c4a7f3a8-09e3-42fa-8c3f-e14b14f4a7c4",
+ InitializationCell->True,
+ CellID->48],
+Cell[49924, 1592, 980, 27, 70, "Text",ExpressionUUID->"7c29f169-6713-4227-b0dc-fff78e27c13d",
+ CellID->49]
+}, Closed]]
+}
+]
+*)
+
+(* End of internal cache information *)

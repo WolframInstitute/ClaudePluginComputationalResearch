@@ -15,7 +15,7 @@ Optionally appends to `Paper/references.bib` and creates a wiki article via [add
 ## When to use
 
 - The user says "cite this", "bibtex for arXiv:...", "DOI 10.xxx/...", "add citation".
-- A reference is added during paper writing, journal entries, or `research-notebook` literature sections.
+- A reference is added during paper writing, journal entries, or `new-research-notebook` literature sections.
 
 ## Recognized inputs
 
@@ -80,7 +80,7 @@ If the user supplies multiple identifiers (newline- or comma-separated), run the
 
 - [add-resource](../add-resource/SKILL.md) — for full wiki articles instead of just BibTeX.
 - [search-math](../search-math/SKILL.md) — surfaces references from MathWorld / Wikipedia that often have DOIs; pipe those DOIs into this skill.
-- [scaffold-paper](../scaffold-paper/SKILL.md) — produces the `Paper/references.bib` this skill appends to.
+- [new-paper](../new-paper/SKILL.md) — produces the `Paper/references.bib` this skill appends to.
 - [journal](../journal/SKILL.md) — owns `Journal/references.bib`; cite into it the same way as Paper.
 
 ## When NOT to use

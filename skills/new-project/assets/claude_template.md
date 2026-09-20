@@ -18,7 +18,7 @@ Additional topic scopes follow the same pattern:
 - `{{CODE_DIR}}/<Topic>Experiment.wl` — experiments
 - `{{CODE_DIR}}/<Topic>Test.wl` — tests (VerificationTest + TestReport)
 
-Notebooks: LLM-generated notebooks go in `NotebooksLLM/` (`<Topic>1.nb` per topic, `Test1.nb` for tests); `Notebooks/` is reserved for your hand-authored files and is never touched by the LLM.
+Artifacts: everything the LLM produces goes in an `Artifacts/` folder — notebooks about the code in `{{CODE_DIR}}/Artifacts/`, research documents and research notebooks in `Research/Artifacts/`, each named `<WhatItSettles>_YYMMDD`. Everything outside an `Artifacts/` folder is yours and is never written or overwritten.
 
 ## Resources
 

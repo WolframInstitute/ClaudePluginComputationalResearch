@@ -65,12 +65,12 @@ One small set of fields, reused in the ledger and in every embedded back-pointer
 | Field | Meaning |
 |-------|---------|
 | `date` | Absolute `YYYY-MM-DD` (from the current date). |
-| `artifact` | Path relative to project root (`NotebooksLLM/Ricci.nb`, `Code/Curvature.wl`). |
+| `artifact` | Path relative to project root (`Code/Artifacts/Ricci_260919.nb`, `Code/Curvature.wl`). |
 | `intent` | One-line distilled goal. **Always present.** |
 | `prompt` | Verbatim user request. Optional — include when short, or when the user asks. |
 | `generator` | The skill that produced it (`new-notebook`, `update-wiki`, …). |
 | `model` | Model id (e.g. `claude-opus-4-8`). |
-| `source` | Notebooks only: the `NotebooksLLM/*.md` source path. |
+| `source` | Notebooks only: the `.md` source path beside the notebook. |
 
 **Fidelity:** default to a concise one-line `intent`.
 Add the verbatim `prompt` when the request is short, reproducibility matters, or the user asks for it.
@@ -87,11 +87,11 @@ One `###` block per generation event:
 Append-only record of the prompts/intent behind generated artifacts.
 Toggle in CLAUDE.md (`Prompt tracking`). See the `provenance` skill for the format.
 
-### 2026-05-29 — NotebooksLLM/RicciCurvature.nb
+### 2026-05-29 — Code/Artifacts/RicciCurvature_260529.nb
 - **Intent:** Explore Ollivier–Ricci curvature on graphs with pastel plots
 - **Prompt:** "make a notebook about ollivier ricci curvature on graphs"
 - **Generator:** new-notebook · claude-opus-4-8
-- **Source:** NotebooksLLM/RicciCurvature.md
+- **Source:** Code/Artifacts/RicciCurvature_260529.md
 ```
 
 Omit lines that don't apply (e.g. no `Source:` for a `.wl` file; drop `Prompt:` when you're only keeping the distilled intent).
@@ -109,7 +109,7 @@ In addition to the ledger entry, embed provenance **inside** each artifact so it
 
 ### Notebooks
 
-Write a leading HTML comment into the `NotebooksLLM/*.md` source.
+Write a leading HTML comment into the artifact's `.md` source.
 HTML comments are dropped by the `{"Markdown","Notebook"}` importer, so they never become cells:
 
 ```markdown
@@ -132,7 +132,7 @@ When the comment is absent, the `.nb` is generated exactly as before (no `"Prove
 See [new-notebook](../new-notebook/SKILL.md).
 
 **`TaggingRules` is a shared slot — merge by key, never replace the option.**
-[research-notebook](../research-notebook/SKILL.md) stores its per-cell fingerprint there under the `"ResearchNotebook"` key, so a writer that sets a literal `TaggingRules -> {...}` erases the other key.
+[new-research-notebook](../new-research-notebook/SKILL.md) stores its per-cell fingerprint there under the `"ResearchNotebook"` key, so a writer that sets a literal `TaggingRules -> {...}` erases the other key.
 Every writer stamps through this helper (canonical here; verified to survive the `ExportString`/`ImportString` round-trip with both keys intact):
 
 ```wolfram
@@ -149,7 +149,7 @@ stampTaggingRule[ nb_Notebook, key_String -> value_ ] :=
 To read it back from a notebook:
 
 ```wolfram
-"Provenance" /. (TaggingRules /. Options[Import["NotebooksLLM/Name.nb"], TaggingRules])
+"Provenance" /. (TaggingRules /. Options[Import["Code/Artifacts/Name_260919.nb"], TaggingRules])
 ```
 
 ### Paclet functions / code (`Kernel/*.wl`, `Code/*.wl`)
@@ -202,7 +202,7 @@ These skills check the toggle and, when on, record provenance in this format:
 
 - **new-notebook** — writes the leading HTML comment into the notebook source and appends a ledger entry.
   On the MCP path it stamps the `TaggingRules` itself via `stampTaggingRule`; on the batch fallback the script propagates the comment.
-- **research-notebook** — same comment and ledger entry; the build passes `TaggingRules -> { "Provenance" -> prov }` through `MathNotebookDocument`, and the later fingerprint stamp merges its `"ResearchNotebook"` key alongside it.
+- **new-research-notebook** — same comment and ledger entry; the build passes `TaggingRules -> { "Provenance" -> prov }` through `MathNotebookDocument`, and the later fingerprint stamp merges its `"ResearchNotebook"` key alongside it.
 - **update-wiki** — appends a `## Provenance` section to newly generated articles and a ledger entry.
 - **work** / **next-session** — record `Origin:` in the Spec; each session's prompt goes to the ledger, and the `## Progress` line links it.
 

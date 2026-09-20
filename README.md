@@ -6,6 +6,7 @@ A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computatio
 Available in the [WolframInstitute marketplace](https://github.com/WolframInstitute/ClaudePluginMarketplace).
 
 * 📁 Turns a folder of resources — code, PDFs, Markdown, notebooks — into an organized git repo, and maintains it.
+* 🗂️ Writes everything it generates into `Artifacts/` folders, one dated stem per artifact, and leaves the rest of the repo to you.
 * 🐺 Imports and exports Wolfram notebooks via Markdown.
 * 📚 Grows and maintains a wiki knowledge base.
 * 🔍 Gathers and summarizes resources, keeping a Markdown summary and recovery instructions.
@@ -65,7 +66,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | Skill / Command | Description |
 |-------|-------------|
 | **new-project** | Scaffold a new project (research, math, paclet-dev, paclet) |
-| **scaffold-paper** | Scaffold a LaTeX or Typst paper, then edit it on request, to the shared writing guide |
+| **new-paper** | Add a LaTeX or Typst paper to `Paper/`, then edit it on request, to the shared writing guide |
 | **journal** | Keep an optional cited LaTeX/Typst journal (def/thm/rem), and take what a paper cannot carry; off by default |
 | **init-wiki** | Create a markdown knowledge base (Wiki/) |
 | **update-wiki** | Update wiki articles, index, and backlinks |
@@ -74,8 +75,9 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **search-math** | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
 | **add-resource** | Add a paper, repo, or page with recovery info |
 | **cite** | BibTeX from an arXiv ID or DOI |
-| **new-notebook** | Build Wolfram notebooks from Markdown (dual-engine: auto-detects a richer converter for frontmatter/LaTeX-math sources) |
-| **research-notebook** | A mathematics paper as a notebook: settled results with complete proofs, experiments quarantined in a Ruliology section, everything numbered and cross-referenced by the front end |
+| **new-notebook** | Build Wolfram notebooks from Markdown into `Code/Artifacts/` (dual-engine: auto-detects a richer converter for frontmatter/LaTeX-math sources) |
+| **new-research-notebook** | A mathematics paper as a notebook, into `Research/Artifacts/`: settled results with complete proofs, experiments quarantined in a Ruliology section, everything numbered and cross-referenced by the front end |
+| **new-research-note** | Freeze a conversation as a dated artifact in `Research/Artifacts/`: a plain LaTeX document (claims, complete proofs, named assumptions, a catalogue), an unevaluated paclet-free notebook and a loadable `.wl`, all sharing one stem; nothing uploaded |
 | **lean** | Drive a Lean/Mathlib formalization session |
 | **paclet-docs** | Generate a symbol reference page per exported paclet function |
 | **build-paclet** | Build a paclet and install it locally |

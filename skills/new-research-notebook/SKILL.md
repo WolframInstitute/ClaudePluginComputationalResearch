@@ -1,5 +1,5 @@
 ---
-name: research-notebook
+name: new-research-notebook
 description: >
   Write a mathematics paper as a Wolfram notebook, optimised for a human who
   wants to check it. Sections run in the order the mathematics needs, and the
@@ -23,7 +23,7 @@ description: >
   user edits; a per-cell fingerprint stops the build rather than overwrite an
   edit made in the .nb. Use when the user says "research notebook", "notebook
   with conjectures", "research document on X", "write up the research on X", or
-  the /research-notebook command.
+  the /new-research-notebook command.
 ---
 
 # Research Notebook
@@ -39,7 +39,7 @@ That is the whole design constraint, and [style.md](style.md) is where it turns 
 | Skill | Produces |
 |-------|----------|
 | `new-notebook` | generic Markdown → `.nb` pipeline (this skill builds on it), and every per-function demonstration |
-| `research-notebook` | a paper: settled results with complete proofs, experiments quarantined, everything numbered by the front end |
+| `new-research-notebook` | a paper: settled results with complete proofs, experiments quarantined, everything numbered by the front end |
 
 The reference for tone, structure and proof style is the author's own paper at
 `~/Library/CloudStorage/OneDrive-Personal/Math/articles/FINISHED/hodgepaper/hodgepaper.tex`.
@@ -47,7 +47,7 @@ Read a section of it when the voice is unclear.
 
 ## Read these
 
-[style.md](style.md) is **not optional** — it carries the tier rules, the length budgets and the proof rules, and it is shared with [scaffold-paper](../scaffold-paper/SKILL.md) so a paper reads the same whether it ships as `.nb`, LaTeX or Typst.
+[style.md](style.md) is **not optional** — it carries the tier rules, the length budgets and the proof rules, and it is shared with [new-paper](../new-paper/SKILL.md) so a paper reads the same whether it ships as `.nb`, LaTeX or Typst.
 
 The other four are read on demand, only what the current step needs:
 
@@ -58,7 +58,7 @@ The other four are read on demand, only what the current step needs:
 
 ## Steps
 
-1. Write or update `NotebooksLLM/<Topic>.md` in paper order (§ *Structure*), following [style.md](style.md) throughout.
+1. Write or update `Research/Artifacts/<Topic>_<YYMMDD>.md` in paper order (§ *Structure*), following [style.md](style.md) throughout. The artifact convention — where it goes, how it is named, the index row it needs — is [artifacts.md](../new-notebook/artifacts.md).
 2. **Sort by tier before writing a line of it** ([style.md](style.md) § *The four tiers*). What is settled goes in the body; experiments to *Ruliology*; everything else to the [journal](../journal/SKILL.md), with one line saying why. **With the journal off, take the ruling here** — stop, list what has no home, and put the three options to the operator ([style.md](style.md) § *When the journal is off*). Nothing below is built until it is answered, because option 2 changes the source.
 3. If a generated `.nb` exists, run the drift check first ([fingerprint.md](fingerprint.md)); stop on any drift.
 4. Convert ([build.md](build.md)), evaluate and embed outputs ([output-embedding.md](output-embedding.md)), stamp the fingerprint.
@@ -235,7 +235,7 @@ Then these, which are this skill's own:
 ## Integration with other skills
 
 - `new-notebook` supplies the base pipeline conventions (backtick escaping, init-cell marking, engine selection) and owns every per-function demonstration notebook; this skill layers the rich engine + MathNotebook post-processing on top.
-- `scaffold-paper` shares [style.md](style.md), so a LaTeX or Typst paper reads the same as a notebook one.
+- `new-paper` shares [style.md](style.md), so a LaTeX or Typst paper reads the same as a notebook one.
 - `journal` is where everything below the settled tier goes. It is off by default, and that is the one case the tier rule cannot resolve on its own: with no journal there is no destination, so the generator stops **at the tier sort** and puts the cut list to the operator rather than choosing for them ([style.md](style.md) § *When the journal is off*).
 - `cite` produces the bibliography entries; `provenance` stamps the `"Provenance"` key when its toggle is on; `lean` can pick up the statements, but only when the operator asks for a formalisation.
 

@@ -4,4 +4,4 @@ If arguments are provided (e.g., `/new-notebook graph curvature examples`), crea
 Otherwise ask what the notebook should cover.
 
 Uses the Markdown→notebook pipeline via the official Wolfram MCP.
-Creates the NotebooksLLM/*.md source and generates NotebooksLLM/*.nb alongside it (the plain Notebooks/ folder is reserved for user-authored notebooks, never touched).
+Creates the Markdown source in Code/Artifacts/ and generates the .nb alongside it, sharing one dated stem. Everything outside an Artifacts/ folder is the human's and is never touched.

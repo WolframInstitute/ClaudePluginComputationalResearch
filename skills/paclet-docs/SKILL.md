@@ -191,4 +191,4 @@ the README.
 - Guide pages — a human deliverable, out of scope by design (see the *Guide
   pages* section).
 - Presentation notebooks for humans reading top-to-bottom — that is
-  `new-notebook` / `research-notebook`.
+  `new-notebook` / `new-research-notebook`.

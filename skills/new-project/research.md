@@ -14,7 +14,7 @@ The script creates `CLAUDE.md`, `<CodeDir>/Tools.wl`, `Resources/`, `Scripts/rec
 ## 2. Initialize the wiki
 
 Use the **init-wiki** skill to create `Wiki/` (`Index.md`, `Status.md`, `Concepts/`, `Resources/`, domain folders).
-It asks for (or infers) the domain-specific folders, creates seed files, appends the wiki section to `CLAUDE.md`, and updates `.gitignore` with `Tour/`, `Resources/`, `NotebooksLLM/*.nb` (the `.md` sources stay tracked).
+It asks for (or infers) the domain-specific folders, creates seed files, appends the wiki section to `CLAUDE.md`, and updates `.gitignore` with `Tour/` and `Resources/` (artifacts stay tracked in full).
 
 ## 3. Create initial code files
 
@@ -53,7 +53,7 @@ This step is **not optional**.
 
 ## 6. Create initial notebook
 
-Use the **new-notebook** skill: write `NotebooksLLM/<ProjectName>.md` as the notebook source and generate `NotebooksLLM/<ProjectName>_YYYY-MM-DD.nb` from it (two-layer architecture; the `.nb` carries its first-creation date), with:
+Use the **new-notebook** skill: write `Code/Artifacts/<ProjectName>_<YYMMDD>.md` as the notebook source and generate `Code/Artifacts/<ProjectName>_<YYMMDD>.nb` beside it (two-layer architecture, one shared stem), with:
 
 - Setup section (package loads)
 - Introductory text
@@ -62,14 +62,15 @@ Use the **new-notebook** skill: write `NotebooksLLM/<ProjectName>.md` as the not
 
 ## 7. Create Paper/ (if requested)
 
-If the user wants a paper, use the **scaffold-paper** skill (add `--typst` for a Typst paper instead of the default LaTeX):
+If the user wants a paper, use the **new-paper** skill (add `--typst` for a Typst paper instead of the default LaTeX):
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] "<ProjectName>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>"
+"${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] [--name <Name>] "<ProjectName>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>"
 ```
 
-This creates `Paper/` with main.tex, macros.sty, references.bib, figures/, and .latexmkrc (LaTeX) or main.typ, macros.typ, references.bib, figures/ (Typst).
+This creates `Paper/` with the paper's source (`main.tex` unnamed, `<Name>.tex` with `--name`), macros.sty, references.bib, figures/ and .latexmkrc — or the Typst equivalents.
+A later paper joins this one in the same folder; the preamble and bibliography are written once and shared.
 The document's author is the **model**; the footnote names the operator, the freedom level in bold, and the instructions in one sentence.
-See scaffold-paper skill for details, and its shared writing guide before adding any prose.
+See new-paper skill for details, and its shared writing guide before adding any prose.
 
 Seed `Paper/references.bib` with biblatex entries from the papers downloaded in step 5.

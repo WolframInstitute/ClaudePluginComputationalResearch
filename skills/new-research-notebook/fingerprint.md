@@ -1,4 +1,4 @@
-# research-notebook: the drift-detection fingerprint
+# new-research-notebook: the drift-detection fingerprint
 
 How the build stamps a per-cell fingerprint and how regeneration checks it.
 This mechanism guards the one-way `.md` → `.nb` pipeline — the working arrangement and the stop-on-drift rule are in [SKILL.md](SKILL.md).

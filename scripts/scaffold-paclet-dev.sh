@@ -33,8 +33,29 @@ cd "$OUTPUT_DIR"
 
 # ── 1. Dev repo root ──────────────────────────────────────────────────────
 
-mkdir -p "$DEV_REPO_NAME/Code"
-echo "Created: $DEV_REPO_NAME/Code/"
+mkdir -p "$DEV_REPO_NAME/Code/Artifacts"
+mkdir -p "$DEV_REPO_NAME/Research/Artifacts"
+echo "Created: $DEV_REPO_NAME/Code/Artifacts/, $DEV_REPO_NAME/Research/Artifacts/"
+
+# Artifacts index: the model writes here, and only here.
+write_artifacts_index() {
+cat > "$1" << 'EOF'
+# Artifacts
+
+Everything the model produces lands here, and everything outside an `Artifacts/` folder is yours.
+
+An artifact is one stem — `<WhatItSettles>_YYMMDD` — shared by whatever files it needs, flat in this folder.
+It becomes a folder of its own name only once it carries its own code, data, bibliography or build script, and then the files inside it go bare.
+Every file of an artifact is tracked, `.nb` included; build litter (`.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`) is not.
+Nothing here is uploaded to the Wolfram Cloud unless you ask for it.
+
+| Artifact | What it settles | State |
+|---|---|---|
+EOF
+}
+
+write_artifacts_index "$DEV_REPO_NAME/Code/Artifacts/README.md"
+write_artifacts_index "$DEV_REPO_NAME/Research/Artifacts/README.md"
 
 mkdir -p "$DEV_REPO_NAME/Work"
 sed -e "s/{{PROJECT_NAME}}/$DEV_REPO_NAME/g" \
@@ -169,7 +190,7 @@ echo "Created: $DEV_REPO_NAME/.gitignore"
     echo "- \`Work/\` — execution state (specs / tasks / per-session progress); status is the folder (\`Active/Backlog/Done/Dropped\`), \`Work/README.md\` indexes active items. Use \`/work\` and \`/next-session\`."
     echo "- \`Code/\` — experimental/unrevised code (dev repo only)"
     echo "- \`Wiki/\` — plain-markdown knowledge base"
-    echo "- \`NotebooksLLM/\` — LLM-generated .nb files (gitignored); \`Notebooks/\` is yours, untouched"
+    echo "- \`Code/Artifacts/\` — notebooks about the code; \`Research/Artifacts/\` — research documents. Everything outside an Artifacts folder is yours, untouched"
     echo "- \`Paper/\` — research notes (gitignored)"
     echo "- \`Resources/\` — reference PDFs (gitignored)"
     echo ""

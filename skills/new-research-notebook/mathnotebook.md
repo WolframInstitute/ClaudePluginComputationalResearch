@@ -1,4 +1,4 @@
-# research-notebook: MathNotebook install and environment mechanics
+# new-research-notebook: MathNotebook install and environment mechanics
 
 The paclet half of the two-half pipeline.
 The authoring conventions (marker table, counters, statement precision) are in [SKILL.md](SKILL.md); this sibling carries the install, the stylesheet-embedding rationale, and the verified mechanics.

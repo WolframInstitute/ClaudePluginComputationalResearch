@@ -200,7 +200,7 @@ No — and the question mostly dissolves, because a new item's Progress is one l
 
 For the legacy blocks that T5 will harvest, pruning buys nothing that `git log -p` does not already provide, and rewriting a closed item's audit trail destroys the human-readable record at no saving to any read path: a closed item is read once more, by the harvest itself.
 One exception, for honesty rather than bytes.
-T2 found a sentence in `Work/Done/` that is **false today** — `research-notebook`'s sync described as `ExportString[Import[path], "Markdown"]`, replaced by one-way generation plus a fingerprint two sessions later — with no mechanism to correct it.
+T2 found a sentence in `Work/Done/` that is **false today** — `new-research-notebook`'s sync described as `ExportString[Import[path], "Markdown"]`, replaced by one-way generation plus a fingerprint two sessions later — with no mechanism to correct it.
 When a harvest pass meets a claim it now knows to be false, it appends one line under that block:
 
 ```

@@ -93,13 +93,16 @@ Everything else is unchanged: wiki prose still needs no sign-off, and the delive
 
 ## Protected content
 
-When the user has **explicitly edited or written** something, the LLM must not silently overwrite it.
-This applies to:
+**Everything outside an `Artifacts/` folder is the user's.**
+The LLM writes its own output into `Code/Artifacts/` and `Research/Artifacts/` ([artifacts.md](../new-notebook/artifacts.md)), and everywhere else it proposes rather than overwrites.
+That is a path check, not a judgment call, and it is the mechanism behind the rest of this section.
+
+Within that, the LLM must not silently overwrite anything the user has **explicitly edited or written**, wherever it sits:
 
 - User-edited Specs and tasks in `Work/`
 - User-written code or configuration
 - User-crafted prose (articles the user specifically wrote by hand)
-- Any content the user explicitly created or revised
+- Any content the user explicitly created or revised — including inside an `Artifacts/` folder, once the user has edited it
 
 When the LLM needs to change protected content:
 
@@ -119,7 +122,7 @@ Do not maintain a `Wiki/Log.md`.
 
 ## Integration with other skills
 
-- Every deliverable-producing skill follows this loop; `scaffold-paper`, `lean`, `publish-paclet`, `new-notebook`, `research-notebook`, and `update-wiki` link here for their specific gates.
+- Every deliverable-producing skill follows this loop; `new-paper`, `lean`, `publish-paclet`, `new-notebook`, `new-research-notebook`, and `update-wiki` link here for their specific gates.
 - `work` presents Specs through it; `next-session` reads it before every session; `scripts/auto-run.sh` runs under *Autonomous mode*.
 
 ## When NOT to use

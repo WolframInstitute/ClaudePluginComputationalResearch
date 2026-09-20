@@ -5,6 +5,14 @@ Reference inventory for the plugin: layout, scripts, commands, templates, projec
 Read this when you need it — it is **not** auto-loaded.
 `CLAUDE.md` carries only the policy a session must know before it can know it needs to look something up.
 
+## The artifact convention
+
+Everything the model generates goes into an `Artifacts/` folder, and everything outside one is the user's — the whole of `revise` § *Protected content* reduced to a path check.
+`new-research-note` and `new-research-notebook` write to `Research/Artifacts/`, `new-notebook` to `Code/Artifacts/`, `new-paper` to `Paper/`, which is the user's document and not an artifact.
+An artifact is one dated stem (`<WhatItSettles>_YYMMDD`) shared by whatever files it needs, flat until it grows its own code, data, bibliography or build; then the folder takes the stem and the files inside go bare.
+Every file of an artifact is tracked, `.nb` included, and nothing is uploaded to the Cloud unless the user asks.
+The canonical statement is [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md); the three producers reference it rather than restating it.
+
 ## Layout
 
 ```
@@ -12,6 +20,7 @@ Read this when you need it — it is **not** auto-loaded.
 skills/*/SKILL.md              — skill definitions (auto-discovered)
 skills/*/<topic>.md            — read-on-demand sibling docs, kept out of the unconditional read
                                  (e.g. next-session/paclet-worktree.md, paclet-dev only)
+skills/new-notebook/artifacts.md — the artifact convention, shared by the three producers
 scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
 hooks/                         — PreToolUse hooks (e.g., block .nb reads)
@@ -21,7 +30,7 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (21)
+## Skills (22)
 
 The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
@@ -34,7 +43,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `scaffold-math-project.sh` | bash | new-project (math-research type) |
 | `scaffold-paclet-dev.sh` | bash | new-project (paclet-dev type) |
 | `scaffold-paclet.sh` | bash | new-project (paclet type) |
-| `scaffold-paper.sh` | bash | scaffold-paper skill (`--typst` for Typst; refuses to overwrite an existing paper without `--force`) |
+| `scaffold-paper.sh` | bash | new-paper skill (`--name` names the paper, `--subfolder` gives it its own directory, `--typst` for Typst; refuses to overwrite an existing source without `--force`, and reuses a `macros`/`references.bib` already in the folder) |
 | `scaffold-journal.sh` | bash | journal skill (`--typst` for Typst) |
 | `build_paclet.wls` | wolframscript | build-paclet skill |
 | `publish_paclet.wls` | wolframscript | publish-paclet skill |
@@ -51,7 +60,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `search_dlmf.wls` | wolframscript | search-math skill |
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
-| `mathnotebook_post.wl` | wolframscript | research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
+| `mathnotebook_post.wl` | wolframscript | new-research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
@@ -60,7 +69,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (23)
+## Commands (24)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
 Three commands have no skill behind them:
@@ -111,7 +120,7 @@ Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`, `{{GOALS}}`
 
 The `new-project` skill asks users which type of project to create:
 
-- **research** (default) — Code/, Wiki/, Work/, Resources/, optional Paper/.
+- **research** (default) — Code/Artifacts/, Research/Artifacts/, Wiki/, Work/, Resources/, optional Paper/.
   Open-ended exploration of a topic.
 - **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created, math-domain taxonomy seeded, optional Lean/ subdirectory.
   Organised around precise theorems and definitions rather than open-ended exploration.
@@ -136,12 +145,15 @@ All paclet types use `Package[]` / `PackageExport` / `PackageScope` (not BeginPa
 See `Wiki/Resources/MarkdownToNotebook.md` for the pin, the recovery command, and why the reverse direction (`NotebookToMarkdown`) is used nowhere.
 `paclet-docs` does **not** use the rich engine — it uses the official MCP doc tools.
 
-`research-notebook` uses the rich engine as the **parser half of a two-half pipeline**: MarkdownToNotebook produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, equation numbering, and citations.
+`new-research-notebook` uses the rich engine as the **parser half of a two-half pipeline**: MarkdownToNotebook produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, equation numbering, and citations.
 The split is forced, not stylistic — the converter's `::: theorem` / `::: proof` divs exist only under `Template: Chapter` (which swaps in the WolframBookTools stylesheet, absent from a stock install), are **silently dropped** under `Default`, and even under `Chapter` give one `Theorem` style for every label, colliding section-derived numbers, no anchors, no cross-references, and no citations.
 That skill generates **one-way**: the `.md` is the source of truth and the user edits it while reading the `.nb`, with a per-cell `CellID` fingerprint stored in `TaggingRules` to detect `.nb` edits and stop a regeneration rather than overwrite them.
 
-Its writing rules live in `skills/research-notebook/style.md`, which `scaffold-paper` reads too — one guide for a paper whether it ships as `.nb`, LaTeX or Typst.
+Its writing rules live in `skills/new-research-notebook/style.md`, which `new-paper` reads too — one guide for a paper whether it ships as `.nb`, LaTeX or Typst.
 The mechanics (pipeline, conversion call, stylesheet, references) are in the `build.md` sibling, so `SKILL.md` carries authoring conventions and nothing else.
+
+`new-research-note` uses neither: its notebook goes through `mcp__Wolfram__WriteNotebook` directly, ships **unevaluated** (Input cells only, no paclet load), and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
+Nothing it writes is deployed to the Cloud.
 
 ## How to Add a New Skill
 

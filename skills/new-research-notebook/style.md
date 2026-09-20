@@ -1,7 +1,7 @@
 # Paper style
 
 The shared writing guide.
-Canonical for [research-notebook](SKILL.md) (a paper as a `.nb`) and for [scaffold-paper](../scaffold-paper/SKILL.md) (a paper as LaTeX or Typst).
+Canonical for [new-research-notebook](SKILL.md) (a paper as a `.nb`) and for [new-paper](../new-paper/SKILL.md) (a paper as LaTeX or Typst).
 Read this before writing a line of either.
 
 **The paper is read by a human who wants to check it.**
@@ -52,7 +52,7 @@ And it is not a decision the generator may take on the operator's behalf, in eit
 **The ruling is taken at the tier sort, before anything is built.**
 It is not a closing step.
 Option 2 changes the document, and by the end of a build the document has been converted, evaluated, deployed and linked from the README — a ruling taken there arrives after the thing it rules on was published.
-So the prompt fires where the cut is made: [research-notebook](SKILL.md) step 2, and the moment material is set aside on the typeset path.
+So the prompt fires where the cut is made: [new-research-notebook](SKILL.md) step 2, and the moment material is set aside on the typeset path.
 The hand-off step at the end only carries out a ruling already taken.
 
 #### The retained block

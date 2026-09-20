@@ -48,7 +48,7 @@ Toggle with /journal; see the `journal` skill. -->
 - **Define before stating.** Anything that appears in a theorem statement must first have a `Wiki/Definitions/<Term>.md` entry.
   Copy `Wiki/Definitions/_template.md` for the right structure.
 - **Compute to explore.** Use Wolfram code (in `{{CODE_DIR}}/`) for examples, counterexamples, plotting structure, testing conjectures.
-  LLM notebooks live under `NotebooksLLM/*.md` → `NotebooksLLM/*.nb` (co-located two-layer pipeline); `Notebooks/` is reserved for your hand-authored files and is never touched.
+  LLM notebooks are artifacts: `{{CODE_DIR}}/Artifacts/<WhatItSettles>_YYMMDD.md` → `.nb`, side by side and both tracked. Everything outside an `Artifacts/` folder is yours and is never touched.
   `new-notebook` has a `theorem-proof` template type for Statement/Proof/Corollaries/Examples notebooks.
 - **Reference precisely.** When a fact comes from MathWorld, nLab, DLMF, OEIS, Wikipedia, or a paper, link it from the relevant `Wiki/Definitions/` or `Wiki/Theorems/` article.
   Use the `search-math` skill to discover the right links and `add-resource` / `cite` to record them.

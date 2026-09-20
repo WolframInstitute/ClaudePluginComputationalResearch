@@ -1,14 +1,19 @@
 #!/usr/bin/env wolframscript
 
-(* publish_notebooks.wls — Build .nb from NotebooksLLM/*.md and upload to Wolfram Cloud *)
+(* publish_notebooks.wls — Build .nb from an Artifacts folder's .md sources and
+   upload to Wolfram Cloud. Publishing is never automatic: run this only when
+   the user has asked for it. Pass the folder as the first argument to override
+   the default Code/Artifacts. *)
 
 (* Scripts live in <root>/Scripts/, so climb one level for the project root. *)
 root = ParentDirectory[DirectoryName[$ScriptCommandLine[[1]]]];
-nbDir = FileNameJoin[{root, "NotebooksLLM"}];
+nbDir = If[Length[$ScriptCommandLine] > 1,
+	ExpandFileName[$ScriptCommandLine[[2]]],
+	FileNameJoin[{root, "Code", "Artifacts"}]];
 
 (* First generate notebooks from wiki sources *)
 Print["Building notebooks from wiki sources..."];
-RunProcess[{"wolframscript", "-file", FileNameJoin[{root, "Scripts", "generate_notebooks.wls"}]}];
+RunProcess[{"wolframscript", "-file", FileNameJoin[{root, "Scripts", "generate_notebooks.wls"}], nbDir}];
 
 nbFiles = FileNames["*.nb", nbDir];
 
