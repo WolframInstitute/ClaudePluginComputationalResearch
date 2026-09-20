@@ -10,13 +10,29 @@ Available in the [WolframInstitute marketplace](https://github.com/WolframInstit
 * 🐺 Imports and exports Wolfram notebooks via Markdown.
 * 📚 Grows and maintains a wiki knowledge base.
 * 🔍 Gathers and summarizes resources, keeping a Markdown summary and recovery instructions.
-* 📦 Converts code into a paclet and builds, documents, and deploys it.
+* 📦 Converts code into a paclet and builds, documents, and deploys it — every exported function self-contained enough to publish to the Function Repository on its own.
 * 📓 Generates expository Wolfram notebooks and publishes them on Wolfram Cloud.
-* 📝 Scaffolds a LaTeX or Typst paper and edits the user-owned document on request.
+* 📝 Adds a LaTeX or Typst paper to `Paper/` and edits the user-owned document on request.
 * 🧬 Optionally records the prompt and intent behind every generated artifact.
 * 📔 Optionally keeps a running scientific journal in LaTeX or Typst.
 * 🧭 Offers a guided tour through the project, and a revision protocol for deliverables.
 * ✅ Tracks plans, todos, and state, and can work an opted-in item unattended onto a branch for review.
+
+## 🗂️ Where things go
+
+```
+Project/
+  Code/Artifacts/        notebooks about the code          new-notebook
+  Research/Artifacts/    notes, and papers as notebooks    new-research-note, new-research-notebook
+  Paper/                 your typeset papers               new-paper
+  Wiki/                  what the project knows
+  Work/                  what it is doing
+  Resources/             what it has read
+```
+
+Everything the plugin generates lands in an `Artifacts/` folder — one dated stem per artifact, `<WhatItSettles>_YYMMDD`, shared by whatever files it needs and flat until the artifact grows its own code, data or build.
+**Everything outside an `Artifacts/` folder is yours, and is never written or overwritten.**
+That one path check is the whole protection rule; the convention is spelled out in [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md).
 
 ## 📥 Installation
 
