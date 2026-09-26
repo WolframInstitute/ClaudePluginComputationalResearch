@@ -5,50 +5,44 @@
 A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computational research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html).
 Available in the [WolframInstitute marketplace](https://github.com/WolframInstitute/ClaudePluginMarketplace).
 
-* 📁 Turns a folder of resources — code, PDFs, Markdown, notebooks — into an organized git repo, and maintains it.
-* 🗂️ Writes everything it generates into `Artifacts/` folders, one dated stem per artifact, and leaves the rest of the repo to you.
-* 🐺 Imports and exports Wolfram notebooks via Markdown.
-* 📚 Grows and maintains a wiki knowledge base.
-* 🔍 Gathers and summarizes resources, keeping a Markdown summary and recovery instructions.
-* 📦 Converts code into a paclet and builds, documents, and deploys it — every exported function self-contained enough to publish to the Function Repository on its own.
-* 📓 Generates expository Wolfram notebooks and publishes them on Wolfram Cloud.
-* 📝 Adds a LaTeX or Typst paper to `Paper/` and edits the user-owned document on request.
-* 🧬 Optionally records the prompt and intent behind every generated artifact.
-* 📔 Optionally keeps a running scientific journal in LaTeX or Typst.
-* 🧭 Offers a guided tour through the project, and a revision protocol for deliverables.
-* ✅ Tracks plans, todos, and state, and can work an opted-in item unattended onto a branch for review.
-
-## 🗂️ Where things go
-
-```
-Project/
-  Code/Artifacts/        notebooks about the code          new-notebook
-  Research/Artifacts/    notes, and papers as notebooks    new-research-note, new-research-notebook
-  Paper/                 your typeset papers               new-paper
-  Wiki/                  what the project knows
-  Work/                  what it is doing
-  Resources/             what it has read
-```
-
-Everything the plugin generates lands in an `Artifacts/` folder — one dated stem per artifact, `<WhatItSettles>_YYMMDD`, shared by whatever files it needs and flat until the artifact grows its own code, data or build.
-**Everything outside an `Artifacts/` folder is yours, and is never written or overwritten.**
-That one path check is the whole protection rule; the convention is spelled out in [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md).
+* ⚙️ Sets itself up, installing the servers and tools you choose.
+* 📁 Turns a folder of code, papers and notebooks into an organized git repository, and keeps it that way.
+* 📚 Grows and maintains a wiki of what the project knows.
+* 🔍 Finds and summarizes papers and resources, and records how to get them back.
+* 🐺 Converts Wolfram notebooks to and from Markdown.
+* 📓 Writes expository notebooks, and mathematics papers as notebooks.
+* 📦 Turns code into a documented paclet and publishes it.
+* 📝 Sets up LaTeX or Typst papers and edits them on request.
+* 📐 Formalizes proofs in Lean.
+* 🧮 Builds code and tests beside a mathematics paper and checks it statement by statement.
+* 📔 Keeps a scientific journal of what was learned, if you want one.
+* 🧬 Records the prompt behind everything it generates, if you want that.
+* 🗃️ Manages a backlog of work, and works it on its own while you are away.
+* 🤝 Shows you every deliverable and waits for your review.
+* 🧭 Gives a guided tour of the project.
 
 ## 📥 Installation
 
-Distributed through the [WolframInstitute plugin marketplace](https://github.com/WolframInstitute/ClaudePluginMarketplace).
-In **Claude Code** (CLI / VS Code extension) — the author's setup:
+Runs on the [Wolfram Engine](https://www.wolfram.com/engine/), which is freely available; no notebook interface is needed.
+Install the plugin in **Claude Code** (CLI or VS Code extension):
 
 ```bash
 claude plugin marketplace add WolframInstitute/ClaudePluginMarketplace
 claude plugin install computational-research@WolframInstitute
 ```
 
-In the **Claude Desktop app**, install from the marketplace GUI.
+In the **Claude Desktop app**, install it from the marketplace GUI.
+Then set up the servers — see *Setup* below.
 
-## ⚙️ Setup
+## 🧩 What it does
 
-The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or Mathematica), and draws on these MCP servers:
+Each area below is a set of skills, and each skill is invoked by the slash command of the same name, `/computational-research:<skill>`.
+Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+### ⚙️ Setup
+
+A research tool should not cost a day of setup.
+You choose the parts, and the plugin installs them and checks that they answer.
 
 | Server | Required | Purpose | Source |
 |--------|----------|---------|--------|
@@ -56,13 +50,18 @@ The plugin works best with [Wolfram Engine](https://www.wolfram.com/engine/) (or
 | **arxiv-latex-mcp** | recommended | Download LaTeX source of arXiv papers | [takashiishida/arxiv-latex-mcp](https://github.com/takashiishida/arxiv-latex-mcp) |
 | **arxiv** | recommended | Search and download arXiv papers | [blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server) |
 
-Install the official Wolfram server from a Wolfram session:
+Until the setup skill lands, install the official Wolfram server by hand, from a Wolfram session:
 
 ```wolfram
 InstallMCPServer["ClaudeCode", "WolframLanguage"]
 ```
 
 **🔑 License seats.** Every running kernel — each Wolfram MCP server, each open front-end, each `wolframscript` call — takes one of your `$MaxLicenseProcesses` seats. The plugin is MCP-first and checks headroom before spawning a kernel; see the [kernel execution policy](CLAUDE.md#wolfram-kernel-execution-policy).
+
+| Skill | What it does |
+|---|---|
+| **setup** | Ask what you want, then install and check it — in design, see [AutoSetup](Work/Backlog/AutoSetup.md) |
+| [check-env](commands/check-env.md) | Check that the kernel and the servers answer, and how many license seats are free |
 
 <details>
 <summary>Notes</summary>
@@ -74,40 +73,100 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 
 </details>
 
-## 🧩 Skills & Commands
+### 🗂️ Projects and artifacts
 
-Each skill is invoked by the slash command of the same name, `/computational-research:<skill>`.
-Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](ARCHITECTURE.md).
+A project is a plain git repository that you can read without the plugin.
+What the plugin writes and what you write never mix.
 
-| Skill / Command | Description |
-|-------|-------------|
-| **new-project** | Scaffold a new project (research, math, paclet-dev, paclet) |
-| **new-paper** | Add a LaTeX or Typst paper to `Paper/`, then edit it on request, to the shared writing guide |
-| **journal** | Keep an optional cited LaTeX/Typst journal (def/thm/rem), and take what a paper cannot carry; off by default |
-| **init-wiki** | Create a markdown knowledge base (Wiki/) |
-| **update-wiki** | Update wiki articles, index, and backlinks |
-| **check-wiki** | Audit the wiki for staleness and gaps |
-| **search-wolfram** | Search Wolfram docs, Function Repository, Community, writings |
-| **search-math** | Search MathWorld, nLab, OEIS, DLMF, Wikipedia math |
-| **add-resource** | Add a paper, repo, or page with recovery info |
-| **cite** | BibTeX from an arXiv ID or DOI |
-| **new-notebook** | Build Wolfram notebooks from Markdown into `Code/Artifacts/` (dual-engine: auto-detects a richer converter for frontmatter/LaTeX-math sources) |
-| **new-research-notebook** | A mathematics paper as a notebook, into `Research/Artifacts/`: settled results with complete proofs, experiments quarantined in a Ruliology section, everything numbered and cross-referenced by the front end |
-| **new-research-note** | Freeze a conversation as a dated artifact in `Research/Artifacts/`: a plain LaTeX document (claims, complete proofs, named assumptions, a catalogue), an unevaluated paclet-free notebook and a loadable `.wl`, all sharing one stem; nothing uploaded |
-| **lean** | Drive a Lean/Mathlib formalization session |
-| **paclet-docs** | Generate a symbol reference page per exported paclet function |
-| **build-paclet** | Build a paclet and install it locally |
-| **publish-paclet** | Build with docs, install, publish to the Cloud, deploy the doc pages publicly |
-| **work** | Manage multi-session work items (spec, tasks, hand-off, decisions, progress) |
-| **next-session** | Run the next task in a fresh session, then stop |
-| **autolab** | Work the backlog autonomously from a chat you can watch: one background worker per task in the Agent map, a queue of items, permissions settled up front, work landing on `auto/<Item>` for review |
-| **provenance** | Track the prompt behind each generated artifact |
-| **start-tour** | Run a guided tour of the project |
-| **revise** | Human revision protocol for deliverables — skill only, no command |
-| `check-env` | Check kernel and MCP availability — command only, no skill |
-| `load-project` | Summarize project status — command only, no skill |
-| `auto-run` | The headless path for cron: work one opted-in item unattended, one cold session per task, onto `auto/<Item>` for a human to review and merge — command only, no skill |
+```
+Project/
+  Code/Artifacts/        notebooks about the code
+  Research/Artifacts/    notes, and papers as notebooks
+  Output/                what you deliver: papers, paclets, …
+  Wiki/                  what the project knows
+  Work/                  what it is doing
+  Resources/             what it has read
+```
+
+Everything the plugin generates lands in an `Artifacts/` folder, one dated name per artifact.
+**Everything outside an `Artifacts/` folder is yours, and is never written or overwritten.**
+The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md).
+
+| Skill | What it does |
+|---|---|
+| [new-project](skills/new-project/SKILL.md) | Set up a new project — research, mathematics, or paclet development |
+| [load-project](commands/load-project.md) | Summarize where the project stands and what to do next |
+| [start-tour](skills/start-tour/SKILL.md) | Walk you through the project, topic by topic, with code to run |
+| [revise](skills/revise/SKILL.md) | The review rule every skill follows: show the deliverable, then wait |
+| [provenance](skills/provenance/SKILL.md) | Record the prompt behind each generated file; off by default |
+
+### 📚 Knowledge and resources
+
+What a project learns should outlast the session that learned it.
+The wiki keeps it, and every source is kept with the way to get it back.
+
+| Skill | What it does |
+|---|---|
+| [init-wiki](skills/init-wiki/SKILL.md) | Start a wiki in the project |
+| [update-wiki](skills/update-wiki/SKILL.md) | Record what was learned after a piece of work |
+| [check-wiki](skills/check-wiki/SKILL.md) | Find stale articles, gaps and broken links |
+| [add-resource](skills/add-resource/SKILL.md) | Save a paper, repository or page, with how to get it back |
+| [search-wolfram](skills/search-wolfram/SKILL.md) | Search the Wolfram documentation, Function Repository and Community |
+| [search-math](skills/search-math/SKILL.md) | Search MathWorld, nLab, OEIS, DLMF and Wikipedia |
+| [cite](skills/cite/SKILL.md) | Make a BibTeX entry from an arXiv id or a DOI |
+
+### 📦 Notebooks and paclets
+
+Code is worth most when others can run it.
+Notebooks explain it, and paclets ship it, each exported function standing on its own.
+
+| Skill | What it does |
+|---|---|
+| [new-notebook](skills/new-notebook/SKILL.md) | Build a Wolfram notebook from Markdown, or edit one |
+| [build-paclet](skills/build-paclet/SKILL.md) | Build a paclet and install it locally |
+| [paclet-docs](skills/paclet-docs/SKILL.md) | Write a reference page for every exported function |
+| [publish-paclet](skills/publish-paclet/SKILL.md) | Build with documentation and publish to the Wolfram Cloud |
+
+### 📝 Papers and mathematics
+
+A result is settled only when its proof is complete.
+The paper carries what is settled, and the journal keeps everything else, so nothing is lost.
+
+| Skill | What it does |
+|---|---|
+| [new-paper](skills/new-paper/SKILL.md) | Add a LaTeX or Typst paper, then edit it on request |
+| [new-research-notebook](skills/new-research-notebook/SKILL.md) | Write a mathematics paper as a notebook, with complete proofs |
+| [new-research-note](skills/new-research-note/SKILL.md) | Turn a conversation into a dated note: claims, proofs, and the code behind them |
+| [journal](skills/journal/SKILL.md) | Keep a cited journal of what was learned, and what a paper cannot carry; off by default |
+| [lean](skills/lean/SKILL.md) | Formalize a proof in Lean with Mathlib |
+
+### 🧮 Computational scaffold of papers and verification
+
+A reader should know what a computer checked, and what they must still take on trust.
+You bring a LaTeX paper; the plugin builds the code and tests beside it and reviews the paper one labelled statement at a time.
+Each statement ends with an honest status: what was checked, and how far the check reaches.
+Your paper is read, never written.
+In design, see [PaperVerification](Work/Backlog/PaperVerification.md).
+
+### 🗃️ Backlog management and Autolab
+
+Long work goes wrong when one session carries too much.
+So work is split into small tasks, each done in a fresh session, and agents may run them while you are away.
+
+A **work item** is one Markdown file in `Work/` with a Spec, a task list, and a short log.
+Its status is the folder it sits in — `Active/`, `Backlog/`, `Done/` or `Dropped/`.
+
+| Skill | What it does |
+|---|---|
+| [work](skills/work/SKILL.md) | Create an item, draft its Spec, break it into tasks |
+| [next-session](skills/next-session/SKILL.md) | Run the next task of an item, then stop |
+| [autolab](skills/autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
+| [auto-run](commands/auto-run.md) | The same without a chat, for scheduled runs |
+
+Only items you mark as allowed are picked, a task marked for a human stops the run, and the results land on a branch for you to review and merge.
+The file format is in [ItemFileFormat](Wiki/Concepts/ItemFileFormat.md); how the unattended runs work, and what they cost, is in [AutonomousPipeline](Wiki/Concepts/AutonomousPipeline.md).
 
 ## 📄 License
 
-MIT
+Code: [MIT](https://opensource.org/license/mit).
+Ideas: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

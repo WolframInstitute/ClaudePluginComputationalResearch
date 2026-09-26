@@ -89,8 +89,15 @@ Anything read out of the in-project copy is stale until it has been pulled.
 Note that git surgery inside the Dropbox folder races the sync daemon — a rebase there aborted mid-flight on files the daemon had touched.
 Where a merge or rebase is needed, do it in the reference clone, push, and fast-forward the Dropbox copy.
 
+### The README is the contract
+
+`README.md` is the plugin's acceptance criteria and its philosophy: every sentence in it is a promise a user can hold the plugin to.
+Change the README first, and iterate on it with the author.
+A gap between a README sentence and the implementation is a work item, and its Spec names the sentence it makes true.
+Until that item closes the README may be ahead of the code; the item is the record of the gap.
+
 ### Keeping the docs current
 
-When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in `ARCHITECTURE.md` and the skills table in `README.md`.
+When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in `ARCHITECTURE.md` and the area tables under `README.md` § *What it does*.
 Inventory does not belong in this file: it is auto-loaded into every session, and a session does not need it resident — measured in [Wiki/Concepts/PreambleAudit.md](Wiki/Concepts/PreambleAudit.md).
 Do not update `CLAUDE.md` in response to `CLAUDE.md`-only changes (that would cycle).

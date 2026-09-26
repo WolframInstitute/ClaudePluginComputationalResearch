@@ -173,4 +173,4 @@ Nothing it writes is deployed to the Cloud.
 3. The plugin system auto-discovers skills from the `skills/` directory
 4. If the skill needs a script, add it to `scripts/` and reference it via `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
 5. If the skill should have a slash command, create `commands/<name>.md`
-6. Update the README.md skills table and this file's tables
+6. Add the skill to its area table under README.md § *What it does*, and update this file's tables
