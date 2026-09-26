@@ -98,6 +98,6 @@ Until that item closes the README may be ahead of the code; the item is the reco
 
 ### Keeping the docs current
 
-When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in `ARCHITECTURE.md` and the area tables under `README.md` § *What it does*.
+When skills, scripts, commands, or templates are added, removed, or renamed, update the tables and counts in `ARCHITECTURE.md` and the area tables under `README.md` § *Functionality*.
 Inventory does not belong in this file: it is auto-loaded into every session, and a session does not need it resident — measured in [Wiki/Concepts/PreambleAudit.md](Wiki/Concepts/PreambleAudit.md).
 Do not update `CLAUDE.md` in response to `CLAUDE.md`-only changes (that would cycle).

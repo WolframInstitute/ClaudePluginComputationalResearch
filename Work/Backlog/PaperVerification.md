@@ -21,7 +21,7 @@ Each statement ends with an honest status: what a machine checked, how far the c
 
 ## Acceptance criteria
 
-The README's *Computational scaffold of papers and verification* section is true:
+The README's *Paper verification* section is true:
 
 - Given a LaTeX paper, the plugin builds the code and tests beside it.
 - It reviews the paper one labelled statement at a time, one statement per session.
@@ -85,7 +85,7 @@ The README's *Computational scaffold of papers and verification* section is true
 - [ ] T4 (model: opus, effort: xhigh — design-critical) — the review loop: generalize s1paper's `verify-statement` into a plugin skill, one statement per session, with pin, register, regenerate and verdict.
 - [ ] T5 (model: opus, effort: xhigh — cross-cutting) — the `autolab` bridge: the generated queue becomes backlog work, one statement per task.
 - [ ] T6 (human) — trial on a second real paper chosen in T1: scaffold it, verify three statements, compare the effort against s1paper.
-- [ ] T7 (model: sonnet, effort: high — doc pass) — rewrite the README's *Computational scaffold of papers and verification* section from *In design* to what shipped, with a table of its skills; then ARCHITECTURE, the blog post, and a version bump.
+- [ ] T7 (model: sonnet, effort: high — doc pass) — rewrite the README's *Paper verification* section from *In design* to what shipped, with a table of its skills; then ARCHITECTURE, the blog post, and a version bump.
 
 ### Done
 

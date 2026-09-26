@@ -33,7 +33,7 @@ ARCHITECTURE.md                — this file
 
 ## Skills (25)
 
-The skills are listed by area in [README.md](README.md) § *What it does*, the only human-facing copy.
+The skills are listed by area in [README.md](README.md) § *Functionality*, the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
 ## Scripts (31)
@@ -175,4 +175,4 @@ Nothing it writes is deployed to the Cloud.
 3. The plugin system auto-discovers skills from the `skills/` directory
 4. If the skill needs a script, add it to `scripts/` and reference it via `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
 5. If the skill should have a slash command, create `commands/<name>.md`
-6. Add the skill to its area table under README.md § *What it does*, and update this file's tables
+6. Add the skill to its area table under README.md § *Functionality*, and update this file's tables

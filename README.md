@@ -5,19 +5,19 @@
 A Wolfram-centric [Claude](https://claude.ai) plugin for [AI-assisted computational research](https://p135246.github.io/wolfram/software/2026/03/04/ai-assisted-computational-research.html).
 Available in the [WolframInstitute marketplace](https://github.com/WolframInstitute/ClaudePluginMarketplace).
 
-* ⚙️ Sets itself up, installing the servers and tools you choose.
-* 📁 Turns a folder of code, papers and notebooks into an organized git repository, and keeps it that way.
-* 📚 Grows and maintains a wiki of what the project knows.
-* 🔍 Finds and summarizes papers and resources, and records how to get them back.
+* ⚙️ **Autosetup** installs the MCP servers and tools, and checks the environment.
+* 📁 **Autoorganization** sorts a project into folders and keeps it tidy.
+* 📚 **Autoknowledge** grows and maintains a wiki of what the project knows.
+* 🔍 **Autoresources** gathers resources and keeps track of how to recover them.
 * 🐺 Converts Wolfram notebooks to and from Markdown.
 * 📓 Writes expository notebooks, and mathematics papers as notebooks.
 * 📦 Turns code into a documented paclet and publishes it.
 * 📝 Sets up LaTeX or Typst papers and edits them on request.
 * 📐 Formalizes proofs in Lean.
-* 🧮 Builds code and tests beside a mathematics paper and checks it statement by statement.
+* 🧮 **Paper verification** builds code and tests beside a mathematics paper and checks it statement by statement.
 * 📔 Keeps a scientific journal of what was learned, if you want one.
 * 🧬 Records the prompt behind everything it generates, if you want that.
-* 🗃️ Manages a backlog of work, and works it on its own while you are away.
+* 🗃️ **Autolab** manages a backlog of work and works through it while you are away.
 * 🤝 Shows you every deliverable and waits for your review.
 * 🧭 Gives a guided tour of the project.
 
@@ -32,17 +32,14 @@ claude plugin install computational-research@WolframInstitute
 ```
 
 In the **Claude Desktop app**, install it from the marketplace GUI.
-Then set up the servers — see *Setup* below.
+Then set up the servers; see *Autosetup* below.
 
-## 🧩 What it does
+## 🧩 Functionality
 
-Each area below is a set of skills, and each skill is invoked by the slash command of the same name, `/computational-research:<skill>`.
-Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](ARCHITECTURE.md).
-
-### ⚙️ Setup
+### ⚙️ Autosetup
 
 A research tool should not cost a day of setup.
-You choose the parts, and the plugin installs them and checks that they answer.
+You choose the parts, and the plugin installs them and checks that they work.
 
 | Server | Required | Purpose | Source |
 |--------|----------|---------|--------|
@@ -56,12 +53,12 @@ Until the setup skill lands, install the official Wolfram server by hand, from a
 InstallMCPServer["ClaudeCode", "WolframLanguage"]
 ```
 
-**🔑 License seats.** Every running kernel — each Wolfram MCP server, each open front-end, each `wolframscript` call — takes one of your `$MaxLicenseProcesses` seats. The plugin is MCP-first and checks headroom before spawning a kernel; see the [kernel execution policy](CLAUDE.md#wolfram-kernel-execution-policy).
+**🔑 License seats.** Every running kernel — each Wolfram MCP server, each open front end, each `wolframscript` call — takes one of your `$MaxLicenseProcesses` seats. The plugin is MCP-first and checks headroom before spawning a kernel; see the [kernel execution policy](CLAUDE.md#wolfram-kernel-execution-policy).
 
 | Skill | What it does |
 |---|---|
 | **setup** | Ask what you want, then install and check it — in design, see [AutoSetup](Work/Backlog/AutoSetup.md) |
-| [check-env](commands/check-env.md) | Check that the kernel and the servers answer, and how many license seats are free |
+| [check-env](commands/check-env.md) | Check that the kernel and the servers respond, and how many license seats are free |
 
 <details>
 <summary>Notes</summary>
@@ -73,7 +70,7 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 
 </details>
 
-### 🗂️ Projects and artifacts
+### 📁 Autoorganization
 
 A project is a plain git repository that you can read without the plugin.
 What the plugin writes and what you write never mix.
@@ -100,25 +97,32 @@ The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md
 | [revise](skills/revise/SKILL.md) | The review rule every skill follows: show the deliverable, then wait |
 | [provenance](skills/provenance/SKILL.md) | Record the prompt behind each generated file; off by default |
 
-### 📚 Knowledge and resources
+### 📚 Autoknowledge
 
-What a project learns should outlast the session that learned it.
-The wiki keeps it, and every source is kept with the way to get it back.
+What a project learns should outlast the session that learned it, so the wiki keeps it.
 
 | Skill | What it does |
 |---|---|
 | [init-wiki](skills/init-wiki/SKILL.md) | Start a wiki in the project |
 | [update-wiki](skills/update-wiki/SKILL.md) | Record what was learned after a piece of work |
 | [check-wiki](skills/check-wiki/SKILL.md) | Find stale articles, gaps and broken links |
+
+### 🔍 Autoresources
+
+A source is useful only if you can find it again.
+Each one is saved with a summary and the steps to get it back.
+
+| Skill | What it does |
+|---|---|
 | [add-resource](skills/add-resource/SKILL.md) | Save a paper, repository or page, with how to get it back |
 | [search-wolfram](skills/search-wolfram/SKILL.md) | Search the Wolfram documentation, Function Repository and Community |
 | [search-math](skills/search-math/SKILL.md) | Search MathWorld, nLab, OEIS, DLMF and Wikipedia |
-| [cite](skills/cite/SKILL.md) | Make a BibTeX entry from an arXiv id or a DOI |
+| [cite](skills/cite/SKILL.md) | Make a BibTeX entry from an arXiv ID or a DOI |
 
 ### 📦 Notebooks and paclets
 
 Code is worth most when others can run it.
-Notebooks explain it, and paclets ship it, each exported function standing on its own.
+Notebooks explain it, and paclets ship it, with each exported function standing on its own.
 
 | Skill | What it does |
 |---|---|
@@ -140,15 +144,15 @@ The paper carries what is settled, and the journal keeps everything else, so not
 | [journal](skills/journal/SKILL.md) | Keep a cited journal of what was learned, and what a paper cannot carry; off by default |
 | [lean](skills/lean/SKILL.md) | Formalize a proof in Lean with Mathlib |
 
-### 🧮 Computational scaffold of papers and verification
+### 🧮 Paper verification
 
 A reader should know what a computer checked, and what they must still take on trust.
-You bring a LaTeX paper; the plugin builds the code and tests beside it and reviews the paper one labelled statement at a time.
+You bring a LaTeX paper; the plugin builds the code and tests beside it and reviews the paper one labeled statement at a time.
 Each statement ends with an honest status: what was checked, and how far the check reaches.
 Your paper is read, never written.
 In design, see [PaperVerification](Work/Backlog/PaperVerification.md).
 
-### 🗃️ Backlog management and Autolab
+### 🗃️ Autolab
 
 Long work goes wrong when one session carries too much.
 So work is split into small tasks, each done in a fresh session, and agents may run them while you are away.
@@ -162,12 +166,12 @@ Every move is yours except one: the last task moves the item to UnderReview, whe
 |---|---|
 | [work](skills/work/SKILL.md) | File an item and break it into tasks |
 | [refine](skills/refine/SKILL.md) | Shape a backlog item with you until it is ready to run |
-| [board](skills/board/SKILL.md) | A board of all items you can read and edit on your phone |
+| [board](skills/board/SKILL.md) | A board of all items that you can read and edit on your phone |
 | [next-session](skills/next-session/SKILL.md) | Run the next task of an item, then stop |
 | [autolab](skills/autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
 | [auto-run](commands/auto-run.md) | The same without a chat, for scheduled runs |
 
-Agents pick only items you moved to Ready, stop at any task marked for a human, and leave their results on a branch for you to review.
+Agents pick only items you have moved to Ready, stop at any task marked for a human, and leave their results on a branch for you to review.
 The file format is in [ItemFileFormat](Wiki/Concepts/ItemFileFormat.md); how the unattended runs work, and what they cost, is in [AutonomousPipeline](Wiki/Concepts/AutonomousPipeline.md).
 
 ## 📄 License

@@ -19,7 +19,7 @@ It covers the Wolfram and arXiv servers, Lean, and LaTeX or Typst.
 
 ## Acceptance criteria
 
-The README's *Setup* section and its first goal are true:
+The README's *Autosetup* section and its first goal are true:
 
 - One command asks what the user wants and shows the plan before installing anything.
 - It installs the chosen servers and tools, and leaves alone what is already there.
@@ -60,7 +60,7 @@ The README's *Setup* section and its first goal are true:
 - [ ] T2 (human) — operator rules on the design and the list of choices offered.
 - [ ] T3 (model: opus, effort: xhigh — cross-cutting) — implement the skill, the command and any script, and correct `check-env` to find the official server.
 - [ ] T4 (human) — trial on a machine or user account with nothing installed.
-- [ ] T5 (model: sonnet, effort: high — doc pass) — README (the *Setup* section: link the skill in its table, replace the manual install line), ARCHITECTURE, the blog post, and a version bump.
+- [ ] T5 (model: sonnet, effort: high — doc pass) — README (the *Autosetup* section: link the skill in its table, replace the manual install line), ARCHITECTURE, the blog post, and a version bump.
 
 ### Done
 
