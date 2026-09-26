@@ -30,7 +30,7 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (22)
+## Skills (23)
 
 The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
@@ -69,7 +69,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (24)
+## Commands (25)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
 Three commands have no skill behind them:
@@ -94,7 +94,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by new-notebook) |
 | `formal_definition_template.md` | Wiki/Definitions/ article template |
 | `formalization_checklist_template.md` | Work/Backlog/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
-| `work_item_template.md` | Work item skeleton: Spec / Tasks / Hand-off / Decisions / Progress (used by work, next-session); the five sections are the whole file, status is the folder (Active/Backlog/Done/Dropped) |
+| `work_item_template.md` | Work item skeleton: a human-first Spec (Summary / Motivation / Acceptance criteria / Prompt history / Technical details), then Tasks / Hand-off / Decisions / Progress (used by work, next-session); the ten sections are the whole file, status is the folder (Backlog/Ready/Active/UnderReview/Done/Dropped) |
 | `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |

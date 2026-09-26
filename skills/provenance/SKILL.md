@@ -176,7 +176,7 @@ A `## Provenance` section at the bottom of the article, mirroring `## Recover`:
 
 Capture the originating request in the Spec; each session's prompt goes to the ledger, not the item file:
 
-- In `## Spec`: an `Origin:` line with the verbatim request that prompted the item.
+- In `## Prompt history`: the verbatim request that prompted the item, dated, plus any later user request that reshaped it (older items carry an `Origin:` line in `## Spec` instead).
 - In `Wiki/Prompts.md`: one ledger entry per session, which the item's `## Progress` line links.
   The item file carries no `Prompt:` field — one fact, one destination (see `work`, *The item file format*).
 
@@ -204,7 +204,7 @@ These skills check the toggle and, when on, record provenance in this format:
   On the MCP path it stamps the `TaggingRules` itself via `stampTaggingRule`; on the batch fallback the script propagates the comment.
 - **new-research-notebook** — same comment and ledger entry; the build passes `TaggingRules -> { "Provenance" -> prov }` through `MathNotebookDocument`, and the later fingerprint stamp merges its `"ResearchNotebook"` key alongside it.
 - **update-wiki** — appends a `## Provenance` section to newly generated articles and a ledger entry.
-- **work** / **next-session** — record `Origin:` in the Spec; each session's prompt goes to the ledger, and the `## Progress` line links it.
+- **work** / **next-session** — record the user's requests in `## Prompt history`; each session's prompt goes to the ledger, and the `## Progress` line links it.
 
 This skill is the single source of truth for the format — the others reference it rather than redefining it.
 

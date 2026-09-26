@@ -20,7 +20,7 @@ Computation is used to test conjectures, generate examples, and visualise struct
 - `Wiki/Theorems/` — one `.md` per theorem (statement, proof outline, status)
 - `Wiki/Definitions/` — one `.md` per formal definition (see `_template.md`)
 - `Wiki/Domains/categories.md` — math-domain taxonomy (adapt to project scope)
-- `Work/` — multi-session work items: spec, tasks, per-session progress (incl. formalization checklists); status is the folder (`Active/Backlog/Done/Dropped`), `Work/README.md` indexes active items
+- `Work/` — multi-session work items: spec, tasks, per-session progress (incl. formalization checklists); status is the folder (`Backlog/Ready/Active/UnderReview/Done/Dropped`), `Work/README.md` indexes active items
 - `Resources/` — reference PDFs, notebooks (gitignored)
 - `Lean/` (if present) — Mathlib-style formalization
 

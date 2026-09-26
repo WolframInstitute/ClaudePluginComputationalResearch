@@ -1,19 +1,37 @@
-# {{ITEM_NAME}}
+# {{ITEM_TITLE}}
 
 *[ LLM Generated ]*
 
 > Type: research    <!-- research | formalization | refactor | investigation -->
-<!-- Add `> Autonomous: allowed` here to let /auto-run work this item unattended; absent means no. -->
-<!-- Status is the folder: Active/ Backlog/ Done/ Dropped/. Move the file to change it. -->
-<!-- These five sections are the whole file. Format: Wiki/Concepts/ItemFileFormat.md -->
+<!-- Optional header lines: `> Target: <paclet or artifact>`, `> Waiting on: you — <what>`.
+     Moving the item to Ready/ lets /auto-run work it unattended; in Backlog/ it never runs. -->
+<!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it.
+     The title is plain words; the filename stays CamelCase. Format: Wiki/Concepts/ItemFileFormat.md -->
 
-## Spec
+## Summary
 
-Origin: <!-- the originating request that prompted this item (provenance) -->
+Two or three sentences a newcomer understands: what this item delivers, and for whom.
+No code, no symbol names — a reader who stops here knows what the item is.
 
-One-paragraph goal: what this work item delivers and why.
-A quick item may stop here; a heavy one fills the subsections below.
-This is the contract — corrected in place when it turns out wrong, never appended to.
+## Motivation
+
+- Why it matters: the problem, and what goes wrong if it is left alone.
+- At most five bullets.
+
+## Acceptance criteria
+
+- What is true when the item is done, stated as an outcome a human can check.
+- At most seven bullets. Tasks are how to get there; these are where "there" is.
+
+## Prompt history
+
+- YYYY-MM-DD — "the user's own words that prompted or reshaped this item, verbatim"
+
+## Technical details
+
+The contract to build against, for the sessions that do the work — corrected in place when it turns out wrong, never appended to.
+A quick item may need one paragraph; a heavy one fills the subsections below.
+Past about one screen it is a sign the item should be split.
 
 ### Requirements
 
@@ -21,11 +39,15 @@ This is the contract — corrected in place when it turns out wrong, never appen
 
 ### Design / API
 
-Function signatures, data shapes, theorem statements — the contract to build against.
+Function signatures, data shapes, theorem statements.
 
 ### Edge cases & out of scope
 
 - ...
+
+### Open questions
+
+1. What only the user can decide, one sentence each with the options. Empty before the item moves to `Ready/`.
 
 ## Tasks
 
@@ -41,6 +63,11 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 ### Done
 
 (completed tasks move here with the session that closed them)
+
+<!-- Each closed box carries one to four indented test instructions for the human reviewer, e.g.
+       [x] T1 (S1) — ...
+         - **Test:** open [the file](../../path) — what the reviewer should see.
+         - **Test:** run `...` — the expected result. -->
 
 ## Hand-off
 

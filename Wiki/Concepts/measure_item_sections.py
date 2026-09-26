@@ -12,6 +12,9 @@ import os
 import re
 
 
+SPEC_SECTIONS = ["Spec", "Summary", "Motivation", "Acceptance criteria", "Prompt history", "Technical details"]
+
+
 def main():
     rows = [measureItem(path) for path in itemPaths()]
     printSections(rows)
@@ -43,7 +46,7 @@ def measureItem(path):
         "progressLines": len(re.findall(r"^- \*\*S\d+\*\*", text, flags=re.M)),
         "total": len(text),
         "preamble": len(parts[0]),
-        "spec": sections.get("Spec", 0),
+        "spec": sum(sections.get(name, 0) for name in SPEC_SECTIONS),
         "tasks": sections.get("Tasks", 0),
         "handoff": sections.get("Hand-off", 0),
         "decisions": sections.get("Decisions", 0),

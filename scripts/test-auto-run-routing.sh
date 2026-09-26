@@ -142,6 +142,7 @@ if [ "${STUB_CLOSES_TASK:-0}" = 1 ]; then
     /^### Done/ { print; if (moved) { print ""; print held } ; next }
     { print }' "$ITEM_PATH" > "$ITEM_PATH.tmp" && mv "$ITEM_PATH.tmp" "$ITEM_PATH"
   git add -A >/dev/null && git commit -qm "stub: closed a task" >/dev/null
+  [ -n "${STUB_AFTER:-}" ] && "$STUB_AFTER"
 fi
 
 # Echo back the tier it was asked for, so the digest's per-task model line is
@@ -235,7 +236,79 @@ want "T1 verdict names haiku" "$DIGEST" 'T1 — turns 12, $0.4200, model `claude
 want "T2 verdict names opus"  "$DIGEST" 'T2 — turns 12, $0.4200, model `claude-opus-5` (routed `opus`)'
 want "stop reason"            "$DIGEST" 'Stop reason | **item-complete**'
 
+# ── part 3: Ready/ — the folder is the approval ─────────────────────────────
+
+ready() { # name, task lines — an unmarked item in Ready/, committed
+  mkdir -p Work/Ready
+  cat > "Work/Ready/$1.md" <<ITEM
+# $1
+
+> Type: refactor
+
+## Summary
+
+Fixture.
+
+## Tasks
+
+$2
+
+### Done
+
+## Hand-off
+
+## Decisions
+
+## Progress
+ITEM
+  git add -A >/dev/null && git commit -qm "fixture: $1" >/dev/null
+}
+
+READYDIR=$(mktemp -d -t auto-run-ready)
+cd "$READYDIR" || exit 2
+git init -q . && git config user.email t@t && git config user.name t
+git commit -q --allow-empty -m init
+
+echo "selection from Ready/"
+ready Queued '- [ ] T1 (model: sonnet, effort: high — mechanical) — do the thing.'
+OUT=$(bash "$DRIVER" --dry-run 2>&1)
+want "unnamed run picks the Ready item" "$OUT" "item      : Queued"
+OUT=$(bash "$DRIVER" Queued --dry-run 2>&1)
+want "named run finds it in Ready/"     "$OUT" "next task : - [ ] T1"
+[ -f Work/Ready/Queued.md ] && ok "dry run leaves it in Ready/" || bad "dry run moved it"
+mkdir -p Work/Backlog && git mv Work/Ready/Queued.md Work/Backlog/Queued.md && git commit -qm park
+OUT=$(bash "$DRIVER" Queued --dry-run 2>&1); RC=$?
+[ "$RC" = 2 ] && ok "a Backlog item is refused" || bad "Backlog item accepted: $OUT"
+git mv Work/Backlog/Queued.md Work/Ready/Queued.md && git commit -qm unpark
+
+echo "starting a Ready item"
+rm -f "$ARGV_FILE"
+STUB_CLOSES_TASK=1 ITEM_PATH="$PWD/Work/Active/Queued.md" bash "$DRIVER" Queued >/dev/null 2>&1; RC=$?
+[ "$RC" = 0 ] && ok "exit 0 — the item completed" || bad "exit $RC, want 0"
+[ -f Work/Active/Queued.md ] && ok "moved to Active/ on the branch" || bad "not in Active/"
+grep -q '^> Autonomous: allowed' Work/Active/Queued.md && ok "marker stamped beside Type" || bad "no marker"
+want "move committed on the branch" "$(git log --format=%s auto/Queued)" "chore(work): start Queued from Ready"
+git checkout -q main 2>/dev/null || git checkout -q master
+[ -f Work/Ready/Queued.md ] && ok "the base branch still shows it in Ready/" || bad "base branch changed"
+
+echo "a finished item in UnderReview/ is still found"
+git checkout -q auto/Queued
+python3 - <<'PY'
+import pathlib
+p = pathlib.Path("Work/Active/Queued.md"); s = p.read_text()
+p.write_text(s.replace("### Done", "- [ ] T2 — the last one.\n\n### Done"))
+PY
+git add -A >/dev/null && git commit -qm "fixture: T2" >/dev/null
+cat > "$BIN/review-mover" <<'MOVER'
+#!/usr/bin/env bash
+mkdir -p Work/UnderReview && git mv Work/Active/Queued.md Work/UnderReview/Queued.md && git commit -qm "stub: to review" >/dev/null
+MOVER
+chmod +x "$BIN/review-mover"
+STUB_CLOSES_TASK=1 STUB_AFTER=review-mover ITEM_PATH="$PWD/Work/Active/Queued.md" bash "$DRIVER" Queued >/dev/null 2>&1; RC=$?
+[ "$RC" = 0 ] && ok "exit 0 — completion seen through UnderReview/" || bad "exit $RC, want 0"
+want "stop reason" "$(cat Work/Runs/*Queued.md | tail -40)" 'Stop reason | **item-complete**'
+
 echo
 echo "$PASS passed, $FAIL failed"
-rm -rf "$WORK" "$STUBDIR"
+rm -rf "$WORK" "$STUBDIR" "$READYDIR"
 [ "$FAIL" = 0 ]

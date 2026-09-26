@@ -12,14 +12,45 @@ Sections in read order, with `## Progress` last because nothing reads it:
 
 | section | grows with sessions? | how it changes |
 |---|---|---|
-| `## Spec` | no — it is a contract | **corrected in place**; never appended to |
+| the Spec: `## Summary`, `## Motivation`, `## Acceptance criteria`, `## Technical details` | no — it is a contract | **corrected in place**; never appended to |
+| `## Prompt history` | only when the user reshapes the item | one quoted, dated line appended |
 | `## Tasks` | no — boxes move to `### Done` | checked off |
 | `## Hand-off` | no — one block | **overwritten** every session |
 | `## Decisions` | one row per real choice | a reversal **edits** the row it reverses |
 | `## Progress` | one **line** per session | append-only, never revised, never read |
 
 `## Hand-off` is new and `## Progress` is what changed: from a 3.4–4.5 kB/session block of prose to a single line.
-These five are the whole file — see [the section list is closed](#the-section-list-is-closed).
+The Spec was one `## Spec` section until 2026-09-26, when it was split into a human-first head — see [the Spec is written for a human first](#the-spec-is-written-for-a-human-first).
+These sections are the whole file — see [the section list is closed](#the-section-list-is-closed).
+
+## The Spec is written for a human first
+
+Decided 2026-09-26 by the operator, reading a backlog item in another repo: *"make sure that the backlog is readable and has some form humans can read and not get overwhelmed … It has to start so that human understands it."*
+The format above had been measured entirely from the session's side — what a cold session pays to read — and nothing in it said who else reads the file.
+In practice the human reads the backlog to decide what to work on next, and an item that opened on a blockquote about a review session followed by symbol tables answered that question only after a full read.
+
+The fix borrows the shape of a GitHub issue, where the same problem was solved long ago: a plain title, a summary, the motivation, acceptance criteria, then the detail.
+The ordering is the whole point — a reader who stops at any heading still knows what the item is, and only the sessions read to the bottom.
+
+- **Summary** is two or three sentences with no code and no symbol names. It is the one section that must make sense to someone who has never opened the repo.
+- **Motivation** is why, in at most five bullets. It is what lets a human rank one backlog item against another.
+- **Acceptance criteria** are outcomes a human can check, at most seven. They are not the task list: tasks are how to get there, criteria are where "there" is, and a session can test a task against them.
+- **Prompt history** holds the user's own words, verbatim and dated. It replaces the single `Origin:` line, because an item is often reshaped by later requests and the paraphrase of a request is exactly where intent is lost.
+- **Technical details** is the old Spec body — requirements, design, edge cases — under the old one-screen bound.
+
+What this costs the session is small and bounded: the three human sections are capped at about fifteen lines together, and Prompt history grows only when the user speaks.
+The read stays flat in session count, which was the property the format existed to protect.
+Items written before the split keep their single `## Spec`; `next-session` reads either shape, and nothing is converted unasked.
+
+### Two human gates, and what the reviewer is handed
+
+The same day the lifecycle gained two folders, `Ready/` and `UnderReview/`, one on each side of the work.
+The operator's picture of the process: *"I spend with AI some hours editing the backlog — me the human readable parts … while the AI is going to be thinking and noting the technical details"*, then the item is ready for the autonomous pipeline, and afterwards *"the human should be able to review stuff."*
+`Backlog/` became the place where an item is argued over (the [`refine`](../../skills/refine/SKILL.md) skill), `Ready/` the approval that lets `/auto-run` take it — replacing the hand-written marker as the ordinary way in — and `UnderReview/` the stop before `Done/`, so that finishing the last task no longer counts as acceptance.
+
+What the reviewer needs is not the Progress line, which says what a session did, but where to look and what they should see.
+So each closed task box carries up to four indented `**Test:**` bullets, written for a human: a relative link, an action, an expected result.
+They live under the box they belong to rather than in a section of their own, which keeps the section list closed and keeps a test next to the task it tests; the driver's box counts read only lines that start with `- [`, so the indented bullets are invisible to it.
 
 ## The one-destination rule
 
@@ -157,7 +188,8 @@ So bounding those two sections is the rest of T3's job, together with the `ad-ho
 
 ### The section list is closed
 
-Three of six items invented top-level sections the template does not have, and each is a destination violation:
+The list is the ten sections of the template — the five Spec sections, then Tasks, Hand-off, Decisions and Progress.
+When it was set, three of six items had invented top-level sections the template did not have, and each was a destination violation:
 
 | section | bytes | what it actually was |
 |---|---|---|

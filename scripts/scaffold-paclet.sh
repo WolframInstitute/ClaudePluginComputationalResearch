@@ -105,7 +105,7 @@ $PACLET_NAME/              <- repo root
 
 \`Work/\` holds execution state — what's being built now. Each file is one work
 item: a Spec, Tasks (one ≈ one session), a Hand-off, and a Progress log. An item's status is
-its folder (\`Active/Backlog/Done/Dropped\`), changed by \`git mv\`; \`Work/README.md\`
+its folder (\`Backlog/Ready/Active/UnderReview/Done/Dropped\`), changed by \`git mv\`; \`Work/README.md\`
 indexes the active ones. Use \`/work <goal>\` to create one and \`/next-session\`
 to do one task per fresh session.
 
@@ -173,7 +173,7 @@ echo "  $PACLET_NAME/Tests/"
 echo "  run_tests.wls"
 echo "  README.md"
 echo "  .gitignore"
-echo "  Work/README.md       — active-item index (status = folder: Active/Backlog/Done/Dropped)"
+echo "  Work/README.md       — Ready/Active/UnderReview index (status = folder: Backlog/Ready/Active/UnderReview/Done/Dropped)"
 echo "  CLAUDE.md"
 echo ""
 echo "Next: add kernel modules, tests, and optionally initialize Wiki/."

@@ -8,8 +8,9 @@ description: >
   work item", "spec out X", "plan for X", "break X into tasks", "track this
   across sessions", "add a task", "update the spec", or the /work command.
   Creates Work/Backlog/<Name>.md, bootstrapping the folder if missing. A work
-  item's status is its folder (Active/Backlog/Done/Dropped), not a field. Specs
-  follow the revise protocol. Do NOT trigger on casual uses of the word "work".
+  item's status is its folder (Backlog/Ready/Active/UnderReview/Done/Dropped),
+  not a field. Specs follow the revise protocol; shaping one together with the
+  user over a long sitting is the refine skill. Do NOT trigger on casual uses of the word "work".
 ---
 
 # Work Items
@@ -32,31 +33,40 @@ State is encoded once, in the filesystem; changing state is a `git mv`.
 
 ```
 Work/
-├── README.md     — index: active items + their next task; buckets are linked, not re-listed
-├── Active/       — in progress              <Name>.md
-├── Backlog/      — proposed / not started   <Name>.md            (drafts live here)
-├── Done/         — completed                YYYY-MM-DD-<Name>.md  (by completion date)
-└── Dropped/      — abandoned / superseded   YYYY-MM-DD-<Name>.md  (by drop date)
+├── README.md     — index: Ready, Active and UnderReview items; the rest are linked, not re-listed
+├── Backlog/      — being shaped with the human     <Name>.md
+├── Ready/        — approved, fully specified       <Name>.md   (/auto-run may take it)
+├── Active/       — in progress                     <Name>.md
+├── UnderReview/  — all tasks done, human to check  <Name>.md
+├── Done/         — reviewed and accepted           YYYY-MM-DD-<Name>.md  (by acceptance date)
+└── Dropped/      — abandoned / superseded          YYYY-MM-DD-<Name>.md  (by drop date)
 ```
 
-Names are **clean** (`<Name>.md`, CamelCase) while an item is live in `Active/` or `Backlog/` — that is what you reference it by.
+The flow is `Backlog → Ready → Active → UnderReview → Done`, and each arrow is a human's call except `Active → UnderReview`, which the last session makes.
+**Backlog** is where an item is argued over and rewritten; nothing runs unattended from it.
+**Ready** is the approval: the human has signed off the Spec and the task list, and an unattended `/auto-run` may pick the item up.
+**UnderReview** is the other human gate: the work is finished, and the human checks it against the Acceptance criteria using each task's test instructions.
+
+Names are **clean** (`<Name>.md`, CamelCase) while an item is live — that is what you reference it by.
 On archival the file is `git mv`'d into `Done/` or `Dropped/` and **prefixed with that day's date** (`date +%F`), so the archives read chronologically.
-Resolve an item by name with an exact path in `Active/` then `Backlog/`; glob `Done/*-<Name>.md` and `Dropped/*-<Name>.md` for archived ones.
+Resolve an item by name with an exact path in `Active/`, `Ready/`, `UnderReview/`, then `Backlog/`; glob `Done/*-<Name>.md` and `Dropped/*-<Name>.md` for archived ones.
 
 ## Bootstrap
 
 If `Work/` does not exist, create it and seed `Work/README.md` from `${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/work_readme_template.md` (substitute the project name).
 The folder is tracked in git — do not gitignore it.
-Create each bucket (`Active/`, `Backlog/`, `Done/`, `Dropped/`) lazily the first time an item lands in it.
+Create each bucket lazily the first time an item lands in it.
 
 ## Steps
 
 ### 1. Draft
 
 Ask for a CamelCase name and a one-line goal.
-Copy `${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/work_item_template.md` to `Work/Backlog/<Name>.md`, set the heading, and draft the `## Spec` — for a quick item the one-paragraph goal is enough; for a heavy one fill Requirements / Design / Edge cases.
+Copy `${CLAUDE_PLUGIN_ROOT}/skills/new-project/assets/work_item_template.md` to `Work/Backlog/<Name>.md`, give it a plain-words title, and draft the Spec — the five sections from `## Summary` to `## Technical details`.
+Write the first three for a human who has never seen the project: short sentences, no code, no symbol names in the Summary.
+For a quick item one paragraph of Technical details is enough; for a heavy one fill Requirements / Design / Edge cases.
 
-Fill the `Origin:` line in the Spec with the user's originating request.
+Put the user's originating request, verbatim and dated, as the first line of `## Prompt history`.
 If the project has prompt tracking on (see the [provenance](../provenance/SKILL.md) skill), also append a `Wiki/Prompts.md` ledger entry for the new item.
 
 The Spec and other item prose follow the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*.
@@ -65,6 +75,7 @@ The Spec and other item prose follow the `Semantic line breaks` toggle in `CLAUD
 
 Show the Spec and wait (revise loop).
 A spec in `Backlog/` is still a malleable draft; approval is the gate to starting work, not a field to flip.
+When the item needs more than a quick round — the user wants to write the Motivation and Acceptance criteria themselves, or the design needs research — hand over to [`refine`](../refine/SKILL.md), which is this step done properly over a long sitting.
 
 ### 3. Decompose into tasks
 
@@ -84,29 +95,62 @@ Its context window is also a fifth of the others', against a repo whose cold sta
 Never pair a cheap tier with a cheap effort by reflex: at `low` effort sonnet answered a two-step arithmetic question wrong in two of three runs, at full confidence, with nothing in the output to flag it ([measured](../../Wiki/Concepts/HeadlessModelSurface.md#it-bites-and-the-evidence-is-the-answer-and-not-the-token-count)).
 The `sonnet` row is measured and the `opus` row is still a prior, so say which is which when presenting it, and leave a task unannotated when its tier is part of what the task measures.
 
-To start work now, `git mv` the file into `Active/` (it is now the approved contract) and add it to the index in `Work/README.md`.
-To queue it for later, leave it in `Backlog/`.
+When the user approves the Spec and the task list, `git mv` the file into `Ready/` — or straight into `Active/` if work starts in this session — and add it to the index.
+Never move an item out of `Backlog/` on your own judgement; that move is the approval.
 
 ## The index
 
-`Work/README.md` lists the **Active** items and each one's next unchecked task — the one thing the folders can't show.
+`Work/README.md` has three short tables — the items a human has to act on or can expect to move:
+
+- **Ready** — each item and its plain title: the queue.
+- **Active** — each item and its next unchecked task, the one thing the folders can't show.
+- **UnderReview** — each item waiting for the human's check.
+
 It does **not** re-list `Backlog/`, `Done/`, or `Dropped/`; those are just linked, since the folder is already the record.
-Update an active item's line when its next task changes; drop the line when the item leaves `Active/`.
+Update a line when the item's next task changes; move or drop it when the item changes folder.
 
 ## Lifecycle (move the file)
 
-- **Backlog → Active** — start work (`git mv` into `Active/`, clean name).
-- **Active → Backlog** — park an item you're not working now.
-- **Active → Done** — all tasks complete; `git mv` into `Done/`, prefix with today's date.
-- **Active/Backlog → Dropped** — abandoned or superseded; `git mv` into `Dropped/`, prefix with today's date.
+- **Backlog → Ready** — the user approves the Spec and the task list (usually the end of a `refine` sitting).
+- **Ready → Active** — work starts: `next-session` or `/auto-run` moves it. `/auto-run` also stamps `> Autonomous: allowed`, so the item stays eligible once it has left `Ready/`.
+- **Backlog → Active** — the user starts an item interactively without queueing it.
+- **Active → Backlog / Ready** — park it; back to `Backlog/` if the Spec needs rethinking.
+- **Active → UnderReview** — the last task closed; `next-session` makes this move.
+- **UnderReview → Done** — the user says it passes review; `git mv` into `Done/`, prefix with today's date.
+- **UnderReview → Active** — review found a problem: add a task for it, then move back.
+- **any → Dropped** — abandoned or superseded; `git mv` into `Dropped/`, prefix with today's date.
 
-After any move, fix `Work/README.md` (it tracks only `Active/`).
+After any move, fix `Work/README.md`.
+
+### Review
+
+When the user reviews an item in `UnderReview/`, walk them through it: the Acceptance criteria one by one, each with the test instructions of the tasks that serve it.
+What they find wrong becomes a new unchecked task, and the item goes back to `Active/`; nothing is fixed silently during review.
+When they accept it, move it to `Done/`.
 
 ## The item file format
 
-Five sections, and they are the whole file: `## Spec`, `## Tasks`, `## Hand-off`, `## Decisions`, `## Progress`.
-Do not add a sixth — measured, invented sections are always a destination violation (an item's conclusions belong in `Wiki/`, a blocker in `## Hand-off`, draft content in the artifact).
+An item reads top-down like a GitHub issue: a human who stops at any heading still knows what the item is.
+The upper half — **the Spec** — is written for people; the lower half is the machinery sessions run on.
+
+| section | for | holds | bound |
+|---|---|---|---|
+| `# Title` | human | what the item is, in plain words (the filename stays CamelCase) | one line |
+| `>` header | both | `Type:`, optionally `Target:`, `Waiting on: you — …`, `Autonomous: allowed` | a few lines |
+| `## Summary` | human | what it delivers, for a newcomer; no code, no symbol names | 2–3 sentences |
+| `## Motivation` | human | why it matters, what goes wrong if left alone | ≤ 5 bullets |
+| `## Acceptance criteria` | human | outcomes a human can check when it is done | ≤ 7 bullets |
+| `## Prompt history` | human | the user's own words that prompted or reshaped it, verbatim, dated, oldest first | one line each |
+| `## Technical details` | sessions | requirements, design / API, edge cases — the contract to build against | ~1 screen |
+| `## Tasks` | sessions | one box ≈ one session, `### Done` below | — |
+| `## Hand-off` | sessions | carry-forward for the next session | one block |
+| `## Decisions` | both | choices between real alternatives | one row each |
+| `## Progress` | audit | one line per session | one line each |
+
+These ten sections are the whole file.
+Do not add another — measured, invented sections are always a destination violation (an item's conclusions belong in `Wiki/`, a blocker in `## Hand-off`, draft content in the artifact).
 Rationale and measurements: [Wiki/Concepts/ItemFileFormat.md](../../Wiki/Concepts/ItemFileFormat.md) in this repo.
+Items written before this format keep their single `## Spec` section; do not convert them unasked.
 
 **One fact, one destination — nothing is written twice.**
 
@@ -121,7 +165,9 @@ Rationale and measurements: [Wiki/Concepts/ItemFileFormat.md](../../Wiki/Concept
 Only `## Progress` grows with session count, at one line, so the read a session pays is flat.
 `## Hand-off` and `## Decisions` are the sections that make that possible: they give every corrigible thing a mutable home, so the append-only log never has to carry a correction.
 
-- **`## Spec`** — the contract. Corrected in place; never appended to. Findings are not Spec material. Past ~1 screen it is a signal the item should have been split.
+- **The Spec** (Summary to Technical details) — the contract. Corrected in place; never appended to. Findings are not Spec material. The human sections say *what* and *why*; if a session finds itself explaining mechanism there, it belongs in Technical details. Technical details past ~1 screen is a signal the item should have been split.
+- **`## Prompt history`** — the one Spec section that grows, and only when the user reshapes the item. Quote the user, never paraphrase; trim with `…`. Session prompts go to the provenance ledger, not here.
+- **Test instructions** — when a task closes, its box in `### Done` gets one to four indented `**Test:**` bullets telling a human how to check it: which file to open (a relative link), what to run, what they should see. They are written for the reviewer, not the next session, so they name places and expected results, not what the session did. A task with nothing a human could check says so in one bullet.
 - **`## Hand-off`** — one block, rewritten (or emptied) every session. Half-finished state, a blocker, an open branch. Not a diary.
 - **`## Decisions`** — a row is earned by a choice between real alternatives that a later session could otherwise re-litigate. One sentence for the decision, one for the rationale, a link for the evidence. A reversal **edits** the row it reverses; the table never holds a row and its contradiction.
 - **`## Progress`** — append-only, one line per session, and nothing reads it. It is the audit trail for a human and for git.
@@ -137,13 +183,13 @@ Items written before this format keep their old Progress blocks; the next sessio
 
 ### The autonomy markers
 
-Two optional, hand-written markers control whether `/auto-run` may work the item unattended.
-Both are opt-in and fail closed — an unmarked item is never picked.
+`/auto-run` works an item unattended only if the human has said so, and it fails closed — an item in `Backlog/` is never picked.
 
-- **`> Autonomous: allowed`** — one more `>` header line beside `> Type:`, above `## Spec`. It makes the whole item eligible. Add it only when the user asks for it; it is their decision, not the drafting session's.
+- **The `Ready/` folder** — the ordinary way: moving an item there is the approval, and `/auto-run` takes it from there.
+- **`> Autonomous: allowed`** — one more `>` header line beside `> Type:`, above `## Summary`. The driver stamps it when it starts a Ready item; writing it by hand makes an item already in `Active/` eligible. Add it only when the user asks for it; it is their decision, not the drafting session's.
 - **`(human)`** — appended to a single task line. The driver halts before running that task, so an author can gate one step of an otherwise autonomous item — a spec that must be presented, a deliverable the user wants to see generated.
 
-Neither adds a section, so the five-section rule holds.
+None of these adds a section, so the closed section list holds.
 The driver, the stop conditions, and why the `revise` gate survives this: [Wiki/Concepts/AutonomousPipeline.md](../../Wiki/Concepts/AutonomousPipeline.md).
 
 ### The routing annotation

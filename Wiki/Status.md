@@ -24,7 +24,8 @@ Most of that is a backlog rather than a broken skill — `Wiki/` postdates 21 of
 The live defect is that filing to `Wiki/` does not stop the fact being re-narrated in Progress.
 
 The item file format that follows from those two measurements is now decided and in force — see [The work item file format](Concepts/ItemFileFormat.md).
-Five sections and no others: `## Spec`, `## Tasks`, a new overwritten `## Hand-off`, `## Decisions`, and a `## Progress` that is one line per session and read by nobody.
+A closed list of sections: the Spec, `## Tasks`, a new overwritten `## Hand-off`, `## Decisions`, and a `## Progress` that is one line per session and read by nobody.
+Since 2026-09-26 the Spec opens human-first, like a GitHub issue — Summary, Motivation, Acceptance criteria, Prompt history, then Technical details.
 One fact, one destination — filing to `Wiki/` discharges the obligation to narrate the fact in Progress.
 With Progress out of the read path, `## Spec` and `## Decisions` turn out to be 70–95 % of what a session opens, so both are now bounded: the Spec is corrected in place rather than amended, and a reversal edits the `Decisions` row it reverses.
 `next-session` lost its partial-read rule (the format makes the read flat) and its 2.3 kB paclet-worktree procedure, which moved to a read-on-demand sibling — the file is 613 B smaller than before despite gaining the rules.

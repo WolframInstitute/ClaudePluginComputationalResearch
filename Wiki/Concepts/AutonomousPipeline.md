@@ -89,15 +89,19 @@ It writes the question into `## Hand-off` and halts the whole loop with reason `
 
 ### Selection — fail closed
 
-Glob `Work/Active/*.md` — the folder, not `Work/README.md`.
+Glob `Work/Ready/*.md` and `Work/Active/*.md` — the folders, not `Work/README.md`.
 The folder is the item's status, so it is also the only thing selection may trust: the index is a human's reading surface and is allowed to lag, and an item absent from it is still eligible.
-An item is eligible only if it carries `> Autonomous: allowed` as a header line beside `> Type:`; absent means no.
+An item in `Ready/` is eligible because the human put it there — since 2026-09-26 that move is the approval.
+An item in `Active/` is eligible only if it carries `> Autonomous: allowed` as a header line beside `> Type:`; absent means no.
+Starting a Ready item, the driver moves it to `Active/` and stamps the marker on the `auto/<Item>` branch and commits both, so it stays eligible on later runs while the base branch still shows it in `Ready/` until the merge.
+Nothing in `Backlog/` is ever picked: that is where the human is still shaping it.
+When the last task closes the session moves the item to `UnderReview/`, not `Done/`, and the driver still resolves it there; accepting it is the human's step.
 A task line containing `(human)` anywhere is a hard stop, so an author can gate individual tasks — T4 itself, which had to be presented for approval, is exactly that case.
 The marker is matched as a substring rather than at end of line, so it still gates a task whose line ends in a trailing note.
-If zero or more than one eligible active item exists, the driver stops and reports.
+If zero or more than one eligible item exists, the driver stops and reports.
 It never picks a favourite, because an unattended wrong choice is not observable until the digest.
 
-The header line is one more `>` line above `## Spec`, so it neither adds a section nor breaks the closed section list.
+The header line is one more `>` line above the first section, so it neither adds a section nor breaks the closed section list.
 
 ### Per task
 
