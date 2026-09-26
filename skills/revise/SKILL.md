@@ -66,9 +66,9 @@ The LLM should mention wiki updates in passing ("I updated the wiki article for 
 
 ## Autonomous mode — the gate is deferred, not dropped
 
-A session driven by `scripts/auto-run.sh` has no human to wait for.
+A session driven by `scripts/auto-run.sh`, or a worker dispatched by `/autolab`, has no human to wait for.
 
-**You are in it when your system prompt says you are** — the driver appends a notice naming itself, the branch, and the item.
+**You are in it when you are told so** — `auto-run.sh` appends a notice to your system prompt, and `/autolab` puts it at the top of a worker's prompt; either names the driver, the branch, and the item.
 Do not try to infer it from the absence of a user: absence is not observable from inside a session, and the first live run proved it, recording in `## Hand-off` that it had "run as an interactive `/next-session`" while it was in fact being driven.
 No notice means you are interactive, whatever the branch is called.
 
@@ -85,7 +85,7 @@ Work never reaches `main` without a human merging it, which is the same shape as
 What changes:
 
 - **Do not stop to present.** Finish the task, commit, and let the digest be the presentation.
-- **Do not guess at a real decision.** When the task turns on a choice you would otherwise have asked about, write the question into `## Hand-off` on a line containing `needs-human:`, commit that, and stop. The driver halts the whole run on it. A wrong autonomous call is invisible until the digest and acquires later tasks on top of it, so halting is cheap and guessing is not.
+- **Do not guess at a real decision.** When the task turns on a choice you would otherwise have asked about, write the question into `## Hand-off` on a line containing `needs-human:`, commit that, and stop. The driver halts the item on it. A wrong autonomous call is invisible until the digest and acquires later tasks on top of it, so halting is cheap and guessing is not.
 - **Protected content stays protected.** User-written Specs, code, and prose are not editable without approval — describe the change in `## Hand-off` as a `needs-human:` question instead.
 - **A `(human)` task is not yours.** A task line marked `(human)` halts the driver before the run; if you find yourself in one anyway, stop and say so.
 
@@ -123,7 +123,7 @@ Do not maintain a `Wiki/Log.md`.
 ## Integration with other skills
 
 - Every deliverable-producing skill follows this loop; `new-paper`, `lean`, `publish-paclet`, `new-notebook`, `new-research-notebook`, and `update-wiki` link here for their specific gates.
-- `work` presents Specs through it; `next-session` reads it before every session; `scripts/auto-run.sh` runs under *Autonomous mode*.
+- `work` presents Specs through it; `next-session` reads it before every session; `scripts/auto-run.sh` and the `autolab` workers run under *Autonomous mode*.
 
 ## When NOT to use
 

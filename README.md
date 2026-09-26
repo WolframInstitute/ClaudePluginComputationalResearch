@@ -100,12 +100,13 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **publish-paclet** | Build with docs, install, publish to the Cloud, deploy the doc pages publicly |
 | **work** | Manage multi-session work items (spec, tasks, hand-off, decisions, progress) |
 | **next-session** | Run the next task in a fresh session, then stop |
+| **autolab** | Work the backlog autonomously from a chat you can watch: one background worker per task in the Agent map, a queue of items, permissions settled up front, work landing on `auto/<Item>` for review |
 | **provenance** | Track the prompt behind each generated artifact |
 | **start-tour** | Run a guided tour of the project |
 | **revise** | Human revision protocol for deliverables — skill only, no command |
 | `check-env` | Check kernel and MCP availability — command only, no skill |
 | `load-project` | Summarize project status — command only, no skill |
-| `auto-run` | Work an opted-in item unattended, one cold session per task, onto `auto/<Item>` for a human to review and merge — command only, no skill |
+| `auto-run` | The headless path for cron: work one opted-in item unattended, one cold session per task, onto `auto/<Item>` for a human to review and merge — command only, no skill |
 
 ## 📄 License
 

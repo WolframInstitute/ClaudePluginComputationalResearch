@@ -137,7 +137,7 @@ Items written before this format keep their old Progress blocks; the next sessio
 
 ### The autonomy markers
 
-Two optional, hand-written markers control whether `/auto-run` may work the item unattended.
+Two optional, hand-written markers control whether `/autolab` or `/auto-run` may work the item unattended.
 Both are opt-in and fail closed — an unmarked item is never picked.
 
 - **`> Autonomous: allowed`** — one more `>` header line beside `> Type:`, above `## Spec`. It makes the whole item eligible. Add it only when the user asks for it; it is their decision, not the drafting session's.
@@ -160,7 +160,7 @@ A task box may also name the model tier and reasoning effort that task wants, im
 - **Absent means inherit** — the tier the session is on. Route a task and you should name both fields: no output field reports the effort a run used, so an inherited effort can be checked neither before nor after.
 - **Never fold `human` into these parens.** `(human)` gates a task by that literal substring, so `(model: opus, human)` would silently un-gate it. The two are separate groups, `(human)` first — and a `(human)` task needs no routing, since no unattended run reaches it.
 
-`next-session` compares the annotation against the tier it is running on; `/auto-run` passes it to that task's headless spawn.
+`next-session` compares the annotation against the tier it is running on; `/autolab` and `/auto-run` pass it to that task's worker.
 The grammar and the measurements behind it: [Wiki/Concepts/ItemFileFormat.md § *The per-task routing annotation*](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation).
 
 ## Updating the spec later

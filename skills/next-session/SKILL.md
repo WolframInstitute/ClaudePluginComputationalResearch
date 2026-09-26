@@ -106,7 +106,7 @@ Which Mathlib lemma or tactic closed it is a durable fact — it goes to the `Wi
 ## Integration with other skills
 
 - `work` creates and formats the items this skill executes; the one-fact destination table lives there.
-- `revise` governs the deliverable (and its *Autonomous mode* governs `/auto-run` sessions).
+- `revise` governs the deliverable (and its *Autonomous mode* governs `/autolab` workers and `/auto-run` sessions).
 - `update-wiki` files the durable facts in step 7; `journal` and `provenance` are fed when their toggles are on.
 - `commit` writes the audit-trail commit in step 8.
 

@@ -5,6 +5,8 @@ allowed-tools:
 ---
 Drive a `Work/` item unattended: `${CLAUDE_PLUGIN_ROOT}/scripts/auto-run.sh $ARGUMENTS`.
 
+This is the headless path, kept for cron. For a run the operator can watch and steer — workers in the Agent map, a queue of items, halts reported in the chat — use `/autolab` instead.
+
 Run it with the Bash tool from the repo root and let it finish — it spawns one cold `claude -p` process per task, so it is slow and its output is the only progress signal.
 Do **not** do the tasks yourself, and do not re-run it after a halt.
 

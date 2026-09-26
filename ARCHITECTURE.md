@@ -23,6 +23,7 @@ skills/*/<topic>.md            — read-on-demand sibling docs, kept out of the 
 skills/new-notebook/artifacts.md — the artifact convention, shared by the three producers
 scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
+agents/                        — subagent definitions (the autolab workers, one per effort level)
 hooks/                         — PreToolUse hooks (e.g., block .nb reads)
 skills/new-project/assets/    — templates for scaffolding
 Wiki/                          — knowledge base: external dependencies, concepts
@@ -30,7 +31,7 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (22)
+## Skills (23)
 
 The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
@@ -69,7 +70,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (24)
+## Commands (25)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
 Three commands have no skill behind them:
@@ -78,9 +79,16 @@ Three commands have no skill behind them:
 |---------|------|
 | `check-env` | `scripts/check-env.sh` + an MCP ping; reports live license headroom |
 | `load-project` | reads `Wiki/` + `Work/` status |
-| `auto-run` | `scripts/auto-run.sh`; then reads the digest it names and reports the stop reason |
+| `auto-run` | `scripts/auto-run.sh`; then reads the digest it names and reports the stop reason — the headless path, kept for cron; `autolab` is the one to watch |
 
 The `plugin:` prefix is **mandatory** headless — `claude -p "/next-session"` is a zero-cost no-op that reports `is_error: false`, while `/computational-research:next-session` expands. This is why `auto-run` verifies each run rather than trusting its exit status.
+
+## Agents (6)
+
+| Agent | Used by |
+|-------|---------|
+| `autolab-worker` | `autolab`, for a task whose annotation names no effort — inherits the session's |
+| `autolab-worker-<effort>` | `autolab`, one each for `low`, `medium`, `high`, `xhigh`, `max`; the `Agent` tool has no effort parameter, so the definition carries it and the call's `model` sets the tier |
 
 ## Templates (in skills/new-project/assets/)
 

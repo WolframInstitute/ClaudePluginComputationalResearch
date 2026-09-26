@@ -68,6 +68,18 @@ Inside a repository it creates `<repo>/.claude/worktrees/agent-<id>` on a branch
 Three things rule it out for a task loop: the worktree sits inside the repo, which for a cloud-synced repo is inside the synced folder; the branch name is not `auto/<Item>`; and each worker starts from `HEAD`, so task 2 would not see task 1's commits.
 The orchestrator makes one worktree per item itself, on `auto/<Item>`, outside the repo, and hands its path to every worker of that item.
 
+### Permissions — the orchestrator cannot write them
+
+Found 2026-09-26 in `InSessionAutoRun` T3, on Claude Code 2.1.283.
+In auto mode the classifier **refuses a session's write to its own settings files** as *Self-Modification* — here, a deny rule added to `.claude/settings.local.json` for a probe.
+The refusal covers the outcome, not the command: a read-only `git ls-files .claude` issued right after was refused on the same ground.
+So a preflight cannot add the run's rules itself and remove them afterwards.
+It lists them, the operator adds them with `/permissions`, and the orchestrator re-reads the files to confirm.
+
+The refused probe was also meant to measure two things, which therefore stay unmeasured: whether a rule edited into a settings file mid-session reaches a running worker, and whether a worker that `cd`s into another repo picks up that repo's `.claude/` rules.
+`/permissions` sidesteps the first, since it is the session's own interface.
+The second is settled by construction rather than measurement: a worker is part of the orchestrating session, so its rules are that session's — the user settings plus those of the directory the chat was opened in.
+
 ## Measured properties of `claude -p` (this machine, `claude` 2.1.220)
 
 Three findings from running it rather than assuming.
@@ -219,6 +231,7 @@ Built by T7, 2026-07-28.
 | eligibility markers | documented in `work` § *The autonomy markers*, seeded as comments in `work_item_template.md` |
 | unconditional commit | one clause in `next-session` step 8 — the liveness check is only sound if an autonomous run always commits |
 | the autonomy signal | `--append-system-prompt`, naming the driver, the branch, and the item — see the third fact below |
+| the in-session driver | `skills/autolab/SKILL.md` and `commands/autolab.md` (2026-09-26): background subagent workers from `agents/autolab-worker*.md`, one worktree per item under `~/.cache/autolab/`, the autonomy notice at the top of the worker prompt |
 | per-task routing | `parse_routing` in the same script, from the annotation `work` writes and `next-session` checks; `scripts/test-auto-run-routing.sh` is its regression test, run by hand and spending nothing |
 
 ### Stop reasons
