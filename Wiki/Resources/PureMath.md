@@ -12,6 +12,19 @@ Harvested 2026-07-28 from the closed items `PacletDocumentation` and `AdoptMarkd
 It is the **reference implementation** the `PacletDocumentation` item was pointed at, and it is the existence proof for the MarkdownToNotebook pipeline at scale.
 It is not a dependency of this plugin — nothing here calls it. It is read for design.
 
+## Code conventions adopted from it
+
+Adopted 2026-09-26 into `skills/new-project/assets/code_style_template.md`, from PureMath's `GUIDE.md` (1,900 lines, read at `f5b12e13`):
+
+- bad input is a non-match that stays unevaluated; a `Failure` via `Enclose`/`Confirm` only for a computation that started and could not finish; no `$Failed`, `Missing`, `Return`;
+- predicates never guess and are never stricter than the functions they guard;
+- full-word names, no collision with `System`;
+- no required wrappers, `System` functions before accessors, abstract operations return abstract objects, a function answers its headline examples;
+- double-backtick spans for context names.
+
+Rejected, on the author's call: PureMath's `Function[{x}, ...]` over `|->`, and its comment-per-function rule — the template keeps `|->` and the stricter no-comments rule.
+The inert-head rule for mathematical objects (§ *Mathematical objects*) comes from the Infrageometry `EuclideanInertHeads` refactor, and agrees with PureMath's object inventory, where a primitive is a value that keeps its head.
+
 ## The single most important thing about it
 
 **PureMath does not author `.nb` documentation at all.**
