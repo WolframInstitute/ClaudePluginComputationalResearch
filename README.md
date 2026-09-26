@@ -101,6 +101,7 @@ Scripts, templates, project types, and the repo layout are in [ARCHITECTURE.md](
 | **work** | Manage multi-session work items (spec, tasks, hand-off, decisions, progress) |
 | **next-session** | Run the next task in a fresh session, then stop |
 | **refine** | Shape a backlog item with the user until it is ready to run |
+| **board** | A clickable, phone-readable board of all work items; edits made there reach the files when you sync |
 | **provenance** | Track the prompt behind each generated artifact |
 | **start-tour** | Run a guided tour of the project |
 | **revise** | Human revision protocol for deliverables — skill only, no command |

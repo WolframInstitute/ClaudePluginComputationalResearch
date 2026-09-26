@@ -52,7 +52,7 @@ The deliverable is a **local, read-only web dashboard** pointed at one project r
 
 ## Hand-off
 
-Fresh item; nothing in flight.
+A first version shipped on 2026-09-26 (5.2.0) as the [`board`](../../skills/board/SKILL.md) skill, built live with the operator rather than through this item's tasks: a claude.ai Artifact over `data/board.json`, with page-side edits of the human sections, move approvals, notes, new items and in-page "Ask Claude" queued in `data/pending.json` and applied by a manual sync. It answers the phone and co-editing constraints by way (b) of the design questions, not the default (a). What is left for T1–T3: the local-server alternative, the wiki view, `Work/Runs/` digests, and whether the item should be closed as done by the skill.
 Depends on nothing, but renders `ModelRouting`'s task annotations if that lands first — keep the board view tolerant of their absence.
 
 ## Decisions
@@ -65,3 +65,4 @@ Depends on nothing, but renders `ModelRouting`'s task annotations if that lands 
 ## Progress
 
 - 2026-08-19 — item filed from the SyntheticInfrageometry walk-family session (operator request).
+- 2026-09-26 — first version shipped as the `board` skill in a live session (operator request); see Hand-off.

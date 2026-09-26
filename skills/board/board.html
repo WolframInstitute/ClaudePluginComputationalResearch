@@ -1,0 +1,593 @@
+<title>{{BOARD_TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root {
+  --bg: #f3f5f8; --surface: #ffffff; --sunk: #eaeef3; --ink: #18202e; --muted: #5a6474; --line: #dce1e9;
+  --accent: #2b59c3; --accent-ink: #ffffff;
+  --st-UnderReview: #7b4fc9; --st-Active: #b86e00; --st-Ready: #0e7c86; --st-Backlog: #6b7586;
+  --st-Done: #2e7d4f; --st-Dropped: #8a919c; --warn-bg: #fff4dd; --warn-ink: #7a4a00;
+  --pend-bg: #e8effd; --pend-ink: #1d3f8f;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #10151e; --surface: #182030; --sunk: #131a26; --ink: #e6eaf1; --muted: #9aa4b5; --line: #2a3445;
+    --accent: #86a8f2; --accent-ink: #0d1422;
+    --st-UnderReview: #b492f0; --st-Active: #e8a33a; --st-Ready: #4cc3cc; --st-Backlog: #97a1b2;
+    --st-Done: #6cc58f; --st-Dropped: #7d8594; --warn-bg: #3a2c10; --warn-ink: #f3cf8a;
+    --pend-bg: #1c2b4d; --pend-ink: #b9ccf7;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #10151e; --surface: #182030; --sunk: #131a26; --ink: #e6eaf1; --muted: #9aa4b5; --line: #2a3445;
+  --accent: #86a8f2; --accent-ink: #0d1422;
+  --st-UnderReview: #b492f0; --st-Active: #e8a33a; --st-Ready: #4cc3cc; --st-Backlog: #97a1b2;
+  --st-Done: #6cc58f; --st-Dropped: #7d8594; --warn-bg: #3a2c10; --warn-ink: #f3cf8a;
+  --pend-bg: #1c2b4d; --pend-ink: #b9ccf7;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); padding-inline: 16px; padding-block: 0 48px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 20px; }
+a { color: var(--accent); }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 14px 10px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { font-size: 19px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.brand .stamp { font: 12px var(--mono); color: var(--muted); }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1 1 320px; min-width: 0; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+.chip .n { font: 12px var(--mono); color: var(--muted); margin-left: 4px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip[aria-pressed="true"] .n { color: inherit; opacity: .7; }
+#q { flex: 1 1 200px; min-width: 0; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 10px; }
+
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 13.5px; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.small { padding: 2px 8px; font-size: 12px; }
+.btn:disabled { opacity: .5; cursor: default; }
+
+.syncbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: var(--pend-bg); color: var(--pend-ink); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+.syncbar code { font: 12.5px var(--mono); background: var(--surface); color: var(--ink); border-radius: 4px; padding: 2px 6px; user-select: all; }
+.notice { font-size: 13px; color: var(--muted); }
+
+h2.band { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+h2.band .n { font-family: var(--mono); font-weight: 400; }
+h2.band .hint { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; }
+
+.needs { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.board { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; }
+@media (max-width: 1000px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .board { grid-template-columns: 1fr; } }
+.col { display: grid; gap: 8px; align-content: start; }
+.col .empty { color: var(--muted); font-size: 13px; padding: 10px 2px; border-top: 1px dashed var(--line); }
+
+.card { display: grid; gap: 6px; text-align: left; width: 100%; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 6px; padding: 10px 12px; cursor: pointer; }
+.card:hover { border-color: var(--c); }
+.card .proj { font: 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.card .t { font-weight: 600; line-height: 1.3; text-wrap: balance; }
+.card .s { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+.card .next { font: 12px/1.4 var(--mono); color: var(--ink); background: var(--sunk); border-radius: 4px; padding: 4px 6px; overflow-wrap: anywhere; }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12px; }
+.tag { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); }
+.tag.warn { background: var(--warn-bg); color: var(--warn-ink); border-color: transparent; }
+.tag.pend { background: var(--pend-bg); color: var(--pend-ink); border-color: transparent; }
+.tag.st { color: var(--c); border-color: var(--c); }
+.prog { display: inline-flex; align-items: center; gap: 6px; font: 11px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.prog i { display: block; width: 56px; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.prog i b { display: block; height: 100%; background: var(--c); }
+
+details.archive { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+details.archive summary { cursor: pointer; padding: 10px 12px; display: flex; gap: 8px; align-items: center; font-weight: 600; font-size: 14px; }
+details.archive ul { list-style: none; margin: 0; padding: 0 12px 10px; display: grid; }
+details.archive li button { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); width: 100%; font-size: 13.5px; }
+details.archive li button:focus-visible { outline: 2px solid var(--accent); }
+details.archive .d { font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+details.archive .p { color: var(--muted); font-size: 12px; }
+
+.item { max-width: 820px; width: 100%; margin: 0 auto; display: grid; gap: 14px; }
+.item .crumb { font: 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.item h1 { font: 600 30px/1.2 var(--serif); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toc { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.toc a { flex: none; font-size: 12.5px; text-decoration: none; color: var(--ink); border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; }
+.callout { background: var(--warn-bg); color: var(--warn-ink); border-radius: 6px; padding: 8px 12px; font-size: 14px; }
+.callout.pend { background: var(--pend-bg); color: var(--pend-ink); display: grid; gap: 4px; }
+.callout.pend ul { margin: 0; padding-left: 1.2em; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.panel h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.panel textarea, .panel input[type=text], .panel select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 6px; padding: 8px 10px; font: 15px/1.5 var(--sans); }
+.panel textarea { min-height: 110px; resize: vertical; }
+.panel label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+.answer { white-space: pre-wrap; font: 15px/1.55 var(--serif); background: var(--sunk); border-radius: 6px; padding: 10px 12px; }
+
+.md { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 22px 22px; font: 17px/1.6 var(--serif); overflow-wrap: break-word; }
+.md h2 { font: 600 13px var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 30px 0 8px; padding-top: 14px; border-top: 1px solid var(--line); scroll-margin-top: 140px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.md h2 .acts { margin-left: auto; display: flex; gap: 6px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.md h3 { font: 600 16px var(--sans); margin: 22px 0 6px; }
+.md p, .md li { max-width: 68ch; }
+.md ul, .md ol { padding-left: 1.3em; }
+.md li { margin: 3px 0; }
+.md li:has(> input[type=checkbox]) { list-style: none; margin-left: -1.3em; }
+.md input[type=checkbox] { margin-right: 6px; accent-color: var(--st-Done); }
+.md code { font: 0.82em var(--mono); background: var(--sunk); border-radius: 3px; padding: 1px 4px; }
+.md pre { background: var(--sunk); border-radius: 6px; padding: 10px 12px; overflow-x: auto; font-size: 13px; line-height: 1.45; }
+.md pre code { background: none; padding: 0; }
+.md blockquote { margin: 10px 0; padding: 4px 14px; border-left: 3px solid var(--line); color: var(--muted); font-family: var(--sans); font-size: 14.5px; }
+.md .tbl { overflow-x: auto; margin: 12px 0; }
+.md table { border-collapse: collapse; font: 14px/1.45 var(--sans); min-width: 100%; }
+.md th, .md td { border-bottom: 1px solid var(--line); padding: 6px 10px 6px 0; text-align: left; vertical-align: top; }
+.md th { font-weight: 600; color: var(--muted); font-size: 12.5px; }
+.md .dead { color: var(--muted); border-bottom: 1px dotted var(--muted); cursor: help; }
+.md hr { border: 0; border-top: 1px solid var(--line); }
+.md .pendsec { background: var(--pend-bg); border-radius: 6px; padding: 2px 12px; }
+.md .editor { display: grid; gap: 8px; margin: 8px 0 4px; }
+.md .editor textarea { width: 100%; min-height: 160px; border: 1px solid var(--accent); background: var(--bg); border-radius: 6px; padding: 8px 10px; font: 14.5px/1.5 var(--mono); resize: vertical; }
+.md .missing { color: var(--muted); font: 14px var(--sans); }
+@media (max-width: 620px) { .md { padding: 4px 14px 16px; font-size: 16px; } .item h1 { font-size: 25px; } }
+@media (prefers-reduced-motion: no-preference) { .card { transition: border-color .12s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>{{BOARD_TITLE}}</h1><span class="stamp" id="stamp">loading…</span></div>
+    <div class="controls" id="controls">
+      <div class="chips" id="chips" role="toolbar" aria-label="Projects"></div>
+      <input id="q" type="search" placeholder="Search titles, summaries, tasks" aria-label="Search">
+      <button class="btn" id="newbtn" hidden>New item</button>
+    </div>
+  </header>
+  <div id="syncbar" hidden></div>
+  <main id="view"><p class="notice">Loading the board…</p></main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+const LIVE = ["UnderReview", "Active", "Ready", "Backlog"];
+const LABEL = { UnderReview: "Under review", Active: "Active", Ready: "Ready", Backlog: "Backlog", Done: "Done", Dropped: "Dropped" };
+const HINT = { UnderReview: "finished — check it", Active: "being worked", Ready: "approved, queued", Backlog: "being shaped" };
+const HUMAN = ["Summary", "Motivation", "Acceptance criteria"];
+const MOVES = {
+  Backlog: [["Ready", "Approve for Ready"]],
+  Ready: [["Backlog", "Back to Backlog"]],
+  Active: [["Backlog", "Park in Backlog"]],
+  UnderReview: [["Done", "Accept"], ["Active", "Send back"]],
+};
+
+let DATA = null, items = [], byId = new Map();
+let pending = { edits: {}, newItems: [] };
+const state = { project: load("project") || "All", q: "", editing: null, asking: false, writable: null, saving: false };
+const caps = { artifact: null, comments: null, sample: null, user: null, owner: false };
+
+function load(k) { try { return localStorage.getItem("wb." + k); } catch { return null; } }
+function save(k, v) { try { localStorage.setItem("wb." + k, v); } catch {} }
+function stash(k, v) { try { sessionStorage.setItem("wb." + k, v); } catch {} }
+function unstash(k) { try { const v = sessionStorage.getItem("wb." + k); sessionStorage.removeItem("wb." + k); return v; } catch { return null; } }
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function inline(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+function today() { return new Date().toISOString().slice(0, 10); }
+
+function sections(md) {
+  const out = [], re = /^## +(.+?)\s*$/gm;
+  let m, marks = [];
+  while ((m = re.exec(md))) marks.push({ name: m[1].trim(), start: m.index, bodyStart: m.index + m[0].length });
+  marks.forEach((s, i) => out.push({ ...s, end: i + 1 < marks.length ? marks[i + 1].start : md.length }));
+  return out;
+}
+function sectionBody(md, name) { const s = sections(md).find(x => x.name === name); return s ? md.slice(s.bodyStart, s.end).trim() : null; }
+function withSection(md, name, text) {
+  const secs = sections(md), s = secs.find(x => x.name === name), block = `## ${name}\n\n${text.trim()}\n\n`;
+  if (s) return md.slice(0, s.start) + block + md.slice(s.end);
+  const order = [...HUMAN, "Prompt history", "Technical details", "Spec", "Tasks"];
+  const after = order.slice(order.indexOf(name) + 1);
+  const anchor = secs.find(x => after.includes(x.name));
+  const at = anchor ? anchor.start : md.length;
+  return md.slice(0, at) + block + md.slice(at);
+}
+function effectiveMd(it) {
+  const e = pending.edits[it.id];
+  let md = it.md;
+  if (e?.sections) for (const [k, v] of Object.entries(e.sections)) md = withSection(md, k, v);
+  return md;
+}
+function pendingCount() {
+  let n = pending.newItems.length;
+  for (const e of Object.values(pending.edits)) n += Object.keys(e.sections || {}).length + (e.move ? 1 : 0) + (e.notes?.length || 0) + (e.kept?.length || 0);
+  return n;
+}
+function editOf(id) { return pending.edits[id] || (pending.edits[id] = { sections: {}, move: null, notes: [], kept: [] }); }
+function prune(id) { const e = pending.edits[id]; if (e && !Object.keys(e.sections).length && !e.move && !e.notes.length && !e.kept.length) delete pending.edits[id]; }
+
+async function persist(what) {
+  if (!caps.artifact || state.writable === false) { toast("Saving is not available in this view. Your change stays on this screen only."); return false; }
+  state.saving = true; renderSyncbar();
+  try {
+    await caps.artifact.publish({ "data/pending.json": JSON.stringify(pending, null, 1) });
+    state.writable = true;
+    toast(what + " — saved. It reaches the files at the next sync.");
+    return true;
+  } catch (e) {
+    if (["not_writer", "not_granted", "capability_disabled", "not_declared", "consent_required", "capability_removed"].includes(e?.code)) {
+      state.writable = false; toast("This view is read-only, so the change was not saved."); route();
+    } else if (e?.code === "conflict") {
+      toast("A newer version of the board was published. Reloading it.");
+    } else if (e?.code === "rate_limited") {
+      toast("Too many saves in a row. Wait a moment and save again.");
+    } else {
+      toast("The change could not be saved (" + (e?.code || "error") + "). Try again.");
+    }
+    return false;
+  } finally { state.saving = false; renderSyncbar(); }
+}
+
+let toastTimer;
+function toast(msg) {
+  let t = document.getElementById("toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.setAttribute("role", "status");
+    t.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:14px;max-width:calc(100% - 32px);z-index:20";
+    document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 4200);
+}
+
+function renderSyncbar() {
+  const bar = document.getElementById("syncbar"), n = pendingCount();
+  bar.hidden = !n;
+  if (!n) return;
+  bar.className = "syncbar";
+  bar.innerHTML = `<span>${state.saving ? "Saving…" : `${n} change${n > 1 ? "s" : ""} waiting to reach the files. In a Claude session on your Mac, say`}</span>${state.saving ? "" : `<code>sync the board</code><button class="btn small" id="copysync">Copy</button>`}`;
+  const c = document.getElementById("copysync");
+  if (c) c.onclick = async () => { try { await navigator.clipboard.writeText("sync the board"); toast("Copied."); } catch { toast("Select the text to copy it."); } };
+}
+
+function renderChips() {
+  const counts = n => items.filter(it => (n === "All" || it.project === n) && LIVE.includes(it.bucket)).length;
+  const names = ["All", ...DATA.projects.map(p => p.name)];
+  const box = document.getElementById("chips");
+  box.innerHTML = names.map(n => `<button class="chip" aria-pressed="${n === state.project}" data-p="${esc(n)}">${esc(n)}<span class="n">${counts(n)}</span></button>`).join("");
+  box.onclick = e => { const b = e.target.closest(".chip"); if (!b) return; state.project = b.dataset.p; save("project", state.project); renderChips(); route(); };
+}
+
+function visible() {
+  const q = state.q.trim().toLowerCase();
+  return items.filter(it => (state.project === "All" || it.project === state.project)
+    && (!q || (it.title + " " + it.name + " " + it.summary + " " + it.next + " " + it.md).toLowerCase().includes(q)));
+}
+
+function progress(it) {
+  const total = it.open + it.done;
+  if (!total) return "";
+  return `<span class="prog" title="${it.done} of ${total} tasks done"><i><b style="width:${Math.round(100 * it.done / total)}%"></b></i>${it.done}/${total}</span>`;
+}
+
+function card(it, showStatus) {
+  const e = pending.edits[it.id], tags = [];
+  if (showStatus) tags.push(`<span class="tag st">${LABEL[it.bucket] || it.bucket}</span>`);
+  if (e?.move) tags.push(`<span class="tag pend">→ ${LABEL[e.move]} at sync</span>`);
+  else if (e) tags.push(`<span class="tag pend">edited</span>`);
+  if (it.waiting) tags.push(`<span class="tag warn">waiting on ${esc(it.waiting.split(/\s+[—-]\s+/)[0])}</span>`);
+  if (it.nextHuman && it.bucket !== "UnderReview") tags.push(`<span class="tag warn">next step is yours</span>`);
+  if (it.autonomous) tags.push(`<span class="tag">auto-run</span>`);
+  if (it.type) tags.push(`<span class="tag">${esc(it.type)}</span>`);
+  const summary = e?.sections?.Summary ? e.sections.Summary.split(/\n\s*\n/)[0] : it.summary;
+  return `<button class="card" style="--c:var(--st-${it.bucket}, var(--muted))" data-id="${esc(it.id)}">
+    ${state.project === "All" ? `<span class="proj">${esc(it.project)}</span>` : ""}
+    <span class="t">${inline(it.title)}</span>
+    ${summary ? `<span class="s">${inline(summary)}</span>` : ""}
+    ${it.next && it.bucket !== "Backlog" ? `<span class="next">next: ${inline(it.next)}</span>` : ""}
+    <span class="meta">${progress(it)}${tags.join("")}</span>
+  </button>`;
+}
+
+function newCards() {
+  return pending.newItems.filter(n => state.project === "All" || n.project === state.project).map(n => `
+    <div class="card" style="--c:var(--st-Backlog);cursor:default">
+      ${state.project === "All" ? `<span class="proj">${esc(n.project)}</span>` : ""}
+      <span class="t">${inline(n.title)}</span>
+      ${n.summary ? `<span class="s">${inline(n.summary)}</span>` : ""}
+      <span class="meta"><span class="tag pend">new — created at sync</span><button class="btn small" data-dropnew="${esc(n.id)}">Discard</button></span>
+    </div>`).join("");
+}
+
+function renderBoard() {
+  const vis = visible();
+  const needs = vis.filter(it => it.bucket === "UnderReview" || (LIVE.includes(it.bucket) && (it.waiting || (it.nextHuman && it.bucket !== "Backlog"))));
+  const col = b => {
+    const list = vis.filter(it => it.bucket === b);
+    const extra = b === "Backlog" ? newCards() : "";
+    return `<section class="col" style="--c:var(--st-${b})"><h2 class="band"><span class="dot"></span>${LABEL[b]}<span class="n">${list.length}</span><span class="hint">— ${HINT[b]}</span></h2>
+      ${extra}${list.length ? list.map(it => card(it, false)).join("") : (extra ? "" : `<div class="empty">Nothing here.</div>`)}</section>`;
+  };
+  const archive = b => {
+    const list = vis.filter(it => it.bucket === b).sort((x, y) => (y.date || "").localeCompare(x.date || ""));
+    if (!list.length) return "";
+    return `<details class="archive" style="--c:var(--st-${b})"><summary><span class="dot"></span>${LABEL[b]}<span class="tag">${list.length}</span></summary><ul>
+      ${list.map(it => `<li><button data-id="${esc(it.id)}"><span class="d">${esc(it.date || "")}</span><span>${inline(it.title)}${state.project === "All" ? ` <span class="p">· ${esc(it.project)}</span>` : ""}</span></button></li>`).join("")}</ul></details>`;
+  };
+  const other = [...new Set(vis.map(it => it.bucket))].filter(b => !LIVE.includes(b) && b !== "Done" && b !== "Dropped");
+  document.getElementById("view").innerHTML = `
+    ${needs.length ? `<section><h2 class="band"><span class="dot" style="--c:var(--warn-ink)"></span>Needs you<span class="n">${needs.length}</span></h2><div class="needs">${needs.map(it => card(it, true)).join("")}</div></section>` : ""}
+    <div class="board">${LIVE.map(col).join("")}</div>
+    <div style="display:grid;gap:10px">${archive("Done")}${archive("Dropped")}${other.map(archive).join("")}</div>
+    ${vis.length ? "" : `<p class="notice">No item matches “${esc(state.q)}”.</p>`}`;
+}
+
+function resolve(it, href) {
+  const parts = it.file.split("/").slice(0, -1);
+  for (const seg of href.split("#")[0].split("/")) { if (seg === "..") parts.pop(); else if (seg && seg !== ".") parts.push(seg); }
+  const path = parts.join("/");
+  return items.find(x => x.project === it.project && x.file === path);
+}
+
+function mdToHtml(md) {
+  md = md.replace(/<!--[\s\S]*?-->/g, "");
+  if (!window.marked || !window.DOMPurify) return `<pre>${esc(md)}</pre>`;
+  return DOMPurify.sanitize(marked.parse(md, { gfm: true }));
+}
+
+function renderMarkdown(it, md) {
+  const box = document.createElement("div");
+  box.innerHTML = mdToHtml(md);
+  box.querySelector("h1")?.remove();
+  box.querySelectorAll("table").forEach(t => { const w = document.createElement("div"); w.className = "tbl"; t.replaceWith(w); w.appendChild(t); });
+  box.querySelectorAll("a[href]").forEach(a => {
+    const href = a.getAttribute("href");
+    if (/^https?:/.test(href)) { a.target = "_blank"; a.rel = "noopener"; return; }
+    if (href.startsWith("#")) return;
+    const target = resolve(it, href);
+    if (target) { a.href = "#" + target.id; return; }
+    const s = document.createElement("span"); s.className = "dead"; s.title = "Not on this board: " + href; s.innerHTML = a.innerHTML; a.replaceWith(s);
+  });
+  const e = pending.edits[it.id];
+  const canWrite = caps.artifact && state.writable !== false;
+  box.querySelectorAll("h2").forEach((h, i) => {
+    const name = h.textContent.trim();
+    h.id = "s" + i; h.dataset.section = name;
+    const acts = document.createElement("span"); acts.className = "acts";
+    if (HUMAN.includes(name) && canWrite) acts.innerHTML += `<button class="btn small" data-edit="${esc(name)}">Edit</button>`;
+    if (caps.comments) acts.innerHTML += `<button class="btn small" data-comment="${i}">Comment</button>`;
+    if (acts.innerHTML) h.appendChild(acts);
+    if (e?.sections?.[name] != null) {
+      const wrap = document.createElement("div"); wrap.className = "pendsec";
+      let n = h.nextSibling; const moved = [];
+      while (n && !(n.nodeType === 1 && n.tagName === "H2")) { moved.push(n); n = n.nextSibling; }
+      h.after(wrap); moved.forEach(x => wrap.appendChild(x));
+    }
+  });
+  if (canWrite) {
+    const have = new Set([...box.querySelectorAll("h2")].map(h => h.dataset.section));
+    const missing = HUMAN.filter(n => !have.has(n));
+    if (missing.length) {
+      const p = document.createElement("p"); p.className = "missing";
+      p.innerHTML = "This item has no " + missing.map(n => `<button class="btn small" data-edit="${esc(n)}">Add ${esc(n.toLowerCase())}</button>`).join(" ");
+      box.prepend(p);
+    }
+  }
+  return box;
+}
+
+function renderItem(it) {
+  const md = effectiveMd(it), e = pending.edits[it.id];
+  const view = document.getElementById("view");
+  const moves = caps.owner && caps.artifact && state.writable !== false ? (MOVES[it.bucket] || []) : [];
+  const changes = [];
+  if (e) {
+    for (const k of Object.keys(e.sections)) changes.push([`${k} edited`, `sec:${k}`]);
+    if (e.move) changes.push([`move to ${LABEL[e.move]}`, "move"]);
+    e.notes.forEach((n, i) => changes.push([`note: “${n.text.length > 60 ? n.text.slice(0, 57) + "…" : n.text}”`, `note:${i}`]));
+    e.kept.forEach((n, i) => changes.push([`kept Claude answer`, `kept:${i}`]));
+  }
+  view.innerHTML = `<article class="item" style="--c:var(--st-${it.bucket}, var(--muted))">
+    <div class="row"><button class="btn" id="back">← Board</button><span class="crumb">${esc(it.project)} / Work / ${esc(it.file)}</span></div>
+    <h1>${inline(it.title)}</h1>
+    <div class="meta"><span class="tag st">${LABEL[it.bucket] || it.bucket}</span>${progress(it)}${it.type ? `<span class="tag">${esc(it.type)}</span>` : ""}${it.autonomous ? `<span class="tag">auto-run</span>` : ""}${it.date ? `<span class="tag">${esc(it.date)}</span>` : ""}</div>
+    ${it.waiting ? `<div class="callout">Waiting on ${inline(it.waiting)}</div>` : ""}
+    ${changes.length ? `<div class="callout pend"><strong>Waiting to sync</strong><ul>${changes.map(([t, k]) => `<li>${esc(t)} <button class="btn small" data-undo="${esc(k)}">Undo</button></li>`).join("")}</ul></div>` : ""}
+    ${moves.length || caps.sample || (caps.artifact && state.writable !== false) ? `<div class="row">
+      ${moves.map(([to, label]) => `<button class="btn${to === "Ready" || to === "Done" ? " primary" : ""}" data-move="${to}"${e?.move === to ? " disabled" : ""}>${label}</button>`).join("")}
+      ${caps.artifact && state.writable !== false ? `<button class="btn" id="notebtn">Note for Claude</button>` : ""}
+      ${caps.sample ? `<button class="btn" id="askbtn">Ask Claude</button>` : ""}
+    </div>` : ""}
+    <div id="panel"></div>
+    <nav class="toc" aria-label="Sections" id="toc"></nav>
+    <div class="md" id="md"></div>
+  </article>`;
+  const box = renderMarkdown(it, md);
+  const mdEl = document.getElementById("md");
+  while (box.firstChild) mdEl.appendChild(box.firstChild);
+  const heads = [...mdEl.querySelectorAll("h2")];
+  document.getElementById("toc").innerHTML = heads.length > 1 ? heads.map(h => `<a href="#${esc(it.id)}" data-s="${h.id}">${esc(h.dataset.section)}</a>`).join("") : "";
+  document.getElementById("toc").onclick = ev => { const a = ev.target.closest("a"); if (!a) return; ev.preventDefault(); document.getElementById(a.dataset.s)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  document.getElementById("back").onclick = () => { location.hash = ""; };
+  document.getElementById("notebtn")?.addEventListener("click", () => openNote(it));
+  document.getElementById("askbtn")?.addEventListener("click", () => openAsk(it));
+  view.querySelectorAll("[data-move]").forEach(b => b.onclick = () => requestMove(it, b.dataset.move));
+  view.querySelectorAll("[data-undo]").forEach(b => b.onclick = () => undo(it, b.dataset.undo));
+  mdEl.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEditor(it, b.dataset.edit, b));
+  mdEl.querySelectorAll("[data-comment]").forEach(b => b.onclick = async () => {
+    try { const r = await caps.comments.openComposer({ element: b.closest("h2") }); if (!r.opened) toast("Tap inside the page first, then Comment."); }
+    catch { b.hidden = true; toast("Comments are not available in this view."); }
+  });
+  const draft = unstash("draft:" + it.id);
+  if (draft) { const d = JSON.parse(draft); if (d.section) openEditor(it, d.section, null, d.text); }
+  window.scrollTo(0, 0);
+}
+
+function openEditor(it, name, btn, text) {
+  const mdEl = document.getElementById("md");
+  mdEl.querySelectorAll(".editor").forEach(x => x.remove());
+  const current = text ?? sectionBody(effectiveMd(it), name) ?? "";
+  const ed = document.createElement("div"); ed.className = "editor";
+  ed.innerHTML = `<label for="edtext" style="font:13px var(--sans);color:var(--muted)">${esc(name)} — markdown, in your words</label>
+    <textarea id="edtext">${esc(current)}</textarea>
+    <div class="row"><button class="btn primary" id="edsave">Save</button><button class="btn" id="edcancel">Cancel</button></div>`;
+  const h = [...mdEl.querySelectorAll("h2")].find(x => x.dataset.section === name);
+  if (h) h.after(ed); else mdEl.prepend(ed);
+  const ta = ed.querySelector("textarea"); ta.focus();
+  ed.querySelector("#edcancel").onclick = () => ed.remove();
+  ed.querySelector("#edsave").onclick = async () => {
+    const v = ta.value.trim();
+    const e = editOf(it.id);
+    if (v === (sectionBody(it.md, name) ?? "").trim()) delete e.sections[name]; else e.sections[name] = v;
+    prune(it.id);
+    stash("draft:" + it.id, JSON.stringify({ section: name, text: v }));
+    if (await persist(name + " edited")) { unstash("draft:" + it.id); route(); }
+  };
+}
+
+function openNote(it) {
+  const p = document.getElementById("panel");
+  p.innerHTML = `<div class="panel"><h3>Note for Claude</h3>
+    <label for="notetext">An answer to an open question, a correction, an idea. It goes into the item's prompt history at sync, in your words, and Claude works it into the technical details.</label>
+    <textarea id="notetext"></textarea>
+    <div class="row"><button class="btn primary" id="notesave">Save note</button><button class="btn" id="noteclose">Close</button></div></div>`;
+  const ta = document.getElementById("notetext"); ta.focus();
+  document.getElementById("noteclose").onclick = () => p.innerHTML = "";
+  document.getElementById("notesave").onclick = async () => {
+    const v = ta.value.trim(); if (!v) return;
+    editOf(it.id).notes.push({ text: v, date: today() });
+    if (await persist("Note")) route();
+  };
+}
+
+let askCtl = null, askTurns = [];
+function openAsk(it) {
+  const p = document.getElementById("panel");
+  askTurns = [];
+  p.innerHTML = `<div class="panel"><h3>Ask Claude about this item</h3>
+    <label for="asktext">Claude sees this item's text, not the code or the wiki. Uses your Claude usage.</label>
+    <textarea id="asktext" placeholder="e.g. What is missing from the acceptance criteria?"></textarea>
+    <div class="row"><button class="btn primary" id="asksend">Ask</button><button class="btn" id="askstop" hidden>Stop</button><button class="btn" id="askclose">Close</button></div>
+    <div id="asklog" style="display:grid;gap:8px"></div></div>`;
+  document.getElementById("asktext").focus();
+  document.getElementById("askclose").onclick = () => { askCtl?.abort(); p.innerHTML = ""; };
+  document.getElementById("askstop").onclick = () => askCtl?.abort();
+  document.getElementById("asksend").onclick = () => ask(it);
+}
+
+async function ask(it) {
+  const ta = document.getElementById("asktext"), q = ta.value.trim();
+  if (!q) return;
+  const log = document.getElementById("asklog"), send = document.getElementById("asksend"), stop = document.getElementById("askstop");
+  const qEl = document.createElement("div"); qEl.className = "notice"; qEl.textContent = "You: " + q;
+  const aEl = document.createElement("div"); aEl.className = "answer"; aEl.textContent = "Thinking…";
+  log.append(qEl, aEl); ta.value = ""; send.disabled = true; stop.hidden = false;
+  const framing = `You are helping a mathematician shape one work item in their research backlog. The item is a markdown file; its Summary, Motivation and Acceptance criteria are the human's to write, and Technical details are the AI's. You see only the item below — not the code, the wiki or other items — so say so when a question needs them. Answer briefly and concretely, in plain markdown. When you propose wording for one of the human sections, give it as a ready-to-paste block.\n\n--- ITEM (${it.project}, ${LABEL[it.bucket] || it.bucket}) ---\n${effectiveMd(it).replace(/<!--[\s\S]*?-->/g, "")}\n--- END ITEM ---`;
+  const turns = askTurns.length ? [...askTurns, { role: "user", content: q }] : [{ role: "user", content: framing + "\n\nQuestion: " + q }];
+  askCtl = new AbortController();
+  try {
+    const r = await caps.sample(turns, { cache: false, signal: askCtl.signal, onText: ({ text }) => { aEl.textContent = text; } });
+    aEl.textContent = r.text;
+    askTurns = [...turns, { role: "assistant", content: r.text }];
+    if (caps.artifact && state.writable !== false) {
+      const keep = document.createElement("button"); keep.className = "btn small"; keep.textContent = "Keep for sync";
+      keep.onclick = async () => { editOf(it.id).kept.push({ question: q, answer: r.text, date: today() }); keep.disabled = true; await persist("Answer kept"); };
+      aEl.after(keep);
+    }
+  } catch (e) {
+    if (e?.code === "cancelled") aEl.textContent = e.text || "Stopped.";
+    else if (e?.code === "not_granted") { aEl.textContent = "Asking Claude was not allowed in this view."; document.getElementById("askbtn").hidden = true; }
+    else if (e?.code === "rate_limited") aEl.textContent = "Too many questions at once. Wait a moment.";
+    else aEl.textContent = (e?.text ? e.text + "\n\n" : "") + "The answer could not be finished (" + (e?.code || "error") + ").";
+  } finally { send.disabled = false; stop.hidden = true; askCtl = null; }
+}
+
+async function requestMove(it, to) {
+  const e = editOf(it.id);
+  e.move = to;
+  if (await persist(`Move to ${LABEL[to]}`)) route();
+}
+
+async function undo(it, key) {
+  const e = editOf(it.id);
+  const [kind, rest] = [key.split(":")[0], key.split(":").slice(1).join(":")];
+  if (kind === "sec") delete e.sections[rest];
+  if (kind === "move") e.move = null;
+  if (kind === "note") e.notes.splice(+rest, 1);
+  if (kind === "kept") e.kept.splice(+rest, 1);
+  prune(it.id);
+  if (await persist("Undone")) route();
+}
+
+function openNew() {
+  const view = document.getElementById("view");
+  const projs = DATA.projects.map(p => p.name);
+  const pre = state.project !== "All" ? state.project : projs[0];
+  view.innerHTML = `<article class="item"><div class="row"><button class="btn" id="back">← Board</button></div>
+    <h1>New backlog item</h1>
+    <div class="panel">
+      <label for="nproj">Project<select id="nproj">${projs.map(p => `<option${p === pre ? " selected" : ""}>${esc(p)}</option>`).join("")}</select></label>
+      <label for="ntitle">Title, in plain words<input type="text" id="ntitle"></label>
+      <label for="nsum">Summary — what it delivers, two or three sentences<textarea id="nsum"></textarea></label>
+      <label for="nmot">Motivation — why it matters (optional)<textarea id="nmot"></textarea></label>
+      <p class="notice">At sync, Claude creates the file in Backlog from these words and starts the technical details.</p>
+      <div class="row"><button class="btn primary" id="nsave">Add to backlog</button></div>
+    </div></article>`;
+  document.getElementById("back").onclick = () => { location.hash = ""; route(); };
+  document.getElementById("nsave").onclick = async () => {
+    const title = document.getElementById("ntitle").value.trim();
+    if (!title) { toast("Give the item a title."); return; }
+    pending.newItems.push({ id: "new-" + Date.now(), project: document.getElementById("nproj").value, title,
+      summary: document.getElementById("nsum").value.trim(), motivation: document.getElementById("nmot").value.trim(), date: today() });
+    if (await persist("New item")) { location.hash = ""; route(); }
+  };
+  window.scrollTo(0, 0);
+}
+
+function route() {
+  renderSyncbar();
+  const it = byId.get(decodeURIComponent(location.hash.slice(1)));
+  document.getElementById("controls").hidden = !!it;
+  document.getElementById("newbtn").hidden = !(caps.artifact && state.writable !== false);
+  if (it) renderItem(it); else renderBoard();
+}
+
+document.getElementById("view").addEventListener("click", e => {
+  const d = e.target.closest("[data-dropnew]");
+  if (d) { pending.newItems = pending.newItems.filter(n => n.id !== d.dataset.dropnew); persist("Discarded").then(route); return; }
+  const b = e.target.closest("[data-id]");
+  if (b) location.hash = b.dataset.id;
+});
+document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; renderBoard(); });
+document.getElementById("newbtn").addEventListener("click", openNew);
+window.addEventListener("hashchange", route);
+
+async function boot() {
+  try {
+    const [board, pend] = await Promise.all([
+      fetch("data/board.json").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+      fetch("data/pending.json").then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+    DATA = board;
+    if (pend) pending = { edits: pend.edits || {}, newItems: pend.newItems || [] };
+  } catch (e) {
+    document.getElementById("view").innerHTML = `<p class="notice">The board data could not be loaded. Reload the page; if it stays empty, ask Claude to sync the board.</p>`;
+    return;
+  }
+  items = DATA.projects.flatMap(p => p.items.map(it => ({ ...it, project: p.name })));
+  byId = new Map(items.map(it => [it.id, it]));
+  if (state.project !== "All" && !DATA.projects.some(p => p.name === state.project)) state.project = "All";
+  document.getElementById("stamp").textContent = "files as of " + DATA.generated;
+  renderChips();
+  route();
+  const use = n => (window.claude?.use ? window.claude.use(n).catch(() => null) : Promise.resolve(null));
+  const [artifact, comments, sample, user] = await Promise.all([use("artifact"), use("comments"), use("sample"), use("user")]);
+  Object.assign(caps, { artifact, comments, sample, user });
+  caps.owner = user ? await user.isOwner().catch(() => false) : false;
+  route();
+}
+boot();
+</script>

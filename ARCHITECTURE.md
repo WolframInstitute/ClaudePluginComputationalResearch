@@ -30,12 +30,12 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (23)
+## Skills (24)
 
 The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (29)
+## Scripts (31)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -64,12 +64,14 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
+| `work-board-build.py` | python | board skill; collects every `Work/` item under a root into the board's `data/board.json` |
+| `work-board-sync.py` | python | board skill; applies the page's queued `data/pending.json` — section edits, notes, moves, new items — to the `Work/` files, commits nothing |
 | `test-auto-run-routing.sh` | bash | nothing — run by hand after a change to `auto-run.sh`'s annotation parse; 36 assertions against fixture items and a stub `claude`, spends nothing |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (25)
+## Commands (26)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
 Three commands have no skill behind them:
