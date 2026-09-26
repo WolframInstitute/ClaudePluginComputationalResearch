@@ -51,11 +51,11 @@ And it never cleans up after a failure — no `git reset`, no `git worktree remo
 ### 1. Select
 
 - Resolve the repo; stop if it is not a git repository or has no `Work/`.
-- **Named items**: each must be `Work/Active/<Item>.md` carrying `> Autonomous: allowed`.
+- **Named items**: each must be `Work/Ready/<Item>.md`, where the folder is the operator's approval, or `Work/Active/<Item>.md` carrying `> Autonomous: allowed`.
   Any that is not stops the run before anything starts, naming it — the operator is still at the keyboard, and nothing has cost anything yet.
-- **No items named**: every `Work/Active/*.md` carrying the marker, in `Work/README.md` order, then any not listed there, alphabetically.
+- **No items named**: every `Work/Active/*.md` carrying the marker, then every `Work/Ready/*.md`, each group in `Work/README.md` order, then any not listed there, alphabetically.
   None → stop and say so.
-- Read each item's state from `auto/<Item>` when that branch exists (`git -C <repo> show auto/<Item>:Work/Active/<Item>.md`), since an earlier run's unmerged work lives there; else from the checkout.
+- Read each item's state from `auto/<Item>` when that branch exists (`git -C <repo> show auto/<Item>:Work/Active/<Item>.md` — a Ready item an earlier run started is in `Active/` there), since an earlier run's unmerged work lives there; else from the checkout.
 - An item is **not runnable**, and is reported and left out, when its first unchecked task carries `(human)`, when its `## Hand-off` already holds a `needs-human` line, or when that task's routing annotation does not parse.
   The annotation grammar is in [work § *The routing annotation*](../work/SKILL.md#the-routing-annotation); `model` must be one of `haiku`, `sonnet`, `opus`, `fable`, since those are the values the `Agent` tool takes.
 
@@ -98,6 +98,10 @@ It lives outside the repo because git surgery inside a cloud-synced folder races
 
 The operator's checkout is never switched.
 
+**Start a Ready item** the way `auto-run.sh` does, in the worktree and on its branch: `git mv Work/Ready/<Item>.md Work/Active/<Item>.md`, add `> Autonomous: allowed` on the line after `> Type:` unless it is there, and commit `chore(work): start <Item> from Ready`.
+The marker keeps the item eligible for later runs once it has left `Ready/`; an item with no `> Type:` line halts `bad-annotation`.
+In the operator's checkout the item stays in `Ready/` until the branch is merged.
+
 ### 4. Dispatch
 
 Per task, record the worktree's `HEAD`, the number of boxes in the item's `### Done`, and the time, then make one `Agent` call:
@@ -127,7 +131,7 @@ Every check reads the worktree with `git -C` and absolute paths.
 | the report says `outcome: fault`, or the worker ended in an error | `fault` |
 | the tree is dirty, ignoring `Work/Runs/` | `dirty-tree` |
 | `HEAD` did not move | `no-commit` |
-| the item file is in neither `Work/Active/<Item>.md` nor `Work/Done/*-<Item>.md` | `item-vanished` |
+| the item file is in none of `Work/Active/<Item>.md`, `Work/UnderReview/<Item>.md`, `Work/Done/*-<Item>.md` | `item-vanished` |
 | `### Done` gained no box | `no-box` |
 | `## Hand-off` holds `needs-human` | `needs-human` |
 | no unchecked task remains | `item-complete` — the success exit |

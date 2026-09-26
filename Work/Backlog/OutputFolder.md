@@ -1,39 +1,56 @@
-# OutputFolder
+# One Output folder for what a project delivers
 
 *[ LLM Generated ]*
 
 > Type: refactor
-<!-- Status is the folder: Active/ Backlog/ Done/ Dropped/. Move the file to change it. -->
+> Waiting on: you — a `/refine` sitting on the Summary, Motivation and Acceptance criteria, and the open questions.
+<!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
-## Spec
+## Summary
 
-Origin: "We dont need papaer folder anymore ... it could be perhaps Output and there could be paclet, paper, whatever" (2026-09-26, operator.)
+A project keeps what it delivers — papers, paclets, and anything else it ships — in one folder called Output.
+Today only papers have a folder, and it is called Paper.
 
-A project keeps its papers in `Paper/`, and nowhere names the other things a project delivers.
-The README already shows the new layout: one `Output/` folder for what the user delivers — papers, paclets, and whatever else a project ships.
-This item makes the plugin follow it.
+## Motivation
+
+- A project delivers more than papers, and nothing says where the rest goes.
+- The README already shows the Output folder, so the skills and the README disagree until this lands.
+
+## Acceptance criteria
+
+The README's directory tree is true:
+
+- A new project's papers are set up in the Output folder.
+- The Output folder stays yours: the plugin sets things up in it on request and never overwrites.
+- A project that already has a Paper folder keeps working, and is told the new name without anything being moved.
+
+## Prompt history
+
+- 2026-09-26 — "We dont need papaer folder anymore ... it could be perhaps Output and there could be paclet, paper, whatever"
+- 2026-09-26 — "I dont know honestly we should have work items to sort it out and to make readme compatible with the actual implementsation."
+
+## Technical details
 
 ### Requirements
 
 - `new-paper` and `scaffold-paper.sh` write to `Output/`, not `Paper/`.
-- `new-project`, the scaffold scripts, the gitignore templates, `cite`, `journal`, `search-wolfram` and `new-research-notebook` all name `Output/`.
-- `Output/` stays the user's, like `Paper/` was: the plugin scaffolds into it on request and never overwrites.
-- An existing project with a `Paper/` keeps working: the skills find it and say that `Output/` is the new name, and never move it themselves.
+- `new-project`, the scaffold scripts, the gitignore templates, `cite`, `journal`, `search-wolfram` and `new-research-notebook` all name `Output/` — about 60 references in 14 files.
+- An existing `Paper/` is found and used; the skills say that `Output/` is the new name and never move it themselves.
 
-### Design questions for T1
-
-- Whether a paper sits flat in `Output/` or in its own subfolder, such as `Output/<PaperName>/`, now that the folder is shared with paclets.
-- Whether a paclet built in the project lives in `Output/` too, and how that fits the paclet-dev layout of separate paclet clones.
-- Whether `Output/` stays gitignored by default, as `Paper/` is.
-
-### Out of scope
+### Edge cases & out of scope
 
 - Moving any existing project's files.
 
+### Open questions
+
+1. Whether a paper sits flat in `Output/` or in its own subfolder, such as `Output/<PaperName>/`, now that the folder is shared with paclets.
+2. Whether a paclet built in the project lives in `Output/` too, and how that fits the paclet-dev layout of separate paclet clones.
+3. Whether `Output/` stays gitignored by default, as `Paper/` is.
+
 ## Tasks
 
-- [ ] T1 (model: opus, effort: xhigh — design-critical) — answer the design questions and correct this Spec.
-- [ ] T2 (model: sonnet, effort: high — mechanical sweep) — rename `Paper/` to `Output/` across the skills, scripts and templates, about 60 references in 14 files, with the fallback for an existing `Paper/`; scaffold a throwaway project to confirm.
+- [ ] T1 (model: opus, effort: xhigh — design-critical) — answer the open questions with the operator and correct the Technical details.
+- [ ] T2 (model: sonnet, effort: high — mechanical sweep) — rename `Paper/` to `Output/` across the skills, scripts and templates, with the fallback for an existing `Paper/`; scaffold a throwaway project to confirm.
 - [ ] T3 (model: sonnet, effort: high — doc pass) — ARCHITECTURE, the blog post if the idea changed, and a version bump.
 
 ### Done
@@ -52,4 +69,4 @@ The README already shows `Output/`, so it is ahead of the skills until T2 lands.
 
 ## Progress
 
-- **S0** 2026-09-26 — item filed from the operator's request; draft Spec awaiting approval.
+- **S0** 2026-09-26 — item filed from the operator's request; draft awaiting `/refine`.

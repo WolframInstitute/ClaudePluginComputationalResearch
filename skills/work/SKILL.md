@@ -35,7 +35,7 @@ State is encoded once, in the filesystem; changing state is a `git mv`.
 Work/
 ├── README.md     — index: Ready, Active and UnderReview items; the rest are linked, not re-listed
 ├── Backlog/      — being shaped with the human     <Name>.md
-├── Ready/        — approved, fully specified       <Name>.md   (/auto-run may take it)
+├── Ready/        — approved, fully specified       <Name>.md   (/auto-run or /autolab may take it)
 ├── Active/       — in progress                     <Name>.md
 ├── UnderReview/  — all tasks done, human to check  <Name>.md
 ├── Done/         — reviewed and accepted           YYYY-MM-DD-<Name>.md  (by acceptance date)
@@ -184,9 +184,8 @@ Items written before this format keep their old Progress blocks; the next sessio
 ### The autonomy markers
 
 `/auto-run` and `/autolab` work an item unattended only if the human has said so, and they fail closed — an item in `Backlog/` is never picked.
-`/autolab` does not read `Ready/` yet: it takes only an `Active/` item carrying `> Autonomous: allowed`.
 
-- **The `Ready/` folder** — the ordinary way: moving an item there is the approval, and `/auto-run` takes it from there.
+- **The `Ready/` folder** — the ordinary way: moving an item there is the approval, and `/auto-run` or `/autolab` takes it from there.
 - **`> Autonomous: allowed`** — one more `>` header line beside `> Type:`, above `## Summary`. The driver stamps it when it starts a Ready item; writing it by hand makes an item already in `Active/` eligible. Add it only when the user asks for it; it is their decision, not the drafting session's.
 - **`(human)`** — appended to a single task line. The driver halts before running that task, so an author can gate one step of an otherwise autonomous item — a spec that must be presented, a deliverable the user wants to see generated.
 
