@@ -15,7 +15,7 @@ Where the script and the specification disagree the script is the fact — see [
 Use it first on any item that has not run before.
 It is checked *after* the preflight rather than before it, so it still refuses a dirty working tree: `--dry-run` is a rehearsal of a real launch, not an inspection you can perform mid-edit.
 
-The defaults are three tasks, ninety minutes, and five dollars (`--max-tasks`, `--max-minutes`, `--max-cost`).
+The defaults are three tasks, ninety minutes, and twenty dollars (`--max-tasks`, `--max-minutes`, `--max-cost`).
 
 There is no model or effort flag, and there is deliberately no way to route a run from the command line: each task is spawned on the model and effort its own annotation names, so changing where a task runs means editing the item file.
 The `routing   :` line of a dry run is what that parse produced —

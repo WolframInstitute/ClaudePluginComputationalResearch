@@ -11,7 +11,7 @@ set -uo pipefail
 
 MAX_TASKS=3
 MAX_MINUTES=90
-MAX_COST=5.00
+MAX_COST=20.00
 DRY_RUN=0
 ITEM=""
 
