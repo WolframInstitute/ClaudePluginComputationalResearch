@@ -10,6 +10,7 @@
 
 Origin: "In the future I would like to add some local web-based dashboard with access to the wiki and to the project work status and details." (2026-08-19.)
 Reshaped 2026-09-26: "It would be great if the backlog could be edited interactively with human and AI somehow in web or wherever … I am still thinking of having some browser dashboard for dealing with the backlog."
+And: "the dashboard should be also somehow reachable from phone (iphone) … perhaps there already are some solutions withing claude etc of some backlog management and agentic orchestrator... if not perhaps we should build an ios app or seomthing like that"
 
 A project run under this plugin keeps its state in two plain-markdown trees: `Wiki/` (durable knowledge) and `Work/` (board, items, run digests).
 Both are built to be read in an editor, which is fine for the session and poor for the operator: seeing where a project stands means opening half a dozen files.
@@ -25,10 +26,13 @@ The deliverable is a **local, read-only web dashboard** pointed at one project r
 - **Markdown stays the source of truth.** The dashboard renders the files; it never becomes a second store.
 - **Editing is now wanted** (2026-09-26): the human edits an item's human sections in the browser and the AI takes part — the `refine` loop, in a page. Item moves stay the human's clicks, and each one is a commit.
 - **Zero build step.** It must start with one command on a stock machine (`/dashboard` → a script serving the current repo); no npm install, no bundler, no daemon left running.
+- **Reachable from an iPhone** (2026-09-26): read the board, edit the human sections, review an UnderReview item, and start a Ready item, from the phone. The worker stays the Mac: most tasks need the local Wolfram kernel and licence, which a cloud VM does not have.
 - **Project-agnostic.** Pointed at any repo that follows the plugin layout (SyntheticInfrageometry is the first real target), not wired to this one.
 
 ### Design questions for T1 (decide before building)
 
+- What already covers the phone, before anything is built (surveyed 2026-09-26, docs at code.claude.com/docs/en/): **Remote Control** drives a live Claude Code session on the Mac from the Claude iOS app, with the Mac's files, MCP servers and plugin, plus push notifications when a task finishes or needs input — so a `/refine` sitting or a review works from the phone today. The repos sit in **Dropbox**, whose iOS app already opens and edits the markdown. **Cloud sessions and routines** need the repo on GitHub and have no Wolfram kernel, so they suit only kernel-free tasks. **GitHub Issues + Projects** has a mature iOS app and `@claude` in issues, but would move the backlog out of markdown. Community Kanban tools for Claude Code sessions exist and were not evaluated. An iOS app is not needed unless all of these fail a trial.
+- How the phone reaches the dashboard: a local server exposed over a private network (Tailscale), or a claude.ai Artifact that a Mac session republishes from the files, whose comments come back to that session.
 - Where the AI joins the editing. Three shapes, markdown staying the one store in each: (a) the local server runs a headless `claude -p` on the item when the human asks, reusing the `/auto-run` machinery; (b) the page lives on claude.ai as an Artifact or a Claude Doc, where co-editing and comments already exist, synced back to the repo — a second store and a cloud copy of a private project; (c) the editor stays VS Code, where the human and Claude Code already co-edit, and the dashboard is only the overview. (a) is the default candidate.
 
 - Live server rendering markdown per request vs. static regeneration on file change — mtime polling is probably enough for one user on localhost.
