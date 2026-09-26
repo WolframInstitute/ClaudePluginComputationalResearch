@@ -27,8 +27,9 @@ The one thing the folders can't show — each in-progress item and its next task
 | Item | Next task |
 |---|---|
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T4 — serial trial of `/autolab` on a throwaway item |
+| [AutolabTrialT4](Active/AutolabTrialT4.md) | T1 — disposable item `/autolab` runs serially for `InSessionAutoRun` T4; marked `> Autonomous: allowed` |
 
-`Backlog/` holds `WorkDashboard`; `/next-session <Name>` after a `git mv` into `Active/` starts it.
+`Backlog/` holds `WorkDashboard` and `PaperVerification`; `/next-session <Name>` after a `git mv` into `Active/` starts one.
 
 `ExercisePaperStyle` completed on 2026-08-21 after four tasks. It started on 2026-08-20 and ran the shared writing guide against a real document on both of its paths: T1 as a notebook and T2 as a scaffolded LaTeX paper, the same mathematics — equidistance and odd girth over the SyntheticInfrageometry primitives — re-set so that a finding appearing on both paths is the guide's and a finding on one is that generator's. T1 found [seven writing rules and three build defects](../Wiki/Concepts/PaperStyleExercise.md), two of the seven being rules of `style.md` that contradict each other. T2 confirmed five of those as path-independent, added four the notebook could not show — chiefly that the guide gives the *Ruliology* calls' supporting code no home outside a notebook's Initialization section — and turned up [seven defects in the LaTeX build path](../Wiki/Concepts/PaperStyleExercise.md#the-build-path--six-defects-in-the-shipped-template), the worst being that `\cref` mislabels every non-theorem and that the obvious fix makes multi-references silently lose entries.
 T3 [answered all of it](../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected) in the shipped guide, generators and templates: nothing that failed was a threshold, so the three flagged numbers keep their values and gain a scope, and the corrected templates were re-scaffolded and compiled on both formats.
