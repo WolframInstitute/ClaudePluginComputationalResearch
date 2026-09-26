@@ -162,10 +162,12 @@ tree_dirty() {
   [ -n "$(git status --porcelain -- . ':(exclude)Work/Runs/')" ]
 }
 
-# Active while live, date-prefixed in Done/ once the last task closes.
+# Active while live, UnderReview/ once the last task closes; date-prefixed in
+# Done/ only after a human has reviewed it (or, for older items, at once).
 resolve_item() {
   local name="$1" hit
   [ -f "Work/Active/$name.md" ] && { echo "Work/Active/$name.md"; return 0; }
+  [ -f "Work/UnderReview/$name.md" ] && { echo "Work/UnderReview/$name.md"; return 0; }
   hit=$(ls -1 Work/Done/*-"$name".md 2>/dev/null | tail -1)
   [ -n "$hit" ] && { echo "$hit"; return 0; }
   return 1
@@ -184,23 +186,34 @@ cd "$REPO_ROOT" || exit 2
 
 # ── selection: fail closed ──────────────────────────────────────────────────
 
+# Two ways in: an item in Ready/, where the folder is the human's approval, or
+# an item already in Active/ that carries the marker (a Ready item the driver
+# started earlier, or one marked by hand).
 if [ -n "$ITEM" ]; then
-  [ -f "Work/Active/$ITEM.md" ] || die "no active item Work/Active/$ITEM.md"
-  eligible "Work/Active/$ITEM.md" || die "$ITEM is not marked '> Autonomous: allowed'"
+  if [ -f "Work/Active/$ITEM.md" ]; then
+    eligible "Work/Active/$ITEM.md" || die "$ITEM is not marked '> Autonomous: allowed'"
+  else
+    [ -f "Work/Ready/$ITEM.md" ] || die "no item $ITEM in Work/Ready/ or Work/Active/"
+  fi
 else
   CANDIDATES=()
   for f in Work/Active/*.md; do
     [ -e "$f" ] || continue
     eligible "$f" && CANDIDATES+=("$(basename "$f" .md)")
   done
+  for f in Work/Ready/*.md; do
+    [ -e "$f" ] || continue
+    CANDIDATES+=("$(basename "$f" .md)")
+  done
   case ${#CANDIDATES[@]} in
     1) ITEM="${CANDIDATES[0]}" ;;
-    0) die "no active item carries '> Autonomous: allowed' — mark one, or name it explicitly" ;;
-    *) die "${#CANDIDATES[@]} eligible active items (${CANDIDATES[*]}) — name the one to run" ;;
+    0) die "no item in Work/Ready/ and no active item carries '> Autonomous: allowed' — move one to Ready/, or name it" ;;
+    *) die "${#CANDIDATES[@]} eligible items (${CANDIDATES[*]}) — name the one to run" ;;
   esac
 fi
 
 ITEM_FILE="Work/Active/$ITEM.md"
+[ -f "$ITEM_FILE" ] || ITEM_FILE="Work/Ready/$ITEM.md"
 BRANCH="auto/$ITEM"
 STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 STAMP=$(date -u +%Y%m%d-%H%M%S)
@@ -229,6 +242,24 @@ fi
 git show-ref --verify --quiet "refs/heads/$BRANCH" \
   && git checkout -q "$BRANCH" \
   || git checkout -q -b "$BRANCH"
+
+# Starting a Ready item moves it to Active/ on the review branch and stamps the
+# marker, so later runs still find it eligible after it has left Ready/.
+if [ -f "Work/Ready/$ITEM.md" ]; then
+  mkdir -p Work/Active
+  git mv "Work/Ready/$ITEM.md" "Work/Active/$ITEM.md"
+  if ! eligible "Work/Active/$ITEM.md"; then
+    awk '
+      !done && /^> *Type:/ { print; print "> Autonomous: allowed"; done=1; next }
+      { print }
+      END { if (!done) exit 1 }' "Work/Active/$ITEM.md" > "Work/Active/$ITEM.md.tmp" \
+      || { rm -f "Work/Active/$ITEM.md.tmp"; die "$ITEM has no '> Type:' line to put the marker beside"; }
+    mv "Work/Active/$ITEM.md.tmp" "Work/Active/$ITEM.md"
+  fi
+  git add "Work/Active/$ITEM.md"
+  git commit -qm "chore(work): start $ITEM from Ready" || die "could not commit the move of $ITEM out of Ready/"
+fi
+ITEM_FILE="Work/Active/$ITEM.md"
 
 # ── digest ──────────────────────────────────────────────────────────────────
 

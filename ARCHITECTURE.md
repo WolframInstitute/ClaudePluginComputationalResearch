@@ -31,12 +31,12 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (23)
+## Skills (25)
 
-The table lives in [README.md](README.md) — one line per skill, and the only human-facing copy.
+The skills are listed by area in [README.md](README.md) § *What it does*, the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (29)
+## Scripts (31)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -65,12 +65,14 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
+| `work-board-build.py` | python | board skill; collects every `Work/` item under a root into the board's `data/board.json` |
+| `work-board-sync.py` | python | board skill; applies the page's queued `data/pending.json` — section edits, notes, moves, new items — to the `Work/` files, commits nothing |
 | `test-auto-run-routing.sh` | bash | nothing — run by hand after a change to `auto-run.sh`'s annotation parse; 36 assertions against fixture items and a stub `claude`, spends nothing |
 | `recover_resources.sh` | bash | copied into projects, also add-resource |
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (25)
+## Commands (27)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
 Three commands have no skill behind them:
@@ -102,7 +104,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `notebook_theorem_proof_template.md` | Theorem-proof notebook skeleton (used by new-notebook) |
 | `formal_definition_template.md` | Wiki/Definitions/ article template |
 | `formalization_checklist_template.md` | Work/Backlog/Formalize-*.md skeleton, a Type: formalization work item (used by lean) |
-| `work_item_template.md` | Work item skeleton: Spec / Tasks / Hand-off / Decisions / Progress (used by work, next-session); the five sections are the whole file, status is the folder (Active/Backlog/Done/Dropped) |
+| `work_item_template.md` | Work item skeleton: a human-first Spec (Summary / Motivation / Acceptance criteria / Prompt history / Technical details), then Tasks / Hand-off / Decisions / Progress (used by work, next-session); the ten sections are the whole file, status is the folder (Backlog/Ready/Active/UnderReview/Done/Dropped) |
 | `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |

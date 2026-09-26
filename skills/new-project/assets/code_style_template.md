@@ -7,22 +7,31 @@ Applies to wiki articles, work items, resources, journal entries, and papers —
 Do not reflow an existing paragraph onto one line, and do not add blank lines between a paragraph's sentences (a blank line still separates paragraphs).
 Detect with: grep -qiE 'semantic line breaks:[[:space:]]*\*{0,2}on' CLAUDE.md && echo on || echo off -->
 
+A Wolfram context name ends in a backtick, which closes a single-backtick code span early and silently corrupts the text.
+In any Markdown — docs, wiki, prompts, commit messages — write such a span with double backticks and a space inside each end: ``` `` WolframInstitute`Name` `` ```.
+
 ## Code style
 
 **Exploratory research code.** Mathematical clarity matters more than robustness.
 Functionality first, readability second, performance third — but readability is non-negotiable.
 Code should read like a mathematician at a blackboard, not production software.
+The rules on input, predicates, naming and interfaces follow the PureMath style guide (`WolframInstitute/PureMath`, `GUIDE.md`), the fuller reference where it is readable.
 
-- **No defensive programming.** No `Return[$Failed]` on shape/range checks, no input validation, no error handling, no `f::badthing` messages.
-  If the caller passes garbage, let it crash naturally.
-  The only acceptable `$Failed` is "no such mathematical object exists" — and even then prefer an empty wrapper when it composes more cleanly.
-- **Crash on the boundary, not inside.** Only the outermost user-facing signature pattern-matches for dispatch (`f[g_Graph, v_, ...]`); helpers below it trust their inputs and let inner built-ins raise their own errors.
+- **Validity lives in the pattern.** The exported signature says what it accepts (`f[g_Graph, v_]`, `f[m_?MatrixQ]`), so a wrong-type call matches nothing and stays unevaluated.
+  No input-checking code, no `f::badarg` messages, no `$Failed`, no `Missing`, no `Return`.
+  Code below the signature trusts its inputs and lets inner built-ins raise their own errors.
+- **A `Failure` is for a computation that started and could not finish** — a step checkable only after starting (a singular matrix met mid-way).
+  Write it with `Enclose` and `Confirm*`, which return a `Failure` value; never `Message[...]; $Failed`.
+- **A predicate answers `True` or `False`, and never guesses.**
+  `False` only on input that is not the thing asked about; a valid input it cannot decide stays unevaluated.
+  A predicate is never stricter than the functions it guards: if `GroupOrder[SymmetricGroup[3]]` works, `GroupQ[SymmetricGroup[3]]` is `True`.
 - **Main functions first, helpers second — but prefer no helpers at all.** Inline the body unless the helper genuinely earns its name (reused at multiple call sites, or captures a single substantial idea).
   Resist splitting a long body into a chain of one-line helpers; compose at the call site with `Map`, `Fold`, `KeyValueMap`, `Thread`, etc. Option dispatchers (public signature handing off to a private worker) are an accepted exception.
   For an exported symbol the bar is higher still — § *Exported functions*.
 - **Functional style; loops only when they earn it.** Default to `Map` / `Fold` / `Nest` / `Apply` / `Select` / `KeyValueMap` / `Thread`.
   Reach for `Do` / `While` / `For` only when (a) you have a mutable accumulator, (b) you need early termination on a non-trivial condition, or (c) the functional form measurably hurts speed or memory.
   When you use a loop, the body should be doing the substantive work — not setting up state for the next pipeline stage.
+  Never `For`, never a list grown by `AppendTo`; use `Table`, or `Sow`/`Reap`.
 - **One-liners when efficient.** If a function fits on one line without becoming dense or unreadable, write it on one line.
   `f[g_, v_] := VertexOutDegree[g, v] - 1` beats a four-line `Module`.
 - **Use `{x} |-> ...`, not `Function[{x}, ...]`.** Use `Function` only when the operator form genuinely will not work (named slots, attributes, multi-statement bodies).
@@ -34,6 +43,29 @@ Code should read like a mathematician at a blackboard, not production software.
   `Module` is for genuinely mutable accumulators; everything else is `With`.
 - **No nested `With`.** `With[{a = ...}, With[{b = ...}, body]]` must be written as the multi-clause form `With[{a = ...}, {b = ...}, body]` (an undocumented but supported syntax).
   Later clauses see earlier bindings, so this is exactly the staged-binding behavior of nested `With` without the visual nesting.
+
+### Naming
+
+- **A name says what the object is**, in full words: `ShortestSeparatingCycle`, not `SSC` or `sepCyc`.
+  No abbreviations, contractions, or initials, in exported symbols and in local variables alike.
+- **Never collide with a `System` symbol**, and do not depend on `` System`Private` `` internals.
+- **Built-in and project symbols are treated alike** — same call conventions, neither needing a wrapper the other does not.
+
+### Mathematical objects
+
+When a framework defines mathematical objects, each object is an **inert head** holding only its defining data: `InfraSegment[p, q]`, `InfraCircle[c, "Radius" -> r]`.
+The head computes nothing and carries no rules beyond formatting.
+Computation happens only when the object meets the structure it is read in, through ordinary functions: `InfraMeasurement[g, InfraSegment[p, q], "Length"]`.
+This is for mathematical objects, not for every function.
+
+- **No object without a theorem that it is well defined.** If the construction is not faithful on some inputs, the object does not exist there, or says so (`Undetermined`).
+- **Parameters are options named for what they are** (`"Radius" -> r`), not positional flags.
+- **Abstract operations return objects**, so they compose: the centre of an abstract group is an abstract group, not an element list.
+  Operations that depend on a choice of representation require that choice as an argument.
+- **Never require a wrapper around what the system already understands.** `SymmetricGroup[3]` is accepted as a group as it stands.
+- **Built-in functions before accessors.** Where a `System` function covers a property (`GroupOrder`), support it rather than standing an `obj["Order"]` beside it.
+  A property accessor is fine where the object needs a structure to be evaluated in.
+- **A function answers its headline examples.** Bounded by cost is fine; failing the first input a reader tries is not — narrow the name, or do not ship it.
 
 ### Exported functions
 
@@ -54,13 +86,12 @@ A function that only works with the rest of the package around it is a fragment,
 
 ### Comments
 
-- **One-line mathematical summary per exported symbol** — what the object *is*, mathematically (e.g. `(* midpoint of a, b: vertex m with d(a, m) == d(m, b) *)`).
-  That is the only comment most functions need, and it **overrides** any global "no comments unless asked" default — the mathematical summary is wanted; the narration forbidden below is what that default is aimed at.
-- Structural section dividers like `(* ===================== Points ===================== *)` are fine.
-- **No** multi-paragraph block comments.
-- **No** comments narrating what the next lines do, what a variable holds, or how the algorithm proceeds step-by-step.
+- **No comments, with one exception:** a line doing mathematics, or an algorithm whose reason a reader cannot get from the code — a non-obvious subtlety, a Wolfram quirk worked around, a deliberate departure from the textbook definition.
+- What a symbol *is* goes in its `::usage`, not in a comment above the definition.
+  Design prose, usage examples and degenerate-case notes go in the wiki or the tests.
+- **No** section dividers, no block comments, no narration of what the next lines do or what a variable holds.
   If a comment is needed to explain a *what*, the code is wrong; rewrite the code, do not annotate it.
-- Reserve comments for genuine *why* — a non-obvious mathematical subtlety, a workaround for a Wolfram-specific quirk, a deliberate departure from the textbook definition.
+- Existing comments in a file are not a licence to add more. When in doubt, leave the comment out.
 - **Compose over annotate.** When tempted to write `(* this builds the level-surface subgraph *)` above a five-line block, bind the block to a named local instead: `With[{levelSurface = ...}, ...]`.
   The name documents the math; the comment becomes redundant.
 

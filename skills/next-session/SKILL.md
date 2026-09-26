@@ -26,13 +26,15 @@ Read `revise` first; it governs the deliverable.
 ### 1. Locate the item
 
 - If a name was given (`/next-session GraphCurvature`), use `Work/Active/<Name>.md`.
-  If it is in `Work/Backlog/` instead, `git mv` it into `Active/` first (it is being started).
-  An archived item (`Work/Done/` or `Work/Dropped/`) has no next task — surface that instead.
+  If it is in `Work/Ready/` instead, `git mv` it into `Active/` first (it is being started).
+  If it is in `Work/Backlog/`, it has not been approved: say so and ask before starting it — shaping it is [`refine`](../refine/SKILL.md).
+  An item in `Work/UnderReview/`, `Work/Done/` or `Work/Dropped/` has no next task — surface that instead.
 - Else read `Work/README.md` (it lists active items); if exactly one is active, use it; if several, ask which.
 
 ### 2. Load context
 
-Read the item file — `## Spec`, `## Tasks`, `## Hand-off`, `## Decisions`.
+Read the item file — the Spec (`## Summary` through `## Technical details`, or a single `## Spec` in an older item), `## Tasks`, `## Hand-off`, `## Decisions`.
+The Acceptance criteria are what the task serves: if the task as written would not move the item toward them, say so rather than doing it.
 The format holds that read flat in session count, so there is no partial-read rule: `## Progress` is one line per session and nothing in it is needed (see `Wiki/Concepts/ItemFileFormat.md`).
 An item that predates the format carries multi-paragraph Progress blocks — read only the last one or two of those, and give the item a `## Hand-off` in step 5.
 
@@ -72,8 +74,19 @@ Prose written here and in the step-4 deliverable follows the `Semantic line brea
 ### 6. Close the task
 
 Check the box and move it to `### Done` with the session number.
+Under it, write the task's **test instructions** — one to four indented bullets telling the human reviewer how to check it:
+
+```
+- [x] T2 (S3) — drop the Group A symbols.
+  - **Test:** open [Kernel/Main.wl](../../Kernel/Main.wl) — the eleven `$Infra*Color` exports are gone.
+  - **Test:** run `TestReport["Tests/ToolsTests.wlt"]` — all pass.
+```
+
+Name the place (a relative link), the action, and what they should see — not what the session did, which is Progress.
+If nothing is checkable by a human, write one bullet saying so and why.
 Update the item's line in `Work/README.md` (next task).
-If that was the **last** task, complete the item: `git mv` the file from `Active/` into `Done/`, prefixing it with today's date (`Work/Done/YYYY-MM-DD-<Name>.md`), and remove its line from `Work/README.md`.
+If that was the **last** task, the work is finished but not accepted: `git mv` the file from `Active/` into `UnderReview/` (clean name) and move its index line to the UnderReview table.
+Only the user moves it on to `Done/`, after review (see `work` § *Review*).
 The folder is now its status — there is no field to flip.
 
 ### 7. Sync durable knowledge
@@ -96,6 +109,7 @@ In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` 
 
 Say: "Session N complete (Tk).
 Start a fresh session and run /next-session for the next task."
+If the item went to `UnderReview/`, say instead that it is ready for review, and point at the test instructions.
 Do not continue.
 
 ## Type-aware execution

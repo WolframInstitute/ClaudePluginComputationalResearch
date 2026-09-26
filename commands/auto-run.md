@@ -14,7 +14,8 @@ Arguments are passed straight through: `[<Item>] [--max-tasks N] [--max-minutes 
 Name the item when more than one is eligible.
 Use `--dry-run` first if the user has not run this before — it prints the selection, the branch, the next task, and the caps without spawning anything, though it still refuses a dirty tree.
 
-The item must carry `> Autonomous: allowed` beside its `> Type:` line, or selection fails closed.
+The item must be in `Work/Ready/` — the human's approval — or already in `Work/Active/` carrying `> Autonomous: allowed` beside its `> Type:` line; anything else fails closed.
+A Ready item is moved to `Active/` and stamped with the marker on the review branch, so the base branch still shows it in `Ready/` until the merge.
 The driver refuses to start on a dirty tree, commits to `auto/<Item>` rather than the current branch, and halts on the first failure without cleaning up.
 
 There is no model or effort flag: each task is spawned on the model and effort its own [routing annotation](../skills/work/SKILL.md#the-routing-annotation) names — `- [ ] T3 (model: sonnet, effort: high — why) — …` — and an unannotated task inherits the machine default.
@@ -33,6 +34,7 @@ Afterwards, Read the digest it names (`Work/Runs/<timestamp>-<Item>.md`, gitigno
 Each per-task verdict names the model the run actually used and the effort it **requested** — no output field reports the effort applied, so do not report one as observed.
 
 Then say what the human owes: review `auto/<Item>` and merge it (the merge is the `revise` approval), or answer the hand-off question.
+On `item-complete` the item sits in `Work/UnderReview/`; point at its test instructions — accepting it into `Done/` is the user's step, not the driver's.
 Leave the branch and the working tree exactly as the driver left them — recovery after a mid-task failure is the user's call, never an automatic `git reset`.
 
 Specification, including why cron and `/loop` cannot drive this: `Wiki/Concepts/AutonomousPipeline.md` in the plugin repo.

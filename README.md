@@ -153,17 +153,21 @@ In design, see [PaperVerification](Work/Backlog/PaperVerification.md).
 Long work goes wrong when one session carries too much.
 So work is split into small tasks, each done in a fresh session, and agents may run them while you are away.
 
-A **work item** is one Markdown file in `Work/` with a Spec, a task list, and a short log.
-Its status is the folder it sits in — `Active/`, `Backlog/`, `Done/` or `Dropped/`.
+A **work item** is one Markdown file in `Work/`.
+You write what you want, why, and how you will accept it; the plugin writes the technical plan and the tasks.
+Its status is the folder it sits in, and it moves Backlog → Ready → Active → UnderReview → Done.
+Every move is yours except one: the last task moves the item to UnderReview, where you check it against your acceptance criteria.
 
 | Skill | What it does |
 |---|---|
-| [work](skills/work/SKILL.md) | Create an item, draft its Spec, break it into tasks |
+| [work](skills/work/SKILL.md) | File an item and break it into tasks |
+| [refine](skills/refine/SKILL.md) | Shape a backlog item with you until it is ready to run |
+| [board](skills/board/SKILL.md) | A board of all items you can read and edit on your phone |
 | [next-session](skills/next-session/SKILL.md) | Run the next task of an item, then stop |
 | [autolab](skills/autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
 | [auto-run](commands/auto-run.md) | The same without a chat, for scheduled runs |
 
-Only items you mark as allowed are picked, a task marked for a human stops the run, and the results land on a branch for you to review and merge.
+Agents pick only items you moved to Ready, stop at any task marked for a human, and leave their results on a branch for you to review.
 The file format is in [ItemFileFormat](Wiki/Concepts/ItemFileFormat.md); how the unattended runs work, and what they cost, is in [AutonomousPipeline](Wiki/Concepts/AutonomousPipeline.md).
 
 ## 📄 License
