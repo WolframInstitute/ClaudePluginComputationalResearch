@@ -80,6 +80,30 @@ The refused probe was also meant to measure two things, which therefore stay unm
 `/permissions` sidesteps the first, since it is the session's own interface.
 The second is settled by construction rather than measurement: a worker is part of the orchestrating session, so its rules are that session's — the user settings plus those of the directory the chat was opened in.
 
+### The serial trial — a plugin agent definition is not reachable until it is pushed
+
+Run 2026-09-26 for `InSessionAutoRun` T4, against the throwaway `AutolabTrialT4` (three tasks, the second scripted to halt `needs-human`; digest at [Work/Runs/20260926-113600-AutolabTrialT4.md](../../Work/Runs/20260926-113600-AutolabTrialT4.md)).
+`commands/autolab.md` was itself unreachable — `computational-research:autolab` did not appear in this session's skill list — so the trial enacted `skills/autolab/SKILL.md`'s steps by hand rather than through the command.
+
+**The headline finding: `agents/autolab-worker-<effort>.md` is not a usable `Agent` `subagent_type` until the commit that adds it is pushed and the marketplace cache resyncs.**
+A direct probe (`Agent` with `subagent_type: computational-research:autolab-worker-low`) returned `Agent type '...' not found. Available agents: claude, claude-code-guide, Explore, general-purpose, Plan, statusline-setup`.
+Root cause, traced live: this session's plugin loads from `~/.claude/plugins/cache/WolframInstitute/computational-research/5.0.1`, itself populated from the `ClaudePluginMarketplace` GitHub source at the last sync; `git log --oneline origin/main..HEAD` showed local `main` three commits ahead of `origin/main`, T3 (`d42e62a`, the commit that added the autolab skill and worker agents) among them.
+There is no local-checkout dev-mode load path for a plugin installed from a marketplace — only `git push` plus a marketplace resync puts a new skill or agent definition in front of a session, and that resync happens on its own schedule, not on demand from inside a session.
+This means every one of T1's "documented, not measured" effort-routing caveats stays unmeasured after T4 too, for a reason T1 could not have anticipated: the mechanism was never reachable this run, independent of whether it works.
+**`InSessionAutoRun` T5 and T6 hit the identical gap unless the outstanding commits are pushed and the cache resyncs first** — check `Agent`'s available-types list before assuming otherwise.
+
+The trial substituted `subagent_type: general-purpose` with `model` set directly on the `Agent` call (routing by model still works, since that is the `Agent` tool's own parameter, independent of any plugin agent file) and proceeded, since the rest of the loop — dispatch, verify, halt propagation, worktree isolation — does not depend on the substitution.
+That much is now measured live rather than probed:
+
+| property | measured |
+|---|---|
+| a real (non-trivial) `next-session` task | T1 (create + link one wiki file): 22 tool uses, 159284 ms, 66812 `subagent_tokens`. T2 (halt): 9 tool uses, 66636 ms, 47026 `subagent_tokens`. Both well inside the 4,000,000-token `--max-tokens` default — headroom for dozens of tasks per item, not the binding constraint the Spec worried it might be |
+| `needs-human` end to end | the worker wrote the exact `needs-human:` line into `## Hand-off`, left the protected wiki article untouched, committed only the hand-off, left its task box unchecked — and the halt reached this chat as a `SubagentHandback` message carrying `outcome: needs-human` and the quoted question, immediately, the same turn the worker returned |
+| worktree isolation | the worker correctly translated every repo-relative path against the worktree root and committed on `auto/AutolabTrialT4`; the operator's own checkout stayed on `main`, untouched, throughout |
+| `Agent`-map identity | `ListAgents` lists a running background subagent by `subagent_type` (`general-purpose`), not by the `description` passed at dispatch — the `description` instead surfaces in the launch confirmation and the completion notice's `summary` (`Agent "AutolabTrialT4 T1" finished`). Both identify the same worker; which one a given surface shows differs |
+
+`git worktree add` hit the same OneDrive dataless-file failure mode as [AutoRunOperations § *Landing `auto/<Item>` on `main`*](AutoRunOperations.md#landing-autoitem-on-main) — `fatal: mmap failed: Operation canceled` this time, against `Operation timed out` there — and a provider restart alone did not clear it; only a full `find .git -type f | xargs cat > /dev/null` sweep did. One more confirmation that the sweep, not the restart, is the reliable fix.
+
 ## Measured properties of `claude -p` (this machine, `claude` 2.1.220)
 
 Three findings from running it rather than assuming.

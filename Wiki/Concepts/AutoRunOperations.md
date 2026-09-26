@@ -202,6 +202,8 @@ Repeat until the count reaches zero.
 It took four passes and about twenty minutes for those 2009 files, because a cold read can time out on its first attempt and because git writes fresh objects while the sweep runs, so the check belongs before the review rather than in the middle of one.
 `Work/` and `Wiki/` behave the same way: a `cat` that times out once is not evidence the file is empty, and a retry usually succeeds.
 
+Confirmed again 2026-09-26 in `InSessionAutoRun` T4: `git worktree add` failed with `fatal: mmap failed: Operation canceled` (this machine's wording for the same dataless condition), and restarting the OneDrive File Provider alone did not clear it — only the full `.git` hydration sweep above did, on the second attempt.
+
 The merge is the approval step — `revise` § *Autonomous mode* defers the human gate to exactly this point, and nothing autonomous is meant to reach `main` any other way.
 
 ```bash

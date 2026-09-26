@@ -91,7 +91,6 @@ Nothing is started in a terminal.
 
 ## Tasks
 
-- [ ] T4 (model: sonnet, effort: high) — serial trial against a throwaway item of three tasks, one of which is built to halt `needs-human`: the Agent map shows each worker, the halt reaches the chat, the branch and digest are right.
 - [ ] T5 (model: sonnet, effort: high) — parallel trial: two throwaway items with `--parallel 2`, each in its own worktree; neither tree touched by the other; the operator's checkout never switched.
 - [ ] T6 (human) — operator trial on a real item in SyntheticInfrageometry; rule on whether `/auto-run` is retired from the README.
 - [ ] T7 (model: sonnet, effort: medium) — release: version bump, marketplace mirror, blog-post paragraph for review.
@@ -101,12 +100,14 @@ Nothing is started in a terminal.
 - [x] T1 (model: opus, effort: high — probes decide the design) — probe the five open mechanics and write the results into `Wiki/Concepts/AutonomousPipeline.md` as a new section, correcting "The harness cannot schedule this": (a) `Agent` `isolation: "worktree"` — which branch it creates, where, whether a second worker can continue the first's branch, what the worker's working directory is; else an orchestrator-made worktree plus absolute paths; (b) effort routing — does a plugin `agents/*.md` definition with an `effort:` field take effect; (c) whether a background worker's permission prompt reaches the operator in VS Code, and what a denial looks like to the orchestrator; (d) whether the orchestrator can message a running worker and get `notify_when_idle`; (e) what usage figure a returning worker reports, for the cap. Correct this Spec where it guessed. (S1)
 - [x] T2 (human) — the operator rules on T1's corrections to the Spec. (S1)
 - [x] T3 (model: opus, effort: high) — implement: `skills/autolab/SKILL.md` (the orchestrator protocol), `commands/autolab.md`, the autonomy notice moved into the worker prompt in `revise` § *Autonomous mode*, `commands/auto-run.md` pointing at `/autolab`, README and ARCHITECTURE rows. (S2)
+- [x] T4 (model: sonnet, effort: high) — serial trial against a throwaway item of three tasks, one of which is built to halt `needs-human`: the Agent map shows each worker, the halt reaches the chat, the branch and digest are right. (S3)
 
 ## Hand-off
 
-T3 built `/autolab`; next is T4, the serial trial, on `sonnet` — start it in a fresh session.
-The trial must load the plugin from this checkout, not the 5.0.1 cache, or the skill and the `agents/autolab-worker*.md` definitions will not exist.
-Watch in T4: whether a plugin agent's `effort:` is accepted, what `subagent_tokens` counts (the `--max-tokens` default of 4 M is a guess), and whether workers can write under `~/.cache/autolab/` once the preflight rule is in.
+T4 ran, and hit the exact trap this Hand-off warned about: the plugin loaded from the marketplace cache, not this checkout, so `computational-research:autolab` and `agents/autolab-worker-<effort>.md` were unreachable — confirmed by a direct probe, not inferred. Root cause (traced, not guessed): the cache mirrors `origin/main`, and local `main` is three commits ahead of it, T3 among them — a marketplace-installed plugin has no local-checkout dev-mode load path. T4 substituted `general-purpose` subagents (routing by `model` still works) and measured the rest of the loop live; full account in [Wiki/Concepts/AutonomousPipeline.md § *The serial trial*](../../Wiki/Concepts/AutonomousPipeline.md#the-serial-trial--a-plugin-agent-definition-is-not-reachable-until-it-is-pushed).
+
+**Before starting T5, push the outstanding local commits (`git log --oneline origin/main..HEAD`) and confirm the marketplace cache has resynced** (check that `Agent`'s available-types list includes `computational-research:autolab-worker-*`) — otherwise T5 hits the identical gap and must fall back to the same substitution, which cannot exercise effort routing either.
+`AutolabTrialT4` (the throwaway item T4 used) is spent and unmerged on `auto/AutolabTrialT4`; its own Hand-off has the disposal steps — merge-or-discard, then drop it, don't run its T3.
 Overlaps `WorkDashboard`: its "live tail while `/auto-run` is executing" is superseded by the Agent map.
 The rest of that item — board, item pages, wiki — is untouched.
 
@@ -120,6 +121,7 @@ The rest of that item — board, item pages, wiki — is untouched.
 | 2026-09-26 | Effort via five agent definitions; worktrees in `~/.cache/autolab/`; a token cap | Plugin internals, left to the LLM by the operator (T2) |
 | 2026-09-26 | The operator adds the preflight's rules with `/permissions`; the orchestrator never writes settings | In auto mode the classifier refused the orchestrator's settings write as self-modification (T3); operator's choice |
 | 2026-09-26 | Keep `auto-run.sh` as the headless path | Only a process can be triggered by cron; the in-session driver dies with its chat. |
+| 2026-09-26 | T4 substituted `general-purpose` subagents for the unreachable `autolab-worker-<effort>` agent types, rather than stopping to ask before proceeding | The gap (unpushed commits, stale marketplace cache) blocks only effort-via-agent-definition, which T1 had already flagged unmeasured; the rest of the loop — dispatch, verify, `needs-human` halt, worktree isolation — does not depend on it, so measuring that much live was worth more than halting T4 outright. |
 
 ## Progress
 
@@ -127,3 +129,4 @@ The rest of that item — board, item pages, wiki — is untouched.
 - **S1** 2026-09-26 T1 — six probes run; Spec corrected (own worktrees, token cap, effort via agent definitions, prompts not relied on). → [Subagent workers](../../Wiki/Concepts/AutonomousPipeline.md#subagent-workers--what-the-2026-07-27-survey-missed)
 - **S1** 2026-09-26 T2 — operator approved the corrected Spec and added the permission preflight (step 0).
 - **S2** 2026-09-26 T3 — `/autolab` built: skill, command, six worker definitions, notice moved into the worker prompt. → [Subagent workers § Permissions](../../Wiki/Concepts/AutonomousPipeline.md#permissions--the-orchestrator-cannot-write-them)
+- **S3** 2026-09-26 T4 — serial trial run by hand on `AutolabTrialT4` (plugin agents unreachable this session); halt confirmed live, loop otherwise measured. → [Subagent workers § The serial trial](../../Wiki/Concepts/AutonomousPipeline.md#the-serial-trial--a-plugin-agent-definition-is-not-reachable-until-it-is-pushed)

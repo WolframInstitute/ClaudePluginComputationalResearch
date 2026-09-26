@@ -33,7 +33,8 @@ The item's value is the trial itself; its tasks are small, textual, and disposab
 
 ## Hand-off
 
-(nothing yet)
+The trial ran (`InSessionAutoRun` T4): T1 succeeded, T2 halted `needs-human` as designed, both on `auto/AutolabTrialT4` (unmerged) — digest at [Work/Runs/20260926-113600-AutolabTrialT4.md](../Runs/20260926-113600-AutolabTrialT4.md), findings in [Wiki/Concepts/AutonomousPipeline.md § *The serial trial*](../../Wiki/Concepts/AutonomousPipeline.md#the-serial-trial--a-plugin-agent-definition-is-not-reachable-until-it-is-pushed).
+This item's value is spent. The `alpha`/`beta` question T2 raised is not a real one — recommended disposition: merge or discard `auto/AutolabTrialT4` (the merge is the `revise` approval, left to the operator), then `git mv` this file into `Work/Dropped/` without running T3, and delete `Wiki/Concepts/AutolabTrialScratch.md` and its `Wiki/Index.md` link, matching how `ModelRoutingTrial`'s scratch article was harvested and removed.
 
 ## Decisions
 
