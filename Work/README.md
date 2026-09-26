@@ -26,7 +26,7 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
-| [InSessionAutoRun](Active/InSessionAutoRun.md) | T2 (human) — rule on the corrected Spec |
+| [InSessionAutoRun](Active/InSessionAutoRun.md) | T3 — build `/autolab`; first verify where workers' permissions come from |
 
 `Backlog/` holds `WorkDashboard`; `/next-session <Name>` after a `git mv` into `Active/` starts it.
 
