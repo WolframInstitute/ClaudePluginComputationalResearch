@@ -26,6 +26,48 @@ What does work is **headless `claude -p`**, one OS process per task.
 That is genuinely cold — a new session id, no inherited history, nothing summarised.
 Cron may still *trigger* a run; it cannot *be* the loop.
 
+**The table missed a fourth mechanism, and it is the one that works in-session: subagents.**
+See [Subagent workers](#subagent-workers--what-the-2026-07-27-survey-missed) below.
+
+## Subagent workers — what the 2026-07-27 survey missed
+
+Probed 2026-09-26 for `InSessionAutoRun` T1, on Claude Code 2.1.257 and the VS Code extension 2.1.282.
+The occasion was the operator's complaint that headless runs cannot be seen: no headless process reaches the VS Code Agent map, the session list, or `claude agents`.
+
+A subagent started with the `Agent` tool is **cold**, as `claude -p` is.
+It has its own context and none of the caller's history; the caller's context grows only by the worker's final report.
+So the reason every in-session mechanism was rejected above does not apply to it.
+
+| property | measured |
+|---|---|
+| visible | a background subagent appears in the VS Code **Agent map** (the "N agents" button under the input box) with status and tokens |
+| skills | it has the `Skill` tool and sees `computational-research:next-session` |
+| model routing | the `Agent` tool's `model` parameter routes it; a `haiku` worker reported Haiku 4.5 from its own system prompt |
+| effort routing | no `effort` parameter on the `Agent` tool; an agent **definition** (`agents/*.md` frontmatter, which a plugin can ship) carries model, effort and tools by the tool's own contract — documented, not measured, since nothing reports the effort applied |
+| steering | a message sent to a running background worker arrived at its next tool round — after the first of eight calls — and the worker obeyed it |
+| completion | the caller is notified when a worker returns; no polling |
+| usage | the notice carries `subagent_tokens`, `tool_uses` and `duration_ms`, and **no dollar figure**, so a cap must be in tokens |
+| cold floor | 34.7–36.8 k tokens for a trivial `haiku` worker, against 31.5 k for a `claude -p` cold start |
+| lifetime | workers live as long as the caller's session; closing the chat ends them |
+| permission gate | in auto mode, an `ask`-listed `rm -f` from a background worker ran after a 32–39 s pause, twice; the operator, asked to deny any prompt, denied none — so the gate was most likely decided by the auto-mode classifier, not the operator. Not established whether a prompt is ever shown; an orchestrator must not rely on one reaching the operator |
+
+### Working directories — two traps
+
+**A worker's Bash working directory resets on every call** to the caller's directory.
+A worker told to work elsewhere must start every command with `cd <path> &&` and give file tools absolute paths.
+A `haiku` worker so instructed read an item, did its task, moved the box into `### Done`, and committed on the right branch in an orchestrator-made worktree, leaving the main checkout on `main` and clean.
+
+**The caller's own `cd` is not reset.**
+One `cd` in the orchestrator's shell moved the session's primary working directory for the rest of the session.
+An orchestrator therefore uses `git -C <path>` and never `cd`.
+
+### The `Agent` tool's worktree isolation does not fit
+
+`isolation: "worktree"` refuses outright when the session's working directory is not a git repository — the usual case when the chat is opened on a folder holding several repos.
+Inside a repository it creates `<repo>/.claude/worktrees/agent-<id>` on a branch `worktree-agent-<id>`, from the caller's `HEAD`, and sets the worker's directory there.
+Three things rule it out for a task loop: the worktree sits inside the repo, which for a cloud-synced repo is inside the synced folder; the branch name is not `auto/<Item>`; and each worker starts from `HEAD`, so task 2 would not see task 1's commits.
+The orchestrator makes one worktree per item itself, on `auto/<Item>`, outside the repo, and hands its path to every worker of that item.
+
 ## Measured properties of `claude -p` (this machine, `claude` 2.1.220)
 
 Three findings from running it rather than assuming.

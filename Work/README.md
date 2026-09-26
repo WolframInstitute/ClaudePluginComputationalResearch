@@ -26,8 +26,8 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
+| [InSessionAutoRun](Active/InSessionAutoRun.md) | T2 (human) — rule on the corrected Spec |
 
-Nothing is active.
 `Backlog/` holds `WorkDashboard`; `/next-session <Name>` after a `git mv` into `Active/` starts it.
 
 `ExercisePaperStyle` completed on 2026-08-21 after four tasks. It started on 2026-08-20 and ran the shared writing guide against a real document on both of its paths: T1 as a notebook and T2 as a scaffolded LaTeX paper, the same mathematics — equidistance and odd girth over the SyntheticInfrageometry primitives — re-set so that a finding appearing on both paths is the guide's and a finding on one is that generator's. T1 found [seven writing rules and three build defects](../Wiki/Concepts/PaperStyleExercise.md), two of the seven being rules of `style.md` that contradict each other. T2 confirmed five of those as path-independent, added four the notebook could not show — chiefly that the guide gives the *Ruliology* calls' supporting code no home outside a notebook's Initialization section — and turned up [seven defects in the LaTeX build path](../Wiki/Concepts/PaperStyleExercise.md#the-build-path--six-defects-in-the-shipped-template), the worst being that `\cref` mislabels every non-theorem and that the obvious fix makes multi-references silently lose entries.
