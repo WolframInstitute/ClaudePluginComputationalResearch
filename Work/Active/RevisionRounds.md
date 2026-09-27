@@ -65,7 +65,6 @@ The README's *Revision* section is true:
 
 ## Tasks
 
-- [ ] T2 (model: opus, effort: high — protocol writing) — the revision round in `revise` and a `commands/revise.md`: grammar, naming, the no-invention rule, the text-file path and the `.nb`-to-`.nb` path through the MCP, the reply for a comment not acted on.
 - [ ] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it.
 - [ ] T4 (human) — trial on a throwaway note: two rounds on its `.tex` and on its `.nb` with hand edits in the `.nb`, then clean; the operator reads the trail.
 - [ ] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump.
@@ -75,11 +74,18 @@ The README's *Revision* section is true:
 (completed tasks move here with the session that closed them)
 
 - [x] T1 (model: opus, effort: xhigh — design-critical) — answer the open questions with the operator and correct the Technical details. *(S0', 2026-09-27)*
+- [x] T2 (S1) (model: opus, effort: high — protocol writing) — the revision round in `revise` and a `commands/revise.md`: grammar, naming, the no-invention rule, the text-file path and the `.nb`-to-`.nb` path through the MCP, the reply for a comment not acted on.
+  - **Test:** read [skills/revise/round.md](../../skills/revise/round.md) against the Acceptance criteria — each criterion but *Clean* has a rule there.
+  - **Test:** read the *Revision round* section of [skills/revise/SKILL.md](../../skills/revise/SKILL.md) and [commands/revise.md](../../commands/revise.md) — both say the same as round.md, in brief.
+  - **Test:** check the four choices this task made in `## Decisions` (dated 2026-09-27, marked "the LLM") — overturn any you disagree with.
+  - The round itself is exercised end to end only in T4.
 
 ## Hand-off
 
-Fresh item; nothing in flight.
-The README *Revision* section is written (2026-09-27) and is ahead of the code until T3 lands.
+T2 done: the round is written in [round.md](../../skills/revise/round.md), summarised in `revise` § *Revision round*, with [commands/revise.md](../../commands/revise.md).
+`revise` now links `/clean`, which T3 creates.
+For T5: `ARCHITECTURE.md` line 77 still says `revise` has no command, and neither `commands/revise.md` nor `round.md` is in its tables yet.
+The README *Revision* section stays ahead of the code until T3 lands.
 
 ## Decisions
 
@@ -92,8 +98,13 @@ The README *Revision* section is written (2026-09-27) and is ahead of the code u
 | 2026-09-27 | Clean moves only numbered rounds, not superseded older-dated artifacts | the operator: "only the rounds" |
 | 2026-09-27 | Clean works in any folder, creating its `Archive/` subfolder when missing | the operator: "well any folder.... it should create an Archive subfolder if not existenct yet" |
 | 2026-09-27 | Comments are lines starting with `>>`, not `[[ ]]` | easy to type; `[[` collides with `Part` and wiki links. Chosen by the LLM at the operator's invitation, open to change |
+| 2026-09-27 | A version number names the whole stem: `k+1` holds every file of `k`, uncommented ones copied verbatim (not the notebook's `.md`) | one number reads as one consistent set, and clean can move a version whole. Chosen by the LLM in T2, open to change |
+| 2026-09-27 | An Output below a rewritten Input stays, and the reply names it as stale | removing it is a change no comment asked for; re-evaluating replaces it. Chosen by the LLM in T2, open to change |
+| 2026-09-27 | A commented file inside a multi-file build (other than a folder-shaped artifact) makes the round ask which folder to version | renaming one `\input` file alone breaks the build. Chosen by the LLM in T2, open to change |
+| 2026-09-27 | The round commits version `k` as the user left it, then `k+1`; hand edits with no comments are committed and no `k+1` is written | makes "every step is in git" true without a separate step; a copy with nothing changed is noise. Chosen by the LLM in T2, open to change |
 
 ## Progress
 
 - **S0** 2026-09-27 — item filed from the operator's request; draft awaiting `/refine`.
 - **S0'** 2026-09-27 — the operator answered four questions (Output, no invention, `.nb` as source, any document); README section written. Then the clean questions (only rounds, any folder); no open questions left. Moved to Ready on the operator's word.
+- **S1** 2026-09-27 T2 — revision round written: grammar, names, steps, no invention, text-file and `.nb` paths; notebook mechanics verified on the kernel (Opus tier). → [round.md](../../skills/revise/round.md), [commands/revise.md](../../commands/revise.md), [Wiki/Concepts/NotebookCommentRound.md](../../Wiki/Concepts/NotebookCommentRound.md)

@@ -3,9 +3,14 @@ name: revise
 description: >
   Human revision workflow for code, functionality, plans, and deliverables.
   This skill defines how the LLM interacts with the user when producing
-  anything that needs review. It is not invoked directly — it is a protocol
-  that all other skills follow. Read this skill at the start of every session
-  to internalize the revision rules.
+  anything that needs review — a protocol that all other skills follow; read
+  it at the start of every session to internalize the revision rules. Invoked
+  directly (`/revise <file>`), it runs one revision round: it reads the `>>`
+  comments and hand edits the user left in a document — a notebook, a LaTeX
+  or Typst paper, a Markdown file, code — and writes the next numbered
+  version beside it (`_2`, `_3`, …), changing only what the comments ask.
+  Use for: "revise this", "revision round", "I left comments in the notebook",
+  "next version of the paper", or the /revise command.
 ---
 
 # Human Revision Workflow
@@ -16,7 +21,8 @@ Every skill that produces code, functionality, plans, or deliverables follows th
 ## When to use
 
 - Read at the start of every session; apply whenever producing code, functionality, plans, or deliverables.
-- Not invoked directly — the other skills follow it as a protocol.
+- The other skills follow it as a protocol.
+- Invoked directly — `/revise <file>`, "revise this", "I left comments in it" — it runs one [revision round](#revision-round).
 
 ## Steps
 
@@ -55,6 +61,22 @@ When showing code or functionality, always include:
 Do not over-explain.
 Do not ask "shall I proceed?" for every micro-step.
 Present meaningful chunks — a complete function, a full plan, a finished section — not individual lines.
+
+## Revision round
+
+The user reviews a document where they read it, not in the chat.
+They write comments into it on lines starting with `>>` — after the comment sign in code, as in `% >> shorter` or `(* >> smaller graph *)` — and may edit it directly.
+A round turns that into the next version:
+
+- **Names.** It writes `Name_k+1` beside the latest version `Name_k` — `Note_260927.tex`, then `Note_260927_2.tex`, `_3`, … — with every file of the stem, and never edits version `k` again.
+- **The edited document is the source.** Everything not commented is carried over verbatim, hand edits included; for a notebook, from round 2 the `.nb` is the source, not its `.md`.
+- **No invention.** It changes only the passages the comments name and adds nothing no comment asked for — in `Output/` as much as in `Artifacts/`.
+- **Every comment is answered.** One acted on is gone from `k+1`; one not acted on stays, followed by `>> not done: <reason>`.
+- **Git holds the trail.** Version `k` is committed as the user left it, then `k+1` once written.
+
+It then lists each comment with what was done, and waits.
+The full procedure — grammar, naming, the text-file and notebook paths — is in [round.md](round.md), read only when running a round.
+Moving old versions aside is `/clean`.
 
 ## What does NOT need revision
 
@@ -124,6 +146,7 @@ Do not maintain a `Wiki/Log.md`.
 
 - Every deliverable-producing skill follows this loop; `new-paper`, `lean`, `publish-paclet`, `new-notebook`, `new-research-notebook`, and `update-wiki` link here for their specific gates.
 - `work` presents Specs through it; `next-session` reads it before every session; `scripts/auto-run.sh` and the `autolab` workers run under *Autonomous mode*.
+- A revision round works on what the generating skills write — `new-notebook`, `new-research-note`, `new-research-notebook`, `new-paper` — and on anything in `Output/`.
 
 ## When NOT to use
 

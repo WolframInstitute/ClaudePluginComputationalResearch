@@ -187,6 +187,7 @@ Modifying an existing notebook:
 **Appending**: export → append new Markdown sections at the end → re-import the full combined string.
 
 Do **not** manipulate raw `.nb` cell lists by hand — always go through the Markdown round-trip.
+The one exception is a [revision round](../revise/round.md#notebooks) on a notebook the user has edited: it rewrites only the commented cells of the imported `.nb` into the next version, because the round trip would lose the user's edits.
 
 ## Claude Desktop / VM mode
 
