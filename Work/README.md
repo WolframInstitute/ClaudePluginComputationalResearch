@@ -29,7 +29,7 @@ The one thing the folders can't show — each in-progress item and its next task
 |---|---|
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
-| [RevisionRounds](Active/RevisionRounds.md) | T3 — `commands/clean.md` and the `Archive/` rule in `artifacts.md` |
+| [RevisionRounds](Active/RevisionRounds.md) | T4 (human) — trial two rounds on a throwaway note's `.tex` and `.nb`, then clean |
 
 ## Ready
 

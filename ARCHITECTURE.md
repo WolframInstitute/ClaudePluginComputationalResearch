@@ -72,15 +72,16 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (27)
+## Commands (29)
 
-Every skill has a slash command of the same name, `/computational-research:<skill>`, except `revise`, which is a protocol other skills follow rather than a command.
-Three commands have no skill behind them:
+Every skill has a slash command of the same name, `/computational-research:<skill>`; `revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/revise/round.md)).
+Four commands have no skill behind them:
 
 | Command | Runs |
 |---------|------|
 | `check-env` | `scripts/check-env.sh` + an MCP ping; reports live license headroom |
 | `load-project` | reads `Wiki/` + `Work/` status |
+| `clean` | moves every numbered revision round but the latest into the folder's `Archive/`, by the naming rule in `skills/revise/round.md` |
 | `auto-run` | `scripts/auto-run.sh`; then reads the digest it names and reports the stop reason — the headless path, kept for cron; `autolab` is the one to watch |
 
 The `plugin:` prefix is **mandatory** headless — `claude -p "/next-session"` is a zero-cost no-op that reports `is_error: false`, while `/computational-research:next-session` expands. This is why `auto-run` verifies each run rather than trusting its exit status.

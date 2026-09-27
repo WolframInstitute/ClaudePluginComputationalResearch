@@ -116,9 +116,7 @@ Nothing is deleted.
 | Skill | What it does |
 |---|---|
 | [revise](skills/revise/SKILL.md) | Show every deliverable and wait; on request, write the next version from your comments |
-| clean | Move earlier versions into `Archive/` |
-
-In design, see [RevisionRounds](Work/Active/RevisionRounds.md).
+| [clean](commands/clean.md) | Move earlier versions into `Archive/` |
 
 ### 📚 Autoknowledge
 

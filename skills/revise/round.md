@@ -69,7 +69,7 @@ Ask the user which folder is the unit before writing anything.
    With no comments, say so and write no `k+1`; if the file differs from its last commit, those are hand edits — commit them as in step 4, and stop.
 4. **Record the commented version.**
    Commit version `k` exactly as the user left it — comments and hand edits — before anything is written:
-   `revise(<stem>): comments on version <k>`.
+   `docs(revise): comments on <stem> version <k>`.
    The user asked for the round, so this commit is part of it.
    After this, version `k` is never edited again.
 5. **Write version `k+1`** by the path for the file type below.
@@ -79,7 +79,7 @@ Ask the user which folder is the unit before writing anything.
 6. **Rebuild and check.**
    Rebuild the `.pdf` if there is one.
    Search `k+1` for comments: only the ones not acted on may remain, each followed by its `not done` line.
-7. **Commit version `k+1`**: `revise(<stem>): version <k+1>`.
+7. **Commit version `k+1`**: `docs(revise): <stem> version <k+1>`.
 8. **Present and wait.**
    Reply with one line per comment — the comment, and what was done or why not:
 

@@ -8,4 +8,4 @@ Only numbered rounds move this way: an artifact a later one supersedes by date, 
 
 If the folder carries an index `README.md`, update it so each entry names only the latest round, with a link into `Archive/`.
 
-Commit the moves: `clean(<folder>): archive round(s) <k> of <stem>`.
+Commit the moves: `chore(clean): archive rounds <k> of <stem> in <folder>`. The stem goes in the subject, not the scope, since the commit hook takes only lowercase scopes.

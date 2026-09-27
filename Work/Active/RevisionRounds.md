@@ -66,7 +66,6 @@ The README's *Revision* section is true:
 ## Tasks
 
 - [ ] T4 (human) — trial on a throwaway note: two rounds on its `.tex` and on its `.nb` with hand edits in the `.nb`, then clean; the operator reads the trail.
-- [ ] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump.
 
 ### Done
 
@@ -79,6 +78,18 @@ The README's *Revision* section is true:
   - **Test:** check the four choices this task made in `## Decisions` (dated 2026-09-27, marked "the LLM") — overturn any you disagree with.
   - The round itself is exercised end to end only in T4.
 - [x] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it. *(S2, 2026-09-27)*
+- [x] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump. *(S3, 2026-09-27)*
+
+## Hand-off
+
+T2, T3 and T5 are done and merged to `main`; released as 5.4.0.
+Only T4 is left: the operator's trial — two rounds on a throwaway note's `.tex` and on its `.nb` with hand edits in the `.nb`, then `/clean`, reading the trail.
+T5 also fixed the commit messages in `round.md` and `clean.md`: `revise(<stem>)` and `clean(<folder>)` were not Conventional Commits types, and a stem is not a valid lowercase scope, so the scaffolded `commit-msg` hook would have refused every round.
+
+## Decisions` (dated 2026-09-27, marked "the LLM") — overturn any you disagree with.
+  - The round itself is exercised end to end only in T4.
+- [x] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it. *(S2, 2026-09-27)*
+- [x] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump. *(S3, 2026-09-27)*
 
 ## Hand-off
 
@@ -109,3 +120,4 @@ The README *Revision* section can be checked against the landed code now that T3
 - **S0'** 2026-09-27 — the operator answered four questions (Output, no invention, `.nb` as source, any document); README section written. Then the clean questions (only rounds, any folder); no open questions left. Moved to Ready on the operator's word.
 - **S1** 2026-09-27 T2 — revision round written: grammar, names, steps, no invention, text-file and `.nb` paths; notebook mechanics verified on the kernel (Opus tier). → [round.md](../../skills/revise/round.md), [commands/revise.md](../../commands/revise.md), [Wiki/Concepts/NotebookCommentRound.md](../../Wiki/Concepts/NotebookCommentRound.md)
 - **S2** 2026-09-27 T3 — `/clean` written: any folder, numbered-round detection per round.md § *Names*, `git mv` into `Archive/` (created if missing), README pruned to the latest with a link in, older-dated artifacts left alone. `artifacts.md` § *One artifact, one date* now archives a superseded artifact into the same `Archive/` instead of `VersionSnapshots_YYMMDD/`. → [commands/clean.md](../../commands/clean.md), [skills/new-notebook/artifacts.md](../../skills/new-notebook/artifacts.md)
+- **S3** 2026-09-27 T5 — docs pass (in the orchestrating chat): ARCHITECTURE command count and `revise`/`clean` rows, README `clean` link, commit messages fixed for the hook, blog post entry, 5.4.0 bump and marketplace sync.
