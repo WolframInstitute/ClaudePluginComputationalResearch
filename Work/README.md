@@ -10,6 +10,7 @@ An item's **status is its folder** — there is no status field:
 |---|---|---|
 | `Active/` | in progress | `<Name>.md` |
 | `Backlog/` | proposed / not started (drafts live here) | `<Name>.md` |
+| `Ready/` | refined and approved; `/autolab` and `/auto-run` may take it | `<Name>.md` |
 | `Done/` | completed | `YYYY-MM-DD-<Name>.md` (completion date) |
 | `Dropped/` | abandoned / superseded | `YYYY-MM-DD-<Name>.md` (drop date) |
 
@@ -28,6 +29,12 @@ The one thing the folders can't show — each in-progress item and its next task
 |---|---|
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
+
+## Ready
+
+| Item | Next task |
+|---|---|
+| [RevisionRounds](Ready/RevisionRounds.md) | T2 — the revision round in `revise` |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `OutputFolder`; `/next-session <Name>` after a `git mv` into `Active/` starts one.
 

@@ -18,7 +18,7 @@ Available in the [WolframInstitute marketplace](https://github.com/WolframInstit
 * 📔 Keeps a scientific journal of what was learned, if you want one.
 * 🧬 Records the prompt behind everything it generates, if you want that.
 * 🗃️ **Autolab** manages a backlog of work and works through it while you are away.
-* 🤝 Shows you every deliverable and waits for your review.
+* 🤝 Shows you every deliverable, and revises it from the comments you write into it, keeping every version.
 * 🧭 Gives a guided tour of the project.
 
 ## 📥 Installation
@@ -86,7 +86,8 @@ Project/
 ```
 
 Everything the plugin generates lands in an `Artifacts/` folder, one dated name per artifact.
-**Everything outside an `Artifacts/` folder is yours, and is never written or overwritten.**
+**Everything outside an `Artifacts/` folder is yours.
+The plugin writes there only what you ask for, and never overwrites a file.**
 The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md).
 
 | Skill | What it does |
@@ -94,8 +95,30 @@ The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md
 | [new-project](skills/new-project/SKILL.md) | Set up a new project — research, mathematics, or paclet development |
 | [load-project](commands/load-project.md) | Summarize where the project stands and what to do next |
 | [start-tour](skills/start-tour/SKILL.md) | Walk you through the project, topic by topic, with code to run |
-| [revise](skills/revise/SKILL.md) | The review rule every skill follows: show the deliverable, then wait |
 | [provenance](skills/provenance/SKILL.md) | Record the prompt behind each generated file; off by default |
+
+### 🤝 Revision
+
+Nothing the plugin makes is final until you have read it.
+You review in the document itself, not in the chat, and you may edit it there directly.
+
+Start a line with `>>` wherever something should change: `>> make this example smaller`.
+This works in any document — a notebook, a LaTeX or Typst paper, a Markdown file — and in code after the comment sign, as in `(* >> use a smaller graph *)`.
+Then ask for a revision.
+The plugin reads your comments and your own edits, and writes the next version beside the old one, with the next number: `Note_260927_2.nb`, then `Note_260927_3.nb`.
+It changes only what you asked for, keeps every edit you made, and adds nothing you did not ask for.
+A comment it could not act on stays in the next version, with the reason.
+It never edits the version you commented on, so every round stays on record.
+
+When you are done, clean up any folder: earlier versions move into its `Archive/` subfolder, made if it is missing, and only the latest stays in view.
+Nothing is deleted.
+
+| Skill | What it does |
+|---|---|
+| [revise](skills/revise/SKILL.md) | Show every deliverable and wait; on request, write the next version from your comments |
+| clean | Move earlier versions into `Archive/` |
+
+In design, see [RevisionRounds](Work/Ready/RevisionRounds.md).
 
 ### 📚 Autoknowledge
 
