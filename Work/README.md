@@ -29,7 +29,6 @@ The one thing the folders can't show — each in-progress item and its next task
 |---|---|
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
-| [RevisionRounds](Active/RevisionRounds.md) | T4 (human) — trial two rounds on a throwaway note's `.tex` and `.nb`, then clean |
 
 ## Ready
 
@@ -38,6 +37,8 @@ The one thing the folders can't show — each in-progress item and its next task
 | — | none ready |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `OutputFolder`; `/next-session <Name>` after a `git mv` into `Active/` starts one.
+
+`RevisionRounds` completed on 2026-09-27 after five tasks, all that day: comments on lines starting with `>>` in any document, each `/revise` round writing the next numbered version beside the last, and `/clean` moving earlier rounds into `Archive/`. Its trial found that commit subjects overran the hook's cap and that a lone comment points at the passage above it, not below.
 
 `ExercisePaperStyle` completed on 2026-08-21 after four tasks. It started on 2026-08-20 and ran the shared writing guide against a real document on both of its paths: T1 as a notebook and T2 as a scaffolded LaTeX paper, the same mathematics — equidistance and odd girth over the SyntheticInfrageometry primitives — re-set so that a finding appearing on both paths is the guide's and a finding on one is that generator's. T1 found [seven writing rules and three build defects](../Wiki/Concepts/PaperStyleExercise.md), two of the seven being rules of `style.md` that contradict each other. T2 confirmed five of those as path-independent, added four the notebook could not show — chiefly that the guide gives the *Ruliology* calls' supporting code no home outside a notebook's Initialization section — and turned up [seven defects in the LaTeX build path](../Wiki/Concepts/PaperStyleExercise.md#the-build-path--six-defects-in-the-shipped-template), the worst being that `\cref` mislabels every non-theorem and that the obvious fix makes multi-references silently lose entries.
 T3 [answered all of it](../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected) in the shipped guide, generators and templates: nothing that failed was a threshold, so the three flagged numbers keep their values and gain a scope, and the corrected templates were re-scaffolded and compiled on both formats.

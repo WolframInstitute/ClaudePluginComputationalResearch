@@ -27,7 +27,7 @@ A bare `>>` at the start of an Input cell is a syntax error, so a commented cell
 
 **What a comment refers to.**
 A comment that shares a line or a cell with other text refers to that passage.
-A comment alone on its lines, or alone in its cell, refers to the passage just below it.
+A comment alone on its lines, or alone in its cell, refers to the passage just above it — a reader writes the note after reading the passage.
 When its words say otherwise — "the example above", "the whole section" — the words win.
 
 ## Names
@@ -69,7 +69,7 @@ Ask the user which folder is the unit before writing anything.
    With no comments, say so and write no `k+1`; if the file differs from its last commit, those are hand edits — commit them as in step 4, and stop.
 4. **Record the commented version.**
    Commit version `k` exactly as the user left it — comments and hand edits — before anything is written:
-   `docs(revise): comments on <stem> version <k>`.
+   `docs(revise): <stem> v<k> comments`.
    The user asked for the round, so this commit is part of it.
    After this, version `k` is never edited again.
 5. **Write version `k+1`** by the path for the file type below.
@@ -79,7 +79,8 @@ Ask the user which folder is the unit before writing anything.
 6. **Rebuild and check.**
    Rebuild the `.pdf` if there is one.
    Search `k+1` for comments: only the ones not acted on may remain, each followed by its `not done` line.
-7. **Commit version `k+1`**: `docs(revise): <stem> version <k+1>`.
+7. **Commit version `k+1`**: `docs(revise): <stem> v<k+1>`.
+   The commit hook caps the subject at 72 characters, so keep it this short even for a long stem.
 8. **Present and wait.**
    Reply with one line per comment — the comment, and what was done or why not:
 

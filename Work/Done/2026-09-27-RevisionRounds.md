@@ -3,7 +3,6 @@
 *[ LLM Generated ]*
 
 > Type: feature
-> Autonomous: allowed
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -65,7 +64,7 @@ The README's *Revision* section is true:
 
 ## Tasks
 
-- [ ] T4 (human) — trial on a throwaway note: two rounds on its `.tex` and on its `.nb` with hand edits in the `.nb`, then clean; the operator reads the trail.
+(none)
 
 ### Done
 
@@ -79,6 +78,19 @@ The README's *Revision* section is true:
   - The round itself is exercised end to end only in T4.
 - [x] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it. *(S2, 2026-09-27)*
 - [x] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump. *(S3, 2026-09-27)*
+- [x] T4 — trial on a throwaway note: two rounds on its `.tex` and on its `.nb` with hand edits in the `.nb`, then clean. Run by the LLM in the orchestrating chat on the operator's "just finish". *(S4, 2026-09-27)*
+
+## Hand-off
+
+Done. The T4 trial, in a scratch repo with the plugin's `commit-msg` hook, took a `.tex` note and a `.nb` through versions 1 → 2 → 3 each, then `/clean`:
+the `.pdf` was rebuilt each round, the `.nb` hand edit survived round 2 with only the commented cell changed, a comment with no source got its `not done` line, and rounds 1–2 of both stems moved into `Archive/`.
+It found two defects, both fixed: commit subjects with a long stem or a folder overran the hook's 72-character cap (now `docs(revise): <stem> v<k>` and `chore(clean): archive earlier rounds in <folder>`), and a lone comment was read as referring to the passage below it, where a reader writes it after the passage (now: above).
+
+## Decisions` (dated 2026-09-27, marked "the LLM") — overturn any you disagree with.
+  - The round itself is exercised end to end only in T4.
+- [x] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it. *(S2, 2026-09-27)*
+- [x] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump. *(S3, 2026-09-27)*
+- [x] T4 — trial on a throwaway note: two rounds on its `.tex` and on its `.nb` with hand edits in the `.nb`, then clean. Run by the LLM in the orchestrating chat on the operator's "just finish". *(S4, 2026-09-27)*
 
 ## Hand-off
 
@@ -112,6 +124,7 @@ The README *Revision* section can be checked against the landed code now that T3
 | 2026-09-27 | A version number names the whole stem: `k+1` holds every file of `k`, uncommented ones copied verbatim (not the notebook's `.md`) | one number reads as one consistent set, and clean can move a version whole. Chosen by the LLM in T2, open to change |
 | 2026-09-27 | An Output below a rewritten Input stays, and the reply names it as stale | removing it is a change no comment asked for; re-evaluating replaces it. Chosen by the LLM in T2, open to change |
 | 2026-09-27 | A commented file inside a multi-file build (other than a folder-shaped artifact) makes the round ask which folder to version | renaming one `\input` file alone breaks the build. Chosen by the LLM in T2, open to change |
+| 2026-09-27 | A lone comment refers to the passage just above it, not below | the T4 trial: a reader writes the note after the passage. Changed by the LLM on the operator's "just finish", open to change |
 | 2026-09-27 | The round commits version `k` as the user left it, then `k+1`; hand edits with no comments are committed and no `k+1` is written | makes "every step is in git" true without a separate step; a copy with nothing changed is noise. Chosen by the LLM in T2, open to change |
 
 ## Progress
@@ -121,3 +134,4 @@ The README *Revision* section can be checked against the landed code now that T3
 - **S1** 2026-09-27 T2 — revision round written: grammar, names, steps, no invention, text-file and `.nb` paths; notebook mechanics verified on the kernel (Opus tier). → [round.md](../../skills/revise/round.md), [commands/revise.md](../../commands/revise.md), [Wiki/Concepts/NotebookCommentRound.md](../../Wiki/Concepts/NotebookCommentRound.md)
 - **S2** 2026-09-27 T3 — `/clean` written: any folder, numbered-round detection per round.md § *Names*, `git mv` into `Archive/` (created if missing), README pruned to the latest with a link in, older-dated artifacts left alone. `artifacts.md` § *One artifact, one date* now archives a superseded artifact into the same `Archive/` instead of `VersionSnapshots_YYMMDD/`. → [commands/clean.md](../../commands/clean.md), [skills/new-notebook/artifacts.md](../../skills/new-notebook/artifacts.md)
 - **S3** 2026-09-27 T5 — docs pass (in the orchestrating chat): ARCHITECTURE command count and `revise`/`clean` rows, README `clean` link, commit messages fixed for the hook, blog post entry, 5.4.0 bump and marketplace sync.
+- **S4** 2026-09-27 T4 — trial run by the LLM on the operator's word: both paths, two rounds each, clean; two defects found and fixed (commit subject length, comment reference direction). Item closed.
