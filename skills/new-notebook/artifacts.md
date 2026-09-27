@@ -66,7 +66,8 @@ Shared machinery — `macros.tex`, `references.bib`, a template — carries no d
 ## One artifact, one date
 
 A revisit is a **new artifact**, not new files in an old folder.
-When a later pass supersedes an earlier one, the earlier sources move into a `<Topic>VersionSnapshots_YYMMDD/` folder with a README saying what each snapshot was, and the current artifact carries the new date.
+When a later pass supersedes an earlier one, the earlier artifact's files move into the folder's `Archive/` subfolder — created if it does not exist yet, tracked in git like everything else — and the current artifact carries the new date.
+This is the same `Archive/` [`/clean`](../../commands/clean.md) moves superseded revision rounds into; a round renumbers one date, a new artifact is a new date, and both end up archived the same way.
 
 ## The index
 

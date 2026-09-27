@@ -65,7 +65,6 @@ The README's *Revision* section is true:
 
 ## Tasks
 
-- [ ] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it.
 - [ ] T4 (human) — trial on a throwaway note: two rounds on its `.tex` and on its `.nb` with hand edits in the `.nb`, then clean; the operator reads the trail.
 - [ ] T5 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, the blog post (the idea: review happens in the document), and a version bump.
 
@@ -79,13 +78,14 @@ The README's *Revision* section is true:
   - **Test:** read the *Revision round* section of [skills/revise/SKILL.md](../../skills/revise/SKILL.md) and [commands/revise.md](../../commands/revise.md) — both say the same as round.md, in brief.
   - **Test:** check the four choices this task made in `## Decisions` (dated 2026-09-27, marked "the LLM") — overturn any you disagree with.
   - The round itself is exercised end to end only in T4.
+- [x] T3 (model: sonnet, effort: high — mechanical) — `commands/clean.md` and the `Archive/` rule in `artifacts.md`, replacing `VersionSnapshots`; the generating skills link it. *(S2, 2026-09-27)*
 
 ## Hand-off
 
 T2 done: the round is written in [round.md](../../skills/revise/round.md), summarised in `revise` § *Revision round*, with [commands/revise.md](../../commands/revise.md).
-`revise` now links `/clean`, which T3 creates.
-For T5: `ARCHITECTURE.md` line 77 still says `revise` has no command, and neither `commands/revise.md` nor `round.md` is in its tables yet.
-The README *Revision* section stays ahead of the code until T3 lands.
+T3 done: [commands/clean.md](../../commands/clean.md) writes the procedure (stem/round detection per round.md § *Names*, the `Archive/` move, the README update, the commit message); `artifacts.md` § *One artifact, one date* now moves a superseded artifact's files into the same `Archive/` instead of a bespoke `VersionSnapshots_YYMMDD/` folder, and links `/clean`. The three generating skills (`new-notebook`, `new-research-note`, `new-research-notebook`) already link `artifacts.md`, so they reach the new rule through that one shared link — none needed a direct edit.
+For T5: `ARCHITECTURE.md` line 77 still says `revise` has no command, and `commands/revise.md`, `commands/clean.md`, `round.md` are not in its tables yet; the commands count (line 75, "27") is now stale too.
+The README *Revision* section can be checked against the landed code now that T3 is in.
 
 ## Decisions
 
@@ -108,3 +108,4 @@ The README *Revision* section stays ahead of the code until T3 lands.
 - **S0** 2026-09-27 — item filed from the operator's request; draft awaiting `/refine`.
 - **S0'** 2026-09-27 — the operator answered four questions (Output, no invention, `.nb` as source, any document); README section written. Then the clean questions (only rounds, any folder); no open questions left. Moved to Ready on the operator's word.
 - **S1** 2026-09-27 T2 — revision round written: grammar, names, steps, no invention, text-file and `.nb` paths; notebook mechanics verified on the kernel (Opus tier). → [round.md](../../skills/revise/round.md), [commands/revise.md](../../commands/revise.md), [Wiki/Concepts/NotebookCommentRound.md](../../Wiki/Concepts/NotebookCommentRound.md)
+- **S2** 2026-09-27 T3 — `/clean` written: any folder, numbered-round detection per round.md § *Names*, `git mv` into `Archive/` (created if missing), README pruned to the latest with a link in, older-dated artifacts left alone. `artifacts.md` § *One artifact, one date* now archives a superseded artifact into the same `Archive/` instead of `VersionSnapshots_YYMMDD/`. → [commands/clean.md](../../commands/clean.md), [skills/new-notebook/artifacts.md](../../skills/new-notebook/artifacts.md)
