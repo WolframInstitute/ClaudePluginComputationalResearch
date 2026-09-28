@@ -18,7 +18,7 @@ Available in the [WolframInstitute marketplace](https://github.com/WolframInstit
 * 📔 Keeps a scientific journal of what was learned, if you want one.
 * 🧬 Records the prompt behind everything it generates, if you want that.
 * 🗃️ **Autolab** manages a backlog of work and works through it while you are away.
-* 🤝 Shows you every deliverable, and revises it from the comments you write into it, keeping every version.
+* 🤝 Shows you every deliverable, and revises it from the notes you write into it, keeping every version and remembering your corrections.
 * 🧭 Gives a guided tour of the project.
 
 ## 📥 Installation
@@ -101,21 +101,35 @@ The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md
 
 Nothing the plugin makes is final until you have read it.
 You review in the document itself, not in the chat, and you may edit it there directly.
+Any document works: a notebook, a LaTeX or Typst paper, a Markdown file, code.
 
-Start a line with `>>` wherever something should change: `>> make this example smaller`.
-This works in any document — a notebook, a LaTeX or Typst paper, a Markdown file — and in code after the comment sign, as in `(* >> use a smaller graph *)`.
-Then ask for a revision.
-The plugin reads your comments and your own edits, and writes the next version beside the old one, with the next number: `Note_260927_2.nb`, then `Note_260927_3.nb`.
-It changes only what you asked for, keeps every edit you made, and adds nothing you did not ask for.
-A comment it could not act on stays in the next version, with the reason.
-It never edits the version you commented on, so every round stays on record.
+To refine a document with the AI:
 
-When you are done, clean up any folder: earlier versions move into its `Archive/` subfolder, made if it is missing, and only the latest stays in view.
+1. **Ask for it.** The plugin writes version 1, `Note_260928.tex` or `Note_260928.nb`, and beside it `Note_260928.provenance.md`, which starts with your request.
+2. **Write notes into it** wherever something should change: `<< make this example smaller >>`.
+   A note can sit inside a sentence or run over several lines; in code it goes inside a comment, as in `(* << use a smaller graph >> *)`.
+   Edit the text yourself wherever that is quicker.
+3. **Ask for a revision** (`/revise Note_260928.nb`, or just "revise it").
+   The plugin writes the next version beside the old one, with the next number: `Note_260928_2.nb`, then `_3`.
+   It changes only what your notes ask, keeps every edit you made, and adds nothing you did not ask for.
+   It never edits the version you wrote your notes in, so every round stays on record.
+4. **Read the reply.** It lists each note with what was done.
+   A note it could not act on stays in the new version, followed by `<< not done: … >>`.
+5. **Repeat on the latest version** until you are satisfied.
+
+The document remembers how you revised it.
+Its provenance file records every note with the lines it was about, every edit you made by hand, and everything you said in the chat about the document.
+From these it keeps a short list of rules, such as "example graphs have at most 10 vertices", and reads them before every round, so a correction you made once is not needed again.
+The reply shows each new rule; to overrule one, edit or delete it in the file.
+For a notebook, the notes point at lines of its Markdown source: each version of a generated notebook keeps its `.md` beside it.
+
+Each round is committed to git: the text files and each notebook's `.md`, but not the generated notebooks.
+When you are done, clean up the folder: earlier versions move into its `Archive/` subfolder, made if it is missing, and only the latest stays in view, with its provenance file.
 Nothing is deleted.
 
 | Skill | What it does |
 |---|---|
-| [revise](skills/revise/SKILL.md) | Show every deliverable and wait; on request, write the next version from your comments |
+| [revise](skills/revise/SKILL.md) | Show every deliverable and wait; on request, write the next version from your notes, remembering past rounds |
 | [clean](commands/clean.md) | Move earlier versions into `Archive/` |
 
 ### 📚 Autoknowledge

@@ -34,7 +34,7 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
-| — | none ready |
+| [DocumentMemory](Ready/DocumentMemory.md) | T2 — `<< … >>` grammar and the document provenance format |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `OutputFolder`; `/next-session <Name>` after a `git mv` into `Active/` starts one.
 
