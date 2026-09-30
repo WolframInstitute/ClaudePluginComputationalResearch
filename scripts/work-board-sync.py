@@ -20,7 +20,7 @@ DATED = {"Done", "Dropped"}
 
 NEW_ITEM = """# {title}
 
-*[ LLM Generated ]*
+*[[ LLM Generated ]]*
 
 > Type: research
 > Waiting on: you — a `/refine` sitting; filed from the board on {date}.

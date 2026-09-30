@@ -1,6 +1,6 @@
 # Formalize: <Theorem / Definition / Topic>
 
-*[ LLM Generated ]*
+*[[ LLM Generated ]]*
 
 > Proof: **outlined**    <!-- outlined | in-progress | proved | verified (proof stage; lifecycle status is the folder) -->
 > Type: formalization

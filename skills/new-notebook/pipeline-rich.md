@@ -19,7 +19,7 @@ Two consequences are easy to get wrong:
 
 - **Keep the notebook options.** `ExportString[Notebook[cells], "NB"]` silently drops them; rich mode must rebuild the original expression instead — `ReplacePart[nb, 1 -> cells]`.
 - **Drop the boxify step, keep the rest.** The parser already emits the structural box tree, so `boxifyInputCells` is dead weight, and its visualization guard is unnecessary: the guard existed only because `ToBoxes[ToExpression[…, Defer]]` strands graphics cells, and rich mode never calls it.
-  `markInitCells` and the `[ LLM Generated ]` marker normalization still apply unchanged.
+  `markInitCells` and the `[[ LLM Generated ]]` marker normalization still apply unchanged.
 
 ## Surface the parser degradation
 
@@ -47,15 +47,15 @@ Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle},
   (* markInitCells and addLLMSubtitle: definitions from pipeline-builtin.md,
      with the Section-first heading match described above *)
 
-  md = StringJoin["# My Notebook Title\n\n", "**[ LLM Generated ]**\n\n", "..."];
+  md = StringJoin["# My Notebook Title\n\n", "**[[ LLM Generated ]]**\n\n", "..."];
 
   Get[wl];
   nb = MarkdownToNotebook[md, "Evaluate" -> False];
   cells = First[nb];
   cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"],
-    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"],
-    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle"]
+    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]}], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"],
+    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"],
+    Cell["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"]
   };
   cells = cells /. Cell[c_, s_String, o___] :>
     Cell[c, s, Sequence @@ DeleteCases[{o}, CellLabel -> _]];

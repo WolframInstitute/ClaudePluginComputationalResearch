@@ -5,7 +5,7 @@
   #text(17pt)[*{{TITLE}}*]
 
   #v(0.3em)
-  #text(11pt)[_\[ LLM Generated \]_]
+  #text(11pt)[_\[\[ LLM Generated \]\]_]
 
   #v(0.4em)
   {{AUTHOR}}

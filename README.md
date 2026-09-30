@@ -158,6 +158,7 @@ Each one is saved with a summary and the steps to get it back.
 
 Code is worth most when others can run it.
 Notebooks explain it, and paclets ship it, with each exported function standing on its own.
+Every project gets one house style for Wolfram code — spaced brackets, chained `With`, the body on its own line, no comments, colours that read in light and dark mode — and every generated notebook is a walkthrough in pictures, marked `[[ LLM Generated ]]` under its title.
 
 | Skill | What it does |
 |---|---|

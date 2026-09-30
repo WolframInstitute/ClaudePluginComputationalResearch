@@ -9,7 +9,7 @@
 // re-dates the paper on every compile and nothing in the output shows that it
 // moved.
 #align(center)[
-  #text(9pt)[\[ LLM Generated \]]
+  #text(9pt)[\[\[ LLM Generated \]\]]
 
   #v(0.4em)
   #text(17pt)[*{{TITLE}}*]

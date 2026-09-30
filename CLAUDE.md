@@ -47,7 +47,7 @@ Its scope in **this** repo is deliberately narrow — external dependencies (wit
 Plugin architecture stays in `ARCHITECTURE.md` and `README.md`; do not mirror the skill/script/command tables into `Wiki/`, or there will be two copies to keep current.
 
 No human sign-off is needed for wiki prose.
-Every article carries a `[ LLM Generated ]` marker under its `# Title`.
+Every article carries a `[[ LLM Generated ]]` marker under its `# Title`.
 Execution state — active items, next tasks — lives in `Work/README.md`, not `Wiki/Status.md`.
 
 ## Plugin Maintenance

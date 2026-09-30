@@ -119,7 +119,7 @@ After every substantial step, the LLM:
 
 The wiki is documentation — the LLM keeps it accurate automatically.
 No human sign-off needed for wiki prose. Every article carries a
-`[ LLM Generated ]` marker directly under its `# Title`.
+`[[ LLM Generated ]]` marker directly under its `# Title`.
 
 ### Human revision (code & functionality)
 
@@ -218,7 +218,7 @@ Use the article format from the update-wiki skill.
 
 ## Article format
 
-Use the article format from [update-wiki § *Create or update articles*](../update-wiki/SKILL.md) — every article carries the `*[ LLM Generated ]*` marker under its title.
+Use the article format from [update-wiki § *Create or update articles*](../update-wiki/SKILL.md) — every article carries the `*[[ LLM Generated ]]*` marker under its title.
 
 No status headers on wiki articles — they're documentation, maintained automatically.
 

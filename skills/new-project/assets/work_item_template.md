@@ -1,6 +1,6 @@
 # {{ITEM_TITLE}}
 
-*[ LLM Generated ]*
+*[[ LLM Generated ]]*
 
 > Type: research    <!-- research | formalization | refactor | investigation -->
 <!-- Optional header lines: `> Target: <paclet or artifact>`, `> Waiting on: you — <what>`.

@@ -17,7 +17,7 @@ The **final** styles a source author should expect:
 | `#### Subsubsection` | `"Subsection"` | `"Subsubsection"` | Subsubsection heading |
 
 So author `##` headings render as `"Section"`, not `"Chapter"`.
-A `**[ LLM Generated ]**` marker line in the source (the documented convention) is imported as a bold `"Text"` cell and normalized to a single `"Subtitle"` cell under the `"Title"` by the marker rules that run alongside the heading shift.
+A `**[[ LLM Generated ]]**` marker line in the source (the documented convention) is imported as a bold `"Text"` cell and normalized to a single `"Subtitle"` cell under the `"Title"` by the marker rules that run alongside the heading shift.
 
 ## Text and formatting
 

@@ -35,7 +35,7 @@ Note the caveat from the paclet's `CLAUDE.md`: a scan of `Default.nb` cannot ans
 
 Two consequences of the deferral worth knowing while authoring:
 
-- `Subtitle` resolves (from `Default.nb`) under `PlainArticle` but **not** under `AMSArticle`, which declares no such style. Use `Author` for the `[ LLM Generated ]` line — the one style that survives a swap to any sheet.
+- `Subtitle` resolves (from `Default.nb`) under `PlainArticle` but **not** under `AMSArticle`, which declares no such style. Use `Author` for the `[[ LLM Generated ]]` line — the one style that survives a swap to any sheet.
 - `Reference` comes from `Default.nb`, whose left margin differs from `AMSArticle`'s. Keep bib keys short and the label fits under both.
 
 ## Embed the stylesheet — never reference it by name

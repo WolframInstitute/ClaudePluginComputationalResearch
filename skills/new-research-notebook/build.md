@@ -105,7 +105,7 @@ Either way the keys are metadata — the `Default` template emits no `Author` ce
 `prompt` is one sentence summarising the instructions actually given, including what was left unspecified.
 A missing `prompt` degrades to the label alone; a missing `freedom` degrades to the operator alone.
 
-`ResearchHeadCells[ meta ]` emits, in order: `[ LLM Generated ]` (`Author`), `Title`, the model (`Author`), the date (`Date`), the footnote (`Date`).
+`ResearchHeadCells[ meta ]` emits, in order: `[[ LLM Generated ]]` (`Author`), `Title`, the model (`Author`), the date (`Date`), the footnote (`Date`).
 A missing key drops its cell rather than printing an empty one.
 
 **The source carries no `#` heading.**
@@ -199,7 +199,7 @@ Two reasons the build always ships `PlainArticle` embedded:
 - **A palette swap sets the sheet by name**, replacing the embedded definitions with a path into a paclet layer on the author's disk. A cloud reader without the paclet then gets **zero** style definitions — no counters, and no labels either, because the label *is* the `CellDingbat` the sheet supplies.
 - **By-name resolution is not measured to work here.** The paclet's own record (`BasicFunctionality` T4) has all six sheets falling back to `Default.nb` for a locally installed copy — Title 45 where the embedded `Get` gives 26 — before a menu reset, after `ResetMenusPacket`, and with the front end freshly launched. It worked for a cloud-installed copy. Treat the swap as a documented author action, not a verified one.
 
-Use `Author` for the `[ LLM Generated ]` line and for the model.
+Use `Author` for the `[[ LLM Generated ]]` line and for the model.
 `Subtitle` resolves under `PlainArticle` but `AMSArticle` declares no `Subtitle`, so a line written in it loses its typography on a swap.
 `Author` and `Date` survive every swap.
 

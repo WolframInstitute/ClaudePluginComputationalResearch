@@ -8,7 +8,7 @@ Read when actually generating a notebook on the built-in path; engine selection 
 After `ImportString`, apply these transformations before `ExportString` — the function definitions appear **once**, inside the complete call below:
 
 1. **Heading shift.** The WL-15 importer maps `##`→`Chapter`; the corpus uses `Title`/`Section`/`Subsection`, so every heading shifts down one level (`Chapter`→`Section`, `Section`→`Subsection`, `Subsection`→`Subsubsection`) immediately after `cells = First[nb]`.
-2. **Marker normalization.** Any `**[ LLM Generated ]**` bold-Text marker from the source (legacy unspaced spelling included) becomes a single `"Subtitle"` cell.
+2. **Marker normalization.** Any `**[[ LLM Generated ]]**` bold-Text marker from the source (the legacy `[LLM Generated]` and `[ LLM Generated ]` spellings included) becomes a single `"Subtitle"` cell.
 3. **Rename `"Program"` → `"CodeText"`** — untagged fences are display-only code.
 4. **`boxifyInputCells` — Critical.** The importer produces `Cell[BoxData["raw string"], "Input"]`; without a structural `RowBox` tree, hover help, F1 lookup, autocomplete, and the suggestion bar are all dead.
    Boxify via `ToBoxes[ToExpression[code, StandardForm, Defer]]` (`Defer` keeps the code unevaluated) — **except** visualization cells.
@@ -16,7 +16,7 @@ After `ImportString`, apply these transformations before `ExportString` — the 
    Do not skip this step — without it, every Input cell ships broken.
 5. **`markInitCells`.** Input cells under `Setup`/`Initialization`/`Preamble`/`Dependencies` headings get `InitializationCell -> True`.
    Wildcard `StringMatchQ` avoids false positives ("Indefinite Integrals" must NOT trigger).
-6. **`addLLMSubtitle` — Critical.** Every generated notebook carries a `"Subtitle"` cell reading `[ LLM Generated ]` (spaced form) directly under the `"Title"`; the function dedupes so exactly one marker ships, whether the source carried one or not.
+6. **`addLLMSubtitle` — Critical.** Every generated notebook carries a `"Subtitle"` cell reading `[[ LLM Generated ]]` (double-bracket form) directly under the `"Title"`; the function dedupes so exactly one marker ships, whether the source carried one or not.
    Never ship an LLM-generated `.nb` without this marker (paclet code is exempt; notebooks are not).
 
 ## The complete Wolfram MCP call
@@ -69,11 +69,11 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
   ];
 
   addLLMSubtitle[cellList_List] := Module[
-    {cells = DeleteCases[cellList, Cell["[ LLM Generated ]", "Subtitle", ___]], pos},
+    {cells = DeleteCases[cellList, Cell["[[ LLM Generated ]]", "Subtitle", ___]], pos},
     pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
     If[MissingQ[pos],
-      Prepend[cells, Cell["[ LLM Generated ]", "Subtitle"]],
-      Insert[cells, Cell["[ LLM Generated ]", "Subtitle"], pos[[1]] + 1]]
+      Prepend[cells, Cell["[[ LLM Generated ]]", "Subtitle"]],
+      Insert[cells, Cell["[[ LLM Generated ]]", "Subtitle"], pos[[1]] + 1]]
   ];
 
   md = StringJoin[
@@ -94,9 +94,9 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
     Cell[c_, "Subsection", o___] :> Cell[c, "Subsubsection", o]
   };
   cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]}], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
-    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]", ___]], _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o],
-    Cell["[LLM Generated]" | "[ LLM Generated ]", _String, o___] :> Cell["[ LLM Generated ]", "Subtitle", o]
+    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]}], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o],
+    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o],
+    Cell["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o]
   };
   cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
   cells = boxifyInputCells[cells];

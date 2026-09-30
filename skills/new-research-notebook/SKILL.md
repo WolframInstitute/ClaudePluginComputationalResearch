@@ -76,7 +76,7 @@ Sections carry mathematical titles ("Hodge decompositions", "Curvature on trees"
 
 Three things a paper does need:
 
-- a **head** — `[ LLM Generated ]`, `Title`, the model as `Author`, the date, the footnote naming the operator with the **bold freedom level** and a one-sentence prompt summary ([style.md](style.md) § *Authorship*), and an `Abstract`;
+- a **head** — `[[ LLM Generated ]]`, `Title`, the model as `Author`, the date, the footnote naming the operator with the **bold freedom level** and a one-sentence prompt summary ([style.md](style.md) § *Authorship*), and an `Abstract`;
 - an **introduction** that states the results in prose, each sentence citing the tag where the result is proved ("by [Prop:Extension]"), so a reader who stops there knows what the paper claims. Not as numbered statements: numbering is per section, so a result announced as its own statement numbers 1.1 while the theorem it announces numbers 5.2, and the reader meets one result under two numbers;
 - the **references**, and after them `Initialization`, folded (§ *Initialization*).
 
@@ -223,7 +223,7 @@ Then these, which are this skill's own:
 - [ ] One statement per cell — no continuation cells, since Markdown cannot express one.
 - [ ] No number typed into the source anywhere; tags written `{#Tag}`, prefixed, cited bare as `[Tag]`.
 - [ ] An equation is numbered exactly when it is cited; a statement is tagged exactly when it is cited.
-- [ ] Head is `[ LLM Generated ]`, Title, the **model** as Author, the date, and the footnote with the operator, the **bold** freedom level and the prompt summary — no human as author.
+- [ ] Head is `[[ LLM Generated ]]`, Title, the **model** as Author, the date, and the footnote with the operator, the **bold** freedom level and the prompt summary — no human as author.
 - [ ] Code folded, graphic not: `CellGroupData[{Input, Output}, {2}]` — never `Closed`, never `Open`. One Output per Input. `Input` cells carry real code.
 - [ ] Initialization last and folded: paclet loads, seed, reproducibility line, example objects, stylesheet-swap note.
 - [ ] Build: rich engine at the pinned clone, `CellLabel` stripped, no `::: theorem` divs, no `\to` or `\tag{…}` in rich mode, `PlainArticle.nb` embedded.

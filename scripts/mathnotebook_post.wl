@@ -335,7 +335,7 @@ withCellID[ cell : Cell[ content_, rest___ ] ] :=
    and every MathNotebook sheet declares it, so it survives a sheet swap.     *)
 
 ResearchHeadCells[ meta_Association ] :=
-  { Cell[ "[ LLM Generated ]", "Author" ],
+  { Cell[ "[[ LLM Generated ]]", "Author" ],
     headCell[ meta, "title", "Title" ],
     headCell[ meta, "model", "Author" ],
     headCell[ meta, "date", "Date" ],

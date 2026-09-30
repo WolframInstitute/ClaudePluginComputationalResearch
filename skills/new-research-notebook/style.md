@@ -196,6 +196,19 @@ Write "the bound 2 cannot be lowered, since margin 1 fails" — not "the margin 
 
 Commentary belongs in a `Remark`, not in loose prose between statements.
 
+## Order, definitions and credit
+
+- **The goal precedes the assumptions.** State what is happening before the details.
+- **Never start a sentence with a symbol.**
+- **Define every notion exactly before using it**, and `\emph` the term where it is defined.
+- **State the hypotheses explicitly**, and use a counterexample to show each one is needed.
+- **A short heuristic before a technical construction**; side remarks and doubts go in footnotes.
+- **Prefer a simple, elegant argument**, even if less general or slightly faulty with a note on how to fix it, over a complicated branching construction.
+- **Credit exactly**: `\cite[Theorem~1.1]{X}`, say how our approach differs, and say plainly what we have not done or do not know.
+- **Counts of what failed or succeeded are not interesting**; prefer a graphical illustration and a clean claim over a technical claim with numbers.
+- **No closer restating the point just made.** Say each thing once.
+- **No code inline in the text**; code at most in tables, as in computer journals.
+
 ## Proofs — complete, and checkable in order — Critical
 
 **A given argument is given in full.**
@@ -329,7 +342,7 @@ Where the [provenance](../provenance/SKILL.md) toggle is on, this line is the re
 The notebook has no footnote style, and `Caption` is not one — it carries a `Figure ⟨n⟩.` dingbat and increments a counter.
 `Date` inherits `Text`, is centred and small, takes neither dingbat nor counter, and every MathNotebook sheet declares it, so it survives a stylesheet swap.
 
-The `[ LLM Generated ]` line stays, above the title, on every path.
+The `[[ LLM Generated ]]` line stays, above the title, on every path.
 Neither amsart nor a plain Typst document has a slot for it, so it is built into the title itself — in LaTeX the first line of `\title`, set `\normalfont\normalsize` above a `\\[0.8ex]` break, with a short `\title[…]` for the running head; in Typst a small line above the title text.
 It is the one marker that tells a reader what they are holding, and the LaTeX path dropped it until it was built by hand.
 
@@ -362,6 +375,6 @@ Bind the two in one sentence after the definition, or let the Example do it by u
 - [ ] One example per statement — every definition and every result; each answers with a picture that shows the phenomenon or one small algebraic value, bare, at most 10 rendered lines, labelled only if cited; on a typeset path the graphic is exported from exactly the call shown and bound to it in one unbreakable block.
 - [ ] No banned vocabulary, no selling adjectives; commentary in a `Remark`.
 - [ ] No `[lookup]` left; notation introduced once; macros defined in one file (LaTeX/Typst).
-- [ ] The author is the model plus the generation date — never the compile date — with `[ LLM Generated ]` above the title on every path; no human is named as author.
+- [ ] The author is the model plus the generation date — never the compile date — with `[[ LLM Generated ]]` above the title on every path; no human is named as author.
 - [ ] The footnote names the operator, carries the freedom level **in bold** (Directed / Guided / Open exploration), and summarises the instructions actually given, including what was left unspecified.
 - [ ] Everything cut is in the journal with one line saying why — nothing deleted; with the journal off, the cut list was put to the operator **at the tier sort** (§ *When the journal is off*), nothing was dropped without a ruling, and retained material carries the `[ Retained — no journal ]` marker.

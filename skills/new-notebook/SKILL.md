@@ -69,7 +69,7 @@ Both are tracked — an artifact is a deliverable, not a build product.
 These are **not** wiki articles: they do not go in `Wiki/`.
 
 The stem carries the date the notebook was settled, `YYMMDD`, and it is stamped once and **preserved on every later regeneration** — a rebuild overwrites the same two files rather than adding a second date.
-The date lives only in the filename; **do not** put it inside the notebook (the `[ LLM Generated ]` subtitle stays undated).
+The date lives only in the filename; **do not** put it inside the notebook (the `[[ LLM Generated ]]` subtitle stays undated).
 A later pass that supersedes the notebook rather than correcting it is a new artifact with a new date, per [artifacts.md](artifacts.md) § *One artifact, one date*.
 
 When to use the source layer:
@@ -201,19 +201,25 @@ When running inside a VM (Claude Desktop Projects or sandboxed environment):
 
 These govern the *content* of every LLM-generated notebook. Apply them as you compose the markdown.
 
-- **Concise** — keep text simple and short; don't over-complicate or over-explain.
-- **Prefer bullet points over prose** — use bulleted lists, not flowing paragraphs, wherever possible.
-- **Text first, then code** — explain in a Text cell, then show the code cell. Never interleave text and code within a paragraph.
-- **No inline code in prose** — keep calls and code out of flowing sentences; they belong in their own cells.
-- **Focus on substance** — the math, algorithms, and what functions do. Explain things properly; don't just print numbers.
-- **Clear structure** — few sections, no sprawl.
-- **Visual, not numeric** — favor graph and plot visualizations over numeric output.
-- **No LaTeX math in table cells** — use plain text inside table cells so they render.
+- **`[[ LLM Generated ]]` as a `Subtitle` cell right after the `Title`** — in the Markdown source, `**[[ LLM Generated ]]**` on its own line under the title; the pipeline normalizes it (§ *pipeline-builtin.md*).
+- **A discovery walkthrough**, building up to the main results. Few sections, no sprawl.
+- **Visuals over numbers** — code illustrates each concept graphically. Prefer a picture to a numerical result, a `True`/`False`, or a list.
+- **One concept on several substrates** — `GraphicsRow` (3 pictures per row) or `GraphicsGrid` (3 × 3).
+- **Text cells: short, plain sentences** stating the math and the narrative. Itemized lists for enumerations. No code or function names, no descriptions of code, no numerical summaries of results.
+- **Text first, then code** — a Text cell, then the code cell. Never interleave text and code within a paragraph.
+- **Math in LaTeX** (`$…$`, `$$…$$`) — except in table cells, where `$…$` does not render; use plain text there.
+- **Examples are full, self-contained snippets** in the snippet style of the project's `CLAUDE.md` § *Snippets*: a chained `With`, one construction per block, literals inline, the display last. No big shared helper functions; copy code between examples instead.
+- **Setup cell** — for a project that publishes a paclet, `PacletInstall[ "<cloud url>", ForceVersionInstall -> True ]` then `` Needs[ "WolframInstitute`<Name>`" ] ``; for local work, `PacletDirectoryLoad[ "<path>" ]` beside the `PacletInstall`. Shared initialization definitions go in a separate initialization cell after it.
+- **References as plain text** — author, title, arXiv link.
 - **Plain tables** — no separating lines, dividers, or frames in tables; use plain rows and `Grid`.
 - **No labels on graphics** — no `PlotLabel`, axis labels, or annotations; let the surrounding text carry the meaning.
-- **Name after the code, not prose** — subsection titles and any labels should name the function call or option being illustrated, e.g. `FindPoint`, `"From" -> "Center"` — not a descriptive sentence.
-- **Only meaningful functions** — define only functions with genuine mathematical meaning. No utility/helper functions (no frame/anim/origin/ecc-style helpers).
-- **Lean on defaults** — only style what carries meaning; otherwise use default rendering.
+- **Name after the code, not prose** — subsection titles name the function call or option being illustrated, e.g. `FindPoint`, `"From" -> "Center"` — not a descriptive sentence.
+- **Lean on defaults** — only style what carries meaning; otherwise use default rendering (§ *Graphics* of the project's `CLAUDE.md`: `Standard*` colors, no `ImageSize`).
+
+When writing cells directly through `mcp__Wolfram__WriteNotebook` rather than the Markdown pipeline:
+
+- Styles that work: `Title`, `Subtitle`, `Section`, `Subsection`, `Text`, `Item`, `ItemNumbered`, `Input`. Not `Subitem`, `Subsubitem`.
+- `Text` / `Item` cells: plain strings plus named characters (`\[Alpha]`, `\[Integral]`, `\[Element]`, …). Not `\n`, `\t`, Unicode escapes, `TextData`, `BoxData`, `StyleBox`, `ButtonBox`, `\[Superscript]`, `\[Subscript]`. Separate cells instead of newlines.
 
 ## Naming conventions
 

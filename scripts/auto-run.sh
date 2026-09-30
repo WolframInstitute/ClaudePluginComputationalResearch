@@ -316,7 +316,7 @@ write_digest() {
   {
     echo "# Autonomous run — $ITEM"
     echo
-    echo "*[ LLM Generated ]* — driver digest, gitignored. Review surface for \`$BRANCH\`."
+    echo "*[[ LLM Generated ]]* — driver digest, gitignored. Review surface for \`$BRANCH\`."
     echo
     echo "| | |"
     echo "|---|---|"
