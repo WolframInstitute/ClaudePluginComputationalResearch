@@ -3,7 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: refactor
-> Waiting on: you — a `/refine` sitting on the Summary, Motivation and Acceptance criteria, and the open questions.
+> Superseded: merged into [FolderRule](../Ready/FolderRule.md) on 2026-10-03; papers go to `Research/`, and there is no `Output/`.
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -70,3 +70,4 @@ The README already shows `Output/`, so it is ahead of the skills until T2 lands.
 ## Progress
 
 - **S0** 2026-09-26 — item filed from the operator's request; draft awaiting `/refine`.
+- **S0'** 2026-10-03 — dropped: the operator ruled "No Output"; the `Paper/` rename lives on in `FolderRule`.

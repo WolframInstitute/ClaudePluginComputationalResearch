@@ -35,8 +35,9 @@ The one thing the folders can't show — each in-progress item and its next task
 | Item | Next task |
 |---|---|
 | [DocumentMemory](Ready/DocumentMemory.md) | T2 — `<< … >>` grammar and the document provenance format |
+| [FolderRule](Ready/FolderRule.md) | T1 — artifacts.md becomes the three-places convention |
 
-`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `OutputFolder`; `/next-session <Name>` after a `git mv` into `Active/` starts one.
+`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and two filed on 2026-10-03: `BacklogLifecycle` and `ParallelSessions`; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 
 `RevisionRounds` completed on 2026-09-27 after five tasks, all that day: comments on lines starting with `>>` in any document, each `/revise` round writing the next numbered version beside the last, and `/clean` moving earlier rounds into `Archive/`. Its trial found that commit subjects overran the hook's cap and that a lone comment points at the passage above it, not below.
 
