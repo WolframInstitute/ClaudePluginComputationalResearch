@@ -276,6 +276,10 @@ What the user changed by hand, found without asking them:
 - **Text files**: `git diff` between version `k` as Claude committed it and the file as the user left it, taken before the round commits version `k`.
 - **No baseline** — a text file whose version `k` was never committed as written, or a notebook without fingerprints: the round records `H · no baseline` and draws no rules from edits.
 
+A note is not a hand edit, but both of these report it as one: the `git diff` holds every line the user added a note on, and the fingerprint marks every annotated cell as edited.
+Take the notes out before deciding.
+A diff line that is only a note is not an edit; a cell is hand-edited only when its content with each note deleted — `StringReplace[ s, " "... ~~ "<<" ~~ Shortest[ ___ ] ~~ ">>" -> "" ]` on its strings, and a string left empty dropped from its `TextData` — still misses its recorded hash.
+
 ### Rules
 
 A rule is what keeps a correction from being needed twice.

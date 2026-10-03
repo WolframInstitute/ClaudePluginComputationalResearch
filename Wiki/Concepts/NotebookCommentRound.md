@@ -40,6 +40,18 @@ Neither converter records where a cell came from, so `SourceLineNotebook` (`scri
 - **`StringMatchQ` treats `"*"` as a wildcard** even inside a `StringExpression`: `StringMatchQ[ "We prove", "*" ~~ " " ~~ ___ ]` is `True`. The block splitter matches list markers with `RegularExpression` for that reason.
 - **Read the file with `Import[ path, "Text" ]`.** Its lines are the file's lines (143 on `SidonBound`), while splitting `ReadString` gives one more, empty, line.
 
+## Three rounds with a repeated hand edit: trial 2026-10-03
+
+A throwaway `.tex` and a `.nb` (from its `.md` by `MarkdownToNotebook` with `SourceLineNotebook`, `CellID`s and the fingerprint of [fingerprint.md](../../skills/new-research-notebook/fingerprint.md), without the MathNotebook passes) went through rounds r2, r3, r4 in a scratch repo with the `commit-msg` hook.
+The user's part — notes and hand edits — was simulated: sed on the `.tex`, `ReplacePart` on cell strings in the `.nb`.
+
+- **The script.** r2: a hand edit "we show" → "it is shown" in one passage, a note in another. r3: the same hand edit in a second passage, so a rule; a note in a third passage that still says "we show". r4: a note in the passage hand-edited in r2, and a note in a fourth passage that says "we show".
+- **The third round (r4) did not bring it back.** After r4 neither `Cycles_261003_4.tex` nor `Notebook_261003_4.md` nor the text of `Notebook_261003_4.nb` holds "we show"; both r2 and r3 hand edits are intact. In the notebook this is a real test: the r4 note made the round regenerate the r2-edited cell from the `.md`, which says "it is shown" only because r2 wrote the hand edit back.
+- **Every check held.** Each round changed only the annotated cells (cell-by-cell compare), every range of the new `.nb` was a block of the new `.md` in order, and the re-stamped fingerprint reported no drift. No `.nb` reached git.
+- **A rule drawn in a round binds that round.** r3's own hand edit made the rule, and r3's note passage was rewritten by it. The round's steps had the rules recorded only in step 9, after the step 7 check; they are now drawn in step 4.
+- **A note looks like a hand edit.** The `git diff` of a text file lists each added note line, and the fingerprint marks every annotated cell as edited. Deleting the notes from a cell's strings (and the empty strings this leaves in `TextData`) restored the recorded hash on all four note-only cells and on none of the two hand-edited ones.
+- **Keep each passage's new text.** With two passages in one round, reading the lower one back from `Name_k+1.md` at its old line took a blank line and the old first sentence, since the passage above had grown by a line. The round now converts the text kept in step 3.
+
 ## Why the grammar is what it is
 
 The first grammar (2026-09-27) was a line starting `>>`; on 2026-10-03 it became a delimited note `<< … >>`, which the operator chose so a note can sit inside a sentence or run over several lines.

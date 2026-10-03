@@ -120,12 +120,16 @@ This changes round.md (which commits both versions of a notebook) and `new-noteb
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T5 — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
 - [ ] T6 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, blog post, version bump.
 
 ### Done
 
 (completed tasks move here with the session that closed them)
+
+- [x] T5 (S4) — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
+  - **Test:** read [NotebookCommentRound § *Three rounds with a repeated hand edit*](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03) — the script of the three rounds, what held, and the three gaps found.
+  - **Test:** read [round.md](../../skills/revise/round.md) steps 4, 7, 9 and § *Notebooks* steps 3–4 — rules are drawn at collect time and bind the same round; each passage's new text is kept and converted from the list.
+  - **Test:** read [provenance § *Hand edits*](../../skills/provenance/SKILL.md#hand-edits) — a note alone is not a hand edit, and how to take notes out before deciding.
 
 - [x] T4 (S3) — the generating skills write the first Request; version 1 of a text file committed as written.
   - **Test:** read [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1) — the generating skill writes the first Request and commits version 1 as written, never the `.nb`.
@@ -148,7 +152,8 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - Review: T4 reverses new-research-note's "do not commit": it now commits version 1 (files by name, no `.nb`) as the baseline for hand edits. new-paper is untouched (user-owned writing space); new-notebook only points at the rule via artifacts.md.
 
 - T4: the generating skills write the first Request; and version 1 of a text file is committed as written. A notebook's `Name.md` is already tracked at generation (artifacts.md).
-- T5: the trial's `.nb` must come from `new-research-notebook` or `new-notebook`, since only those carry fingerprints (hand edits) and source lines; a `new-notebook` notebook has no fingerprint, so its hand edits record `no baseline`.
+- Review: T5 changed the round in three places, each from a trial failure ([trial](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03)). Rules are now drawn in step 4 and bind the same round; before, they were added in step 9, after the step 7 check. A note alone no longer counts as a hand edit. A passage's new text is kept in step 3 and converted from there.
+- Review: in the T5 trial the user was simulated. Notes and hand edits went in by sed and `ReplacePart`, not by typing in a front end. The `.nb` had the fingerprint but not the MathNotebook passes. A round on a notebook you edit by hand is still untested; typed `TextData` may split strings differently from the note-stripping check.
 - Review: T3 switched `new-research-note` from `mcp__Wolfram__WriteNotebook` to new-notebook's pipeline, because `WriteNotebook` makes one cell per line of a paragraph and cannot carry source lines ([NotebookCommentRound § *Source lines*](../../Wiki/Concepts/NotebookCommentRound.md#source-lines-measured-2026-10-03)). Revert if that skill must keep `WriteNotebook`; its notebooks would then use round.md's no-source-lines path.
 - Review: the round's per-passage conversion (round.md step 4) was measured on two passages of `SidonBound`, not yet on a notebook a user edited; T5 is that test. ARCHITECTURE gained the `source_lines.wl` row (scripts 31 → 32) ahead of T6.
 
@@ -171,3 +176,4 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S1** 2026-10-03 T2 — `<< … >>` grammar, provenance-file steps and no-`.nb` git rule in the round; *Document provenance* section written. → [round.md](../../skills/revise/round.md), [provenance](../../skills/provenance/SKILL.md#document-provenance), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md)
 - **S2** 2026-10-03 T3 — cells carry `"SourceLines"` from generation; the round keeps `Name_k.md` per version and writes it first. → [source_lines.wl](../../scripts/source_lines.wl), [round.md § *Notebooks*](../../skills/revise/round.md#notebooks), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md), [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)
 - **S3** 2026-10-03 T4 — generating skills write the first Request and commit version 1 as written. → [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md), [artifacts.md](../../skills/new-notebook/artifacts.md)
+- **S4** 2026-10-03 T5 — three-round trial on a `.tex` and a `.nb`; the repeated hand edit did not come back; three gaps in the round fixed. → [NotebookCommentRound § trial](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03), [round.md](../../skills/revise/round.md#steps), [provenance § *Hand edits*](../../skills/provenance/SKILL.md#hand-edits)

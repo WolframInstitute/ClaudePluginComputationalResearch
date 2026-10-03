@@ -29,7 +29,7 @@ The one thing the folders can't show — each in-progress item and its next task
 |---|---|
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
-| [DocumentMemory](Active/DocumentMemory.md) | T4 — generating skills write the first Request; version 1 of a text file committed as written |
+| [DocumentMemory](Active/DocumentMemory.md) | T6 — README tables, ARCHITECTURE, blog post, version bump |
 
 ## Ready
 

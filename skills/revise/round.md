@@ -71,6 +71,7 @@ Ask the user which folder is the unit before writing anything.
 4. **Collect.**
    List every note with its line range, the passage it refers to, and its text.
    Find the hand edits ([§ *Hand edits*](../provenance/SKILL.md#hand-edits)), and take any request the user made about this document in the chat since the last round.
+   Draw the rules these give ([provenance § *Rules*](../provenance/SKILL.md#rules)) now, not at step 9: a rule drawn from this round's edits already binds this round's rewrites.
    With no notes, say so and write no `k+1`; record the hand edits as in steps 5 and 9, commit, and stop.
 5. **Record version `k` as the user left it.**
    Commit it — notes and hand edits — with the provenance file as the user left it, before anything is written: `docs(revise): <stem> v<k> notes`.
@@ -82,13 +83,13 @@ Ask the user which folder is the unit before writing anything.
    Everything else is carried over verbatim, including every hand edit.
    Delete each note that was acted on.
 7. **Check against the rules.**
-   Read each rewritten passage against every rule in `## Rules`, and check that no hand edit recorded in an earlier round is undone.
+   Read each rewritten passage against every rule in `## Rules` and every rule drawn in step 4, and check that no hand edit recorded in an earlier round is undone.
    A passage that breaks one is fixed in `k+1`.
    A new note that contradicts a rule wins; the rule is rewritten in step 9.
 8. **Rebuild and check.**
    Rebuild the `.pdf` if there is one.
    Search `k+1` for notes: only the ones not acted on may remain, each followed by its `not done` note.
-9. **Record the round** in the provenance file: a `### r<k+1>` entry under `## Rounds` with each note, hand edit and request, and any rule they add or rewrite under `## Rules` — format in [provenance § *Document provenance*](../provenance/SKILL.md#document-provenance).
+9. **Record the round** in the provenance file: a `### r<k+1>` entry under `## Rounds` with each note, hand edit and request, and the rules drawn in step 4 or rewritten in step 7 under `## Rules` — format in [provenance § *Document provenance*](../provenance/SKILL.md#document-provenance).
 10. **Commit version `k+1`** and the provenance file: `docs(revise): <stem> v<k+1>`.
     Stage files by name: the text files of the stem and its provenance file, never a `.nb` — a generated notebook is not committed, only its `.md` is.
     The commit hook caps the subject at 72 characters, so keep it this short even for a long stem.
@@ -181,10 +182,11 @@ The `.nb` is never committed; the `.md` is.
    - **An annotated passage** is rewritten as the note asks, and the note removed.
      A note asking for a new cell becomes a new passage after the lines it refers to.
 
-   Keep a list of the passages, each with its range `{ first, last }` in `Name_k.md` and its new length in lines.
+   Keep a list of the passages, each with its range `{ first, last }` in `Name_k.md`, its new length in lines, and its new text.
+   Keep the text itself: in `Name_k+1.md` a passage sits below its old `first` by every change of length above it, so reading it back at `first` takes the wrong lines.
    `git diff --no-index Name_k.md Name_k+1.md` must show only these passages.
 4. **Write `Name_k+1.nb`** from `Name_k.nb`, one passage at a time, bottom up again.
-   For a rewritten passage, convert its new text alone with the engine that built the notebook, stamped, its lines moved to where the passage starts:
+   For a rewritten passage, convert its new text from the step 3 list alone with the engine that built the notebook, stamped, its lines moved to where the passage starts:
 
    ```wolfram
    With[ { new = First @ SourceLineNotebook[ MarkdownToNotebook[ #, "Evaluate" -> False ] &, passage ] /.
