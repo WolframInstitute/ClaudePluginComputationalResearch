@@ -12,6 +12,7 @@ This mechanism guards the one-way `.md` → `.nb` pipeline — the working arran
    ```
 
    The fingerprint is `<| CellID -> Hash[ { content, style } ] |>`, and it has to **walk into `CellGroupData`**.
+   A cell's own options stay outside the hash, its `"SourceLines"` among them, so a [revision round](../revise/round.md#notebooks) that moves a cell's source lines does not mark it edited.
    Level `{1}` alone is not enough: `FoldExampleGroups` puts every Example's `Input` and `Output` inside a group and the folded *Initialization* section is another, so on a document with four Examples that is eleven cells — all of the code and all of the outputs — outside drift detection, with the check reporting clean because both sides use the same level (measured on `SidonBound`, 2026-08-21).
    Two details are load-bearing: **assign the `CellID`s yourself** — `CreateCellID -> True` is an instruction to the front end and does **not** stamp programmatically built cells — and **fingerprint after the round-trip**, never the in-memory expression, because `Export` normalises cell content and an in-memory fingerprint reports every cell as edited.
    **Stamp the round-tripped notebook, never the in-memory one.**

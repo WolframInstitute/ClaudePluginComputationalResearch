@@ -252,7 +252,9 @@ Which lines a note is stored against:
 
 - **Text files** (`.tex`, `.typ`, `.md`, code): lines of the file itself.
 - **Notebooks**: lines of the version's Markdown source, never positions in the `.nb`.
-  Each generated cell carries its source line range in its `TaggingRules`.
+  Each generated cell carries its source line range in its own `TaggingRules`, as `"SourceLines" -> { first, last }`, stamped at generation by `SourceLineNotebook` in [`scripts/source_lines.wl`](../../scripts/source_lines.wl); `CellSourceLines[ cell ]` reads it.
+  A Markdown block that converts to several cells — a paragraph holding a display equation, a list item with a nested one — gives each of them the block's range.
+  Head cells built from the frontmatter, the `[ LLM Generated ]` line and embedded Outputs carry none.
   A note in a cell maps to that cell's lines; a note in a cell the user added maps to `after L<n>`, the last line of the cell above it.
   A notebook generated before cells carried line ranges has none: its notes are anchored by quoted passage only, with `L?`.
 

@@ -120,7 +120,6 @@ This changes round.md (which commits both versions of a notebook) and `new-noteb
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T3 (model: opus, effort: high — kernel work) — notebook line ranges in `TaggingRules` at generation; the `.md` carried per version; cell-to-`.md` write-back in the round.
 - [ ] T4 (model: sonnet, effort: medium — mechanical) — the generating skills write the first Request; version 1 of a text file committed as written.
 - [ ] T5 — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
 - [ ] T6 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, blog post, version bump.
@@ -135,12 +134,18 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
   - **Test:** read [provenance § *Document provenance*](../../skills/provenance/SKILL.md#document-provenance) — the file, its three sections, anchors, hand edits and rules match this item's Technical details.
   - **Test:** run the `perl` line from round.md § *Text files* on a `.tex` holding `% << shorter >>` and a two-line `% << … >>` — it prints each note with its line range.
   - **Test:** read [clean.md](../../commands/clean.md) and [artifacts.md](../../skills/new-notebook/artifacts.md) § *Git and the Cloud* — the provenance file stays put; a generated `.nb` is not tracked.
+- [x] T3 (S2) — `"SourceLines"` per cell at generation (`scripts/source_lines.wl`, wired into new-notebook, new-research-note, new-research-notebook); the `.md` carried per version; round.md § *Notebooks* rewritten `.md`-first with cell write-back.
+  - **Test:** on the MCP kernel, `Get` the MarkdownToNotebook clone and [source_lines.wl](../../scripts/source_lines.wl), then `SourceLineNotebook[ MarkdownToNotebook[ #, "Evaluate" -> False ] &, Import[ "Research/Artifacts/SidonBound_260821.md", "Text" ] ]` — every cell carries `TaggingRules -> { "SourceLines" -> { first, last } }`, and the first cell starting `Definition.` has range `{ 36, 36 }`, its line in the `.md`.
+  - **Test:** read [round.md](../../skills/revise/round.md) § *Names* and § *Notebooks* — the `.md` is carried as `Name_k+1.md`; steps 3–7 write the `.md` bottom-up, convert only the rewritten passages, write hand edits back, check every range is a block of the new `.md`, and re-stamp the fingerprint.
+  - **Test:** read [provenance § *Anchors*](../../skills/provenance/SKILL.md#anchors) and [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md) — the key is named `"SourceLines"`.
+  - **Test:** read [new-research-note](../../skills/new-research-note/SKILL.md) § *Conversion* — it now converts through new-notebook's pipeline, not `WriteNotebook`; check you agree.
 
 ## Hand-off
 
-- T3: round.md § *Names* still says a notebook's `.md` is not carried after version 1, and § *Notebooks* still rewrites the `.nb` directly; T3 replaces both (`.md` per version, `.md`-first rewrite, cell write-back). Until then a notebook round commits only the provenance file.
-- T3: the `TaggingRules` key for a cell's source line range is unnamed in `provenance` § *Anchors*; name it and add it to [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md).
-- Review: T2 also corrected the "`.nb` is tracked" sentence in init-wiki, the math CLAUDE.md template, new-research-notebook/build.md and ARCHITECTURE.md, and the `>>` wording in revise/SKILL.md; the rule-drawing criteria in `provenance` § *Rules* are the LLM's reading of the Spec.
+- T4: the generating skills write the first Request; and version 1 of a text file is committed as written. A notebook's `Name.md` is already tracked at generation (artifacts.md).
+- T5: the trial's `.nb` must come from `new-research-notebook` or `new-notebook`, since only those carry fingerprints (hand edits) and source lines; a `new-notebook` notebook has no fingerprint, so its hand edits record `no baseline`.
+- Review: T3 switched `new-research-note` from `mcp__Wolfram__WriteNotebook` to new-notebook's pipeline, because `WriteNotebook` makes one cell per line of a paragraph and cannot carry source lines ([NotebookCommentRound § *Source lines*](../../Wiki/Concepts/NotebookCommentRound.md#source-lines-measured-2026-10-03)). Revert if that skill must keep `WriteNotebook`; its notebooks would then use round.md's no-source-lines path.
+- Review: the round's per-passage conversion (round.md step 4) was measured on two passages of `SidonBound`, not yet on a notebook a user edited; T5 is that test. ARCHITECTURE gained the `source_lines.wl` row (scripts 31 → 32) ahead of T6.
 
 ## Decisions
 
@@ -159,3 +164,4 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S0'** 2026-09-28 — the operator chose `<< … >>`, the `.provenance` name, `.md` anchors for notebooks, no git for notebooks; one open question left.
 - **S0''** 2026-09-28 — the operator settled git (no `.nb`, `.md` yes); README *Revision* section rewritten as the workflow; approved ("okey fine"), moved to Ready.
 - **S1** 2026-10-03 T2 — `<< … >>` grammar, provenance-file steps and no-`.nb` git rule in the round; *Document provenance* section written. → [round.md](../../skills/revise/round.md), [provenance](../../skills/provenance/SKILL.md#document-provenance), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md)
+- **S2** 2026-10-03 T3 — cells carry `"SourceLines"` from generation; the round keeps `Name_k.md` per version and writes it first. → [source_lines.wl](../../scripts/source_lines.wl), [round.md § *Notebooks*](../../skills/revise/round.md#notebooks), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md), [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)

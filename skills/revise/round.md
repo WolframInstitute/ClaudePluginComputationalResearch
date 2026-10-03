@@ -50,7 +50,7 @@ Version `k+1` holds every file of the stem that version `k` holds:
 - an annotated document is revised;
 - a `.pdf` is rebuilt from the new `.tex` (then `latexmk -c`);
 - every other file — a `.wl`, a companion document with no notes — is copied verbatim, and changed only where a note in it asks;
-- the `.md` source of a notebook is not carried: it stays version 1's source, because from round 2 the `.nb` is the source.
+- the `.md` source of a notebook is carried as `Name_k+1.md` beside `Name_k+1.nb`, and kept in step with it (§ *Notebooks*).
 
 A **folder-shaped artifact** (`Name_YYMMDD/` holding `Notebook/`, `Code/`, …) is revised as a copy of the whole folder, `Name_YYMMDD_2/`, so the bare inner names keep resolving.
 An annotated file that is part of any other multi-file build — an `\input`, an `#include`, a `Get` from a sibling file — is **not** renamed on its own, since that breaks the build.
@@ -144,36 +144,72 @@ The user answers by editing the note or deleting both in `k+1`.
 
 ## Notebooks
 
-The user edits the `.nb`, so from round 2 the `.nb` is the source.
-The round imports `Name_k.nb`, rewrites only the annotated cells, and exports `Name_k+1.nb`, all on the AgentTools MCP kernel (`mcp__Wolfram__WolframLanguageEvaluator`).
-This is the one exception to `new-notebook`'s rule that a notebook is edited through a Markdown round trip: that round trip loses typeset content and environment styles, and would lose the user's edits with them.
-The drift fingerprint does not apply, since nothing is regenerated from Markdown; its `TaggingRules` key is carried over as it is, like every other option.
-The `.nb` itself is never committed; what the user wrote into it is kept in the provenance file.
+A notebook is a pair: `Name_k.nb`, which the user reads, annotates and edits, and `Name_k.md`, its Markdown source.
+Each generated cell carries the lines of the `.md` it came from, as `"SourceLines" -> { first, last }` in its own `TaggingRules` ([provenance § *Anchors*](../provenance/SKILL.md#anchors)), so a note in a cell is anchored to lines of the `.md`.
+The round carries both halves:
+
+- **The `.nb` the user edited is the base of `Name_k+1.nb`.** Every cell without a note is carried over as it is, hand edits included; nothing is regenerated from Markdown.
+- **`Name_k+1.md` is kept in step with it.** A change is written into the `.md` first and only that passage is converted; a cell the user edited is written back into the `.md` by reading that one cell.
+
+The reverse converter (`NotebookToMarkdown`) is never used, since it silently loses content (`Wiki/Resources/MarkdownToNotebook.md`).
+Everything runs on the AgentTools MCP kernel (`mcp__Wolfram__WolframLanguageEvaluator`), after `Get[ "${CLAUDE_PLUGIN_ROOT}/scripts/source_lines.wl" ]`.
+The `.nb` is never committed; the `.md` is.
 **A round never evaluates cells.**
 
-1. **Find the annotated cells.**
+1. **Find the annotated cells, and their lines.**
 
    ```wolfram
    With[ { nb = Import[ "Name_k.nb", "NB" ] },
      With[ { pos = Position[ nb,
            Cell[ content : Except[ _CellGroupData ], ___ ] /;
              StringContainsQ[ StringJoin @ Cases[ content, _String, { 0, Infinity } ], "<<" ~~ Shortest[ ___ ] ~~ ">>" ] ] },
-       { pos, Extract[ nb, pos ] } ] ]
+       { pos, CellSourceLines /@ Extract[ nb, pos ], Extract[ nb, pos ] } ] ]
    ```
 
    The joined strings of a cell are its text: a typed `<<` in an Input cell is a `"<<"` token in its `BoxData`, inside a comment too, and a Text cell's lines are separated by `"\n"`.
    `Except[ _CellGroupData ]` is load-bearing — a group cell contains the strings of every cell under it, so without it each section containing a note matches as well.
    An Input cell holding both a `Get` and a `Put` matches too; read it before taking it as a note.
    Positions, not `CellID`s: a cell the user added may carry none.
-2. **Rewrite each cell's content, and only its content.**
-   Keep its style and every option: `ReplacePart[ nb, Append[ p, 1 ] -> newContent ]`.
-   - Text-like cells take a string, or `TextData[ … ]` where the cell already had inline styling.
-   - Input cells take boxes from the front end parser: `First @ UsingFrontEnd @ FrontEndExecute @ FrontEnd`UndocumentedTestFEParserPacket[ code, False ]`.
-     Without a front end, the plain string `code` also works as content; the front end parses it when the notebook is opened.
-   - A cell that was only a note is deleted once acted on: `Delete[ nb, { p1, p2, … } ]`, after all replacements, since deleting shifts positions.
-   - A note asking for a new cell inserts one, in the style of its neighbours.
-3. **Leave outputs alone.**
+   A cell with no lines was added by the user; its note is anchored `after L<n>`, the last line of the nearest cell above that has lines.
+2. **Find the hand-edited cells** by the fingerprint ([provenance § *Hand edits*](../provenance/SKILL.md#hand-edits)): edited, added and deleted cells, each with its lines.
+   A deleted cell's lines are the block of `Name_k.md` between its neighbours' ranges that no remaining cell carries.
+3. **Write `Name_k+1.md`.**
+   `cp Name_k.md Name_k+1.md`, then make each change with the Edit tool, **from the bottom of the file up**, so the line numbers above an edit stay valid:
+   - **A hand-edited cell** is written back: read the cell in the kernel — an Input cell's joined strings are its code verbatim, a text cell's content in `InputForm` shows its formulas — and change its lines to say what the cell now says.
+     Change only what the user changed; the rest of the passage keeps its Markdown as written, `$…$` and `{#Tag}` included.
+     A cell the user added goes in after the lines of the cell above it; a deleted cell's lines are taken out.
+   - **An annotated passage** is rewritten as the note asks, and the note removed.
+     A note asking for a new cell becomes a new passage after the lines it refers to.
+
+   Keep a list of the passages, each with its range `{ first, last }` in `Name_k.md` and its new length in lines.
+   `git diff --no-index Name_k.md Name_k+1.md` must show only these passages.
+4. **Write `Name_k+1.nb`** from `Name_k.nb`, one passage at a time, bottom up again.
+   For a rewritten passage, convert its new text alone with the engine that built the notebook, stamped, its lines moved to where the passage starts:
+
+   ```wolfram
+   With[ { new = First @ SourceLineNotebook[ MarkdownToNotebook[ #, "Evaluate" -> False ] &, passage ] /.
+         ( "SourceLines" -> range_ ) :> "SourceLines" -> range + first - 1,
+       pos = Position[ nb, c : Cell[ _, _String, ___ ] /; MatchQ[ CellSourceLines[ c ], { a_, b_ } /; first <= a && b <= last ] ] },
+     ReplacePart[ Delete[ ShiftSourceLines[ nb, { first, last }, length ], Rest[ pos ] ], First[ pos ] -> Sequence @@ new ] ]
+   ```
+
+   - Run the generating skill's per-cell passes on `new` before inserting it: the `CellLabel` and `CellID` strip, and for a research notebook `ReadCellTags` and the passes of `MathNotebookDocument` (`First @ MathNotebookDocument[ cells, tags ]`, with `tags` every `CellTags` value in the notebook plus the bib keys, so citations resolve), and `FoldExampleGroups` if the passage holds an Example.
+     Give the new cells `CellID`s above the largest in the notebook.
+   - A hand-edited passage keeps its cells as the user left them: only `ShiftSourceLines` runs, and each cell the write-back moved or added gets its new lines with `StampSourceLines[ cell, { first, last } ]`.
+   - A cell that was only a note is deleted once acted on.
+5. **Leave outputs alone.**
    An Output below a rewritten Input is now stale; it stays, since removing it is not what the note asked, and the reply says which ones to re-evaluate.
-4. **Export and check.**
-   `Export[ "Name_k+1.nb", new, "NB" ]`, then re-import and compare cell by cell with `Name_k.nb`: only the positions from step 1 may differ.
+6. **Export and check.**
+   `Export[ "Name_k+1.nb", new, "NB" ]`, then re-import and compare cell by cell with `Name_k.nb`: only the cells of the passages may differ, apart from their `"SourceLines"`.
    `Export` adds `FrontEndVersion`, `StyleDefinitions` and an `ExpressionUUID` to a notebook that lacks them, so compare cells, not the whole expression; from then on the round trip is a fixed point.
+   Then check the pair: every range in `Name_k+1.nb` is a block of `Name_k+1.md`, in order.
+
+   ```wolfram
+   With[ { ranges = DeleteCases[ Cases[ Import[ "Name_k+1.nb", "NB" ], c : Cell[ _, _String, ___ ] :> CellSourceLines[ c ], Infinity ], None ] },
+     { Complement[ ranges, SourceBlocks @ Import[ "Name_k+1.md", "Text" ] ] === { }, OrderedQ[ ranges ] } ]
+   ```
+
+7. **Re-stamp the fingerprint** from the re-imported `Name_k+1.nb` ([fingerprint.md](../new-research-notebook/fingerprint.md)), so the next round measures hand edits against version `k+1` as written; the user's edits of this round are already in the provenance file and in `Name_k+1.md`.
+
+**A notebook without source lines** — generated before cells carried them — has no anchors and no `.md` to keep in step.
+Its notes are anchored by quoted passage, `L?`; each annotated cell's content is rewritten in place with `ReplacePart[ nb, Append[ p, 1 ] -> newContent ]` (a string or `TextData` for a text cell, boxes from `FrontEnd`UndocumentedTestFEParserPacket[ code, False ]` for an Input cell), and no `Name_k+1.md` is written; the reply says so.

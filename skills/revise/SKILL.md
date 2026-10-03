@@ -70,7 +70,7 @@ They write notes into it as `<< … >>`, inside a line or over several — in co
 A round turns that into the next version:
 
 - **Names.** It writes `Name_k+1` beside the latest version `Name_k` — `Note_260927.tex`, then `Note_260927_2.tex`, `_3`, … — with every file of the stem, and never edits version `k` again.
-- **The edited document is the source.** Everything without a note is carried over verbatim, hand edits included; for a notebook, from round 2 the `.nb` is the source, not its `.md`.
+- **The edited document is the source.** Everything without a note is carried over verbatim, hand edits included; for a notebook, the `.nb` the user edited is carried over, and its `.md` is kept in step with it, each cell knowing its source lines.
 - **No invention.** It changes only the passages the notes name and adds nothing no note asked for — in `Output/` as much as in `Artifacts/`.
 - **Every note is answered.** One acted on is gone from `k+1`; one not acted on stays, followed by `<< not done: <reason> >>`.
 - **The document remembers.** Its provenance file `<stem>.provenance.md` records every note, hand edit and chat request, and keeps rules drawn from them; each round reads the rules first and checks the new version against them.

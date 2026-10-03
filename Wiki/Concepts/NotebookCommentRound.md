@@ -2,8 +2,9 @@
 
 *[ LLM Generated ]*
 
-A revision round on a notebook works `.nb` → `.nb`: it imports the version the user annotated and edited, rewrites only the cells holding a note (`<< … >>`), and exports the next version.
-It never goes through Markdown, because that round trip loses typeset content and environment styles ([fingerprint.md](../../skills/new-research-notebook/fingerprint.md) § *Why there is no reverse direction*), and with them the user's edits.
+A revision round on a notebook works on a pair, `Name_k.nb` and its source `Name_k.md`: it carries the `.nb` the user annotated and edited over to `Name_k+1.nb`, replacing only the cells holding a note (`<< … >>`), and keeps `Name_k+1.md` in step.
+Each cell knows the lines of the `.md` it came from (`"SourceLines"`, [TaggingRules registry](TaggingRulesRegistry.md)), so a change is written into the `.md` first and only that passage is converted, and a hand-edited cell is written back by reading that one cell.
+It never converts a whole notebook back to Markdown, because that loses typeset content and environment styles ([fingerprint.md](../../skills/new-research-notebook/fingerprint.md) § *Why there is no reverse direction*), and with them the user's edits.
 The procedure is [skills/revise/round.md](../../skills/revise/round.md) § *Notebooks*; this article holds what was measured to make it.
 
 ## What was measured
@@ -26,6 +27,18 @@ On the AgentTools kernel (Wolfram 15.0), 2026-09-27, on small probe notebooks in
 - **Rewriting content leaves the rest identical.**
   `ReplacePart` on the content of two cells, then `Export` and re-import: the notebook options were unchanged and exactly those two cells differed.
 - **Code for an Input cell** comes from the front end's parser packet, `FrontEnd`UndocumentedTestFEParserPacket[code, False]`, which returns the `BoxData` with lines separated by `"\n"`.
+
+## Source lines: measured 2026-10-03
+
+Neither converter records where a cell came from, so `SourceLineNotebook` (`scripts/source_lines.wl`) converts the source twice: as it is, and with a sentinel paragraph `SOURCELINES first last` before each Markdown block.
+
+- **A sentinel changes nothing else.** With `MarkdownToNotebook` the cells between the sentinels were identical to the plain conversion — content, style and order — on `SidonBound_260821.md` (41 cells) and on a probe holding a tight list, a nested item, numbered items, a block quote, a pipe table, display math, an HTML comment, a fence and a paragraph glued to a fence.
+- **The built-in importer differs only in options.** Splitting a numbered list there adds `CounterAssignments` to the later items, so the ranges are copied onto the plain conversion by position after checking that the style sequences agree, and the shipped cells are always the plain ones.
+- **One block can make several cells.** A paragraph holding a display equation gives `Text`, `DisplayFormula`, `Text`, and a list item with a nested one gives `Item` and `Subitem`; each carries the block's range.
+- **`WriteNotebook` cannot carry source lines.** The AgentTools `mcp__Wolfram__WriteNotebook` makes one cell per line of a paragraph, glues a sentinel to the next block, and splits an HTML comment over cells. `new-research-note` therefore converts through `new-notebook`'s pipeline instead.
+- **Shifting is exact.** Two passages replaced bottom-up — 3 lines to 2, 1 to 3 — left every range in the new notebook a block of the new `.md`, in order.
+- **`StringMatchQ` treats `"*"` as a wildcard** even inside a `StringExpression`: `StringMatchQ[ "We prove", "*" ~~ " " ~~ ___ ]` is `True`. The block splitter matches list markers with `RegularExpression` for that reason.
+- **Read the file with `Import[ path, "Text" ]`.** Its lines are the file's lines (143 on `SidonBound`), while splitting `ReadString` gives one more, empty, line.
 
 ## Why the grammar is what it is
 

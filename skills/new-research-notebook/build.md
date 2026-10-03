@@ -123,8 +123,10 @@ Module[ { nb, cells },
 
   Get[ "MarkdownToNotebook/MarkdownToNotebook.wl" ];              (* pinned clone, project root *)
   Get[ "${CLAUDE_PLUGIN_ROOT}/scripts/mathnotebook_post.wl" ];
+  Get[ "${CLAUDE_PLUGIN_ROOT}/scripts/source_lines.wl" ];
 
-  nb    = MarkdownToNotebook[ "Research/Artifacts/<Topic>_<YYMMDD>.md", "Evaluate" -> False ];
+  (* each cell carries the .md lines it came from, as TaggingRules -> { "SourceLines" -> { first, last } } *)
+  nb    = SourceLineNotebook[ MarkdownToNotebook[ #, "Evaluate" -> False ] &, Import[ "Research/Artifacts/<Topic>_<YYMMDD>.md", "Text" ] ];
   cells = First[ nb ];
 
   (* the converter stamps In[n]:= even under "Evaluate" -> False, and a 19-digit CellID on every cell *)
@@ -137,6 +139,11 @@ Module[ { nb, cells },
   MathNotebookDocument[ AssignCellIDs[ cells ], bibTags, CreateCellID -> True ]
 ]
 ```
+
+**Source lines first.** `SourceLineNotebook` converts the source twice — once as it is, once with a marker paragraph before each Markdown block — and copies each block's line range onto the cells it produced, so a [revision round](../revise/round.md#notebooks) can anchor a note in a cell to lines of the `.md` ([provenance § *Anchors*](../provenance/SKILL.md#anchors)).
+The shipped cells are the plain conversion; when the two conversions disagree it returns them unstamped, so check `! FreeQ[ nb, "SourceLines" ]` and say so if it fails.
+Every later pass carries cell options through, so the ranges survive to the file; the tag-only cell `ReadCellTags` merges away takes its range with it.
+Convert the file's text (`Import[ …, "Text" ]`), not a string assembled in memory, so the lines are the file's lines.
 
 All four generator passes live in `scripts/mathnotebook_post.wl` beside the passes they are ordered against.
 The order is a real constraint:

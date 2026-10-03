@@ -36,7 +36,7 @@ ARCHITECTURE.md                — this file
 The skills are listed by area in [README.md](README.md) § *Functionality*, the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (31)
+## Scripts (32)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -62,6 +62,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
 | `mathnotebook_post.wl` | wolframscript | new-research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
+| `source_lines.wl` | wolframscript | new-notebook, new-research-note, new-research-notebook and the revise round (Get through the MCP; `SourceLineNotebook` stamps each generated cell with its `.md` lines, `ShiftSourceLines` / `StampSourceLines` keep them in step during a round) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
