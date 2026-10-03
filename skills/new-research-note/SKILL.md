@@ -295,7 +295,7 @@ A census that is short on `Input` means fences were mangled; one with `Output` i
 ### 8. Report
 
 Follow [revise](../revise/SKILL.md): the artifact is the deliverable and the report is the presentation.
-Producing it in full before presenting is safe here precisely because nothing is committed and nothing is uploaded.
+Producing it in full before presenting is safe here precisely because nothing is uploaded and version 1 is a commit that can be amended.
 A few lines:
 
 - the folder path;
@@ -304,7 +304,7 @@ A few lines:
 - **what is left unproved** — each item already sitting in the document as an `assumption` or a measured `observation`, named here too;
 - **anything the conversation asked for that the artifact could not honour** — a claim that did not verify, a case that was too large to enumerate. Say it in the report; do not ship it as a sentence in the document.
 
-Do not commit, and do not upload.
+Write `<stem>.provenance.md` and commit version 1 as written, files staged by name, never the `.nb` ([provenance § *Version 1*](../provenance/SKILL.md#version-1)); do not upload.
 
 ## Checklist
 
@@ -321,7 +321,7 @@ Do not commit, and do not upload.
 - [ ] Every notebook code cell was evaluated in the session and its output checked; each fast computation has its brute-force check beside it.
 - [ ] `.wl` is the notebook's definitions verbatim and nothing else; `Get` re-runs a demonstration.
 - [ ] README: what was settled, results table, contents, rebuild command, `Not uploaded to the Wolfram Cloud.`
-- [ ] Nothing committed, nothing uploaded.
+- [ ] `<stem>.provenance.md` written with the first Request; version 1 committed as written (no `.nb`); nothing uploaded.
 
 ## Integration with other skills
 

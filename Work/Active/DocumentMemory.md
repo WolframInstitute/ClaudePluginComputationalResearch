@@ -120,13 +120,16 @@ This changes round.md (which commits both versions of a notebook) and `new-noteb
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T4 (model: sonnet, effort: medium — mechanical) — the generating skills write the first Request; version 1 of a text file committed as written.
 - [ ] T5 — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
 - [ ] T6 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, blog post, version bump.
 
 ### Done
 
 (completed tasks move here with the session that closed them)
+
+- [x] T4 (S3) — the generating skills write the first Request; version 1 of a text file committed as written.
+  - **Test:** read [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1) — the generating skill writes the first Request and commits version 1 as written, never the `.nb`.
+  - **Test:** read the checklist and step 8 of [new-research-note](../../skills/new-research-note/SKILL.md) and step 9 of [new-research-notebook](../../skills/new-research-notebook/SKILL.md) — both write the provenance file; new-research-note now commits instead of leaving files uncommitted.
 
 - [x] T1 (human) — review the README *Revision* section and the Acceptance criteria. *(S0'', 2026-09-28)*
 - [x] T2 (S1) — `<< … >>` grammar in round.md and commands/revise.md; `.nb` never committed in round.md and artifacts.md; the *Document provenance* section of `provenance` (format, anchors, hand edits, rules); round.md links it; `/clean` leaves the file.
@@ -141,6 +144,8 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
   - **Test:** read [new-research-note](../../skills/new-research-note/SKILL.md) § *Conversion* — it now converts through new-notebook's pipeline, not `WriteNotebook`; check you agree.
 
 ## Hand-off
+
+- Review: T4 reverses new-research-note's "do not commit": it now commits version 1 (files by name, no `.nb`) as the baseline for hand edits. new-paper is untouched (user-owned writing space); new-notebook only points at the rule via artifacts.md.
 
 - T4: the generating skills write the first Request; and version 1 of a text file is committed as written. A notebook's `Name.md` is already tracked at generation (artifacts.md).
 - T5: the trial's `.nb` must come from `new-research-notebook` or `new-notebook`, since only those carry fingerprints (hand edits) and source lines; a `new-notebook` notebook has no fingerprint, so its hand edits record `no baseline`.
@@ -165,3 +170,4 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S0''** 2026-09-28 — the operator settled git (no `.nb`, `.md` yes); README *Revision* section rewritten as the workflow; approved ("okey fine"), moved to Ready.
 - **S1** 2026-10-03 T2 — `<< … >>` grammar, provenance-file steps and no-`.nb` git rule in the round; *Document provenance* section written. → [round.md](../../skills/revise/round.md), [provenance](../../skills/provenance/SKILL.md#document-provenance), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md)
 - **S2** 2026-10-03 T3 — cells carry `"SourceLines"` from generation; the round keeps `Name_k.md` per version and writes it first. → [source_lines.wl](../../scripts/source_lines.wl), [round.md § *Notebooks*](../../skills/revise/round.md#notebooks), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md), [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)
+- **S3** 2026-10-03 T4 — generating skills write the first Request and commit version 1 as written. → [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md), [artifacts.md](../../skills/new-notebook/artifacts.md)

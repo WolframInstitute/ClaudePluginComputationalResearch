@@ -79,7 +79,7 @@ It is updated in the same step that creates the artifact, never later.
 **Every file in an artifact is tracked, except a generated `.nb`.**
 A generated notebook is not committed; its `.md` source is, and the `.nb` is rebuilt from it.
 Stage an artifact's files by name, so a `.nb` is never added by accident.
-A document under revision also keeps its provenance file, `<stem>.provenance.md`, tracked beside it ([provenance § *Document provenance*](../provenance/SKILL.md#document-provenance)).
+A document under revision also keeps its provenance file, `<stem>.provenance.md`, tracked beside it; the generating skill writes its first Request and commits version 1 as written ([provenance § *Document provenance*](../provenance/SKILL.md#document-provenance)).
 
 Build litter is not part of the artifact and is never committed: `.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`, `.bbl`, `.blg`, editor backups.
 Run `latexmk -c` after a build.

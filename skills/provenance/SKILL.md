@@ -246,6 +246,15 @@ Each line of a round is one note (`N`) or one hand edit (`H`), numbered from 1 w
 | text | the note's words, or the hand edit as before → after (a one-line summary for a long one) |
 | outcome | for a note, what was done, or `not done` and why |
 
+### Version 1
+
+The skill that generates a document starts its provenance file:
+
+1. Write `<stem>.provenance.md` with an empty `## Rules`, one line under `## Requests` — the date, the user's request in their words (shortened if long), and `(v1, <skill>)` — and an empty `## Rounds`.
+2. Commit version 1 as written: the text files (`.tex`, `.typ`, `.md`, code), the `.md` source of a notebook, and the provenance file, staged by name; never a generated `.nb`.
+   This commit is the baseline that [hand edits](#hand-edits) of a text file are measured against.
+3. Where the skill must not commit (the user asked for no commit, or the project forbids it), say `no baseline` in the file's `## Requests` line; the first round then records edits as `no baseline`.
+
 ### Anchors
 
 Which lines a note is stored against:
