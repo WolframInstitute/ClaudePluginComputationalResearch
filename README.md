@@ -77,18 +77,32 @@ What the plugin writes and what you write never mix.
 
 ```
 Project/
-  Code/Artifacts/        notebooks about the code
-  Research/Artifacts/    notes, and papers as notebooks
-  Output/                what you deliver: papers, paclets, …
-  Wiki/                  what the project knows
-  Work/                  what it is doing
-  Resources/             what it has read
+  Code/          the code, and notebooks about it
+  Research/      papers, research notebooks, notes
+  Wiki/          what the project knows
+  Work/          what it is doing
+  Resources/     what it has read
 ```
 
-Everything the plugin generates lands in an `Artifacts/` folder, one dated name per artifact.
-**Everything outside an `Artifacts/` folder is yours.
-The plugin writes there only what you ask for, and never overwrites a file.**
-The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md).
+Every folder that holds documents has the same three places:
+
+```
+Research/
+  GeodesicPools_260919.tex      a document in progress
+  GeodesicPools_260919_2.tex    its next version
+  Artifacts/                    what the plugin made once, on request
+  Archive/                      earlier versions, moved aside
+```
+
+* **The folder itself** holds the documents in progress: the ones you write, and the ones you and the plugin write together, one numbered version per round.
+* **`Artifacts/`** holds what the plugin made once: a notebook you asked for, a note on a conversation, an exploration. One dated name per artifact, and an index.
+* **`Archive/`** holds what is superseded: earlier versions and older artifacts, moved there when you clean up. Nothing is deleted.
+
+**The plugin never overwrites a file.**
+It writes a new artifact, or the next version of a document beside the last one, and only when you ask.
+Everything outside `Artifacts/` is yours.
+To keep working on an artifact, move it up into the folder; from then on it is a document in progress.
+The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md); the rule for every folder is in design, see [FolderRule](Work/Ready/FolderRule.md).
 
 | Skill | What it does |
 |---|---|
@@ -102,10 +116,12 @@ The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md
 Nothing the plugin makes is final until you have read it.
 You review in the document itself, not in the chat, and you may edit it there directly.
 Any document works: a notebook, a LaTeX or Typst paper, a Markdown file, code.
+This is how you and the plugin write one document together, round after round.
 
-To refine a document with the AI:
+To revise a document with the AI:
 
 1. **Ask for it.** The plugin writes version 1, `Note_260928.tex` or `Note_260928.nb`, and beside it `Note_260928.provenance.md`, which starts with your request.
+   Say where it goes: a document you will keep working on belongs in the folder itself, `Research/` for a paper or a note, and a one-off in `Artifacts/`.
 2. **Write notes into it** wherever something should change: `<< make this example smaller >>`.
    A note can sit inside a sentence or run over several lines; in code it goes inside a comment, as in `(* << use a smaller graph >> *)`.
    Edit the text yourself wherever that is quicker.
@@ -198,16 +214,35 @@ You write what you want, why, and how you will accept it; the plugin writes the 
 Its status is the folder it sits in, and it moves Backlog → Ready → Active → UnderReview → Done.
 Every move is yours except one: the last task moves the item to UnderReview, where you check it against your acceptance criteria.
 
+Each step of an item's life has its skill:
+
+1. **File it** in the backlog, in a few sentences.
+2. **Refine it** with the plugin, over as many sittings as it takes, until it is ready to run.
+   You refine an item; you revise a document.
+3. **Go through the backlog** now and then: what waits on you, what has gone stale, what to refine, merge or drop next.
+4. **Run it**, one task per fresh session, yourself or by agents while you are away.
+5. **Review it** when all tasks are done: the plugin walks you through your acceptance criteria and each task's test instructions, and you accept it or send it back with a new task.
+
 | Skill | What it does |
 |---|---|
-| [work](skills/work/SKILL.md) | File an item and break it into tasks |
-| [refine](skills/refine/SKILL.md) | Shape a backlog item with you until it is ready to run |
+| [new-item](skills/work/SKILL.md) | File an item in the backlog: what you want, why, and how you will accept it |
+| [refine](skills/refine/SKILL.md) | Shape one backlog item with you until it is ready to run |
+| [backlog](skills/work/SKILL.md) | Go through the whole backlog with you; items move only on your word |
 | [board](skills/board/SKILL.md) | A board of all items that you can read and edit on your phone |
 | [next-session](skills/next-session/SKILL.md) | Run the next task of an item, then stop |
 | [autolab](skills/autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
 | [auto-run](commands/auto-run.md) | The same without a chat, for scheduled runs |
+| [review](skills/work/SKILL.md) | Check a finished item with you: accept it, or send it back with a new task |
 
+`new-item`, `backlog` and `review` are in design, see [BacklogLifecycle](Work/Backlog/BacklogLifecycle.md); today `work` files an item and holds the review steps.
 Agents pick only items you have moved to Ready, stop at any task marked for a human, and leave their results on a branch for you to review.
+
+**Several sessions at once.**
+Your own sessions, the agents, and a colleague's may work the same backlog.
+An item is claimed by its branch: whoever works it does so on the item's own branch in its own worktree, and git lets a branch be checked out only once.
+So two sessions never take the same item, and a checkout never sees another's half-done work.
+The `Work/` folders stay the one list; the board and any outside kanban tool are views of it.
+In design, see [ParallelSessions](Work/Backlog/ParallelSessions.md).
 The file format is in [ItemFileFormat](Wiki/Concepts/ItemFileFormat.md); how the unattended runs work, and what they cost, is in [AutonomousPipeline](Wiki/Concepts/AutonomousPipeline.md).
 
 ## 📄 License
