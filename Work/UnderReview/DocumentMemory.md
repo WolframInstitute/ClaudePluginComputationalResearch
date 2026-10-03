@@ -120,11 +120,16 @@ This changes round.md (which commits both versions of a notebook) and `new-noteb
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T6 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, blog post, version bump.
-
 ### Done
 
 (completed tasks move here with the session that closed them)
+
+- [x] T6 (S5) — README tables, ARCHITECTURE, blog post, version bump.
+  - **Test:** read [ARCHITECTURE](../../ARCHITECTURE.md) § *Commands* and § *Notebook conversion engines* — `revise` reads and writes the provenance file; `new-research-note` goes through new-notebook's conversion, not `WriteNotebook`.
+  - **Test:** read [README § *Revision*](../../README.md#-revision) and the `provenance` row of the Functionality table — the provenance file is always on for a revised document.
+  - **Test:** read [commands/revise.md](../../commands/revise.md) — a notebook round writes the `.md` first, as in round.md.
+  - **Test:** read the new *Version 5.6* entry at the top of the blog post's version history (live clone, uncommitted) — ideas only, `Last updated` is 2026-10-03.
+  - **Test:** `.claude-plugin/plugin.json` reads `5.6.0`.
 
 - [x] T5 (S4) — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
   - **Test:** read [NotebookCommentRound § *Three rounds with a repeated hand edit*](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03) — the script of the three rounds, what held, and the three gaps found.
@@ -148,6 +153,10 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
   - **Test:** read [new-research-note](../../skills/new-research-note/SKILL.md) § *Conversion* — it now converts through new-notebook's pipeline, not `WriteNotebook`; check you agree.
 
 ## Hand-off
+
+- Review: T6 chose version **5.6.0**, not 5.5.0: the blog post already holds an uncommitted *Version 5.5 (2026-09-30)* entry (shared code conventions) that no commit here ships. Rename to 5.5.0 if that entry is not to ship first.
+- Review: the marketplace clone `ClaudePluginMarketplace/` is not in the worktree (gitignored), so its `marketplace.json` is not mirrored and nothing is pushed. After merge: mirror `version` / `description` from `.claude-plugin/plugin.json`, commit and push there.
+- Review: the blog entry went into the author's live clone, which has other uncommitted edits; it is not committed. ARCHITECTURE and `commands/revise.md` carried stale lines (`WriteNotebook` for new-research-note; `.nb`-first rounds), corrected here.
 
 - Review: T4 reverses new-research-note's "do not commit": it now commits version 1 (files by name, no `.nb`) as the baseline for hand edits. new-paper is untouched (user-owned writing space); new-notebook only points at the rule via artifacts.md.
 
@@ -177,3 +186,4 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S2** 2026-10-03 T3 — cells carry `"SourceLines"` from generation; the round keeps `Name_k.md` per version and writes it first. → [source_lines.wl](../../scripts/source_lines.wl), [round.md § *Notebooks*](../../skills/revise/round.md#notebooks), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md), [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)
 - **S3** 2026-10-03 T4 — generating skills write the first Request and commit version 1 as written. → [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md), [artifacts.md](../../skills/new-notebook/artifacts.md)
 - **S4** 2026-10-03 T5 — three-round trial on a `.tex` and a `.nb`; the repeated hand edit did not come back; three gaps in the round fixed. → [NotebookCommentRound § trial](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03), [round.md](../../skills/revise/round.md#steps), [provenance § *Hand edits*](../../skills/provenance/SKILL.md#hand-edits)
+- **S5** 2026-10-03 T6 — docs pass: ARCHITECTURE, README provenance row, revise command, blog entry, version 5.6.0; item to UnderReview. → [ARCHITECTURE](../../ARCHITECTURE.md), [plugin.json](../../.claude-plugin/plugin.json)

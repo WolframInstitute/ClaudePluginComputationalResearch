@@ -75,7 +75,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 
 ## Commands (29)
 
-Every skill has a slash command of the same name, `/computational-research:<skill>`; `revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/revise/round.md)).
+Every skill has a slash command of the same name, `/computational-research:<skill>`; `revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/revise/round.md)), reading and writing the document's `<stem>.provenance.md` (format: `skills/provenance/SKILL.md` § *Document provenance*, always on for a revised document, unlike the prompt ledger).
 Four commands have no skill behind them:
 
 | Command | Runs |
@@ -165,7 +165,8 @@ That skill generates **one-way**: the `.md` is the source of truth and the user 
 Its writing rules live in `skills/new-research-notebook/style.md`, which `new-paper` reads too — one guide for a paper whether it ships as `.nb`, LaTeX or Typst.
 The mechanics (pipeline, conversion call, stylesheet, references) are in the `build.md` sibling, so `SKILL.md` carries authoring conventions and nothing else.
 
-`new-research-note` uses neither: its notebook goes through `mcp__Wolfram__WriteNotebook` directly, ships **unevaluated** (Input cells only, no paclet load), and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
+`new-research-note` uses neither parser: its notebook goes through `new-notebook`'s conversion, ships **unevaluated** (Input cells only, no paclet load), carries `"SourceLines"` in each cell like every generated notebook, and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
+Its first request goes to the document's provenance file, and version 1 of the text files is committed as written, the baseline for hand edits.
 Nothing it writes is deployed to the Cloud.
 
 ## How to Add a New Skill

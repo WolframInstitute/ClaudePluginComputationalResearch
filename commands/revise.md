@@ -5,7 +5,7 @@ First read the rules and the last two rounds in the document's provenance file, 
 Write the next version beside the latest one, with the next number (`Note_260927_2.tex`, then `_3`), changing only what the notes ask, obeying the rules, and carrying everything else over verbatim, hand edits included.
 Never edit the annotated version; commit it as the user left it, then commit the new one with the provenance file — never a `.nb`.
 A note not acted on stays, followed by `<< not done: <reason> >>`.
-For a notebook, the `.nb` is the source: rewrite only the annotated cells through the Wolfram MCP, and never evaluate.
+For a notebook, the notes point at lines of its `.md`: write the change into `Name_k+1.md` first, convert only that passage through the Wolfram MCP, and never evaluate ([round.md § *Notebooks*](../skills/revise/round.md#notebooks)).
 
 Then list each note with what was done, and each new rule, and wait.
 
