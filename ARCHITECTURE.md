@@ -10,7 +10,7 @@ Read this when you need it — it is **not** auto-loaded.
 Everything the model generates goes into an `Artifacts/` folder, and everything outside one is the user's — the whole of `revise` § *Protected content* reduced to a path check.
 `new-research-note` and `new-research-notebook` write to `Research/Artifacts/`, `new-notebook` to `Code/Artifacts/`, `new-paper` to `Paper/`, which is the user's document and not an artifact.
 An artifact is one dated stem (`<WhatItSettles>_YYMMDD`) shared by whatever files it needs, flat until it grows its own code, data, bibliography or build; then the folder takes the stem and the files inside go bare.
-Every file of an artifact is tracked, `.nb` included, and nothing is uploaded to the Cloud unless the user asks.
+Every file of an artifact is tracked except a generated `.nb`, whose `.md` source is tracked instead, and nothing is uploaded to the Cloud unless the user asks.
 The canonical statement is [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md); the three producers reference it rather than restating it.
 
 ## Layout

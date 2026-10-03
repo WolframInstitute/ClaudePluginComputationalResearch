@@ -120,7 +120,6 @@ This changes round.md (which commits both versions of a notebook) and `new-noteb
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T2 (model: opus, effort: high — protocol writing) — `<< … >>` grammar in round.md and commands/revise.md; `.nb` never committed in round.md and artifacts.md; the *Document provenance* section of `provenance` (format, anchors, hand edits, rules); round.md links it; `/clean` leaves the file.
 - [ ] T3 (model: opus, effort: high — kernel work) — notebook line ranges in `TaggingRules` at generation; the `.md` carried per version; cell-to-`.md` write-back in the round.
 - [ ] T4 (model: sonnet, effort: medium — mechanical) — the generating skills write the first Request; version 1 of a text file committed as written.
 - [ ] T5 — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
@@ -131,10 +130,17 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 (completed tasks move here with the session that closed them)
 
 - [x] T1 (human) — review the README *Revision* section and the Acceptance criteria. *(S0'', 2026-09-28)*
+- [x] T2 (S1) — `<< … >>` grammar in round.md and commands/revise.md; `.nb` never committed in round.md and artifacts.md; the *Document provenance* section of `provenance` (format, anchors, hand edits, rules); round.md links it; `/clean` leaves the file.
+  - **Test:** read [round.md](../../skills/revise/round.md) § *The note grammar* and § *Steps* — notes are `<< … >>`, steps 3, 7 and 9 read, check and record the provenance file, step 10 never stages a `.nb`.
+  - **Test:** read [provenance § *Document provenance*](../../skills/provenance/SKILL.md#document-provenance) — the file, its three sections, anchors, hand edits and rules match this item's Technical details.
+  - **Test:** run the `perl` line from round.md § *Text files* on a `.tex` holding `% << shorter >>` and a two-line `% << … >>` — it prints each note with its line range.
+  - **Test:** read [clean.md](../../commands/clean.md) and [artifacts.md](../../skills/new-notebook/artifacts.md) § *Git and the Cloud* — the provenance file stays put; a generated `.nb` is not tracked.
 
 ## Hand-off
 
-(nothing yet)
+- T3: round.md § *Names* still says a notebook's `.md` is not carried after version 1, and § *Notebooks* still rewrites the `.nb` directly; T3 replaces both (`.md` per version, `.md`-first rewrite, cell write-back). Until then a notebook round commits only the provenance file.
+- T3: the `TaggingRules` key for a cell's source line range is unnamed in `provenance` § *Anchors*; name it and add it to [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md).
+- Review: T2 also corrected the "`.nb` is tracked" sentence in init-wiki, the math CLAUDE.md template, new-research-notebook/build.md and ARCHITECTURE.md, and the `>>` wording in revise/SKILL.md; the rule-drawing criteria in `provenance` § *Rules* are the LLM's reading of the Spec.
 
 ## Decisions
 
@@ -152,3 +158,4 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S0** 2026-09-28 — item filed from the operator's request; draft awaiting answers to the open questions.
 - **S0'** 2026-09-28 — the operator chose `<< … >>`, the `.provenance` name, `.md` anchors for notebooks, no git for notebooks; one open question left.
 - **S0''** 2026-09-28 — the operator settled git (no `.nb`, `.md` yes); README *Revision* section rewritten as the workflow; approved ("okey fine"), moved to Ready.
+- **S1** 2026-10-03 T2 — `<< … >>` grammar, provenance-file steps and no-`.nb` git rule in the round; *Document provenance* section written. → [round.md](../../skills/revise/round.md), [provenance](../../skills/provenance/SKILL.md#document-provenance), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md)

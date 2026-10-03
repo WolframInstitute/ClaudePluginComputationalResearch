@@ -7,7 +7,7 @@ The writing rules are in [style.md](style.md); the authoring conventions in [SKI
 
 The source of truth is `Research/Artifacts/<Topic>_<YYMMDD>.md` ([artifacts.md](../new-notebook/artifacts.md)).
 Conversion is a **two-half pipeline**, both halves load-bearing: `WolframInstitute/MarkdownToNotebook` parses the Markdown, then `scripts/mathnotebook_post.wl` applies the environments, the numbering and the citations.
-The generated `.nb` sits beside the source, sharing its stem, and is tracked — an artifact is a deliverable, not a build product.
+The generated `.nb` sits beside the source, sharing its stem; the source is tracked and the `.nb` is not, since it is rebuilt from it.
 
 The parser half is the **rich engine** documented in [new-notebook](../new-notebook/SKILL.md) *Conversion engine — built-in vs rich*: the pinned local clone, `Template: Default`, `"Evaluate" -> False`.
 A research source always carries frontmatter and LaTeX math, so rich mode is always selected; the built-in importer is the fallback when the clone is absent, and it changes what you may write (§ *TeX in the sources*).

@@ -36,7 +36,7 @@ Artifacts/
   GeodesicPools_260919.tex        the document
   GeodesicPools_260919.pdf        compiled from it
   GeodesicPools_260919.md         the notebook source
-  GeodesicPools_260919.nb         converted from it, unevaluated
+  GeodesicPools_260919.nb         converted from it, unevaluated, not committed
   GeodesicPools_260919.wl         the definitions, loadable with Get
 ```
 
@@ -76,9 +76,10 @@ It is updated in the same step that creates the artifact, never later.
 
 ## Git and the Cloud
 
-**Every file in an artifact is tracked, `.nb` included.**
-An artifact is a deliverable, not a build product.
-If a notebook should not be in git history, it does not belong in the artifact.
+**Every file in an artifact is tracked, except a generated `.nb`.**
+A generated notebook is not committed; its `.md` source is, and the `.nb` is rebuilt from it.
+Stage an artifact's files by name, so a `.nb` is never added by accident.
+A document under revision also keeps its provenance file, `<stem>.provenance.md`, tracked beside it ([provenance § *Document provenance*](../provenance/SKILL.md#document-provenance)).
 
 Build litter is not part of the artifact and is never committed: `.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`, `.bbl`, `.blg`, editor backups.
 Run `latexmk -c` after a build.
