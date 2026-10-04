@@ -34,7 +34,7 @@ if [ "$FORMAT" = "typst" ]; then
       -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
       "$ASSETS_DIR/journal_template.typ" > "$JOURNAL_DIR/journal.typ"
     cat > "$JOURNAL_DIR/references.bib" << 'EOF'
-% Journal bibliography — entries added via the cite skill
+% Journal bibliography — entries added via the paper-cite skill
 EOF
 
     echo "Created: $JOURNAL_DIR/ (Typst)"
@@ -53,7 +53,7 @@ else
       "$ASSETS_DIR/journal_template.tex" > "$JOURNAL_DIR/journal.tex"
     cp "$ASSETS_DIR/latexmkrc_template" "$JOURNAL_DIR/.latexmkrc"
     cat > "$JOURNAL_DIR/references.bib" << 'EOF'
-% Journal bibliography — entries added via the cite skill
+% Journal bibliography — entries added via the paper-cite skill
 EOF
 
     echo "Created: $JOURNAL_DIR/ (LaTeX)"

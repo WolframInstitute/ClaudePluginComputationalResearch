@@ -2,8 +2,8 @@
 
    Each generated cell carries, in its own TaggingRules, the lines of the .md it came from:
      Cell[ ..., TaggingRules -> { "SourceLines" -> { first, last } } ]
-   A revision round anchors a note in a cell to those lines (provenance skill, Anchors).
-   Loaded with Get on the MCP kernel by the generating pipelines and by revise/round.md. *)
+   A revision round anchors a note in a cell to those lines (project-provenance skill, Anchors).
+   Loaded with Get on the MCP kernel by the generating pipelines and by document-revise/round.md. *)
 
 SourceBlocks[ text_String ] :=
   With[ { lines = StringSplit[ text, "\n", All ] },

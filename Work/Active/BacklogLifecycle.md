@@ -93,10 +93,14 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 ## Tasks
 
 - [ ] T4 (human) — trial: one backlog check and one review of a real item.
-- [ ] T5 (model: sonnet, effort: high — doc pass) — README and ARCHITECTURE tables, the refine/revise sentence, the blog post (the idea: each step of an item's life has a name), major version bump with the rename table.
 
 ### Done
 
+- [x] T5 (S4) — doc pass: ARCHITECTURE counts, README row, leftover old names, the refine/revise sentence, blog post, version 6.0.0 with the rename table.
+  - **Test:** `ARCHITECTURE.md` says Skills (27) and Commands (31), matching `ls skills | wc -l` and `ls commands | wc -l`; the README *Autolab* table lists `backlog-add` first and has no "`new-item` is in design" line.
+  - **Test:** [Wiki/Concepts/SkillNames.md](../../Wiki/Concepts/SkillNames.md) holds the old to new table; `.claude-plugin/plugin.json` says 6.0.0.
+  - **Test:** the blog post has a *Version 6.0* entry and `Last updated on 2026-10-05` (uncommitted, in the author's clone).
+  - **Test:** `grep -rn "/autolab\b" skills commands` finds nothing.
 - [x] T1 (model: sonnet, effort: medium — mechanical) — rename every skill and command to the table; fix every cross-reference, the templates and the scripts; `claude plugin validate` passes. Closed by S1.
   Test: `ls skills commands` shows only `<area>-<word>` names; `bash scripts/test-auto-run-routing.sh` passes; `claude plugin validate .` passes; `/backlog-run` resolves.
 - [x] T2 (S2) — `backlog-review` skill and command, lifting `work` § *Review*; `backlog-board` runs its steps for Accept / Send back.
@@ -111,11 +115,15 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 
 ## Hand-off
 
-T3 done: `backlog-info` exists (skill + command); the README row links it, and `backlog-add` and `backlog-review` point at it.
-Next is T4, the `(human)` trial: one `/backlog-info` and one `/backlog-review` of a real item.
-For the trial: `auto/DocumentMemory`, `auto/FolderRule` and `auto/RevisionRounds` are merged leftovers and `auto/AutolabTrialT4` is a halted run, so `/backlog-info` here has something to report; the 30-day staleness threshold is a guess to check against what the user calls stale.
-Left for T5: ARCHITECTURE skill/command tables and counts lack `backlog-review` and `backlog-info`; README line "`new-item` is in design" still names the old row.
+T5 done: docs and version 6.0.0 are in the branch; only T4 (the `(human)` trial) is left, and the operator skipped it for the moment.
+After the merge, in this order:
+- Mirror `version`, `description` and `keywords` of `.claude-plugin/plugin.json` into `ClaudePluginMarketplace/.claude-plugin/marketplace.json` (the clone is not in the worktree), commit and push both repos.
+- The blog post `~/Library/CloudStorage/OneDrive-Personal/Web/p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md` has a new *Version 6.0* entry and `Last updated` 2026-10-05, uncommitted; commit and publish it yourself.
+  It has no 5.7 entry (the folder rule); add one if you want it.
+  The blog states ideas only, so the old to new table is not there; it is in `Wiki/Concepts/SkillNames.md`.
+For T4: `auto/DocumentMemory`, `auto/FolderRule` and `auto/RevisionRounds` are merged leftovers and `auto/AutolabTrialT4` is a halted run; the 30-day staleness threshold of `backlog-info` is a guess.
 From T2: an `auto/<Item>` branch and `main` both edit `Work/README.md`, so the review's `git merge-tree` check may stop on an index-only conflict; watch how often.
+Verified: `claude plugin validate .` passes (warnings only), `bash scripts/test-auto-run-routing.sh` 55 passed.
 
 ## Decisions
 
@@ -137,3 +145,4 @@ From T2: an `auto/<Item>` branch and `main` both edit `Work/README.md`, so the r
 - **S1** 2026-10-05 — T1: renamed every skill and command to `<area>-<word>`, rewrote cross-references; validate and routing test pass; no alias stubs.
 - **S2** 2026-10-05 T2 — `backlog-review` skill and command; `backlog-add` § *Review* lifted; board, run, autolab and scheduled point at it. → [skills/backlog-review/SKILL.md](../../skills/backlog-review/SKILL.md), [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)
 - **S3** 2026-10-05 T3 — `backlog-info` skill and command; README row, `backlog-add` and `backlog-review` point at it. → [skills/backlog-info/SKILL.md](../../skills/backlog-info/SKILL.md), [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)
+- **S4** 2026-10-05 T5 — ARCHITECTURE counts 27/31, README row, old names left in prose fixed, blog entry, version 6.0.0, rename table in the Wiki. → [Wiki/Concepts/SkillNames.md](../../Wiki/Concepts/SkillNames.md)

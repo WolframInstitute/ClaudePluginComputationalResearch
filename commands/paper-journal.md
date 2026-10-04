@@ -16,4 +16,4 @@ Interpret `$ARGUMENTS`:
 - `show` — print or compile the current journal.
 
 Follow the format and rules defined in the `paper-journal` skill.
-The journal is a record, not a deliverable — it is exempt from the revise loop (like wiki prose).
+The journal is a record, not a deliverable — it is exempt from the `document-revise` loop (like wiki prose).

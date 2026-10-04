@@ -23,7 +23,7 @@ The canonical statement is [skills/notebook-create/artifacts.md](skills/notebook
 skills/*/SKILL.md              — skill definitions (auto-discovered)
 skills/*/<topic>.md            — read-on-demand sibling docs, kept out of the unconditional read
                                  (e.g. backlog-run/paclet-worktree.md, paclet-dev only)
-skills/notebook-create/artifacts.md — the three-places convention, shared by the producers, revise and clean
+skills/notebook-create/artifacts.md — the three-places convention, shared by the producers, `document-revise` and `project-clean`
 scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
 agents/                        — subagent definitions (the autolab workers, one per effort level)
@@ -34,7 +34,7 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (25)
+## Skills (27)
 
 The skills are listed by area in [README.md](README.md) § *Functionality*, the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
@@ -76,7 +76,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (29)
+## Commands (31)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`; `document-revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/document-revise/round.md)), reading and writing the document's `<stem>.provenance.md` (format: `skills/project-provenance/SKILL.md` § *Document provenance*, always on for a revised document, unlike the prompt ledger).
 Four commands have no skill behind them:

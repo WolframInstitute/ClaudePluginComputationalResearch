@@ -306,8 +306,8 @@ These skills check the toggle and, when on, record provenance in this format:
   On the MCP path it stamps the `TaggingRules` itself via `stampTaggingRule`; on the batch fallback the script propagates the comment.
 - **paper-create-notebook** — same comment and ledger entry; the build passes `TaggingRules -> { "Provenance" -> prov }` through `MathNotebookDocument`, and the later fingerprint stamp merges its `"ResearchNotebook"` key alongside it.
 - **wiki-update** — appends a `## Provenance` section to newly generated articles and a ledger entry.
-- **work** / **backlog-run** — record the user's requests in `## Prompt history`; each session's prompt goes to the ledger, and the `## Progress` line links it.
-- **revise** — keeps each revised document's provenance file (§ *Document provenance*), whatever the toggle says.
+- **backlog-add** / **backlog-run** — record the user's requests in `## Prompt history`; each session's prompt goes to the ledger, and the `## Progress` line links it.
+- **document-revise** — keeps each revised document's provenance file (§ *Document provenance*), whatever the toggle says.
 
 This skill is the single source of truth for the format — the others reference it rather than redefining it.
 

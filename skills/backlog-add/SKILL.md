@@ -73,14 +73,14 @@ The Spec and other item prose follow the `Semantic line breaks` toggle in `CLAUD
 
 ### 2. Present and wait
 
-Show the Spec and wait (revise loop).
+Show the Spec and wait (the `document-revise` loop).
 A spec in `Backlog/` is still a malleable draft; approval is the gate to starting work, not a field to flip.
 When the item needs more than a quick round — the user wants to write the Motivation and Acceptance criteria themselves, or the design needs research — hand over to [`backlog-refine`](../backlog-refine/SKILL.md), which is this step done properly over a long sitting.
 
 ### 3. Decompose into tasks
 
 Derive `## Tasks` from the approved Spec — each unchecked box should be one focused session.
-Route each task as you write it with a [routing annotation](#the-routing-annotation), and present the routing together with the breakdown so the user rules on it (revise loop):
+Route each task as you write it with a [routing annotation](#the-routing-annotation), and present the routing together with the breakdown so the user rules on it (the `document-revise` loop):
 
 | the task is… | model | effort |
 |---|---|---|

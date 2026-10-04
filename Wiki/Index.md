@@ -17,6 +17,7 @@ See [Work/README.md](../Work/README.md).
 
 ## Concepts
 
+- [Skill and command names](Concepts/SkillNames.md) — every name is `<area>-<word>`; the old to new table of version 6.0.0, with no alias stubs
 - [Session Information Budget](Concepts/SessionInformationBudget.md) — what a `backlog-run` run must read before it can work, measured from git history
 - [Progress vs Wiki](Concepts/ProgressWikiSplit.md) — where the durable knowledge actually is: ~53 kB in `## Progress`, 6.6 kB harvested, and what the misplacement costs to read
 - [The work item file format](Concepts/ItemFileFormat.md) — the five sections, the one-fact-one-destination rule, the per-task routing annotation, and why `## Progress` is one line per session and read by nobody

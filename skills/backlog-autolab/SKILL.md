@@ -9,7 +9,7 @@ description: >
   eligible items, verifies every task the way backlog-run-scheduled does, halts only the item
   that fails, and ends with a digest per item. Use when the user says "autolab",
   "run the backlog", "let the agents work the backlog", "work these items
-  autonomously here", "work the queue while I'm away", or runs /autolab.
+  autonomously here", "work the queue while I'm away", or runs /backlog-autolab.
 ---
 
 # Autolab
@@ -163,7 +163,7 @@ The autonomy notice that `auto-run.sh` puts into the system prompt goes at the t
 Fill in `<Item>`, `<Tk>`, `<Worktree>` (absolute) and `<Home>` (this session's directory, where a worker's Bash starts):
 
 ```
-You are an autonomous worker dispatched by /autolab. No user reads this transcript; the orchestrator reads only your final report.
+You are an autonomous worker dispatched by /backlog-autolab. No user reads this transcript; the orchestrator reads only your final report.
 
 Item: <Item>. Task: <Tk>. Branch: auto/<Item>. Worktree: <Worktree>.
 The worktree is the repository you work in. Never touch any other checkout.
