@@ -54,6 +54,10 @@ Research/Artifacts/
 ```
 
 Five files sharing one stem, flat in `Research/Artifacts/`, plus a row in its index.
+That is the default place: a note is a one-off.
+When the user asks for a note they will keep working on, the same five files go in `Research/` itself, with no index row, and later rounds are written beside them ([artifacts.md](../new-notebook/artifacts.md) § *Which place*).
+A request that does not say goes to `Research/Artifacts/`, without asking.
+The paths below show `Research/Artifacts/`.
 The convention they follow — the three places, the shape, the naming, git and the Cloud — is [artifacts.md](../new-notebook/artifacts.md); this skill only says what goes *inside* each file.
 
 - `<Topic>` is explicit `CapitalizedWords` saying what the note settles, then the date it was settled, `YYMMDD`, **the same in all five names**.

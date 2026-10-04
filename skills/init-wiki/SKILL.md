@@ -145,8 +145,9 @@ The script parses ## Recover sections from Wiki/Resources/*.md.
 
 Notebooks about the code are artifacts: they live in Code/Artifacts/, the .md
 source and the generated .nb sharing one dated stem; the .md is tracked, the .nb is not. Research
-documents go in Research/Artifacts/ the same way. Everything outside an
-Artifacts/ folder is yours and is never written or overwritten.
+documents go in Research/Artifacts/ the same way. A document you keep
+working on lives in the folder itself, and earlier versions go to Archive/.
+The plugin never overwrites a file.
 These are artifacts, not wiki articles — they do not go in Wiki/.
 
 ### Guided Tour

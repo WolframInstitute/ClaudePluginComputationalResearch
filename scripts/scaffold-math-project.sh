@@ -33,7 +33,8 @@ cd "$OUTPUT_DIR"
 
 # ── 1. Directories ─────────────────────────────────────────────────────────
 
-mkdir -p "$PROJECT_NAME/$CODE_DIR"
+mkdir -p "$PROJECT_NAME/$CODE_DIR/Artifacts"
+mkdir -p "$PROJECT_NAME/Research/Artifacts"
 mkdir -p "$PROJECT_NAME/Resources"
 mkdir -p "$PROJECT_NAME/Scripts"
 mkdir -p "$PROJECT_NAME/Wiki/Theorems"
@@ -43,7 +44,17 @@ mkdir -p "$PROJECT_NAME/Work"
 if [ "$WITH_LEAN" = "1" ]; then
   mkdir -p "$PROJECT_NAME/Lean"
 fi
-echo "Created directories: $PROJECT_NAME/{$CODE_DIR,Resources,Scripts,Work,Wiki/{Theorems,Definitions,Domains}}$([ "$WITH_LEAN" = "1" ] && echo ',Lean' || true)"
+echo "Created directories: $PROJECT_NAME/{$CODE_DIR/Artifacts,Research/Artifacts,Resources,Scripts,Work,Wiki/{Theorems,Definitions,Domains}}$([ "$WITH_LEAN" = "1" ] && echo ',Lean' || true)"
+
+cp "$ASSETS_DIR/artifacts_index_template.md" "$PROJECT_NAME/$CODE_DIR/Artifacts/README.md"
+cp "$ASSETS_DIR/artifacts_index_template.md" "$PROJECT_NAME/Research/Artifacts/README.md"
+echo "Created: Artifacts indexes"
+
+sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+  -e "s|{{TOPIC_DESCRIPTION}}|$TOPIC_DESCRIPTION|g" \
+  -e "s|{{CODE_DIR}}|$CODE_DIR|g" \
+  "$ASSETS_DIR/project_readme_template.md" > "$PROJECT_NAME/README.md"
+echo "Created: $PROJECT_NAME/README.md"
 
 sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
   "$ASSETS_DIR/work_readme_template.md" > "$PROJECT_NAME/Work/README.md"
@@ -103,6 +114,7 @@ echo "=== Math-research project scaffolded: $PROJECT_NAME/ ==="
 echo ""
 echo "  $CODE_DIR/"
 echo "    Tools.wl                   — shared general utilities"
+echo "  Research/                     — papers, research notebooks, notes (Artifacts/ inside)"
 echo "  Resources/                    — reference PDFs, notebooks (gitignored)"
 echo "  Wiki/"
 echo "    Theorems/                   — one .md per theorem (statement, proof outline, status)"

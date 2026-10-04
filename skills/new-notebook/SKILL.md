@@ -4,7 +4,7 @@ description: >
   Create or modify Wolfram Notebooks (.nb) from structured Markdown content
   using the Wolfram MCP. This is the unified notebook skill — use it for
   creating new notebooks, editing existing ones, or converting a Markdown
-  source in Code/Artifacts/ into an .nb. Triggers on: "create notebook", "make a
+  source in Code/ or Code/Artifacts/ into an .nb. Triggers on: "create notebook", "make a
   notebook", "notebook about X", "edit notebook", "update notebook",
   "put this in a notebook", "generate .nb". Also used by other skills
   (new-project, start-tour) when they produce notebooks.
@@ -50,8 +50,14 @@ The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` hel
 
 ## Where notebooks live — Critical
 
-A notebook about the project's code is an artifact, and it goes in `Code/Artifacts/`.
-No file is ever overwritten, and outside an `Artifacts/` folder nothing is written unasked — that is the whole of [revise](../revise/SKILL.md) § *Protected content* as it applies here.
+A notebook about the project's code goes to one of two places, and the request names which:
+
+- **`Code/`** — a document in progress, one the user will keep working on, with a revision round per version.
+- **`Code/Artifacts/`** — a one-off.
+  A request that does not say goes here, without asking.
+
+The paths below show `Code/Artifacts/`; for a document in progress read `Code/`, which has no index row to write.
+No file is ever overwritten, and outside `Artifacts/` nothing is written unasked — that is the whole of [revise](../revise/SKILL.md) § *Protected content* as it applies here.
 The full convention — the three places, which one a notebook goes to, the shape, the naming, the index, git and the Cloud — is [artifacts.md](artifacts.md); read it before creating one.
 
 ## Two-layer architecture (co-located)
@@ -240,4 +246,4 @@ The `.md` source name is undated; the generated `.nb` appends the first-creation
 
 - Research documents with definitions/theorems/conjectures — that is `new-research-notebook`.
 - Paclet documentation pages — that is `paclet-docs`.
-- Overwriting any file, or writing outside an `Artifacts/` folder unasked — see [artifacts.md](artifacts.md) § *Never overwrite*.
+- Overwriting any file, or writing a document in progress unasked — see [artifacts.md](artifacts.md) § *Never overwrite*.

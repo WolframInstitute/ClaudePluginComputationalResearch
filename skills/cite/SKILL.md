@@ -2,7 +2,7 @@
 name: cite
 description: >
   Produce a BibTeX/biblatex entry from an arXiv ID or DOI. Optionally appends
-  to Paper/references.bib if it exists. Use when the user says "cite this",
+  to Research/references.bib if it exists. Use when the user says "cite this",
   "bibtex for arXiv:...", "DOI 10.xxx/...", "add citation", or when adding a
   reference during paper writing.
 ---
@@ -10,7 +10,7 @@ description: >
 # Cite
 
 Thin wrapper around [scripts/cite_from_id.wls](../../scripts/cite_from_id.wls) that takes an identifier (arXiv ID, DOI, or URL containing either) and emits a BibTeX entry.
-Optionally appends to `Paper/references.bib` and creates a wiki article via [add-resource](../add-resource/SKILL.md).
+Optionally appends to `Research/references.bib` and creates a wiki article via [add-resource](../add-resource/SKILL.md).
 
 ## When to use
 
@@ -54,10 +54,10 @@ The user may want to edit the key, trim the abstract, or fix author casing.
 
 Ask the user (or infer from context):
 
-- **`Paper/references.bib`** — if a Paper/ directory exists and the citation is for the paper being written.
+- **`Research/references.bib`** — if a paper is in `Research/` (a `Paper/` folder in an older project) and the citation is for the paper being written; with a paper in its own subfolder, that paper's own `references.bib`.
   Append at end, **after** checking the key is not already present (`grep` first).
 - **`Journal/references.bib`** — if a `Journal/` directory exists and the citation supports a journal entry (see the [journal](../journal/SKILL.md) skill).
-  Append at end, after `grep`-checking the key is not already present, as for Paper.
+  Append at end, after `grep`-checking the key is not already present, as for the paper.
 - **`Wiki/Resources/<Key>.md`** — if the citation deserves a full wiki article (will be summarised).
   Invoke [add-resource](../add-resource/SKILL.md) with the BibTeX and the URL.
 - **Stdout only** — when the user is just looking up a citation in conversation.
@@ -80,8 +80,8 @@ If the user supplies multiple identifiers (newline- or comma-separated), run the
 
 - [add-resource](../add-resource/SKILL.md) — for full wiki articles instead of just BibTeX.
 - [search-math](../search-math/SKILL.md) — surfaces references from MathWorld / Wikipedia that often have DOIs; pipe those DOIs into this skill.
-- [new-paper](../new-paper/SKILL.md) — produces the `Paper/references.bib` this skill appends to.
-- [journal](../journal/SKILL.md) — owns `Journal/references.bib`; cite into it the same way as Paper.
+- [new-paper](../new-paper/SKILL.md) — produces the `Research/references.bib` this skill appends to.
+- [journal](../journal/SKILL.md) — owns `Journal/references.bib`; cite into it the same way as into a paper.
 
 ## When NOT to use
 

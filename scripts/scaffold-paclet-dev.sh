@@ -37,25 +37,19 @@ mkdir -p "$DEV_REPO_NAME/Code/Artifacts"
 mkdir -p "$DEV_REPO_NAME/Research/Artifacts"
 echo "Created: $DEV_REPO_NAME/Code/Artifacts/, $DEV_REPO_NAME/Research/Artifacts/"
 
-# Artifacts index: the model writes here, and only here.
+# Artifacts index, the same in every Artifacts/ folder.
 write_artifacts_index() {
-cat > "$1" << 'EOF'
-# Artifacts
-
-Everything the model produces lands here, and everything outside an `Artifacts/` folder is yours.
-
-An artifact is one stem — `<WhatItSettles>_YYMMDD` — shared by whatever files it needs, flat in this folder.
-It becomes a folder of its own name only once it carries its own code, data, bibliography or build script, and then the files inside it go bare.
-Every file of an artifact is tracked, `.nb` included; build litter (`.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`) is not.
-Nothing here is uploaded to the Wolfram Cloud unless you ask for it.
-
-| Artifact | What it settles | State |
-|---|---|---|
-EOF
+    cp "$ASSETS_DIR/artifacts_index_template.md" "$1"
 }
 
 write_artifacts_index "$DEV_REPO_NAME/Code/Artifacts/README.md"
 write_artifacts_index "$DEV_REPO_NAME/Research/Artifacts/README.md"
+
+sed -e "s/{{PROJECT_NAME}}/$DEV_REPO_NAME/g" \
+    -e "s|{{TOPIC_DESCRIPTION}}|$TOPIC|g" \
+    -e "s|{{CODE_DIR}}|Code|g" \
+    "$ASSETS_DIR/project_readme_template.md" > "$DEV_REPO_NAME/README.md"
+echo "Created: $DEV_REPO_NAME/README.md"
 
 mkdir -p "$DEV_REPO_NAME/Work"
 sed -e "s/{{PROJECT_NAME}}/$DEV_REPO_NAME/g" \
@@ -190,8 +184,8 @@ echo "Created: $DEV_REPO_NAME/.gitignore"
     echo "- \`Work/\` — execution state (specs / tasks / per-session progress); status is the folder (\`Backlog/Ready/Active/UnderReview/Done/Dropped\`), \`Work/README.md\` indexes active items. Use \`/work\` and \`/next-session\`."
     echo "- \`Code/\` — experimental/unrevised code (dev repo only)"
     echo "- \`Wiki/\` — plain-markdown knowledge base"
-    echo "- \`Code/Artifacts/\` — notebooks about the code; \`Research/Artifacts/\` — research documents. Everything outside an Artifacts folder is yours, untouched"
-    echo "- \`Paper/\` — research notes (gitignored)"
+    echo "- \`Code/\` and \`Research/\` — each has three places: the folder itself for documents in progress, \`Artifacts/\` for what the plugin made once, \`Archive/\` for what is superseded; the plugin never overwrites a file"
+    echo "- \`Research/\` — papers, research notebooks, notes; there is no \`Paper/\` folder"
     echo "- \`Resources/\` — reference PDFs (gitignored)"
     echo ""
     echo "## Work items: branch + PR per paclet"

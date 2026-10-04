@@ -9,7 +9,7 @@ Read after the shared questionnaire and environment check in [SKILL.md](SKILL.md
 ```
 
 `<CodeDir>` defaults to `Code` if omitted.
-The script creates `CLAUDE.md`, `<CodeDir>/Tools.wl`, `Resources/`, `Scripts/recover_resources.sh`, and `Work/README.md`, and prints what it made.
+The script creates `README.md` and `CLAUDE.md`, `<CodeDir>/Tools.wl`, `<CodeDir>/Artifacts/` and `Research/Artifacts/` (each with its index), `Resources/`, `Scripts/recover_resources.sh`, and `Work/README.md`, and prints what it made.
 
 ## 2. Initialize the wiki
 
@@ -49,7 +49,7 @@ This step is **not optional**.
    - Download PDF to `Resources/Author_Year_ShortTitle.pdf`
    - Create `Wiki/Resources/Author_Year.md` with citation, summary, and Recover section
    - Update `Wiki/Index.md`
-4. If Paper/ exists, add biblatex entries to `Paper/references.bib`
+4. If a paper exists in `Research/`, add biblatex entries to `Research/references.bib`
 
 ## 6. Create initial notebook
 
@@ -60,7 +60,7 @@ Use the **new-notebook** skill: write `Code/Artifacts/<ProjectName>_<YYMMDD>.md`
 - Initial computations demonstrating the core functions
 - Visualization examples
 
-## 7. Create Paper/ (if requested)
+## 7. Add a paper (if requested)
 
 If the user wants a paper, use the **new-paper** skill (add `--typst` for a Typst paper instead of the default LaTeX):
 
@@ -68,9 +68,10 @@ If the user wants a paper, use the **new-paper** skill (add `--typst` for a Typs
 "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] [--name <Name>] "<ProjectName>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>"
 ```
 
-This creates `Paper/` with the paper's source (`main.tex` unnamed, `<Name>.tex` with `--name`), macros.sty, references.bib, figures/ and .latexmkrc — or the Typst equivalents.
+This adds to `Research/` the paper's source (`main.tex` unnamed, `<Name>.tex` with `--name`), macros.sty, references.bib, figures/ and .latexmkrc — or the Typst equivalents.
 A later paper joins this one in the same folder; the preamble and bibliography are written once and shared.
+A paper is a document in progress, so it sits in `Research/` itself, never in `Artifacts/`.
 The document's author is the **model**; the footnote names the operator, the freedom level in bold, and the instructions in one sentence.
 See new-paper skill for details, and its shared writing guide before adding any prose.
 
-Seed `Paper/references.bib` with biblatex entries from the papers downloaded in step 5.
+Seed `Research/references.bib` with biblatex entries from the papers downloaded in step 5.

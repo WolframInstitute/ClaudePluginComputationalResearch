@@ -62,10 +62,15 @@ The convention lives in [artifacts.md](../../skills/new-notebook/artifacts.md), 
 
 ## Tasks
 
-- [ ] T2 (model: sonnet, effort: high — mechanical sweep) — `Paper/` to `Research/` across skills, scripts and templates, with the fallback for an existing `Paper/`; destinations in the four generating skills; the scaffolds and their project READMEs; scaffold a throwaway project and a paper in it to confirm.
 - [ ] T3 (model: sonnet, effort: high — doc pass) — README check against the acceptance criteria, ARCHITECTURE, the blog post (the idea: one rule for every folder, papers beside the research), version bump.
 
 ### Done
+
+- [x] T2 (S2) — `Paper/` to `Research/` across skills, scripts and templates, with the fallback for an existing `Paper/`; destinations in the four generating skills; the scaffolds and their project READMEs.
+  - **Test:** run `scripts/scaffold-project.sh Demo "x" /tmp/demo`, then `scripts/scaffold-paper.sh --name First /tmp/demo/Demo` — `Code/` and `Research/` each have `Artifacts/README.md`, `Demo/README.md` states the three places, and the paper lands in `Research/First.tex`.
+  - **Test:** `mkdir -p /tmp/old/Paper && scripts/scaffold-paper.sh /tmp/old` — the paper goes to `Paper/main.tex`, and the script says `Research/` is the new place and nothing is moved.
+  - **Test:** `grep -rn 'Paper/' skills commands scripts` — only the fallback sentences in new-paper, cite, search-wolfram, artifacts.md, the scaffold script and the project README templates remain.
+  - **Test:** read [new-paper](../../skills/new-paper/SKILL.md) and the destination paragraph in [new-notebook](../../skills/new-notebook/SKILL.md), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md) — a document in progress goes in the folder, a one-off or an unsaid request in `Artifacts/`.
 
 - [x] T1 (S1) — rewrite artifacts.md as the three-places convention (root, `Artifacts/`, `Archive/`, the `Research/` rule for papers); `revise`, `clean`, the generating skills and `new-paper` link it; the protected-content paragraph in `revise`.
   - **Test:** read [artifacts.md](../../skills/new-notebook/artifacts.md) — the three places, *Never overwrite*, *Which place* (with *Papers* and *Moving up*) and *Archive* say what the README *Autoorganization* section promises.
@@ -74,13 +79,14 @@ The convention lives in [artifacts.md](../../skills/new-notebook/artifacts.md), 
 
 ## Hand-off
 
-T1 done: [artifacts.md](../../skills/new-notebook/artifacts.md) is the three-places convention; T2 makes the skills, scripts and templates follow it.
-The README *Autoorganization* section is still ahead of the paths: `Paper/` is unchanged until T2.
-For review:
-- The Acceptance criteria say the plugin "asks which when it is not clear"; the 2026-10-03 Decision says an ambiguous request goes to `Artifacts/` without asking. The convention follows the Decision; T3 aligns the criterion's wording, unless the reviewer says otherwise.
-- *Never overwrite* names two exceptions so the rule is not absurd: a generated file (`.nb`, `.pdf`) is rebuilt in place, and code under development is edited in place with git as its history.
-- The file keeps its name and place, `skills/new-notebook/artifacts.md`, so no link broke; a rename to something like `skills/revise/folders.md` is a T3 option.
-- Old-rule sentences ("everything outside `Artifacts/` is yours", "never written") left for T2: `skills/init-wiki/SKILL.md` ~146, `skills/new-project/assets/claude_template.md` 21, `math_claude_template.md` 51, `scripts/scaffold-project.sh` 50, `scripts/scaffold-paclet-dev.sh` 45 and 193, `commands/new-notebook.md` 7; `ARCHITECTURE.md` 10-14 for T3.
+T2 done: skills, scripts and templates follow [artifacts.md](../../skills/new-notebook/artifacts.md); T3 is the README, ARCHITECTURE, blog and version pass.
+For T3:
+- README *Autoorganization* still says the rule "is in design, see FolderRule" and has "Everything outside `Artifacts/` is yours" (line ~103); ARCHITECTURE.md 10-14 carries the old rule.
+- The acceptance criterion "the plugin asks which when it is not clear" contradicts the 2026-10-03 Decision (ambiguous goes to `Artifacts/` without asking); skills follow the Decision, so reword the criterion.
+- New assets: `artifacts_index_template.md` (one index text, used by all three project scaffolds, replacing two inline copies) and `project_readme_template.md` (the project's README that states the three places); list both in ARCHITECTURE.
+- `scaffold-math-project.sh` created no `Artifacts/` before; it now does, like the others. Paclet-dev dev repos now track `Research/` (the `Paper/` line left `gitignore_dev.template`).
+- Fallback: `scaffold-paper.sh` uses an existing `Paper/` (even if `Research/` also exists) and prints that `Research/` is the new place; nothing is moved. Wiki holds only historical `Paper/` mentions (PaperStyleExercise, Status), left as history.
+- Not done: `Research/` is created by the paper scaffold only through `mkdir -p` of the files; `Research/Artifacts/` comes from the project scaffolds. A project made before this change has no `Research/Artifacts/` index until a generating skill creates it.
 
 ## Decisions
 
@@ -97,3 +103,4 @@ For review:
 - **S0** 2026-10-03 — item filed from the operator's request; README section written first.
 - **S0'** 2026-10-03 — the operator settled the four questions and dropped `Output/`; `OutputFolder` merged in; moved to Ready.
 - **S1** 2026-10-04 T1 — artifacts.md rewritten as the three-places convention; revise, round.md, /clean, the generating skills and new-paper point at it; `Output/` gone from revise. → [artifacts.md](../../skills/new-notebook/artifacts.md)
+- **S2** 2026-10-04 T2 — `Paper/` to `Research/` across the skills, scripts and templates; destinations in the four generating skills; shared index and project README templates; throwaway project and papers scaffolded to confirm. → [new-paper](../../skills/new-paper/SKILL.md), [scaffold-paper.sh](../../scripts/scaffold-paper.sh)

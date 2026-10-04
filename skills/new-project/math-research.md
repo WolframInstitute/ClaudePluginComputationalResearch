@@ -10,7 +10,7 @@ Also check whether `lean` is on `PATH` if the user wants Lean — warn (don't fa
     "<ProjectName>" "<topic>" "." "<Author>" "<email>" "<CodeDir>" "<WithLean=0|1>"
 ```
 
-The script creates the math variant of `CLAUDE.md` (see `math_claude_template.md`), `<CodeDir>/Tools.wl`, `Resources/`, `Scripts/` (recover + notebook helpers), `Wiki/{Theorems,Definitions,Domains}/` with `_template.md` and `categories.md` seeds, `Work/README.md`, and `Lean/` only if `WithLean=1` — it prints what it made.
+The script creates `README.md`, the math variant of `CLAUDE.md` (see `math_claude_template.md`), `<CodeDir>/Tools.wl`, `<CodeDir>/Artifacts/` and `Research/Artifacts/` (each with its index), `Resources/`, `Scripts/` (recover + notebook helpers), `Wiki/{Theorems,Definitions,Domains}/` with `_template.md` and `categories.md` seeds, `Work/README.md`, and `Lean/` only if `WithLean=1` — it prints what it made.
 
 ## 2. Initialize the wiki
 
@@ -57,6 +57,6 @@ If `WithLean=1` was set:
 1. Tell the user to run `cd <ProjectName>/Lean && lake new <ProjectName> math` themselves — this skill does not run `lake` on their behalf.
 2. Once the lakefile exists, invoke **lean** to set up a `Work/Backlog/Formalize-<topic>.md` formalization checklist for the first theorem.
 
-## 9. Paper (if requested)
+## 9. Paper (if requested, in `Research/`)
 
 Same as [research.md](research.md) step 7.

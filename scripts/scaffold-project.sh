@@ -42,26 +42,20 @@ mkdir -p "$PROJECT_NAME/Scripts"
 mkdir -p "$PROJECT_NAME/Work"
 echo "Created directories: $PROJECT_NAME/{$CODE_DIR/Artifacts,Research/Artifacts,Resources,Scripts,Work}"
 
-# Artifacts index: the model writes here, and only here.
+# Artifacts index, the same in every Artifacts/ folder.
 write_artifacts_index() {
-cat > "$1" << 'EOF'
-# Artifacts
-
-Everything the model produces lands here, and everything outside an `Artifacts/` folder is yours.
-
-An artifact is one stem — `<WhatItSettles>_YYMMDD` — shared by whatever files it needs, flat in this folder.
-It becomes a folder of its own name only once it carries its own code, data, bibliography or build script, and then the files inside it go bare.
-Every file of an artifact is tracked, `.nb` included; build litter (`.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`) is not.
-Nothing here is uploaded to the Wolfram Cloud unless you ask for it.
-
-| Artifact | What it settles | State |
-|---|---|---|
-EOF
+  cp "$ASSETS_DIR/artifacts_index_template.md" "$1"
 }
 
 write_artifacts_index "$PROJECT_NAME/$CODE_DIR/Artifacts/README.md"
 write_artifacts_index "$PROJECT_NAME/Research/Artifacts/README.md"
 echo "Created: Artifacts indexes"
+
+sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+  -e "s|{{TOPIC_DESCRIPTION}}|$TOPIC_DESCRIPTION|g" \
+  -e "s|{{CODE_DIR}}|$CODE_DIR|g" \
+  "$ASSETS_DIR/project_readme_template.md" > "$PROJECT_NAME/README.md"
+echo "Created: $PROJECT_NAME/README.md"
 
 sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
   "$ASSETS_DIR/work_readme_template.md" > "$PROJECT_NAME/Work/README.md"
@@ -113,6 +107,7 @@ echo "=== Project scaffolded: $PROJECT_NAME/ ==="
 echo ""
 echo "  $CODE_DIR/"
 echo "    Tools.wl           — shared general utilities"
+echo "  Research/             — papers, research notebooks, notes (Artifacts/ inside)"
 echo "  Resources/            — reference PDFs and notebooks"
 echo "  Scripts/"
 echo "    recover_resources.sh — rebuild Resources/ from wiki ## Recover sections"
@@ -120,4 +115,4 @@ echo "  Work/"
 echo "    README.md            — Ready/Active/UnderReview index (status = folder: Backlog/Ready/Active/UnderReview/Done/Dropped)"
 echo "  CLAUDE.md             — project context for future Claude sessions"
 echo ""
-echo "Next: Claude will initialize Wiki/, optionally create Paper/, and download papers."
+echo "Next: Claude will initialize Wiki/, optionally add a paper to Research/, and download papers."

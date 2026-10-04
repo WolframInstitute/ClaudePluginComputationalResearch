@@ -10,7 +10,7 @@ Read after the shared questionnaire and environment check in [SKILL.md](SKILL.md
     "<OrgName>" "<GitHubUser>" "<topic>" "<Author>" "<email>" "."
 ```
 
-The script creates one submodule directory per paclet (each with the paclet root, `run_tests.wls`, `README.md`, `.gitignore`), plus `Code/` for experimental work, `Scripts/recover_resources.sh`, `.gitmodules`, `.gitignore`, and `CLAUDE.md` — it prints what it made.
+The script creates one submodule directory per paclet (each with the paclet root, `run_tests.wls`, `README.md`, `.gitignore`), plus `README.md`, `Code/` and `Research/` (each with an `Artifacts/` and its index), `Scripts/recover_resources.sh`, `.gitmodules`, `.gitignore`, and `CLAUDE.md` — it prints what it made.
 
 ### Triple nesting convention
 

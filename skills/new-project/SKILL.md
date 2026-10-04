@@ -26,7 +26,7 @@ The project takes a research topic from **any scientific domain** and explores i
 Before scaffolding, you need:
 
 1. **Project type** — what kind of project to create:
-   - **research** (default) — exploratory computation with Wiki, Code/, Resources/, optional Paper/.
+   - **research** (default) — exploratory computation with Wiki, Code/, Research/, Resources/, optional paper.
      Use for open-ended investigation of a topic.
    - **math-research** — pure-math project organised around precise theorems and definitions.
      Wiki/{Theorems,Definitions,Domains}/ and a top-level Work/ up front, math-domain taxonomy seeded, optional Lean/ subdirectory.
@@ -48,8 +48,8 @@ Before scaffolding, you need:
 
 #### research (default)
 
-4. **Include Paper/?** (optional) — default: yes.
-   Creates Paper/ with LaTeX article templates (amsart, biblatex, shared macros).
+4. **Include a paper?** (optional) — default: yes.
+   Adds a paper to `Research/` with LaTeX article templates (amsart, biblatex, shared macros).
    Say no to skip.
 5. **Code directory name** (optional) — default is `Code/`, but projects may use `Wolfram/`, `src/`, `Lean/`, etc.
 6. **Domain folders** (optional) — what domain-specific wiki folders to create.
@@ -58,7 +58,7 @@ Before scaffolding, you need:
 
 #### math-research
 
-4. **Include Paper/?** (optional) — default: yes.
+4. **Include a paper?** (optional) — default: yes.
 5. **Include Lean/?** (optional) — default: no. Set yes if the project will formalise results in Lean/Mathlib.
    The scaffold creates an empty `Lean/` directory; the user runs `lake new <ProjectName> math` inside it themselves.
 6. **Code directory name** (optional) — default `Code/`.
@@ -72,7 +72,7 @@ Before scaffolding, you need:
    Default: `WolframInstitute`.
 6. **GitHub username** (optional) — for the private dev repo.
    Default: from git config.
-7. **Include Paper/?** (optional) — default: no. Paper/ is gitignored in paclet-dev repos.
+7. **Include a paper?** (optional) — default: no. The paper goes to `Research/`, which the dev repo tracks.
 8. **Research depth** (optional) — short / standard (default) / deep.
 
 #### paclet
@@ -154,7 +154,7 @@ Tell the user:
     template for math-research projects)
   - `new-research-notebook` — cloud-published research document
     (definitions → theorems → symbols/functions → code calls)
-  - `new-paper` — add a LaTeX/Typst `Paper/` later
+  - `new-paper` — add a LaTeX/Typst paper to `Research/` later
   - `check-wiki` — wiki health check (stale articles, broken links)
   - `build-paclet` / `publish-paclet` / `paclet-docs` — build, publish,
     and document paclets (paclet types)
