@@ -162,6 +162,8 @@ This is the same shape as the existing paclet-worktree rule, where work lands on
 When a task genuinely needs a decision the run does **not** guess.
 It writes the question into `## Hand-off` and halts the whole loop with reason `needs-human`.
 `## Hand-off` is already the fixed place an unattended loop looks for an item's state, which is what T3 built it for.
+The question waits on the branch, where the checkout cannot show it: the checkout still has the item in `Ready/` or `Active/`.
+[`backlog-info`](../../skills/backlog-info/SKILL.md) finds it there with `git show auto/<Item>:…`, beside the finished runs that wait for a review.
 
 ## The loop
 

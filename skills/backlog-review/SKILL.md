@@ -9,7 +9,8 @@ description: >
   from the user's words, item to Active/). Nothing is fixed during the review.
   Use for: "review X", "review the item", "check the finished item", "accept
   X", "send X back", "merge the autolab branch", or the /backlog-review command.
-  Not for running tasks (backlog-run) or going through the whole backlog.
+  Not for running tasks (backlog-run) or going through the whole backlog
+  (backlog-info).
 ---
 
 # Review a finished item

@@ -229,14 +229,14 @@ Each step of an item's life has its skill:
 |---|---|
 | [new-item](skills/backlog-add/SKILL.md) | File an item in the backlog: what you want, why, and how you will accept it |
 | [backlog-refine](skills/backlog-refine/SKILL.md) | Shape one backlog item with you until it is ready to run |
-| [backlog](skills/backlog-add/SKILL.md) | Go through the whole backlog with you; items move only on your word |
+| [backlog-info](skills/backlog-info/SKILL.md) | Go through the whole backlog with you; items move only on your word |
 | [backlog-board](skills/backlog-board/SKILL.md) | A board of all items that you can read and edit on your phone |
 | [backlog-run](skills/backlog-run/SKILL.md) | Run the next task of an item, then stop |
 | [backlog-autolab](skills/backlog-autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
 | [backlog-run-scheduled](commands/backlog-run-scheduled.md) | The same without a chat, for scheduled runs |
 | [backlog-review](skills/backlog-review/SKILL.md) | Check a finished item with you: accept it, or send it back with a new task |
 
-`new-item` and `backlog` are in design, see [BacklogLifecycle](Work/Active/BacklogLifecycle.md); today `backlog-add` files an item.
+`new-item` is in design, see [BacklogLifecycle](Work/Active/BacklogLifecycle.md); today `backlog-add` files an item.
 Agents pick only items you have moved to Ready, stop at any task marked for a human, and leave their results on a branch for you to review.
 
 **Several sessions at once.**

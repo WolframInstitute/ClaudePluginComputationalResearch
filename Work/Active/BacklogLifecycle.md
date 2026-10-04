@@ -92,7 +92,6 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 
 ## Tasks
 
-- [ ] T3 (model: opus, effort: high — protocol writing) — `backlog-info` skill and command.
 - [ ] T4 (human) — trial: one backlog check and one review of a real item.
 - [ ] T5 (model: sonnet, effort: high — doc pass) — README and ARCHITECTURE tables, the refine/revise sentence, the blog post (the idea: each step of an item's life has a name), major version bump with the rename table.
 
@@ -105,12 +104,18 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
   - **Test:** [skills/backlog-add/SKILL.md](../../skills/backlog-add/SKILL.md) has no § *Review* any more; its Lifecycle lines and [commands/backlog-add.md](../../commands/backlog-add.md) point at `backlog-review`.
   - **Test:** [skills/backlog-board/SKILL.md](../../skills/backlog-board/SKILL.md) sync step 3 finishes Accept / Send back through `backlog-review` § *The verdict*, and says that branch items are reviewed with `/backlog-review`.
   - **Test:** `claude plugin validate .` passes (warnings only, as before); `/backlog-review` resolves after a plugin update.
+- [x] T3 (S3) — `backlog-info` skill and command.
+  - **Test:** read [skills/backlog-info/SKILL.md](../../skills/backlog-info/SKILL.md) — it reads `Backlog/`, `Ready/`, `UnderReview/` and every `auto/*` branch, reports what waits on you, what is stale, overlaps and numbered proposals, and moves an item only on your word; it never moves one to `Ready/` and never syncs the board.
+  - **Test:** in this repo, `git branch --format='%(refname:short)' --list 'auto/*' --no-merged HEAD` and the `--merged HEAD` twin (step 1) list the waiting and the leftover branches.
+  - **Test:** the README's *Autolab* table links `backlog-info`; [commands/backlog-info.md](../../commands/backlog-info.md) exists; `/backlog-info` resolves after a plugin update.
 
 ## Hand-off
 
-T2 done: `backlog-review` exists (skill + command); `backlog-add` § *Review* is gone, its callers point at the new skill; the README row now links it.
-Next is T3, `backlog-info`. ARCHITECTURE skill/command tables and counts still lack `backlog-review` — T5's doc pass.
-For the T4 trial: an `auto/<Item>` branch and `main` both edit `Work/README.md`, so the review's up-front `git merge-tree` check may stop on an index-only conflict; watch whether that is common enough to warrant regenerating the index instead of stopping.
+T3 done: `backlog-info` exists (skill + command); the README row links it, and `backlog-add` and `backlog-review` point at it.
+Next is T4, the `(human)` trial: one `/backlog-info` and one `/backlog-review` of a real item.
+For the trial: `auto/DocumentMemory`, `auto/FolderRule` and `auto/RevisionRounds` are merged leftovers and `auto/AutolabTrialT4` is a halted run, so `/backlog-info` here has something to report; the 30-day staleness threshold is a guess to check against what the user calls stale.
+Left for T5: ARCHITECTURE skill/command tables and counts lack `backlog-review` and `backlog-info`; README line "`new-item` is in design" still names the old row.
+From T2: an `auto/<Item>` branch and `main` both edit `Work/README.md`, so the review's `git merge-tree` check may stop on an index-only conflict; watch how often.
 
 ## Decisions
 
@@ -131,3 +136,4 @@ For the T4 trial: an `auto/<Item>` branch and `main` both edit `Work/README.md`,
 - **R1** 2026-10-04 — refined with the operator: names `<area>-<word>` for every skill, the backlog family settled, review merges, tasks re-cut; moved to Ready.
 - **S1** 2026-10-05 — T1: renamed every skill and command to `<area>-<word>`, rewrote cross-references; validate and routing test pass; no alias stubs.
 - **S2** 2026-10-05 T2 — `backlog-review` skill and command; `backlog-add` § *Review* lifted; board, run, autolab and scheduled point at it. → [skills/backlog-review/SKILL.md](../../skills/backlog-review/SKILL.md), [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)
+- **S3** 2026-10-05 T3 — `backlog-info` skill and command; README row, `backlog-add` and `backlog-review` point at it. → [skills/backlog-info/SKILL.md](../../skills/backlog-info/SKILL.md), [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)

@@ -214,6 +214,7 @@ If it is LLM-drafted and unapproved, edit directly.
 - `backlog-run` executes one task per fresh session against an item created here.
   In a paclet-dev repo, an item that changes paclet code is developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree and lands as a PR on that paclet's repo (the dev repo stays on `main`) — name the target paclet in the Spec.
 - `backlog-review` checks a finished item with the user and moves it to `Done/` or back to `Active/`.
+- `backlog-info` goes through the whole backlog with the user and proposes what to refine, merge, split or drop.
 - `wiki-update` records durable knowledge in `Wiki/` — this skill does not touch the Wiki; it manages execution state only.
 - The `document-revise` protocol governs every Spec and task-list interaction.
 - For Lean formalization, `paper-lean` creates a `Type: formalization` item here.
