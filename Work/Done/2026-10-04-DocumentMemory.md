@@ -3,7 +3,6 @@
 *[ LLM Generated ]*
 
 > Type: feature
-> Autonomous: allowed
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -187,3 +186,4 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S3** 2026-10-03 T4 — generating skills write the first Request and commit version 1 as written. → [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md), [artifacts.md](../../skills/new-notebook/artifacts.md)
 - **S4** 2026-10-03 T5 — three-round trial on a `.tex` and a `.nb`; the repeated hand edit did not come back; three gaps in the round fixed. → [NotebookCommentRound § trial](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03), [round.md](../../skills/revise/round.md#steps), [provenance § *Hand edits*](../../skills/provenance/SKILL.md#hand-edits)
 - **S5** 2026-10-03 T6 — docs pass: ARCHITECTURE, README provenance row, revise command, blog entry, version 5.6.0; item to UnderReview. → [ARCHITECTURE](../../ARCHITECTURE.md), [plugin.json](../../.claude-plugin/plugin.json)
+- **S6** 2026-10-04 — `auto/DocumentMemory` merged into `main` on the operator's word ("do it and finish"), with 5.5.1 from origin; 5.6.0 released, marketplace synced. Item closed.
