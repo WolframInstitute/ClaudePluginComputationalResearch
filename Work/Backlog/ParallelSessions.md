@@ -3,7 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: investigation
-> Waiting on: you — the open questions, and whether to trial Kanban Code.
+> Waiting on: you — open question 1, and the Agent View trial.
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -25,11 +25,14 @@ The README's *Several sessions at once* paragraph is true:
 - Two sessions cannot take the same item; the second one is told who has it.
 - A session working an item never sees another session's uncommitted work.
 - An item's branch and worktree are named by one rule, the same for interactive and autonomous sessions.
-- Whether Kanban Code is used beside the plugin is decided from a trial, and the decision is recorded.
+- Sessions are watched and steered in Claude Code's Agent View, and a trial confirms it is enough.
 
 ## Prompt history
 
 - 2026-10-03 — "Also regarding the backlog we want to explore the possibility how to deal with multiple agents/claude sessions working on different things in the backlog. There is github.com/langwatch/kanban-code. Could we possibly use it? Does it require the backlog to be in github online? In that case it should be in the dev repos."
+- 2026-10-04 — "We need to turn board into something like vibe-kanban where we will also see the work items being done by multiple sessions, where i could start multiple sessions and view their output and communicate with them... like a control interface.. Is it the best to build our own board or would it be the best to make our backlog into github backlog and kanban board and use some standard orchestrator"
+- 2026-10-04 — "lets not use the vibe kanban etc and lets use the default the agentic view. If it brings what i want.... but then it should be somehow connected with our board that i can click there for agent to process"
+- 2026-10-04 — "well okey it is not such a problem not to connect the board then, forget it if it is too bad"
 
 ## Technical details
 
@@ -48,6 +51,15 @@ The README's *Several sessions at once* paragraph is true:
 - It has grown servers, cloud machines and a secrets vault; the board is a part of a larger system.
 
 So it is a session manager, not a backlog: it would be a second store beside `Work/` unless every Ready item were mirrored to a GitHub issue in its dev repo, and even then the issue would hold only a link and the start prompt.
+vibe-kanban has the same shape: tasks in its own store, one worktree per task, logs, follow-ups and diff review.
+
+### Agent View (Claude Code 2.1.289, read 2026-10-04)
+
+- `claude agents` lists every session on the machine, interactive and background, and dispatches, attaches to and replies to them; Remote Control reaches the same sessions from the phone.
+- `claude --bg -n <name> "<prompt>"` starts a background session that appears there at once; `claude agents --json` prints each session's `cwd`, `name` and `status` for scripts.
+- An item is started by dispatching `/computational-research:next-session <Item>` from Agent View, or by `/autolab` for several.
+- `-w` puts the worktree at `<repo>/.claude/worktrees/`, inside the synced folder; the item's worktree is made outside it instead.
+- Not built, kept for later: a "Start agent" button on the board that queues a start in `pending.json`, which the next sync dispatches as `claude --bg -n <Item>` in the item's worktree, and card statuses read from `claude agents --json` at sync.
 
 ### The claim
 
@@ -65,14 +77,14 @@ The claim is the branch plus the worktree, for every session:
 ### Open questions
 
 1. One branch name for both paths, `work/<Item>`, with the paclet-dev worktrees keeping their own rule?
-2. Trial Kanban Code for a week as a view over the sessions, with cards started by hand on `/computational-research:next-session <Item>`, before deciding?
-3. If its GitHub import is wanted, mirror Ready items to issues in each dev repo, or not at all?
+2. ~~Trial Kanban Code?~~ Answered 2026-10-04: no; Agent View instead.
+3. ~~Mirror Ready items to GitHub issues?~~ Answered 2026-10-04: no; the backlog stays in `Work/`.
 
 ## Tasks
 
-- [ ] T1 (human) — decide the open questions; install Kanban Code if the trial is wanted.
+- [ ] T1 (human) — decide open question 1.
 - [ ] T2 (model: opus, effort: high — protocol writing) — the claim in `next-session`: worktree per item for interactive sessions, the stop on a busy branch, the shared branch name with `autolab` and `auto-run.sh`.
-- [ ] T3 (human) — the Kanban Code trial, if chosen; record the ruling in the Decisions table and a wiki resource article.
+- [ ] T3 (human) — a week of Agent View on a real project, items started by dispatching `next-session`; record whether it is enough, and whether the board's Start button is wanted after all.
 - [ ] T4 (model: sonnet, effort: high — doc pass) — README, AutonomousPipeline article, version bump.
 
 ### Done
@@ -88,8 +100,11 @@ The README paragraph *Several sessions at once* was written on 2026-10-03.
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-10-04 | No link from the board to sessions for now | The board is a claude.ai page and cannot start a local process; a click could only act at the next sync. The operator does not need it yet; the design is kept in Technical details |
+| 2026-10-04 | Sessions are run and watched in Claude Code's Agent View; no vibe-kanban, Kanban Code, GitHub Projects or own controller | Agent View already dispatches, shows and steers sessions, with Remote Control for the phone; the outside tools keep a second task store, and the GitHub orchestrators run in the cloud without the Wolfram kernel |
 | 2026-10-03 | `Work/` stays the one store; Kanban Code, if used, is a view | its backlog is a per-machine JSON of sessions, not items; a second store forks the list. Proposed by the LLM, open to change |
 
 ## Progress
 
 - **S0** 2026-10-03 — item filed from the operator's request; Kanban Code read from its README and source.
+- 2026-10-04 — Agent View chosen over outside kanban tools and an own controller; board–session link deferred (operator decision).
