@@ -3,6 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: feature
+> Autonomous: allowed
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -119,21 +120,51 @@ This changes round.md (which commits both versions of a notebook) and `new-noteb
 
 One unchecked box ≈ one focused session — small enough to finish, report, and commit in a single sitting.
 
-- [ ] T2 (model: opus, effort: high — protocol writing) — `<< … >>` grammar in round.md and commands/revise.md; `.nb` never committed in round.md and artifacts.md; the *Document provenance* section of `provenance` (format, anchors, hand edits, rules); round.md links it; `/clean` leaves the file.
-- [ ] T3 (model: opus, effort: high — kernel work) — notebook line ranges in `TaggingRules` at generation; the `.md` carried per version; cell-to-`.md` write-back in the round.
-- [ ] T4 (model: sonnet, effort: medium — mechanical) — the generating skills write the first Request; version 1 of a text file committed as written.
-- [ ] T5 — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
-- [ ] T6 (model: sonnet, effort: high — doc pass) — README tables, ARCHITECTURE, blog post, version bump.
-
 ### Done
 
 (completed tasks move here with the session that closed them)
 
+- [x] T6 (S5) — README tables, ARCHITECTURE, blog post, version bump.
+  - **Test:** read [ARCHITECTURE](../../ARCHITECTURE.md) § *Commands* and § *Notebook conversion engines* — `revise` reads and writes the provenance file; `new-research-note` goes through new-notebook's conversion, not `WriteNotebook`.
+  - **Test:** read [README § *Revision*](../../README.md#-revision) and the `provenance` row of the Functionality table — the provenance file is always on for a revised document.
+  - **Test:** read [commands/revise.md](../../commands/revise.md) — a notebook round writes the `.md` first, as in round.md.
+  - **Test:** read the new *Version 5.6* entry at the top of the blog post's version history (live clone, uncommitted) — ideas only, `Last updated` is 2026-10-03.
+  - **Test:** `.claude-plugin/plugin.json` reads `5.6.0`.
+
+- [x] T5 (S4) — trial: three rounds on a throwaway `.tex` and `.nb` with a repeated hand edit; round 3 must not bring it back.
+  - **Test:** read [NotebookCommentRound § *Three rounds with a repeated hand edit*](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03) — the script of the three rounds, what held, and the three gaps found.
+  - **Test:** read [round.md](../../skills/revise/round.md) steps 4, 7, 9 and § *Notebooks* steps 3–4 — rules are drawn at collect time and bind the same round; each passage's new text is kept and converted from the list.
+  - **Test:** read [provenance § *Hand edits*](../../skills/provenance/SKILL.md#hand-edits) — a note alone is not a hand edit, and how to take notes out before deciding.
+
+- [x] T4 (S3) — the generating skills write the first Request; version 1 of a text file committed as written.
+  - **Test:** read [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1) — the generating skill writes the first Request and commits version 1 as written, never the `.nb`.
+  - **Test:** read the checklist and step 8 of [new-research-note](../../skills/new-research-note/SKILL.md) and step 9 of [new-research-notebook](../../skills/new-research-notebook/SKILL.md) — both write the provenance file; new-research-note now commits instead of leaving files uncommitted.
+
 - [x] T1 (human) — review the README *Revision* section and the Acceptance criteria. *(S0'', 2026-09-28)*
+- [x] T2 (S1) — `<< … >>` grammar in round.md and commands/revise.md; `.nb` never committed in round.md and artifacts.md; the *Document provenance* section of `provenance` (format, anchors, hand edits, rules); round.md links it; `/clean` leaves the file.
+  - **Test:** read [round.md](../../skills/revise/round.md) § *The note grammar* and § *Steps* — notes are `<< … >>`, steps 3, 7 and 9 read, check and record the provenance file, step 10 never stages a `.nb`.
+  - **Test:** read [provenance § *Document provenance*](../../skills/provenance/SKILL.md#document-provenance) — the file, its three sections, anchors, hand edits and rules match this item's Technical details.
+  - **Test:** run the `perl` line from round.md § *Text files* on a `.tex` holding `% << shorter >>` and a two-line `% << … >>` — it prints each note with its line range.
+  - **Test:** read [clean.md](../../commands/clean.md) and [artifacts.md](../../skills/new-notebook/artifacts.md) § *Git and the Cloud* — the provenance file stays put; a generated `.nb` is not tracked.
+- [x] T3 (S2) — `"SourceLines"` per cell at generation (`scripts/source_lines.wl`, wired into new-notebook, new-research-note, new-research-notebook); the `.md` carried per version; round.md § *Notebooks* rewritten `.md`-first with cell write-back.
+  - **Test:** on the MCP kernel, `Get` the MarkdownToNotebook clone and [source_lines.wl](../../scripts/source_lines.wl), then `SourceLineNotebook[ MarkdownToNotebook[ #, "Evaluate" -> False ] &, Import[ "Research/Artifacts/SidonBound_260821.md", "Text" ] ]` — every cell carries `TaggingRules -> { "SourceLines" -> { first, last } }`, and the first cell starting `Definition.` has range `{ 36, 36 }`, its line in the `.md`.
+  - **Test:** read [round.md](../../skills/revise/round.md) § *Names* and § *Notebooks* — the `.md` is carried as `Name_k+1.md`; steps 3–7 write the `.md` bottom-up, convert only the rewritten passages, write hand edits back, check every range is a block of the new `.md`, and re-stamp the fingerprint.
+  - **Test:** read [provenance § *Anchors*](../../skills/provenance/SKILL.md#anchors) and [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md) — the key is named `"SourceLines"`.
+  - **Test:** read [new-research-note](../../skills/new-research-note/SKILL.md) § *Conversion* — it now converts through new-notebook's pipeline, not `WriteNotebook`; check you agree.
 
 ## Hand-off
 
-(nothing yet)
+- Review: T6 chose version **5.6.0**, not 5.5.0: the blog post already holds an uncommitted *Version 5.5 (2026-09-30)* entry (shared code conventions) that no commit here ships. Rename to 5.5.0 if that entry is not to ship first.
+- Review: the marketplace clone `ClaudePluginMarketplace/` is not in the worktree (gitignored), so its `marketplace.json` is not mirrored and nothing is pushed. After merge: mirror `version` / `description` from `.claude-plugin/plugin.json`, commit and push there.
+- Review: the blog entry went into the author's live clone, which has other uncommitted edits; it is not committed. ARCHITECTURE and `commands/revise.md` carried stale lines (`WriteNotebook` for new-research-note; `.nb`-first rounds), corrected here.
+
+- Review: T4 reverses new-research-note's "do not commit": it now commits version 1 (files by name, no `.nb`) as the baseline for hand edits. new-paper is untouched (user-owned writing space); new-notebook only points at the rule via artifacts.md.
+
+- T4: the generating skills write the first Request; and version 1 of a text file is committed as written. A notebook's `Name.md` is already tracked at generation (artifacts.md).
+- Review: T5 changed the round in three places, each from a trial failure ([trial](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03)). Rules are now drawn in step 4 and bind the same round; before, they were added in step 9, after the step 7 check. A note alone no longer counts as a hand edit. A passage's new text is kept in step 3 and converted from there.
+- Review: in the T5 trial the user was simulated. Notes and hand edits went in by sed and `ReplacePart`, not by typing in a front end. The `.nb` had the fingerprint but not the MathNotebook passes. A round on a notebook you edit by hand is still untested; typed `TextData` may split strings differently from the note-stripping check.
+- Review: T3 switched `new-research-note` from `mcp__Wolfram__WriteNotebook` to new-notebook's pipeline, because `WriteNotebook` makes one cell per line of a paragraph and cannot carry source lines ([NotebookCommentRound § *Source lines*](../../Wiki/Concepts/NotebookCommentRound.md#source-lines-measured-2026-10-03)). Revert if that skill must keep `WriteNotebook`; its notebooks would then use round.md's no-source-lines path.
+- Review: the round's per-passage conversion (round.md step 4) was measured on two passages of `SidonBound`, not yet on a notebook a user edited; T5 is that test. ARCHITECTURE gained the `source_lines.wl` row (scripts 31 → 32) ahead of T6.
 
 ## Decisions
 
@@ -151,3 +182,8 @@ One unchecked box ≈ one focused session — small enough to finish, report, an
 - **S0** 2026-09-28 — item filed from the operator's request; draft awaiting answers to the open questions.
 - **S0'** 2026-09-28 — the operator chose `<< … >>`, the `.provenance` name, `.md` anchors for notebooks, no git for notebooks; one open question left.
 - **S0''** 2026-09-28 — the operator settled git (no `.nb`, `.md` yes); README *Revision* section rewritten as the workflow; approved ("okey fine"), moved to Ready.
+- **S1** 2026-10-03 T2 — `<< … >>` grammar, provenance-file steps and no-`.nb` git rule in the round; *Document provenance* section written. → [round.md](../../skills/revise/round.md), [provenance](../../skills/provenance/SKILL.md#document-provenance), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md)
+- **S2** 2026-10-03 T3 — cells carry `"SourceLines"` from generation; the round keeps `Name_k.md` per version and writes it first. → [source_lines.wl](../../scripts/source_lines.wl), [round.md § *Notebooks*](../../skills/revise/round.md#notebooks), [NotebookCommentRound](../../Wiki/Concepts/NotebookCommentRound.md), [TaggingRulesRegistry](../../Wiki/Concepts/TaggingRulesRegistry.md)
+- **S3** 2026-10-03 T4 — generating skills write the first Request and commit version 1 as written. → [provenance § *Version 1*](../../skills/provenance/SKILL.md#version-1), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md), [artifacts.md](../../skills/new-notebook/artifacts.md)
+- **S4** 2026-10-03 T5 — three-round trial on a `.tex` and a `.nb`; the repeated hand edit did not come back; three gaps in the round fixed. → [NotebookCommentRound § trial](../../Wiki/Concepts/NotebookCommentRound.md#three-rounds-with-a-repeated-hand-edit-trial-2026-10-03), [round.md](../../skills/revise/round.md#steps), [provenance § *Hand edits*](../../skills/provenance/SKILL.md#hand-edits)
+- **S5** 2026-10-03 T6 — docs pass: ARCHITECTURE, README provenance row, revise command, blog entry, version 5.6.0; item to UnderReview. → [ARCHITECTURE](../../ARCHITECTURE.md), [plugin.json](../../.claude-plugin/plugin.json)

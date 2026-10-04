@@ -144,7 +144,7 @@ The script parses ## Recover sections from Wiki/Resources/*.md.
 ### Notebooks
 
 Notebooks about the code are artifacts: they live in Code/Artifacts/, the .md
-source and the generated .nb sharing one dated stem, both tracked. Research
+source and the generated .nb sharing one dated stem; the .md is tracked, the .nb is not. Research
 documents go in Research/Artifacts/ the same way. Everything outside an
 Artifacts/ folder is yours and is never written or overwritten.
 These are artifacts, not wiki articles — they do not go in Wiki/.
@@ -202,7 +202,7 @@ Resources/
 Exceptions: if the project has git submodules in `Resources/`, preserve them with lines like `!Resources/SubmoduleName/`.
 
 `Wiki/` itself is tracked.
-`Tour/` and `Resources/` (binary files) are gitignored. Artifacts are tracked in full, `.nb` included — an artifact is a deliverable, not a build product.
+`Tour/` and `Resources/` (binary files) are gitignored. Artifacts are tracked, except a generated `.nb`: its `.md` source is tracked and the `.nb` is rebuilt from it.
 
 ### 7. Scan and seed articles
 

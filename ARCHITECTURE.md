@@ -10,7 +10,7 @@ Read this when you need it — it is **not** auto-loaded.
 Everything the model generates goes into an `Artifacts/` folder, and everything outside one is the user's — the whole of `revise` § *Protected content* reduced to a path check.
 `new-research-note` and `new-research-notebook` write to `Research/Artifacts/`, `new-notebook` to `Code/Artifacts/`, `new-paper` to `Paper/`, which is the user's document and not an artifact.
 An artifact is one dated stem (`<WhatItSettles>_YYMMDD`) shared by whatever files it needs, flat until it grows its own code, data, bibliography or build; then the folder takes the stem and the files inside go bare.
-Every file of an artifact is tracked, `.nb` included, and nothing is uploaded to the Cloud unless the user asks.
+Every file of an artifact is tracked except a generated `.nb`, whose `.md` source is tracked instead, and nothing is uploaded to the Cloud unless the user asks.
 The canonical statement is [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md); the three producers reference it rather than restating it.
 
 ## Layout
@@ -36,7 +36,7 @@ ARCHITECTURE.md                — this file
 The skills are listed by area in [README.md](README.md) § *Functionality*, the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (31)
+## Scripts (32)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -62,6 +62,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `search_wikipedia_math.wls` | wolframscript | search-math skill |
 | `cite_from_id.wls` | wolframscript | cite skill |
 | `mathnotebook_post.wl` | wolframscript | new-research-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
+| `source_lines.wl` | wolframscript | new-notebook, new-research-note, new-research-notebook and the revise round (Get through the MCP; `SourceLineNotebook` stamps each generated cell with its `.md` lines, `ShiftSourceLines` / `StampSourceLines` keep them in step during a round) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | check-env command |
 | `auto-run.sh` | bash | auto-run command; drives `next-session` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
@@ -74,7 +75,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 
 ## Commands (29)
 
-Every skill has a slash command of the same name, `/computational-research:<skill>`; `revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/revise/round.md)).
+Every skill has a slash command of the same name, `/computational-research:<skill>`; `revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/revise/round.md)), reading and writing the document's `<stem>.provenance.md` (format: `skills/provenance/SKILL.md` § *Document provenance*, always on for a revised document, unlike the prompt ledger).
 Four commands have no skill behind them:
 
 | Command | Runs |
@@ -164,7 +165,8 @@ That skill generates **one-way**: the `.md` is the source of truth and the user 
 Its writing rules live in `skills/new-research-notebook/style.md`, which `new-paper` reads too — one guide for a paper whether it ships as `.nb`, LaTeX or Typst.
 The mechanics (pipeline, conversion call, stylesheet, references) are in the `build.md` sibling, so `SKILL.md` carries authoring conventions and nothing else.
 
-`new-research-note` uses neither: its notebook goes through `mcp__Wolfram__WriteNotebook` directly, ships **unevaluated** (Input cells only, no paclet load), and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
+`new-research-note` uses neither parser: its notebook goes through `new-notebook`'s conversion, ships **unevaluated** (Input cells only, no paclet load), carries `"SourceLines"` in each cell like every generated notebook, and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
+Its first request goes to the document's provenance file, and version 1 of the text files is committed as written, the baseline for hand edits.
 Nothing it writes is deployed to the Cloud.
 
 ## How to Add a New Skill

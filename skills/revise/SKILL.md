@@ -5,11 +5,12 @@ description: >
   This skill defines how the LLM interacts with the user when producing
   anything that needs review — a protocol that all other skills follow; read
   it at the start of every session to internalize the revision rules. Invoked
-  directly (`/revise <file>`), it runs one revision round: it reads the `>>`
-  comments and hand edits the user left in a document — a notebook, a LaTeX
+  directly (`/revise <file>`), it runs one revision round: it reads the
+  `<< … >>` notes and hand edits the user left in a document — a notebook, a LaTeX
   or Typst paper, a Markdown file, code — and writes the next numbered
-  version beside it (`_2`, `_3`, …), changing only what the comments ask.
-  Use for: "revise this", "revision round", "I left comments in the notebook",
+  version beside it (`_2`, `_3`, …), changing only what the notes ask and
+  remembering past rounds in the document's provenance file.
+  Use for: "revise this", "revision round", "I left notes in the notebook",
   "next version of the paper", or the /revise command.
 ---
 
@@ -22,7 +23,7 @@ Every skill that produces code, functionality, plans, or deliverables follows th
 
 - Read at the start of every session; apply whenever producing code, functionality, plans, or deliverables.
 - The other skills follow it as a protocol.
-- Invoked directly — `/revise <file>`, "revise this", "I left comments in it" — it runs one [revision round](#revision-round).
+- Invoked directly — `/revise <file>`, "revise this", "I left notes in it" — it runs one [revision round](#revision-round).
 
 ## Steps
 
@@ -65,17 +66,18 @@ Present meaningful chunks — a complete function, a full plan, a finished secti
 ## Revision round
 
 The user reviews a document where they read it, not in the chat.
-They write comments into it on lines starting with `>>` — after the comment sign in code, as in `% >> shorter` or `(* >> smaller graph *)` — and may edit it directly.
+They write notes into it as `<< … >>`, inside a line or over several — in code inside a comment, as in `% << shorter >>` or `(* << smaller graph >> *)` — and may edit it directly.
 A round turns that into the next version:
 
 - **Names.** It writes `Name_k+1` beside the latest version `Name_k` — `Note_260927.tex`, then `Note_260927_2.tex`, `_3`, … — with every file of the stem, and never edits version `k` again.
-- **The edited document is the source.** Everything not commented is carried over verbatim, hand edits included; for a notebook, from round 2 the `.nb` is the source, not its `.md`.
-- **No invention.** It changes only the passages the comments name and adds nothing no comment asked for — in `Output/` as much as in `Artifacts/`.
-- **Every comment is answered.** One acted on is gone from `k+1`; one not acted on stays, followed by `>> not done: <reason>`.
-- **Git holds the trail.** Version `k` is committed as the user left it, then `k+1` once written.
+- **The edited document is the source.** Everything without a note is carried over verbatim, hand edits included; for a notebook, the `.nb` the user edited is carried over, and its `.md` is kept in step with it, each cell knowing its source lines.
+- **No invention.** It changes only the passages the notes name and adds nothing no note asked for — in `Output/` as much as in `Artifacts/`.
+- **Every note is answered.** One acted on is gone from `k+1`; one not acted on stays, followed by `<< not done: <reason> >>`.
+- **The document remembers.** Its provenance file `<stem>.provenance.md` records every note, hand edit and chat request, and keeps rules drawn from them; each round reads the rules first and checks the new version against them.
+- **Git holds the trail.** Version `k` is committed as the user left it, then `k+1` once written — text files, `.md` sources and the provenance file, never a generated `.nb`.
 
-It then lists each comment with what was done, and waits.
-The full procedure — grammar, naming, the text-file and notebook paths — is in [round.md](round.md), read only when running a round.
+It then lists each note with what was done, and each new rule, and waits.
+The full procedure — grammar, naming, the text-file and notebook paths — is in [round.md](round.md), and the provenance file's format in [provenance § *Document provenance*](../provenance/SKILL.md#document-provenance); both are read only when running a round.
 Moving old versions aside is `/clean`.
 
 ## What does NOT need revision

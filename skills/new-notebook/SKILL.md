@@ -91,7 +91,7 @@ If the project has prompt tracking on (a `Prompt tracking: **on**` line in `CLAU
 1. Write a leading `<!-- provenance: ... -->` comment at the top of the `Code/Artifacts/Name_YYMMDD.md` source.
 2. Inject it into the `.nb` on the MCP path yourself:
    build `prov = <| "intent" -> ..., "date" -> ..., ... |>` from the comment's fields,
-   strip the comment from the markdown string before conversion (the built-in importer drops HTML comments, but the rich parser is not guaranteed to),
+   strip the comment from the markdown string before conversion (the built-in importer drops HTML comments, but the rich parser is not guaranteed to), replacing its lines by empty lines so the cells' source lines stay the file's,
    and stamp the notebook expression just before `ExportString` with the `stampTaggingRule` merge helper from the [provenance](../provenance/SKILL.md) skill.
    `TaggingRules` is a shared slot — `new-research-notebook`'s fingerprint key lives there too — so merge by key; never write a literal `TaggingRules -> {...}` that replaces the option.
    In the built-in call this wraps the final expression: `ExportString[ stampTaggingRule[ Notebook[cells], "Provenance" -> prov ], "NB" ]`;

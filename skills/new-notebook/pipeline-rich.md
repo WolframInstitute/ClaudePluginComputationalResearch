@@ -50,7 +50,8 @@ Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle},
   md = StringJoin["# My Notebook Title\n\n", "**[[ LLM Generated ]]**\n\n", "..."];
 
   Get[wl];
-  nb = MarkdownToNotebook[md, "Evaluate" -> False];
+  Get["${CLAUDE_PLUGIN_ROOT}/scripts/source_lines.wl"];
+  nb = SourceLineNotebook[MarkdownToNotebook[#, "Evaluate" -> False] &, md];
   cells = First[nb];
   cells = cells /. {
     Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]}], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"],
@@ -72,5 +73,6 @@ Note the differences from the built-in call, each load-bearing:
 - **`markInitCells` matches `"Section"` first**, not `"Chapter"`.
 - **`ReplacePart[nb, 1 -> cells]`**, not `Notebook[cells]` — keeps `CreateCellID` and `StyleDefinitions`.
 - **`CellLabel` stripped** — the converter stamps `In[n]:=` on cells it did not evaluate.
+- **`SourceLineNotebook`, not a bare conversion** — each cell carries the lines of `md` it came from, as in the *Source lines* paragraph under the call in [pipeline-builtin.md](pipeline-builtin.md); `md` is the source file's text as it is on disk.
 
 With provenance on, stamp per SKILL.md § *Provenance*: apply `stampTaggingRule` to `ReplacePart[nb, 1 -> cells]`, which it leaves option-complete.

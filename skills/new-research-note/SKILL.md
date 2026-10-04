@@ -63,7 +63,7 @@ The convention they follow — the rule, the shape, the naming, git and the Clou
 
 ## Kernel execution (license-aware)
 
-Everything Wolfram runs on the official AgentTools MCP — `mcp__Wolfram__WolframLanguageEvaluator` for the computations, `mcp__Wolfram__WriteNotebook` for the conversion — one persistent kernel, no extra seat.
+Everything Wolfram runs on the official AgentTools MCP — `mcp__Wolfram__WolframLanguageEvaluator` for the computations and the conversion — one persistent kernel, no extra seat.
 **Keep one session and pass its id on every call**, so the definitions accumulate and what the notebook ships is literally what was run.
 `pdflatex` costs no Wolfram seat.
 The authoritative policy is [`CLAUDE.md` § *Wolfram Kernel Execution Policy*](../../CLAUDE.md#wolfram-kernel-execution-policy); check headroom before any `wolframscript` fallback.
@@ -172,7 +172,8 @@ A number inherited from the conversation without being re-run is a number with n
 
 ### Conversion
 
-Write the Markdown source, then convert it with `mcp__Wolfram__WriteNotebook` (`file`, `markdown`, `overwrite -> True`).
+Write the Markdown source, then convert it with the [new-notebook](../new-notebook/SKILL.md) pipeline on the MCP kernel — built-in or rich engine, chosen as there — which stamps each cell with the lines of the `.md` it came from, the anchors a [revision round](../revise/round.md#notebooks) needs.
+`mcp__Wolfram__WriteNotebook` is not used: it turns each line of a paragraph into its own cell, and cannot carry source lines (measured 2026-10-03).
 The mapping: `#` → `Title`, `##` → `Section`, a paragraph → one `Text` cell, a fenced block tagged `wolfram` → one `Input` cell.
 The `.md` is the source and the `.nb` is generated from it; edit the `.md` and convert again.
 
@@ -254,7 +255,7 @@ Preamble, title block with the disclosure footnote, Setting, Steps, Claims with 
 
 ### 4. Write the notebook source and convert it
 
-The `.md` in walkthrough order, then `WriteNotebook`.
+The `.md` in walkthrough order, then the conversion.
 
 ### 5. Extract the code file
 
@@ -294,7 +295,7 @@ A census that is short on `Input` means fences were mangled; one with `Output` i
 ### 8. Report
 
 Follow [revise](../revise/SKILL.md): the artifact is the deliverable and the report is the presentation.
-Producing it in full before presenting is safe here precisely because nothing is committed and nothing is uploaded.
+Producing it in full before presenting is safe here precisely because nothing is uploaded and version 1 is a commit that can be amended.
 A few lines:
 
 - the folder path;
@@ -303,7 +304,7 @@ A few lines:
 - **what is left unproved** — each item already sitting in the document as an `assumption` or a measured `observation`, named here too;
 - **anything the conversation asked for that the artifact could not honour** — a claim that did not verify, a case that was too large to enumerate. Say it in the report; do not ship it as a sentence in the document.
 
-Do not commit, and do not upload.
+Write `<stem>.provenance.md` and commit version 1 as written, files staged by name, never the `.nb` ([provenance § *Version 1*](../provenance/SKILL.md#version-1)); do not upload.
 
 ## Checklist
 
@@ -320,7 +321,7 @@ Do not commit, and do not upload.
 - [ ] Every notebook code cell was evaluated in the session and its output checked; each fast computation has its brute-force check beside it.
 - [ ] `.wl` is the notebook's definitions verbatim and nothing else; `Get` re-runs a demonstration.
 - [ ] README: what was settled, results table, contents, rebuild command, `Not uploaded to the Wolfram Cloud.`
-- [ ] Nothing committed, nothing uploaded.
+- [ ] `<stem>.provenance.md` written with the first Request; version 1 committed as written (no `.nb`); nothing uploaded.
 
 ## Integration with other skills
 

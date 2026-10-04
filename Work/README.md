@@ -11,6 +11,7 @@ An item's **status is its folder** — there is no status field:
 | `Active/` | in progress | `<Name>.md` |
 | `Backlog/` | proposed / not started (drafts live here) | `<Name>.md` |
 | `Ready/` | refined and approved; `/autolab` and `/auto-run` may take it | `<Name>.md` |
+| `UnderReview/` | all tasks done, awaiting the user's review | `<Name>.md` |
 | `Done/` | completed | `YYYY-MM-DD-<Name>.md` (completion date) |
 | `Dropped/` | abandoned / superseded | `YYYY-MM-DD-<Name>.md` (drop date) |
 
@@ -30,11 +31,16 @@ The one thing the folders can't show — each in-progress item and its next task
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
 
+## UnderReview
+
+| Item | Next task |
+|---|---|
+| [DocumentMemory](UnderReview/DocumentMemory.md) | all six tasks done; review its test instructions, then move to `Done/` |
+
 ## Ready
 
 | Item | Next task |
 |---|---|
-| [DocumentMemory](Ready/DocumentMemory.md) | T2 — `<< … >>` grammar and the document provenance format |
 | [FolderRule](Ready/FolderRule.md) | T1 — artifacts.md becomes the three-places convention |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and two filed on 2026-10-03: `BacklogLifecycle` and `ParallelSessions`; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.

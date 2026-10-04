@@ -86,7 +86,8 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
     fence, "wolfram\nPlot[Sin[x], {x, 0, 2 Pi}]\n", fence, "\n"
   ];
 
-  nb = ImportString[md, {"Markdown", "Notebook"}];
+  Get["${CLAUDE_PLUGIN_ROOT}/scripts/source_lines.wl"];
+  nb = SourceLineNotebook[ImportString[#, {"Markdown", "Notebook"}] &, md];
   cells = First[nb];
   cells = cells /. {
     Cell[c_, "Chapter", o___] :> Cell[c, "Section", o],
@@ -105,5 +106,9 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
   ExportString[Notebook[cells], "NB"]
 ]
 ```
+
+**Source lines.** `SourceLineNotebook` stamps each cell with the lines of `md` it came from (`TaggingRules -> {"SourceLines" -> {first, last}}`), which is what a [revision round](../revise/round.md#notebooks) anchors notes to; every pass above carries cell options through.
+So `md` is the source file's text as it is on disk — `Import["Code/Artifacts/Name_YYMMDD.md", "Text"]` — and the string built above stands in for it only in this example.
+It ships the plain conversion and returns it unstamped if the two conversions it compares disagree; check `! FreeQ[nb, "SourceLines"]`.
 
 With provenance on, wrap the final expression per SKILL.md § *Provenance*: `ExportString[ stampTaggingRule[ Notebook[cells], "Provenance" -> prov ], "NB" ]`.

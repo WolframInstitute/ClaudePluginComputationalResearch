@@ -66,7 +66,8 @@ The other four are read on demand, only what the current step needs:
 6. **Deploy** to the Wolfram Cloud, public, stable object name `<Project>/<Topic>.nb` (matching `scripts/publish_notebooks.wls`).
 7. **Link from the repo README** in a `## 📓 Research Notebooks` section — a table `| Notebook | Description | Link |`, one row per notebook, the link anchored on "Wolfram Cloud". Create the section if missing; update the row in place if the notebook already has one.
 8. Hand the open questions and everything cut in step 2 to the journal. With the journal off the ruling was already taken in step 2 and this step only carries it out — the retained block went into the source before the build, or the material was dropped on an explicit instruction ([style.md](style.md) § *When the journal is off*). Unattended, keep it and write the list into the item's `## Hand-off`, which is the channel the run digest quotes.
-9. If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see [provenance](../provenance/SKILL.md)), the provenance comment belongs in the `.md` **before** the build; append the ledger entry to `Wiki/Prompts.md` here.
+9. Write `<stem>.provenance.md` with the first Request and commit the `.md` and that file as written, never the `.nb` ([provenance § *Version 1*](../provenance/SKILL.md#version-1)).
+10. If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see [provenance](../provenance/SKILL.md)), the provenance comment belongs in the `.md` **before** the build; append the ledger entry to `Wiki/Prompts.md` here.
 
 ## Structure — an ordinary paper
 

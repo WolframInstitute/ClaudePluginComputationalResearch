@@ -109,7 +109,7 @@ The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md
 | [new-project](skills/new-project/SKILL.md) | Set up a new project — research, mathematics, or paclet development |
 | [load-project](commands/load-project.md) | Summarize where the project stands and what to do next |
 | [start-tour](skills/start-tour/SKILL.md) | Walk you through the project, topic by topic, with code to run |
-| [provenance](skills/provenance/SKILL.md) | Record the prompt behind each generated file; off by default |
+| [provenance](skills/provenance/SKILL.md) | Record the prompt behind each generated file, off by default; and, always on, the provenance file of every revised document |
 
 ### 🤝 Revision
 
