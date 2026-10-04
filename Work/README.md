@@ -40,8 +40,9 @@ None.
 | Item | Next task |
 |---|---|
 | [FolderRule](Ready/FolderRule.md) | T1 — artifacts.md becomes the three-places convention |
+| [BacklogLifecycle](Ready/BacklogLifecycle.md) | T1 — rename every skill to `<area>-<word>`; the backlog family under `backlog-` |
 
-`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and two filed on 2026-10-03: `BacklogLifecycle` and `ParallelSessions`; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
+`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 
 `DocumentMemory` completed on 2026-10-04 after five tasks, all run by `/autolab` on 2026-10-03: notes written as `<< … >>`, a provenance file beside each revised document that keeps every note with its lines, every hand edit and every chat request, and the rules drawn from them, read before each round. Generated notebooks stay out of git; each version's `.md` is committed. Its trial found that rules were drawn too late in the round to bind it; the round now draws them first.
 
