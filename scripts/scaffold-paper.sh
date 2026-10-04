@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
-# scaffold-paper.sh — Add a paper to Paper/, with LaTeX or Typst templates
+# scaffold-paper.sh — Add a paper to Research/, with LaTeX or Typst templates
 #
 # Usage: scaffold-paper.sh [--typst|--latex] [--name <Name>] [--subfolder] [--force] \
 #            <ProjectDir> [Title] [Operator] [Email] [Model] [Freedom] [Prompt] [Date]
 #
-# Paper/ holds many papers over a project's life. --name gives this one its own
-# source file; without it the file is main.tex, which is what a first paper in an
-# empty Paper/ usually wants.
+# A paper is a document in progress: it lives in Research/ beside the research
+# notebooks and notes, never in Artifacts/. A project that already has a Paper/
+# folder keeps using it, and the script says Research/ is the new place; nothing
+# is moved. --name gives this paper its own source file; without it the file is
+# main.tex, which is what a first paper usually wants.
 #
-#   default      Paper/<Name>.tex, sharing Paper/macros.sty and Paper/references.bib
-#   --subfolder  Paper/<Name>/<Name>.tex, with its own macros and bibliography
+#   default      Research/<Name>.tex, sharing Research/macros.sty and Research/references.bib
+#   --subfolder  Research/<Name>/<Name>.tex, with its own macros and bibliography
 #
-# The skill asks the user which of the two when Paper/ already holds a paper; it
-# does not guess.
+# The skill asks the user which of the two when Research/ already holds a paper;
+# it does not guess.
 #
 # The author of the document is the MODEL. The operator is the person who ran the
 # session and is named in the footnote, not as an author, together with the
@@ -61,7 +63,11 @@ FREEDOM="${6:-Open exploration}"
 PROMPT="${7:-TODO}"
 DATE="${8:-$(date +"%d %B %Y" | sed 's/^0//')}"
 
-PAPER_DIR="$PROJECT_DIR/Paper"
+PAPER_DIR="$PROJECT_DIR/Research"
+if [ -d "$PROJECT_DIR/Paper" ]; then
+    PAPER_DIR="$PROJECT_DIR/Paper"
+    echo "new-paper: $PROJECT_DIR/Paper exists, so the paper goes there. Research/ is the new place for papers; nothing is moved."
+fi
 if [ "$SUBFOLDER" -eq 1 ]; then
     PAPER_DIR="$PAPER_DIR/$NAME"
 fi

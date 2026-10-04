@@ -3,6 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: refactor
+> Autonomous: allowed
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -26,7 +27,7 @@ The README's *Autoorganization* section is true:
 
 - A new project's `Code/` and `Research/` follow the rule, and the scaffold says so in the project's README.
 - A new paper is set up in `Research/`; a project that already has a `Paper/` folder keeps working and is told the new place, with nothing moved.
-- A one-off the plugin makes lands in the folder's `Artifacts/`; a document in progress lands in the folder itself, and the plugin asks which when it is not clear.
+- A one-off the plugin makes lands in the folder's `Artifacts/`; a document in progress lands in the folder itself; a request that does not say which lands in `Artifacts/`.
 - Clean moves earlier versions into the `Archive/` of the folder the document is in, wherever that folder is.
 - The plugin never overwrites a file anywhere.
 
@@ -61,19 +62,34 @@ The convention lives in [artifacts.md](../../skills/new-notebook/artifacts.md), 
 
 ## Tasks
 
-- [ ] T1 (model: opus, effort: high — convention writing) — rewrite artifacts.md as the three-places convention (root, `Artifacts/`, `Archive/`, the `Research/` rule for papers); `revise`, `clean`, the generating skills and `new-paper` link it; the protected-content paragraph in `revise`.
-- [ ] T2 (model: sonnet, effort: high — mechanical sweep) — `Paper/` to `Research/` across skills, scripts and templates, with the fallback for an existing `Paper/`; destinations in the four generating skills; the scaffolds and their project READMEs; scaffold a throwaway project and a paper in it to confirm.
-- [ ] T3 (model: sonnet, effort: high — doc pass) — README check against the acceptance criteria, ARCHITECTURE, the blog post (the idea: one rule for every folder, papers beside the research), version bump.
-
 ### Done
 
-(completed tasks move here with the session that closed them)
+- [x] T3 (S3) — README check against the acceptance criteria, ARCHITECTURE, the blog post (the idea: one rule for every folder, papers beside the research), version bump to 5.7.0.
+  - **Test:** read [README § Autoorganization](../../README.md) — each sentence is true of the skills; the "in design" line is gone and an unsaid destination is stated as `Artifacts/`.
+  - **Test:** read [ARCHITECTURE § The three places](../../ARCHITECTURE.md) and the Templates table — both new templates are listed, no `Paper/` except the fallback.
+  - **Test:** `grep '"version"' .claude-plugin/plugin.json` — 5.7.0.
+  - **Test:** the blog entry waits in Hand-off, not applied; paste it into the post and set `Last updated`.
+
+- [x] T2 (S2) — `Paper/` to `Research/` across skills, scripts and templates, with the fallback for an existing `Paper/`; destinations in the four generating skills; the scaffolds and their project READMEs.
+  - **Test:** run `scripts/scaffold-project.sh Demo "x" /tmp/demo`, then `scripts/scaffold-paper.sh --name First /tmp/demo/Demo` — `Code/` and `Research/` each have `Artifacts/README.md`, `Demo/README.md` states the three places, and the paper lands in `Research/First.tex`.
+  - **Test:** `mkdir -p /tmp/old/Paper && scripts/scaffold-paper.sh /tmp/old` — the paper goes to `Paper/main.tex`, and the script says `Research/` is the new place and nothing is moved.
+  - **Test:** `grep -rn 'Paper/' skills commands scripts` — only the fallback sentences in new-paper, cite, search-wolfram, artifacts.md, the scaffold script and the project README templates remain.
+  - **Test:** read [new-paper](../../skills/new-paper/SKILL.md) and the destination paragraph in [new-notebook](../../skills/new-notebook/SKILL.md), [new-research-note](../../skills/new-research-note/SKILL.md), [new-research-notebook](../../skills/new-research-notebook/SKILL.md) — a document in progress goes in the folder, a one-off or an unsaid request in `Artifacts/`.
+
+- [x] T1 (S1) — rewrite artifacts.md as the three-places convention (root, `Artifacts/`, `Archive/`, the `Research/` rule for papers); `revise`, `clean`, the generating skills and `new-paper` link it; the protected-content paragraph in `revise`.
+  - **Test:** read [artifacts.md](../../skills/new-notebook/artifacts.md) — the three places, *Never overwrite*, *Which place* (with *Papers* and *Moving up*) and *Archive* say what the README *Autoorganization* section promises.
+  - **Test:** read [revise § Protected content](../../skills/revise/SKILL.md#protected-content) — it opens with "Never overwrite; outside `Artifacts/`, write only on request" and links artifacts.md.
+  - **Test:** `grep -rn 'Output/' skills commands` — no hits; `grep -rn 'One artifact, one date' skills commands` — no hits (the anchor is now *Archive*).
 
 ## Hand-off
 
-Fresh item; the design questions are settled in `## Decisions`.
-The README *Autoorganization* section states the rule and the tree without `Output/`, so it is ahead of the skills until T2 lands.
-`OutputFolder` was merged into this item and dropped.
+All three tasks done; the item is ready for review.
+Left for the operator, since a worker does not touch the live blog clone or the marketplace clone (neither is in the worktree):
+- Blog post: add this entry above Version 5.6 in `p135246.github.io/Wolfram/_posts/2026-03-04-ai-assisted-computational-research.md`, and set `Last updated` to the merge date.
+  > ### Version 5.7 (date)
+  > Version 5.7.0 gives every folder the same three places. Until now the rule was that whatever the machine writes goes into one folder, and a document that human and machine write together had no place of its own. Now a folder holds the documents in progress, one subfolder holds what was made once on request, and another holds what is superseded; nothing is ever overwritten or deleted. Papers no longer have a folder apart: they live with the research notebooks and notes they grew from.
+- Marketplace: mirror `version` 5.7.0, `description` and `keywords` from `.claude-plugin/plugin.json` into `ClaudePluginMarketplace/.claude-plugin/marketplace.json`, then commit and push both repos.
+- Wiki: unchanged; it holds only historical `Paper/` mentions.
 
 ## Decisions
 
@@ -89,3 +105,6 @@ The README *Autoorganization* section states the rule and the tree without `Outp
 
 - **S0** 2026-10-03 — item filed from the operator's request; README section written first.
 - **S0'** 2026-10-03 — the operator settled the four questions and dropped `Output/`; `OutputFolder` merged in; moved to Ready.
+- **S1** 2026-10-04 T1 — artifacts.md rewritten as the three-places convention; revise, round.md, /clean, the generating skills and new-paper point at it; `Output/` gone from revise. → [artifacts.md](../../skills/new-notebook/artifacts.md)
+- **S2** 2026-10-04 T2 — `Paper/` to `Research/` across the skills, scripts and templates; destinations in the four generating skills; shared index and project README templates; throwaway project and papers scaffolded to confirm. → [new-paper](../../skills/new-paper/SKILL.md), [scaffold-paper.sh](../../scripts/scaffold-paper.sh)
+- **S3** 2026-10-04 T3 — README, ARCHITECTURE and plugin description say the three places; acceptance criterion reworded to the Decision; version 5.7.0; blog and marketplace entries left in Hand-off. → [README](../../README.md), [ARCHITECTURE](../../ARCHITECTURE.md)

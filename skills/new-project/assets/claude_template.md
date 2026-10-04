@@ -18,7 +18,7 @@ Additional topic scopes follow the same pattern:
 - `{{CODE_DIR}}/<Topic>Experiment.wl` — experiments
 - `{{CODE_DIR}}/<Topic>Test.wl` — tests (VerificationTest + TestReport)
 
-Artifacts: everything the LLM produces goes in an `Artifacts/` folder — notebooks about the code in `{{CODE_DIR}}/Artifacts/`, research documents and research notebooks in `Research/Artifacts/`, each named `<WhatItSettles>_YYMMDD`. Everything outside an `Artifacts/` folder is yours and is never written or overwritten.
+Folders: `{{CODE_DIR}}/` (the code and notebooks about it) and `Research/` (papers, research notebooks, notes) each have three places — the folder itself for documents in progress, `Artifacts/` for what the LLM made once, on request (named `<WhatItSettles>_YYMMDD`, with an index), `Archive/` for what is superseded. A request that does not say which place goes to `Artifacts/`. The LLM never overwrites a file. Papers live in `Research/`; there is no `Paper/` folder.
 
 ## Resources
 

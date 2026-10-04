@@ -1,24 +1,27 @@
 ---
 name: new-paper
 description: >
-  Add a paper to Paper/ — a LaTeX (amsart, biblatex) or Typst source from the
+  Add a paper to Research/ — a LaTeX (amsart, biblatex) or Typst source from the
   template, sharing the folder's preamble — then act as an editor on the
-  user-owned document. Paper/ holds many papers; when one is already there, ask
-  whether the new one joins them or gets its own subfolder. Prose written into the paper follows the shared writing guide in
+  user-owned document. Research/ holds the papers beside the research notebooks
+  and notes; when a paper is already there, ask whether the new one joins it or
+  gets its own subfolder. A project that already has a Paper/ folder keeps using
+  it. Prose written into the paper follows the shared writing guide in
   new-research-notebook/style.md: settled statements only, experiments in a
   Ruliology section, complete proofs, short sentences, each result stated at the
   generality its proof reaches, and the model as sole author with a footnote
   naming the operator and disclosing in bold how much freedom the model had. Use when the user
   says "scaffold paper", "add paper", "create paper folder", "set up latex",
   "set up typst", or during new-project when the user wants a paper. Trigger on:
-  "paper setup", "latex template", "typst template", "add Paper/", "I want to
-  write a paper".
+  "paper setup", "latex template", "typst template", "I want to write a
+  paper".
 ---
 
 # New Paper
 
-Add a typeset article to `Paper/`, then help the user *edit* it.
-`Paper/` accumulates papers over a project's life; this skill adds one and never disturbs another.
+Add a typeset article to `Research/`, then help the user *edit* it.
+`Research/` accumulates papers, research notebooks and notes over a project's life; this skill adds a paper and never disturbs another document.
+A project that already has a `Paper/` folder keeps it: the paper is added there, and the skill tells the user that `Research/` is the new place and that nothing is moved.
 Two formats:
 
 - **LaTeX** (default) — amsart document class, biblatex with biber, shared `macros.sty`.
@@ -53,14 +56,14 @@ Three things a typeset paper has to do that a notebook does not, all of them mea
 ## When to use
 
 - The user says "new paper", "add a paper", "scaffold paper", "set up latex", "set up typst", "I want to write a paper".
-- During `new-project` when the questionnaire's *Include Paper/?* is yes.
+- During `new-project` when the questionnaire's *Include a paper?* is yes.
 
 ## What you need
 
-1. **Project directory** — where `Paper/` is, or goes.
+1. **Project directory** — whose `Research/` holds the paper, or gets it.
    Usually the project root.
 2. **Name** — `CapitalizedWords` for the paper, which becomes its filename.
-   Only the first paper in an empty `Paper/` may go unnamed, as `main`.
+   Only the first paper in a `Research/` without one may go unnamed, as `main`.
 3. **Format** — LaTeX (default) or Typst.
    Pass `--typst` if the user wants Typst, or they say "typst".
 4. **Title** (optional) — working title.
@@ -73,14 +76,14 @@ If invoked from new-project, these are already known.
 
 ## Steps
 
-### 0. If `Paper/` already holds a paper, ask
+### 0. If `Research/` already holds a paper, ask
 
 A second paper can sit either way, and the choice is the user's — **ask, do not guess**:
 
-- **Beside the others** (default) — `Paper/<Name>.tex`, sharing `Paper/macros.sty` and `Paper/references.bib`. One preamble, one bibliography, every paper in the project drawing on both.
-- **Its own subfolder** (`--subfolder`) — `Paper/<Name>/<Name>.tex`, with its own macros and bibliography. Self-contained, and handed to a co-author or a journal as a directory.
+- **Beside the others** (default) — `Research/<Name>.tex`, sharing `Research/macros.sty` and `Research/references.bib`. One preamble, one bibliography, every paper in the project drawing on both.
+- **Its own subfolder** (`--subfolder`) — `Research/<Name>/<Name>.tex`, with its own macros and bibliography. Self-contained, and handed to a co-author or a journal as a directory.
 
-An empty or absent `Paper/` needs no question: scaffold it and name the paper.
+A `Research/` without a paper needs no question: scaffold it and name the paper.
 
 ### 1. Run the scaffold script
 
@@ -88,7 +91,7 @@ An empty or absent `Paper/` needs no question: scaffold it and name the paper.
 "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] [--name <Name>] [--subfolder] [--force] "<ProjectDir>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>" "<Date>"
 ```
 
-`<Name>` is `CapitalizedWords` naming the paper, and it becomes the filename; leave it off for the first paper in an empty `Paper/` and the source is `main.tex`.
+`<Name>` is `CapitalizedWords` naming the paper, and it becomes the filename; leave it off for the first paper and the source is `main.tex`.
 `<Operator>` is the person running the session and `<Model>` is you, by name and exact identifier.
 `<Freedom>` is one of `Directed`, `Guided`, `Open exploration` — it prints **bold** in the footnote, and between two labels you take the more open one.
 `<Prompt>` is one sentence summarising the instructions you actually worked under, including what was left unspecified.
@@ -98,9 +101,12 @@ An empty or absent `Paper/` needs no question: scaffold it and name the paper.
 Give a different `--name` rather than reaching for `--force`.
 A `macros.sty` or `references.bib` already in the folder is reused untouched, so a new paper joins the existing ones instead of replacing their preamble.
 
+If the project has a `Paper/` folder, the script uses it instead and says so; tell the user that `Research/` is the new place for papers.
+Nothing is moved.
+
 LaTeX creates:
 ```
-Paper/
+Research/
 ├── <Name>.tex         — article (amsart + \usepackage{macros})
 ├── macros.sty         — shared preamble, theorem envs, macros    (written once)
 ├── references.bib     — bibliography (biblatex format)           (written once)
@@ -110,14 +116,14 @@ Paper/
 
 Typst (`--typst`) creates:
 ```
-Paper/
+Research/
 ├── <Name>.typ         — document (#import "macros.typ": *)
 ├── macros.typ         — shared preamble, math shorthand, theorem envs
 ├── references.bib     — bibliography (read natively by Typst)
 └── figures/           — for plots and images
 ```
 
-The paper is **not** an artifact and does not go in `Artifacts/`: it is the user's document from the moment it is scaffolded, and this skill edits it on request ([artifacts.md](../new-notebook/artifacts.md) draws the line).
+The paper is **not** an artifact and does not go in `Artifacts/`: it is a document in progress, the user's from the moment it is scaffolded, and lives in `Research/` itself; this skill edits it on request ([artifacts.md](../new-notebook/artifacts.md) § *Papers*).
 
 ### 2. Seed references from existing resources
 
@@ -127,28 +133,26 @@ Both formats read `references.bib`.
 
 ### 3. Update .gitignore
 
-If Paper/ is NOT already gitignored (research projects where Paper/ is tracked), add build artifact patterns.
-LaTeX:
-
-The `**` covers a paper in a subfolder as well as one at `Paper/`'s top level:
+Add build artifact patterns, unless the project's `.gitignore` already lists them.
+LaTeX; the `**` covers a paper in a subfolder as well as one at the top level of `Research/`:
 
 ```
-Paper/**/*.aux
-Paper/**/*.bbl
-Paper/**/*.bcf
-Paper/**/*.blg
-Paper/**/*.fdb_latexmk
-Paper/**/*.fls
-Paper/**/*.log
-Paper/**/*.out
-Paper/**/*.run.xml
-Paper/**/*.synctex.gz
-Paper/**/*.toc
-Paper/**/*.pdf
+Research/**/*.aux
+Research/**/*.bbl
+Research/**/*.bcf
+Research/**/*.blg
+Research/**/*.fdb_latexmk
+Research/**/*.fls
+Research/**/*.log
+Research/**/*.out
+Research/**/*.run.xml
+Research/**/*.synctex.gz
+Research/**/*.toc
+Research/**/*.pdf
 ```
 
-Typst produces only `Paper/**/*.pdf`.
-If Paper/ is already gitignored entirely (paclet-dev type), no action needed.
+Typst produces only `Research/**/*.pdf`.
+For a paper in an existing `Paper/`, use `Paper/` in the patterns; if that folder is already gitignored entirely, no action needed.
 
 ## Template contents
 
@@ -182,15 +186,15 @@ Measured on both halves — [the evidence](../../Wiki/Concepts/PaperStyleExercis
 ### Compiling
 
 ```bash
-cd Paper && latexmk -pdf <Name>.tex      # LaTeX
-cd Paper && typst compile <Name>.typ     # Typst (typst watch for live preview)
+cd Research && latexmk -pdf <Name>.tex   # LaTeX
+cd Research && typst compile <Name>.typ  # Typst (typst watch for live preview)
 ```
 
 ## Rules for LLM
 
 This skill **scaffolds and edits**; it does not write the paper.
 
-- **The paper source is the user's writing space** — `Paper/` sits outside every `Artifacts/` folder, which is exactly what makes it protected content in the [revise](../revise/SKILL.md) § *Protected content* sense: never author or overwrite it unprompted.
+- **The paper source is the user's writing space** — it sits in `Research/` itself, outside every `Artifacts/` folder, which is exactly what makes it protected content in the [revise](../revise/SKILL.md) § *Protected content* sense: never author or overwrite it unprompted.
 - Act as an **editor on request**:
   - Import material at a specified location ("put the lemma after Section 2").
   - Correct or rewrite a paragraph the user points to.

@@ -163,7 +163,7 @@ If `Journal/` does not exist yet, scaffold it first (default LaTeX).
 An entry that exists because a paper could not carry it opens with **one line naming the reason**, as a source comment, so a later reader knows it was a tier decision and not a stray note:
 
 ```latex
-% Cut from Paper/main.tex 2026-08-18: verified, not proved.
+% Cut from Research/main.tex 2026-08-18: verified, not proved.
 \begin{claim}
 Every connected graph $G$ with $|V(G)| \le 8$ satisfies $\kappa(G) \ge -1$.
 Verified by enumeration; no proof.

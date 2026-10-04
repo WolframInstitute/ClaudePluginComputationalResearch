@@ -4,6 +4,6 @@ Recognized inputs: bare arXiv ID (e.g. `2301.00001`), old-style ID (`math-ph/050
 
 Pass the identifier as the argument (e.g., `/cite 2301.00001` or `/cite 10.1088/0951-7715/4/2/002`).
 
-The skill shows the BibTeX entry to you first, then optionally appends to `Paper/references.bib` if it exists, and/or creates a `Wiki/Resources/` article via `add-resource`.
+The skill shows the BibTeX entry to you first, then optionally appends to `Research/references.bib` (or `Paper/references.bib` in an older project) if it exists, and/or creates a `Wiki/Resources/` article via `add-resource`.
 
 The general-purpose `cite` skill (without `-id`) is still available for free-form citation lookup; use this command when you already have an arXiv ID or DOI in hand.

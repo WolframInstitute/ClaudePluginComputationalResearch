@@ -4,7 +4,7 @@ description: >
   Create or modify Wolfram Notebooks (.nb) from structured Markdown content
   using the Wolfram MCP. This is the unified notebook skill — use it for
   creating new notebooks, editing existing ones, or converting a Markdown
-  source in Code/Artifacts/ into an .nb. Triggers on: "create notebook", "make a
+  source in Code/ or Code/Artifacts/ into an .nb. Triggers on: "create notebook", "make a
   notebook", "notebook about X", "edit notebook", "update notebook",
   "put this in a notebook", "generate .nb". Also used by other skills
   (new-project, start-tour) when they produce notebooks.
@@ -50,9 +50,15 @@ The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` hel
 
 ## Where notebooks live — Critical
 
-A notebook about the project's code is an artifact, and it goes in `Code/Artifacts/`.
-Everything outside an `Artifacts/` folder is the human's and is never written or overwritten — that is the whole of [revise](../revise/SKILL.md) § *Protected content* as it applies here.
-The full convention — the rule, the shape, the naming, the index, git and the Cloud — is [artifacts.md](artifacts.md); read it before creating one.
+A notebook about the project's code goes to one of two places, and the request names which:
+
+- **`Code/`** — a document in progress, one the user will keep working on, with a revision round per version.
+- **`Code/Artifacts/`** — a one-off.
+  A request that does not say goes here, without asking.
+
+The paths below show `Code/Artifacts/`; for a document in progress read `Code/`, which has no index row to write.
+No file is ever overwritten, and outside `Artifacts/` nothing is written unasked — that is the whole of [revise](../revise/SKILL.md) § *Protected content* as it applies here.
+The full convention — the three places, which one a notebook goes to, the shape, the naming, the index, git and the Cloud — is [artifacts.md](artifacts.md); read it before creating one.
 
 ## Two-layer architecture (co-located)
 
@@ -70,7 +76,7 @@ These are **not** wiki articles: they do not go in `Wiki/`.
 
 The stem carries the date the notebook was settled, `YYMMDD`, and it is stamped once and **preserved on every later regeneration** — a rebuild overwrites the same two files rather than adding a second date.
 The date lives only in the filename; **do not** put it inside the notebook (the `[[ LLM Generated ]]` subtitle stays undated).
-A later pass that supersedes the notebook rather than correcting it is a new artifact with a new date, per [artifacts.md](artifacts.md) § *One artifact, one date*.
+A later pass that supersedes the notebook rather than correcting it is a new artifact with a new date, per [artifacts.md](artifacts.md) § *Archive*.
 
 When to use the source layer:
 
@@ -240,4 +246,4 @@ The `.md` source name is undated; the generated `.nb` appends the first-creation
 
 - Research documents with definitions/theorems/conjectures — that is `new-research-notebook`.
 - Paclet documentation pages — that is `paclet-docs`.
-- Anything outside an `Artifacts/` folder — that is the human's, and it is never written or overwritten.
+- Overwriting any file, or writing a document in progress unasked — see [artifacts.md](artifacts.md) § *Never overwrite*.

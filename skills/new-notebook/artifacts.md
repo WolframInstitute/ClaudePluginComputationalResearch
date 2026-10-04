@@ -1,34 +1,84 @@
-# The artifact convention
+# The three places
 
-Shared by [new-notebook](SKILL.md), [new-research-note](../new-research-note/SKILL.md) and [new-research-notebook](../new-research-notebook/SKILL.md).
-One rule, one shape, one index.
+Every folder that holds documents has the same three places.
+Shared by [revise](../revise/SKILL.md), [`/clean`](../../commands/clean.md), the generating skills — [new-notebook](SKILL.md), [new-research-note](../new-research-note/SKILL.md), [new-research-notebook](../new-research-notebook/SKILL.md) — and [new-paper](../new-paper/SKILL.md).
+One rule, applied to every folder.
 
 ## The rule
 
-**Everything the model writes lands in an `Artifacts/` folder.
-Everything outside one is the human's.**
+```
+Research/
+  GeodesicPools_260919.tex      a document in progress
+  GeodesicPools_260919_2.tex    its next version
+  Artifacts/                    what the plugin made once, on request
+  Archive/                      earlier versions, moved aside
+```
 
-That is the whole protection mechanism: a path check, not a judgment call.
-There is no author suffix on any filename — who wrote what is recorded inside the document, in its `\author` line and in the `\thanks` naming the operator and how much freedom the model had.
+- **The folder itself** holds the documents in progress: the ones the user writes, and the ones the user and the plugin write together, one numbered version per [revision round](../revise/round.md).
+- **`Artifacts/`** holds what the plugin made once, on request: a notebook, a note on a conversation, an exploration.
+  One dated stem per artifact, and an index.
+- **`Archive/`** holds what is superseded: earlier versions and older artifacts.
+  Nothing is deleted.
 
-## Where
+The rule is recursive.
+`Artifacts/` is a folder too, so it has its own `Archive/`: a document revised inside `Artifacts/` archives into `Artifacts/Archive/`.
+`Archive/` is created when something is first moved into it, never in advance.
 
-| Producer | Destination |
-|---|---|
-| `new-research-note` | `Research/Artifacts/` |
-| `new-research-notebook` | `Research/Artifacts/` |
-| `new-notebook` | `Code/Artifacts/` |
+`Work/` and `Wiki/` are not document folders.
+`Work/` has its status folders, and `Wiki/` has no versions: an article is corrected in place.
 
-`Research/Artifacts/` holds standalone mathematics — what was settled, independent of any one paclet.
-`Code/Artifacts/` holds notebooks about the code: demonstrations, walkthroughs, explorations of what the project's own functions do.
-An artifact goes next to what it is about.
-Create the folder if it is missing, with the `README.md` index described below.
+## Never overwrite
 
-In a working root that holds several projects, `Research/Artifacts/` sits at the root beside them, and each project keeps its own `Code/Artifacts/`.
+**The plugin never overwrites a file.**
+It writes a new artifact, or version `k+1` of a document beside version `k`, and version `k` is never edited again.
+
+**Outside `Artifacts/`, it writes only on request.**
+A document starts in the folder itself only when the user asks for it there; a round writes `k+1` there only when the user asks for the round.
+Everywhere else outside `Artifacts/`, the plugin proposes rather than writes — [revise](../revise/SKILL.md) § *Protected content*.
+
+Two things are not overwriting:
+
+- **A generated file** is rebuilt in place from its source: a `.nb` from its `.md`, a `.pdf` from its `.tex`.
+  Its source is the document; the generated file is not.
+- **Code under development** — a `.wl` package, a script — is edited in place, with approval, and git holds its history.
+  Versions and `Archive/` are for documents someone reads, not for code someone runs.
+
+## Which place
+
+A generating skill takes a destination: **the folder itself** for a document in progress, **`Artifacts/`** for a one-off.
+A request that does not say which goes to `Artifacts/`, without asking: nothing is overwritten either way, so the cheap default is safe, and the user can move it up later.
+
+| Producer | Folder | Document in progress | One-off |
+|---|---|---|---|
+| `new-notebook` | `Code/` | `Code/` | `Code/Artifacts/` |
+| `new-research-note` | `Research/` | `Research/` | `Research/Artifacts/` |
+| `new-research-notebook` | `Research/` | `Research/` | `Research/Artifacts/` |
+| `new-paper` | `Research/` | always | never |
+
+`Code/` holds the code and the notebooks about it: demonstrations, walkthroughs, explorations of what the project's own functions do.
+`Research/` holds standalone mathematics, independent of any one paclet: papers, research notebooks, notes.
+A document goes next to what it is about.
+Create `Artifacts/` if it is missing, with the index described below.
+
+In a working root that holds several projects, `Research/` sits at the root beside them, and each project keeps its own `Code/`.
+
+Paclets stay in their own clones ([paclet-dev](../new-project/paclet-dev.md)); nothing built lands in the project.
+
+### Papers
+
+A paper is always a document in progress: it is the user's from the moment it is scaffolded, and it is never an artifact.
+It lives in `Research/`, flat, or in `Research/<PaperName>/` once it has its own bibliography and figures.
+A project that already has a `Paper/` folder keeps it: the paper is found and used there, the user is told that `Research/` is the new place, and nothing is moved.
+
+### Moving up
+
+To keep working on an artifact, the user moves it up into the folder: a plain `git mv`, no command.
+From then on it is a document in progress, and its next round is written beside it there.
+The next update of the `Artifacts/` index notes where it went.
 
 ## The shape
 
-An artifact is **one stem**, and whatever files it needs share it:
+A document or an artifact is **one stem**, and whatever files it needs share it:
 
 ```
 Artifacts/
@@ -52,36 +102,46 @@ Then the **folder takes the stem and the files inside go bare**:
     build.wls
 ```
 
-Bare inner names are not cosmetic: they are what lets a `build.wls`, an `\input` or a cross-folder `Get` keep resolving when the artifact is re-dated or renamed.
+Bare inner names are not cosmetic: they are what lets a `build.wls`, an `\input` or a cross-folder `Get` keep resolving when the stem is re-dated or renamed.
 
 ## Naming
 
-`CapitalizedWords` saying what the artifact settles, then `_YYMMDD` — the date the work was settled, not the date a file was last touched.
+`CapitalizedWords` saying what the stem settles, then `_YYMMDD` — the date the work was settled, not the date a file was last touched.
 
 Explicit over short: `InfraCircleTheoryAndInterface_260914`, not `InfraCircle`.
-A reader scanning the folder should know what each artifact answers without opening it.
+A reader scanning the folder should know what each stem answers without opening it.
 
-Shared machinery — `macros.tex`, `references.bib`, a template — carries no date, because it is not an artifact.
+A revision round appends its number to the stem — `_2`, `_3` — by the rule in [round.md](../revise/round.md) § *Names*.
+A paper, and any file the user named, keeps its name; rounds number it the same way.
 
-## One artifact, one date
+Shared machinery — `macros.tex`, `references.bib`, a template — carries no date, because it is not a document.
 
-A revisit is a **new artifact**, not new files in an old folder.
-When a later pass supersedes an earlier one, the earlier artifact's files move into the folder's `Archive/` subfolder — created if it does not exist yet, tracked in git like everything else — and the current artifact carries the new date.
-This is the same `Archive/` [`/clean`](../../commands/clean.md) moves superseded revision rounds into; a round renumbers one date, a new artifact is a new date, and both end up archived the same way.
+## Archive
+
+Two things supersede a stem, and both end in the `Archive/` of the folder the stem is in:
+
+- **A round** renumbers one date: `Note_260927_2.tex` supersedes `Note_260927.tex`.
+  [`/clean`](../../commands/clean.md) moves every round but the latest into `Archive/`.
+- **A revisit** is a new artifact with a new date, not new files in an old stem.
+  The generating skill moves the earlier artifact's files into `Archive/` when it writes the new date.
+
+`Archive/` is tracked in git like everything else.
+A stem's provenance file stays beside its latest round ([provenance § *Document provenance*](../provenance/SKILL.md#document-provenance)).
 
 ## The index
 
 Every `Artifacts/` folder carries a `README.md`: the convention in brief, then one table row per artifact — name, what it settles, and its state (page count, whether it compiled, what is still a scaffold).
 It is updated in the same step that creates the artifact, never later.
+An artifact moved up into its folder, or into `Archive/`, keeps its row with a link to where it went.
 
 ## Git and the Cloud
 
-**Every file in an artifact is tracked, except a generated `.nb`.**
+**Every file of a stem is tracked, except a generated `.nb`.**
 A generated notebook is not committed; its `.md` source is, and the `.nb` is rebuilt from it.
-Stage an artifact's files by name, so a `.nb` is never added by accident.
+Stage a stem's files by name, so a `.nb` is never added by accident.
 A document under revision also keeps its provenance file, `<stem>.provenance.md`, tracked beside it; the generating skill writes its first Request and commits version 1 as written ([provenance § *Document provenance*](../provenance/SKILL.md#document-provenance)).
 
-Build litter is not part of the artifact and is never committed: `.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`, `.bbl`, `.blg`, editor backups.
+Build litter is never committed: `.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`, `.bbl`, `.blg`, editor backups.
 Run `latexmk -c` after a build.
 
 **Nothing is uploaded to the Wolfram Cloud unless the user asks for it.**

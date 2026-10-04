@@ -4,4 +4,4 @@ If arguments are provided (e.g., `/new-notebook graph curvature examples`), crea
 Otherwise ask what the notebook should cover.
 
 Uses the Markdown→notebook pipeline via the official Wolfram MCP.
-Creates the Markdown source in Code/Artifacts/ and generates the .nb alongside it, sharing one dated stem. Everything outside an Artifacts/ folder is the human's and is never touched.
+Creates the Markdown source and generates the .nb alongside it, sharing one dated stem: in Code/ for a document the user will keep working on, in Code/Artifacts/ for a one-off (the default when the request does not say). No file is ever overwritten.

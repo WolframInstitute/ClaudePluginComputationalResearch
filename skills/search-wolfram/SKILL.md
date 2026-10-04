@@ -159,7 +159,7 @@ Suggest which resources are most useful for the project and what to explore next
 
 - Use **add-resource** for each downloaded notebook or notable reference
 - Update **Wiki/Index.md** if new articles were created
-- If Paper/ exists and references were found, suggest adding citations to `Paper/references.bib`
+- If a paper exists in `Research/` (or an older `Paper/`) and references were found, suggest adding citations to its `references.bib`
 
 ## When NOT to use
 

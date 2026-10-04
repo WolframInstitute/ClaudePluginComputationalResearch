@@ -33,13 +33,14 @@ The one thing the folders can't show — each in-progress item and its next task
 
 ## UnderReview
 
-None.
+| Item | Tasks |
+|---|---|
+| [FolderRule](UnderReview/FolderRule.md) | T1-T3 done; blog entry and marketplace mirror left in its Hand-off |
 
 ## Ready
 
 | Item | Next task |
 |---|---|
-| [FolderRule](Ready/FolderRule.md) | T1 — artifacts.md becomes the three-places convention |
 | [BacklogLifecycle](Ready/BacklogLifecycle.md) | T1 — rename every skill to `<area>-<word>`; the backlog family under `backlog-` |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.

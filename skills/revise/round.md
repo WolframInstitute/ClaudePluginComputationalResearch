@@ -111,7 +111,7 @@ A round changes only the passages its notes name.
 It adds no sentence, result, claim, example or reference that no note asked for, and it does not tidy, reword or reformat the rest.
 A note that asks for new material gets exactly that material, where the note sits.
 
-This matters most in `Output/`, which is the user's: a round may write `k+1` there, because the user asked and nothing is overwritten, but it writes only what the notes ask.
+This matters most for a document in progress in the folder itself, which is the user's ([artifacts.md](../new-notebook/artifacts.md)): a round may write `k+1` there, because the user asked and nothing is overwritten, but it writes only what the notes ask.
 When acting on a note would take a claim nobody has checked — a number, a citation, a proof step — do not supply one.
 Leave the note and say why.
 
