@@ -116,17 +116,11 @@ Update a line when the item's next task changes; move or drop it when the item c
 - **Backlog → Active** — the user starts an item interactively without queueing it.
 - **Active → Backlog / Ready** — park it; back to `Backlog/` if the Spec needs rethinking.
 - **Active → UnderReview** — the last task closed; `backlog-run` makes this move.
-- **UnderReview → Done** — the user says it passes review; `git mv` into `Done/`, prefix with today's date.
-- **UnderReview → Active** — review found a problem: add a task for it, then move back.
+- **UnderReview → Done** — the user accepts it in a [`backlog-review`](../backlog-review/SKILL.md); `git mv` into `Done/`, prefix with today's date.
+- **UnderReview → Active** — the review found a problem: a new task for it, then the item moves back (`backlog-review`).
 - **any → Dropped** — abandoned or superseded; `git mv` into `Dropped/`, prefix with today's date.
 
 After any move, fix `Work/README.md`.
-
-### Review
-
-When the user reviews an item in `UnderReview/`, walk them through it: the Acceptance criteria one by one, each with the test instructions of the tasks that serve it.
-What they find wrong becomes a new unchecked task, and the item goes back to `Active/`; nothing is fixed silently during review.
-When they accept it, move it to `Done/`.
 
 ## The item file format
 
@@ -219,6 +213,7 @@ If it is LLM-drafted and unapproved, edit directly.
 
 - `backlog-run` executes one task per fresh session against an item created here.
   In a paclet-dev repo, an item that changes paclet code is developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree and lands as a PR on that paclet's repo (the dev repo stays on `main`) — name the target paclet in the Spec.
+- `backlog-review` checks a finished item with the user and moves it to `Done/` or back to `Active/`.
 - `wiki-update` records durable knowledge in `Wiki/` — this skill does not touch the Wiki; it manages execution state only.
 - The `document-revise` protocol governs every Spec and task-list interaction.
 - For Lean formalization, `paper-lean` creates a `Type: formalization` item here.

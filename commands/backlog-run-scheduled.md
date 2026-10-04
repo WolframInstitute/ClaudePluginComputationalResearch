@@ -33,8 +33,8 @@ Afterwards, Read the digest it names (`Work/Runs/<timestamp>-<Item>.md`, gitigno
 
 Each per-task verdict names the model the run actually used and the effort it **requested** — no output field reports the effort applied, so do not report one as observed.
 
-Then say what the human owes: review `auto/<Item>` and merge it (the merge is the `document-revise` approval), or answer the hand-off question.
-On `item-complete` the item sits in `Work/UnderReview/`; point at its test instructions — accepting it into `Done/` is the user's step, not the driver's.
+Then say what the human owes: review the item with `/backlog-review <Item>`, which merges `auto/<Item>` (the merge is the `document-revise` approval), or answer the hand-off question.
+On `item-complete` the item sits in `Work/UnderReview/` on the branch; point at its test instructions — accepting it into `Done/` is the user's step, not the driver's.
 Leave the branch and the working tree exactly as the driver left them — recovery after a mid-task failure is the user's call, never an automatic `git reset`.
 
 Specification, including why cron and `/loop` cannot drive this: `Wiki/Concepts/AutonomousPipeline.md` in the plugin repo.

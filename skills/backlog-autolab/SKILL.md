@@ -155,7 +155,7 @@ When no item is in flight and the queue is empty:
 2. **The worktrees** — a clean one is removed with `git -C <repo> worktree remove <path>`, no `--force`; its branch stays.
    A dirty one stays, and the summary names its path.
 3. **A short summary in the chat**, per item: the branch, its commits, the stop reason.
-   Then what waits for the operator: review and merge `auto/<Item>` (the merge is the `document-revise` approval), answer each hand-off question, remove this run's rules with `/permissions`, and add the rules to approve next time.
+   Then what waits for the operator: review each finished item with `/backlog-review <Item>`, which merges `auto/<Item>` (the merge is the `document-revise` approval), answer each hand-off question, remove this run's rules with `/permissions`, and add the rules to approve next time.
 
 ## The worker prompt
 

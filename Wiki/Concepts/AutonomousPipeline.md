@@ -153,7 +153,7 @@ Those come apart cleanly:
 
 - autonomous runs commit to `auto/<Item>`, never to `main`;
 - the per-run digest is the **present** step;
-- the human's merge is the **approve** step.
+- the human's merge is the **approve** step — made in [`backlog-review`](../../skills/backlog-review/SKILL.md), on accept and on send back alike, after the walk through the Acceptance criteria.
 
 The blocking wait is removed.
 The gate is not.
@@ -174,6 +174,7 @@ An item in `Active/` is eligible only if it carries `> Autonomous: allowed` as a
 Starting a Ready item, the driver moves it to `Active/` and stamps the marker on the `auto/<Item>` branch and commits both, so it stays eligible on later runs while the base branch still shows it in `Ready/` until the merge.
 Nothing in `Backlog/` is ever picked: that is where the human is still shaping it.
 When the last task closes the session moves the item to `UnderReview/`, not `Done/`, and the driver still resolves it there; accepting it is the human's step.
+Until the merge only the branch shows `UnderReview/`, so a review finds the item through `git branch --list 'auto/*' --no-merged`, not through the checkout's folders, and the board, which reads the checkout, cannot offer Accept for it.
 A task line containing `(human)` anywhere is a hard stop, so an author can gate individual tasks — T4 itself, which had to be presented for approval, is exactly that case.
 The marker is matched as a substring rather than at end of line, so it still gates a task whose line ends in a trailing note.
 If zero or more than one eligible item exists, the driver stops and reports.

@@ -28,6 +28,7 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
+| [BacklogLifecycle](Active/BacklogLifecycle.md) | T3 — `backlog-info` skill and command |
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/backlog-autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
 
@@ -37,9 +38,7 @@ None.
 
 ## Ready
 
-| Item | Next task |
-|---|---|
-| [BacklogLifecycle](Ready/BacklogLifecycle.md) | T1 — rename every skill to `<area>-<word>`; the backlog family under `backlog-` |
+None.
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 

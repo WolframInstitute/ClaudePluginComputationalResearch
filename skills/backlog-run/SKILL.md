@@ -86,7 +86,7 @@ Name the place (a relative link), the action, and what they should see — not w
 If nothing is checkable by a human, write one bullet saying so and why.
 Update the item's line in `Work/README.md` (next task).
 If that was the **last** task, the work is finished but not accepted: `git mv` the file from `Active/` into `UnderReview/` (clean name) and move its index line to the UnderReview table.
-Only the user moves it on to `Done/`, after review (see `backlog-add` § *Review*).
+Only the user moves it on to `Done/`, in a [`backlog-review`](../backlog-review/SKILL.md).
 The folder is now its status — there is no field to flip.
 
 ### 7. Sync durable knowledge
@@ -109,7 +109,7 @@ In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` 
 
 Say: "Session N complete (Tk).
 Start a fresh session and run /backlog-run for the next task."
-If the item went to `UnderReview/`, say instead that it is ready for review, and point at the test instructions.
+If the item went to `UnderReview/`, say instead that it is ready for review with `/backlog-review <Name>`, and point at the test instructions.
 Do not continue.
 
 ## Type-aware execution

@@ -92,7 +92,6 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 
 ## Tasks
 
-- [ ] T2 (model: opus, effort: high — protocol writing) — `backlog-review` skill and command, lifting `work` § *Review*; `backlog-board` runs its steps for Accept / Send back.
 - [ ] T3 (model: opus, effort: high — protocol writing) — `backlog-info` skill and command.
 - [ ] T4 (human) — trial: one backlog check and one review of a real item.
 - [ ] T5 (model: sonnet, effort: high — doc pass) — README and ARCHITECTURE tables, the refine/revise sentence, the blog post (the idea: each step of an item's life has a name), major version bump with the rename table.
@@ -101,11 +100,17 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 
 - [x] T1 (model: sonnet, effort: medium — mechanical) — rename every skill and command to the table; fix every cross-reference, the templates and the scripts; `claude plugin validate` passes. Closed by S1.
   Test: `ls skills commands` shows only `<area>-<word>` names; `bash scripts/test-auto-run-routing.sh` passes; `claude plugin validate .` passes; `/backlog-run` resolves.
+- [x] T2 (S2) — `backlog-review` skill and command, lifting `work` § *Review*; `backlog-board` runs its steps for Accept / Send back.
+  - **Test:** read [skills/backlog-review/SKILL.md](../../skills/backlog-review/SKILL.md) — it finds an item on its unmerged `auto/<Item>` branch or in `UnderReview/`, refuses a halted run and a branch that does not merge, walks the criteria one per turn, and ends in Accept (merge, `Done/`) or Send back (merge, new task, `Active/`).
+  - **Test:** [skills/backlog-add/SKILL.md](../../skills/backlog-add/SKILL.md) has no § *Review* any more; its Lifecycle lines and [commands/backlog-add.md](../../commands/backlog-add.md) point at `backlog-review`.
+  - **Test:** [skills/backlog-board/SKILL.md](../../skills/backlog-board/SKILL.md) sync step 3 finishes Accept / Send back through `backlog-review` § *The verdict*, and says that branch items are reviewed with `/backlog-review`.
+  - **Test:** `claude plugin validate .` passes (warnings only, as before); `/backlog-review` resolves after a plugin update.
 
 ## Hand-off
 
-T1 done: 25 skills and 28 commands renamed (git mv), cross-references rewritten across skills, commands, scripts, README, ARCHITECTURE, Wiki; Work/ history and this table left as written. README/ARCHITECTURE tables, version bump and blog post are T5. `backlog-review` and `backlog-info` do not exist yet (T2, T3).
-The README *Autolab* section was rewritten on 2026-10-03 with the five steps and the table, linking the new names to `skills/work/SKILL.md` until the skills exist.
+T2 done: `backlog-review` exists (skill + command); `backlog-add` § *Review* is gone, its callers point at the new skill; the README row now links it.
+Next is T3, `backlog-info`. ARCHITECTURE skill/command tables and counts still lack `backlog-review` — T5's doc pass.
+For the T4 trial: an `auto/<Item>` branch and `main` both edit `Work/README.md`, so the review's up-front `git merge-tree` check may stop on an index-only conflict; watch whether that is common enough to warrant regenerating the index instead of stopping.
 
 ## Decisions
 
@@ -116,6 +121,8 @@ The README *Autolab* section was rewritten on 2026-10-03 with the five steps and
 | 2026-10-04 | Backlog names: `backlog-add`, `-refine`, `-info`, `-board`, `-run`, `-autolab`, `-run-scheduled`, `-review` | the user's list |
 | 2026-10-04 | Clean rename, no alias stubs, major version bump | simplest; the user left the choice to the LLM |
 | 2026-10-04 | The review merges the branch, on accept and on send back; send back continues on `main` | the merge is already the approval; one place of truth; the user left the choice to the LLM |
+| 2026-10-05 | The review reads the branch with `git show` and checks it merges up front; the merge happens only at the verdict | the merge is the approval, so nothing lands before the user has looked, and a conflict is found before the walkthrough, not after |
+| 2026-10-05 | The board's Accept / Send back never merge; an item still on its branch is reviewed with `/backlog-review` | the board reads the checkout, where such an item shows in `Ready/` or `Active/`, so the page cannot offer Accept for it |
 | 2026-10-04 | `backlog-info` reports queued board changes but does not sync | the board's rule: a sync is always the user's request; the user left the choice to the LLM |
 
 ## Progress
@@ -123,3 +130,4 @@ The README *Autolab* section was rewritten on 2026-10-03 with the five steps and
 - **S0** 2026-10-03 — item filed from the operator's request; README section written first.
 - **R1** 2026-10-04 — refined with the operator: names `<area>-<word>` for every skill, the backlog family settled, review merges, tasks re-cut; moved to Ready.
 - **S1** 2026-10-05 — T1: renamed every skill and command to `<area>-<word>`, rewrote cross-references; validate and routing test pass; no alias stubs.
+- **S2** 2026-10-05 T2 — `backlog-review` skill and command; `backlog-add` § *Review* lifted; board, run, autolab and scheduled point at it. → [skills/backlog-review/SKILL.md](../../skills/backlog-review/SKILL.md), [AutonomousPipeline](../../Wiki/Concepts/AutonomousPipeline.md)
