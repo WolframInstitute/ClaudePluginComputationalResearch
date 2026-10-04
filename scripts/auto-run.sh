@@ -15,7 +15,7 @@ MAX_COST=20.00
 DRY_RUN=0
 ITEM=""
 
-# `acceptEdits` covers file edits only, so the git invocations `next-session`
+# `acceptEdits` covers file edits only, so the git invocations `backlog-run`
 # step 8 makes have to be named.
 #
 # This list is a FLOOR, not a ceiling: `--allowedTools` is added to whatever the
@@ -63,14 +63,14 @@ while [ $# -gt 0 ]; do
       echo "Each task's model and effort come from its own routing annotation:"
       echo "  - [ ] T3 (model: sonnet, effort: high — why) — the task body."
       exit 0 ;;
-    -*) echo "auto-run: unknown option $1" >&2; exit 2 ;;
+    -*) echo "backlog-run-scheduled: unknown option $1" >&2; exit 2 ;;
     *)  ITEM="$1"; shift ;;
   esac
 done
 
 # ── helpers ─────────────────────────────────────────────────────────────────
 
-die() { echo "auto-run: $1" >&2; exit 2; }
+die() { echo "backlog-run-scheduled: $1" >&2; exit 2; }
 
 # First unchecked task line in `## Tasks`, excluding the `### Done` subsection.
 next_task() {
@@ -238,7 +238,7 @@ if [ "$DRY_RUN" = 1 ]; then
 fi
 
 # Autonomous work never lands on the caller's branch: the human's merge is the
-# `revise` approval step.
+# `document-revise` approval step.
 git show-ref --verify --quiet "refs/heads/$BRANCH" \
   && git checkout -q "$BRANCH" \
   || git checkout -q -b "$BRANCH"
@@ -268,7 +268,7 @@ ALLOWLIST=$(IFS=,; echo "${ALLOWED[*]}")
 
 # A headless session cannot observe that it is headless: the first live run
 # (T8, 2026-07-28) did the task correctly but recorded in `## Hand-off` that it
-# had "run as an interactive /next-session", which was false. `revise` asks the
+# had "run as an interactive /backlog-run", which was false. `document-revise` asks the
 # session to detect autonomous mode from the absence of a user, and absence is
 # exactly what is not observable from inside. So the driver states it, in the
 # system prompt rather than in the prompt, where it cannot be mistaken for part
@@ -360,8 +360,8 @@ write_digest() {
   } > "$DIGEST"
 
   echo
-  echo "auto-run: stopped — $STOP_REASON after $TASKS_RUN task(s), \$$(printf '%.4f' "$TOTAL_COST")"
-  echo "auto-run: digest $DIGEST"
+  echo "backlog-run-scheduled: stopped — $STOP_REASON after $TASKS_RUN task(s), \$$(printf '%.4f' "$TOTAL_COST")"
+  echo "backlog-run-scheduled: digest $DIGEST"
 }
 
 halt() { STOP_REASON="$1"; write_digest; exit "${2:-1}"; }
@@ -409,16 +409,16 @@ while :; do
   HEAD_BEFORE=$(git rev-parse HEAD)
   DONE_BEFORE=$(done_boxes "$ITEM_FILE")
 
-  echo "auto-run: $ITEM $TASK_ID [${ROUTE_MODEL:-inherited}/${ROUTE_EFFORT:-inherited}] — $(date -u +%H:%M:%SZ)"
+  echo "backlog-run-scheduled: $ITEM $TASK_ID [${ROUTE_MODEL:-inherited}/${ROUTE_EFFORT:-inherited}] — $(date -u +%H:%M:%SZ)"
 
   # The prompt goes FIRST: `--allowedTools` is variadic and swallows every
   # positional after it, so a trailing prompt is consumed as a tool name and the
   # run dies with "Input must be provided either through stdin or as a prompt".
-  # The `plugin:` prefix is mandatory headless: the bare `/next-session` is a
+  # The `plugin:` prefix is mandatory headless: the bare `/backlog-run` is a
   # zero-cost no-op that reports is_error:false.
   # `${ROUTE_ARGS[@]+...}` guards the empty-array expansion under `set -u`, which
   # is an error on bash 3.2 — still the /bin/bash on macOS.
-  OUT=$(claude -p "/computational-research:next-session $ITEM" \
+  OUT=$(claude -p "/computational-research:backlog-run $ITEM" \
         --output-format json \
         --permission-mode acceptEdits \
         ${ROUTE_ARGS[@]+"${ROUTE_ARGS[@]}"} \

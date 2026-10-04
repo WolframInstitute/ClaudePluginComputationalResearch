@@ -17,7 +17,7 @@ A file loaded into every session should carry only what a session must know **be
 That gives three classes:
 
 - **policy** — changes what a session does, and is unfindable at the point of use because nothing prompts you to look. A session that does not know kernels consume license seats does not go looking for a kernel policy; it just spawns `wolframscript` and gets a license error.
-- **reference** — needed only by the skill that uses it, and that skill *does* know to look. `new-project` knows it needs the project types.
+- **reference** — needed only by the skill that uses it, and that skill *does* know to look. `project-create` knows it needs the project types.
 - **inventory** — a list of what exists on disk, answerable by `ls` at the moment the question arises.
 
 Measured against the pre-split file:
@@ -38,7 +38,7 @@ The four tables — Skills 2,450 B, Templates 2,518 B, Scripts 2,181 B, Commands
 
 **The Skills table was the clearest case.** The harness injects every skill's `description:` frontmatter into every session unconditionally: **9,613 B across 21 skills**, richer than the table's one-line summaries and impossible to switch off. `README.md` carries a second, human-facing copy. The `CLAUDE.md` table was a third, and the only one that was both lossy and paid for on every turn.
 
-**The Commands table encoded a rule and two exceptions.** Every skill has a slash command of the same name; `check-env` and `load-project` are the only commands without a skill, and `revise` the only skill without a command. 772 B for one sentence.
+**The Commands table encoded a rule and two exceptions.** Every skill has a slash command of the same name; `project-check-env` and `project-load` are the only commands without a skill, and `document-revise` the only skill without a command. 772 B for one sentence.
 
 **Scripts and Templates are `ls` plus a purpose column.** The purpose is also in the skill that calls the script, at the point where it is called.
 
@@ -56,7 +56,7 @@ A duplicate maintained by hand drifts in whichever field nobody diffs.
 
 ## What was done
 
-Inventory and reference moved to `ARCHITECTURE.md` at the repo root, read on demand — the same pay-for-what-you-read move [Item File Format](ItemFileFormat.md) made when it pushed `next-session`'s paclet-worktree procedure into a sibling file.
+Inventory and reference moved to `ARCHITECTURE.md` at the repo root, read on demand — the same pay-for-what-you-read move [Item File Format](ItemFileFormat.md) made when it pushed `backlog-run`'s paclet-worktree procedure into a sibling file.
 The Skills table was **deleted rather than moved**: the harness list and `README.md` are the two copies that survive, and `ARCHITECTURE.md` points at `README.md` instead of adding a third.
 `## Plugin Maintenance` shrank to a pointer at the global rule plus the one thing the global file lacks — the marketplace re-clone command.
 
@@ -65,7 +65,7 @@ The Skills table was **deleted rather than moved**: the harness list and `README
 | | before | after |
 |---|---:|---:|
 | `CLAUDE.md` | 16,906 B | 5,254 B (−69 %) |
-| fixed preamble (`CLAUDE.md` + `next-session` + `revise` + `Work/README.md`) | 27,934 B | 16,319 B (**−42 %**) |
+| fixed preamble (`CLAUDE.md` + `backlog-run` + `document-revise` + `Work/README.md`) | 27,934 B | 16,319 B (**−42 %**) |
 | `ARCHITECTURE.md`, read on demand | — | 9,896 B |
 
 The 1,546 B kernel policy is now the largest surviving block, and most sessions never spawn a kernel.
@@ -79,10 +79,10 @@ Bytes removed from `CLAUDE.md` convert to tokens at roughly 4:1, so the ~11.7 kB
 
 **A move only pays if the destination stays unread.**
 `ARCHITECTURE.md` costs 9,896 B to any session that opens it, more than the tables cost before, since it now also carries the reference sections.
-The bet is that the sessions needing it — `new-project`, the paclet skills, adding a skill — are a minority. If that turns out false, the tables should be split per-consumer rather than pulled back into `CLAUDE.md`.
+The bet is that the sessions needing it — `project-create`, the paclet skills, adding a skill — are a minority. If that turns out false, the tables should be split per-consumer rather than pulled back into `CLAUDE.md`.
 
 **Scaffolded projects were not audited here.**
-`new-project` generates a project `CLAUDE.md` by appending `code_style_template.md` (7,247 B) to `claude_template.md` (3,280 B) or `math_claude_template.md` (5,323 B) — **10.5 kB or 12.6 kB auto-loaded into every session of every downstream project**, two thirds of it the code-style block.
+`project-create` generates a project `CLAUDE.md` by appending `code_style_template.md` (7,247 B) to `claude_template.md` (3,280 B) or `math_claude_template.md` (5,323 B) — **10.5 kB or 12.6 kB auto-loaded into every session of every downstream project**, two thirds of it the code-style block.
 That audit has since been done in T9: [Generated preamble audit](GeneratedPreambleAudit.md).
 It found the generated file already 82 % policy and the code-style block — the suspect, on size — fully justified by this test; the real defects were two duplicate sections and a contradiction between two auto-loaded files.
 
@@ -99,5 +99,5 @@ The section classification is hand-encoded in the script and asserted against th
 
 - [Session Information Budget](SessionInformationBudget.md) — the measurement that identified the preamble as the largest term
 - [Autonomous Pipeline](AutonomousPipeline.md) — the 31.5 k-token cold start this audit serves
-- [Item File Format](ItemFileFormat.md) — the same read-on-demand move applied to the item file and `next-session`
+- [Item File Format](ItemFileFormat.md) — the same read-on-demand move applied to the item file and `backlog-run`
 - `ARCHITECTURE.md` — where the inventory now lives

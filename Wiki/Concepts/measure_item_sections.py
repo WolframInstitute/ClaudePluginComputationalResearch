@@ -82,7 +82,7 @@ def printDecisions(rows):
 
 
 def printReadPath(rows):
-    print("Read path — what next-session step 2 opens")
+    print("Read path — what backlog-run step 2 opens")
     print(f"{'item':44s} {'S':>2} {'whole file':>10} {'without Progress':>17} {'Spec+Decisions share':>21}")
     for row in rows:
         withoutProgress = row["total"] - row["progress"]

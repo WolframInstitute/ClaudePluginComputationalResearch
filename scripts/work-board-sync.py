@@ -23,7 +23,7 @@ NEW_ITEM = """# {title}
 *[[ LLM Generated ]]*
 
 > Type: research
-> Waiting on: you — a `/refine` sitting; filed from the board on {date}.
+> Waiting on: you — a `/backlog-refine` sitting; filed from the board on {date}.
 
 ## Summary
 
@@ -43,7 +43,7 @@ NEW_ITEM = """# {title}
 
 ## Technical details
 
-(to be written in the first `/refine` sitting)
+(to be written in the first `/backlog-refine` sitting)
 
 ## Tasks
 

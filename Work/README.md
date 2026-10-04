@@ -10,7 +10,7 @@ An item's **status is its folder** — there is no status field:
 |---|---|---|
 | `Active/` | in progress | `<Name>.md` |
 | `Backlog/` | proposed / not started (drafts live here) | `<Name>.md` |
-| `Ready/` | refined and approved; `/autolab` and `/auto-run` may take it | `<Name>.md` |
+| `Ready/` | refined and approved; `/backlog-autolab` and `/backlog-run-scheduled` may take it | `<Name>.md` |
 | `UnderReview/` | all tasks done, awaiting the user's review | `<Name>.md` |
 | `Done/` | completed | `YYYY-MM-DD-<Name>.md` (completion date) |
 | `Dropped/` | abandoned / superseded | `YYYY-MM-DD-<Name>.md` (drop date) |
@@ -18,8 +18,8 @@ An item's **status is its folder** — there is no status field:
 Changing status is a `git mv`.
 Names are clean while an item is live and get a date prefix when archived, so `Done/` and `Dropped/` read chronologically.
 
-Run `/next-session` in a **fresh** session to work the next task of an active item — clean context per task is the whole point.
-Use `/work` to create a new item.
+Run `/backlog-run` in a **fresh** session to work the next task of an active item — clean context per task is the whole point.
+Use `/backlog-add` to create a new item.
 
 ## Active
 
@@ -28,7 +28,7 @@ The one thing the folders can't show — each in-progress item and its next task
 
 | Item | Next task |
 |---|---|
-| [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
+| [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/backlog-autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
 
 ## UnderReview
@@ -41,13 +41,13 @@ None.
 |---|---|
 | [BacklogLifecycle](Ready/BacklogLifecycle.md) | T1 — rename every skill to `<area>-<word>`; the backlog family under `backlog-` |
 
-`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
+`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 
-`FolderRule` completed on 2026-10-04 after three tasks, all run by `/autolab` that day: every folder has the same three places, the documents in progress in the folder itself, one-offs in `Artifacts/` and superseded versions in `Archive/`, and papers live in `Research/` beside the research notebooks, an existing `Paper/` still found and used.
+`FolderRule` completed on 2026-10-04 after three tasks, all run by `/backlog-autolab` that day: every folder has the same three places, the documents in progress in the folder itself, one-offs in `Artifacts/` and superseded versions in `Archive/`, and papers live in `Research/` beside the research notebooks, an existing `Paper/` still found and used.
 
-`DocumentMemory` completed on 2026-10-04 after five tasks, all run by `/autolab` on 2026-10-03: notes written as `<< … >>`, a provenance file beside each revised document that keeps every note with its lines, every hand edit and every chat request, and the rules drawn from them, read before each round. Generated notebooks stay out of git; each version's `.md` is committed. Its trial found that rules were drawn too late in the round to bind it; the round now draws them first.
+`DocumentMemory` completed on 2026-10-04 after five tasks, all run by `/backlog-autolab` on 2026-10-03: notes written as `<< … >>`, a provenance file beside each revised document that keeps every note with its lines, every hand edit and every chat request, and the rules drawn from them, read before each round. Generated notebooks stay out of git; each version's `.md` is committed. Its trial found that rules were drawn too late in the round to bind it; the round now draws them first.
 
-`RevisionRounds` completed on 2026-09-27 after five tasks, all that day: comments on lines starting with `>>` in any document, each `/revise` round writing the next numbered version beside the last, and `/clean` moving earlier rounds into `Archive/`. Its trial found that commit subjects overran the hook's cap and that a lone comment points at the passage above it, not below.
+`RevisionRounds` completed on 2026-09-27 after five tasks, all that day: comments on lines starting with `>>` in any document, each `/document-revise` round writing the next numbered version beside the last, and `/project-clean` moving earlier rounds into `Archive/`. Its trial found that commit subjects overran the hook's cap and that a lone comment points at the passage above it, not below.
 
 `ExercisePaperStyle` completed on 2026-08-21 after four tasks. It started on 2026-08-20 and ran the shared writing guide against a real document on both of its paths: T1 as a notebook and T2 as a scaffolded LaTeX paper, the same mathematics — equidistance and odd girth over the SyntheticInfrageometry primitives — re-set so that a finding appearing on both paths is the guide's and a finding on one is that generator's. T1 found [seven writing rules and three build defects](../Wiki/Concepts/PaperStyleExercise.md), two of the seven being rules of `style.md` that contradict each other. T2 confirmed five of those as path-independent, added four the notebook could not show — chiefly that the guide gives the *Ruliology* calls' supporting code no home outside a notebook's Initialization section — and turned up [seven defects in the LaTeX build path](../Wiki/Concepts/PaperStyleExercise.md#the-build-path--six-defects-in-the-shipped-template), the worst being that `\cref` mislabels every non-theorem and that the obvious fix makes multi-references silently lose entries.
 T3 [answered all of it](../Wiki/Concepts/PaperStyleExercise.md#what-t3-corrected) in the shipped guide, generators and templates: nothing that failed was a threshold, so the three flagged numbers keep their values and gain a scope, and the corrected templates were re-scaffolded and compiled on both formats.
@@ -64,15 +64,15 @@ T2 then built the document the earlier exercise never produced — `NotebooksLLM
 The ruling was being taken after the document it changes had been deployed; *marked* named no marker, which also put the retained material in breach of the bans on hedges and on `[lookup]`; and *report in the run digest* was unimplementable, since a session cannot write the digest at all — the list now goes to `## Hand-off`, which the digest quotes, verified against a real driver run.
 That document is **kept**, unlike `ExercisePaperStyle`'s: deleting those is what left T2 with no case to test.
 One more sits there from an operator session on 2026-08-19: `WorkDashboard`, a read-only local web dashboard over a project's `Wiki/` + `Work/` trees.
-`ModelRouting` was filed the same day and started immediately — T1 [measured the headless surface](../Wiki/Concepts/HeadlessModelSurface.md), T2 made the [annotation](../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation) a format rule, and T3 gave `/auto-run` its half and [trialled it live on two tiers](../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke): `sonnet` closed a real task for a quarter to a tenth of the default tier's price, while `haiku` produced a correct deliverable for $0.07 and then failed the session protocol.
-It completed on 2026-08-20 after four tasks, when T4 — the operator's own `(human)` call — took `haiku` off the default routing table and made a `/next-session` tier mismatch halt rather than warn; the `opus` row is still a prior and `fable` is still untested.
-The one thing left open by the items below is whether `/auto-run` should stop inheriting the user's `~/.claude/settings.json` allow rules — recorded as an open question in [Wiki/Status.md](../Wiki/Status.md#open-questions), not yet filed as an item, because it changes the pipeline's security posture rather than fixing it.
+`ModelRouting` was filed the same day and started immediately — T1 [measured the headless surface](../Wiki/Concepts/HeadlessModelSurface.md), T2 made the [annotation](../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation) a format rule, and T3 gave `/backlog-run-scheduled` its half and [trialled it live on two tiers](../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke): `sonnet` closed a real task for a quarter to a tenth of the default tier's price, while `haiku` produced a correct deliverable for $0.07 and then failed the session protocol.
+It completed on 2026-08-20 after four tasks, when T4 — the operator's own `(human)` call — took `haiku` off the default routing table and made a `/backlog-run` tier mismatch halt rather than warn; the `opus` row is still a prior and `fable` is still untested.
+The one thing left open by the items below is whether `/backlog-run-scheduled` should stop inheriting the user's `~/.claude/settings.json` allow rules — recorded as an open question in [Wiki/Status.md](../Wiki/Status.md#open-questions), not yet filed as an item, because it changes the pipeline's security posture rather than fixing it.
 
-`ModelRoutingTrial` completed on 2026-08-20 after two tasks — the throwaway that gave `ModelRouting` T3 a live mixed-model run. A two-task run on two tiers (`haiku`, then `sonnet`) showed `auto-run.sh` routes per task rather than per run, each session reading its own tier off its own system prompt. Its branch merged the same day, which was the `revise` approval; the scratch article it produced was harvested into [the pipeline article](../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) and deleted.
-`AuditFixes` completed on 2026-07-28 after ten tasks: the inert `.nb`-read hook fixed, the cross-skill contradictions and duplicated policy prose removed, three oversized skills split into cores plus read-on-demand siblings, `research-notebook` restructured to the user-mandated canonical order, the `revise` protocol made reachable, the standard skill skeleton applied to all 21 skills, and the plugin bumped to 4.9.0 with the marketplace synced.
-`HardenAutoRun` completed on 2026-07-28 after two tasks: all four never-live `/auto-run` stop conditions fired against real sessions, `--allowedTools` turned out to only ever *add* to the settings files, and the driver gained the Wolfram MCP defaults.
+`ModelRoutingTrial` completed on 2026-08-20 after two tasks — the throwaway that gave `ModelRouting` T3 a live mixed-model run. A two-task run on two tiers (`haiku`, then `sonnet`) showed `auto-run.sh` routes per task rather than per run, each session reading its own tier off its own system prompt. Its branch merged the same day, which was the `document-revise` approval; the scratch article it produced was harvested into [the pipeline article](../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) and deleted.
+`AuditFixes` completed on 2026-07-28 after ten tasks: the inert `.nb`-read hook fixed, the cross-skill contradictions and duplicated policy prose removed, three oversized skills split into cores plus read-on-demand siblings, `research-notebook` restructured to the user-mandated canonical order, the `document-revise` protocol made reachable, the standard skill skeleton applied to all 21 skills, and the plugin bumped to 4.9.0 with the marketplace synced.
+`HardenAutoRun` completed on 2026-07-28 after two tasks: all four never-live `/backlog-run-scheduled` stop conditions fired against real sessions, `--allowedTools` turned out to only ever *add* to the settings files, and the driver gained the Wolfram MCP defaults.
 `AutoRunHaltTrial` was dropped on 2026-07-28: the crash-test dummy `HardenAutoRun` drove, whose five tasks were sabotage rather than work — `Dropped/` rather than `Done/` for exactly that reason.
 `EvaluateWorkItemsEfficiency` completed on 2026-07-28 after nine tasks: the per-session budget is measured, the item file format is decided and in force, both auto-loaded preambles are audited, the unattended pipeline is built and trialled live, and T5's harvest moved the closed items' durable content into `Wiki/`.
 `AutoRunTrial` completed on 2026-07-28: the throwaway item that gave `EvaluateWorkItemsEfficiency` T8 a real item to drive, closing with its `(human)` task done interactively.
-`AdoptMarkdownToNotebook` completed on 2026-07-27: `new-notebook` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.
+`AdoptMarkdownToNotebook` completed on 2026-07-27: `notebook-create` gained an auto-detected rich conversion engine, and `research-notebook` now uses that engine as the parser half of a two-half pipeline with MathNotebook post-processing, generating one-way from a readable `.md`.
 `PacletDocumentation` completed on 2026-07-27; paclet presentation moved from a hand-built cloud notebook to real Wolfram documentation, bundled on publish and deployed publicly.

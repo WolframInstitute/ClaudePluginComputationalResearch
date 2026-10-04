@@ -123,7 +123,7 @@ if [ "$HAS_OFFICIAL" -eq 1 ] && [ "$HAS_UNOFFICIAL" -eq 1 ]; then
   warn "wolfram-mcp). Each holds a separate kernel/license seat. Disabling the"
   warn "unused one frees a seat for wolframscript."
 fi
-warn "License seats are finite (\$MaxLicenseProcesses). Run /check-env inside"
+warn "License seats are finite (\$MaxLicenseProcesses). Run /project-check-env inside"
 warn "Claude for live headroom — that step queries the kernel via the MCP."
 
 echo ""
@@ -134,7 +134,7 @@ echo "=== Summary ==="
 if [ -n "$WOLFRAMSCRIPT" ] && [ "$RESULT" = "2" ] && [ "$MCP_FOUND" -eq 1 ]; then
   echo -e "  ${GREEN}Wolfram kernel and MCP available.${NC}"
   echo "  Prefer the MCP (one persistent kernel) for evaluation; wolframscript"
-  echo "  spawns a new seat-consuming kernel. Run /check-env in Claude for"
+  echo "  spawns a new seat-consuming kernel. Run /project-check-env in Claude for"
   echo "  live license headroom before relying on wolframscript."
 elif [ -n "$WOLFRAMSCRIPT" ] && [ "$MCP_FOUND" -eq 0 ]; then
   echo -e "  ${YELLOW}Kernel available, but MCP server not detected locally.${NC}"

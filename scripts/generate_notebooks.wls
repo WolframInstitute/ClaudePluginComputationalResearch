@@ -71,7 +71,7 @@ boxifyCell[content_String, style_, opts___] :=
 	]
 
 (* Parse a leading `<!-- provenance: key: value ... -->` block (see the
-   `provenance` skill). Returns an Association or None. *)
+   `project-provenance` skill). Returns an Association or None. *)
 provenanceComment[text_String] :=
 	SelectFirst[
 		StringCases[text, Shortest["<!--" ~~ b___ ~~ "-->"] :> b],

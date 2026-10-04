@@ -58,7 +58,7 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 | Skill | What it does |
 |---|---|
 | **setup** | Ask what you want, then install and check it — in design, see [AutoSetup](Work/Backlog/AutoSetup.md) |
-| [check-env](commands/check-env.md) | Check that the kernel and the servers respond, and how many license seats are free |
+| [project-check-env](commands/project-check-env.md) | Check that the kernel and the servers respond, and how many license seats are free |
 
 <details>
 <summary>Notes</summary>
@@ -66,7 +66,7 @@ InstallMCPServer["ClaudeCode", "WolframLanguage"]
 * Operation in Cowork mode and Chat mode has not been tested.
 * On older Wolfram versions the legacy [Wolfram/MCPServer](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/MCPServer) paclet still works as a fallback.
 * The unofficial [sw1sh/WolframMCP](https://github.com/sw1sh/WolframMCP) server is optional; it adds Wolfram Language LSP support, similar to [Serena](https://github.com/oraios/serena).
-* Running both Wolfram MCP servers at once uses two license seats — `/computational-research:check-env` reports live headroom and flags this.
+* Running both Wolfram MCP servers at once uses two license seats — `/computational-research:project-check-env` reports live headroom and flags this.
 
 </details>
 
@@ -104,14 +104,14 @@ Outside `Artifacts/` it writes only when you ask.
 A request that does not say where it goes lands in `Artifacts/`, so nothing of yours is touched.
 To keep working on an artifact, move it up into the folder; from then on it is a document in progress.
 A project that already has a `Paper/` folder keeps using it; nothing is moved.
-The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md).
+The convention is spelled out in [artifacts.md](skills/notebook-create/artifacts.md).
 
 | Skill | What it does |
 |---|---|
-| [new-project](skills/new-project/SKILL.md) | Set up a new project — research, mathematics, or paclet development |
-| [load-project](commands/load-project.md) | Summarize where the project stands and what to do next |
-| [start-tour](skills/start-tour/SKILL.md) | Walk you through the project, topic by topic, with code to run |
-| [provenance](skills/provenance/SKILL.md) | Record the prompt behind each generated file, off by default; and, always on, the provenance file of every revised document |
+| [project-create](skills/project-create/SKILL.md) | Set up a new project — research, mathematics, or paclet development |
+| [project-load](commands/project-load.md) | Summarize where the project stands and what to do next |
+| [project-tour](skills/project-tour/SKILL.md) | Walk you through the project, topic by topic, with code to run |
+| [project-provenance](skills/project-provenance/SKILL.md) | Record the prompt behind each generated file, off by default; and, always on, the provenance file of every revised document |
 
 ### 🤝 Revision
 
@@ -127,7 +127,7 @@ To revise a document with the AI:
 2. **Write notes into it** wherever something should change: `<< make this example smaller >>`.
    A note can sit inside a sentence or run over several lines; in code it goes inside a comment, as in `(* << use a smaller graph >> *)`.
    Edit the text yourself wherever that is quicker.
-3. **Ask for a revision** (`/revise Note_260928.nb`, or just "revise it").
+3. **Ask for a revision** (`/document-revise Note_260928.nb`, or just "revise it").
    The plugin writes the next version beside the old one, with the next number: `Note_260928_2.nb`, then `_3`.
    It changes only what your notes ask, keeps every edit you made, and adds nothing you did not ask for.
    It never edits the version you wrote your notes in, so every round stays on record.
@@ -147,8 +147,8 @@ Nothing is deleted.
 
 | Skill | What it does |
 |---|---|
-| [revise](skills/revise/SKILL.md) | Show every deliverable and wait; on request, write the next version from your notes, remembering past rounds |
-| [clean](commands/clean.md) | Move earlier versions into `Archive/` |
+| [document-revise](skills/document-revise/SKILL.md) | Show every deliverable and wait; on request, write the next version from your notes, remembering past rounds |
+| [project-clean](commands/project-clean.md) | Move earlier versions into `Archive/` |
 
 ### 📚 Autoknowledge
 
@@ -156,9 +156,9 @@ What a project learns should outlast the session that learned it, so the wiki ke
 
 | Skill | What it does |
 |---|---|
-| [init-wiki](skills/init-wiki/SKILL.md) | Start a wiki in the project |
-| [update-wiki](skills/update-wiki/SKILL.md) | Record what was learned after a piece of work |
-| [check-wiki](skills/check-wiki/SKILL.md) | Find stale articles, gaps and broken links |
+| [wiki-init](skills/wiki-init/SKILL.md) | Start a wiki in the project |
+| [wiki-update](skills/wiki-update/SKILL.md) | Record what was learned after a piece of work |
+| [wiki-check](skills/wiki-check/SKILL.md) | Find stale articles, gaps and broken links |
 
 ### 🔍 Autoresources
 
@@ -167,10 +167,10 @@ Each one is saved with a summary and the steps to get it back.
 
 | Skill | What it does |
 |---|---|
-| [add-resource](skills/add-resource/SKILL.md) | Save a paper, repository or page, with how to get it back |
-| [search-wolfram](skills/search-wolfram/SKILL.md) | Search the Wolfram documentation, Function Repository and Community |
-| [search-math](skills/search-math/SKILL.md) | Search MathWorld, nLab, OEIS, DLMF and Wikipedia |
-| [cite](skills/cite/SKILL.md) | Make a BibTeX entry from an arXiv ID or a DOI |
+| [wiki-add-resource](skills/wiki-add-resource/SKILL.md) | Save a paper, repository or page, with how to get it back |
+| [wiki-search-wolfram](skills/wiki-search-wolfram/SKILL.md) | Search the Wolfram documentation, Function Repository and Community |
+| [wiki-search-math](skills/wiki-search-math/SKILL.md) | Search MathWorld, nLab, OEIS, DLMF and Wikipedia |
+| [paper-cite](skills/paper-cite/SKILL.md) | Make a BibTeX entry from an arXiv ID or a DOI |
 
 ### 📦 Notebooks and paclets
 
@@ -180,10 +180,10 @@ Every project gets one house style for Wolfram code — spaced brackets, chained
 
 | Skill | What it does |
 |---|---|
-| [new-notebook](skills/new-notebook/SKILL.md) | Build a Wolfram notebook from Markdown, or edit one |
-| [build-paclet](skills/build-paclet/SKILL.md) | Build a paclet and install it locally |
+| [notebook-create](skills/notebook-create/SKILL.md) | Build a Wolfram notebook from Markdown, or edit one |
+| [paclet-build](skills/paclet-build/SKILL.md) | Build a paclet and install it locally |
 | [paclet-docs](skills/paclet-docs/SKILL.md) | Write a reference page for every exported function |
-| [publish-paclet](skills/publish-paclet/SKILL.md) | Build with documentation and publish to the Wolfram Cloud |
+| [paclet-publish](skills/paclet-publish/SKILL.md) | Build with documentation and publish to the Wolfram Cloud |
 
 ### 📝 Papers and mathematics
 
@@ -192,11 +192,11 @@ The paper carries what is settled, and the journal keeps everything else, so not
 
 | Skill | What it does |
 |---|---|
-| [new-paper](skills/new-paper/SKILL.md) | Add a LaTeX or Typst paper, then edit it on request |
-| [new-research-notebook](skills/new-research-notebook/SKILL.md) | Write a mathematics paper as a notebook, with complete proofs |
-| [new-research-note](skills/new-research-note/SKILL.md) | Turn a conversation into a dated note: claims, proofs, and the code behind them |
-| [journal](skills/journal/SKILL.md) | Keep a cited journal of what was learned, and what a paper cannot carry; off by default |
-| [lean](skills/lean/SKILL.md) | Formalize a proof in Lean with Mathlib |
+| [paper-create](skills/paper-create/SKILL.md) | Add a LaTeX or Typst paper, then edit it on request |
+| [paper-create-notebook](skills/paper-create-notebook/SKILL.md) | Write a mathematics paper as a notebook, with complete proofs |
+| [paper-create-note](skills/paper-create-note/SKILL.md) | Turn a conversation into a dated note: claims, proofs, and the code behind them |
+| [paper-journal](skills/paper-journal/SKILL.md) | Keep a cited journal of what was learned, and what a paper cannot carry; off by default |
+| [paper-lean](skills/paper-lean/SKILL.md) | Formalize a proof in Lean with Mathlib |
 
 ### 🧮 Paper verification
 
@@ -227,16 +227,16 @@ Each step of an item's life has its skill:
 
 | Skill | What it does |
 |---|---|
-| [new-item](skills/work/SKILL.md) | File an item in the backlog: what you want, why, and how you will accept it |
-| [refine](skills/refine/SKILL.md) | Shape one backlog item with you until it is ready to run |
-| [backlog](skills/work/SKILL.md) | Go through the whole backlog with you; items move only on your word |
-| [board](skills/board/SKILL.md) | A board of all items that you can read and edit on your phone |
-| [next-session](skills/next-session/SKILL.md) | Run the next task of an item, then stop |
-| [autolab](skills/autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
-| [auto-run](commands/auto-run.md) | The same without a chat, for scheduled runs |
-| [review](skills/work/SKILL.md) | Check a finished item with you: accept it, or send it back with a new task |
+| [new-item](skills/backlog-add/SKILL.md) | File an item in the backlog: what you want, why, and how you will accept it |
+| [backlog-refine](skills/backlog-refine/SKILL.md) | Shape one backlog item with you until it is ready to run |
+| [backlog](skills/backlog-add/SKILL.md) | Go through the whole backlog with you; items move only on your word |
+| [backlog-board](skills/backlog-board/SKILL.md) | A board of all items that you can read and edit on your phone |
+| [backlog-run](skills/backlog-run/SKILL.md) | Run the next task of an item, then stop |
+| [backlog-autolab](skills/backlog-autolab/SKILL.md) | Work the backlog while you are away, one background worker per task that you can watch and message |
+| [backlog-run-scheduled](commands/backlog-run-scheduled.md) | The same without a chat, for scheduled runs |
+| [review](skills/backlog-add/SKILL.md) | Check a finished item with you: accept it, or send it back with a new task |
 
-`new-item`, `backlog` and `review` are in design, see [BacklogLifecycle](Work/Backlog/BacklogLifecycle.md); today `work` files an item and holds the review steps.
+`new-item`, `backlog` and `review` are in design, see [BacklogLifecycle](Work/Backlog/BacklogLifecycle.md); today `backlog-add` files an item and holds the review steps.
 Agents pick only items you have moved to Ready, stop at any task marked for a human, and leave their results on a branch for you to review.
 
 **Several sessions at once.**

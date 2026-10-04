@@ -9,8 +9,8 @@ The rule is: **merge by key, never replace the option.**
 
 | Key | Written by | Content |
 |---|---|---|
-| `"Provenance"` | `new-notebook` / `new-research-notebook` at build (MCP path), or `Scripts/generate_notebooks.wls` (batch fallback) | association of provenance fields parsed from the source's leading `<!-- provenance: ... -->` comment |
-| `"ResearchNotebook"` | `new-research-notebook` after the export/re-import round-trip | `{ "Cells" -> <\| CellID -> Hash[ { content, style } ] \|> }`, the per-cell drift fingerprint |
+| `"Provenance"` | `notebook-create` / `paper-create-notebook` at build (MCP path), or `Scripts/generate_notebooks.wls` (batch fallback) | association of provenance fields parsed from the source's leading `<!-- provenance: ... -->` comment |
+| `"ResearchNotebook"` | `paper-create-notebook` after the export/re-import round-trip | `{ "Cells" -> <\| CellID -> Hash[ { content, style } ] \|> }`, the per-cell drift fingerprint |
 
 Both writers can touch the same notebook: with prompt tracking on, a research notebook is built with `"Provenance"` (passed through `MathNotebookDocument`) and then stamped with `"ResearchNotebook"` — in that order, since the fingerprint must come from the round-tripped file.
 
@@ -20,15 +20,15 @@ A cell has its own `TaggingRules` option, separate from the notebook's, and one 
 
 | Key | Written by | Content |
 |---|---|---|
-| `"SourceLines"` | `SourceLineNotebook` in `scripts/source_lines.wl`, at generation by `new-notebook`, `new-research-note` and `new-research-notebook`; `ShiftSourceLines` and `StampSourceLines` during a revision round | `{ first, last }`, the lines of the version's `.md` the cell was converted from |
+| `"SourceLines"` | `SourceLineNotebook` in `scripts/source_lines.wl`, at generation by `notebook-create`, `paper-create-note` and `paper-create-notebook`; `ShiftSourceLines` and `StampSourceLines` during a revision round | `{ first, last }`, the lines of the version's `.md` the cell was converted from |
 
-It is what a [revision round](NotebookCommentRound.md) anchors a note to ([provenance § *Anchors*](../../skills/provenance/SKILL.md#anchors)).
+It is what a [revision round](NotebookCommentRound.md) anchors a note to ([provenance § *Anchors*](../../skills/project-provenance/SKILL.md#anchors)).
 `StampSourceLines` merges it into the cell's `TaggingRules` by key, the cell-level counterpart of `stampTaggingRule`.
 It does not disturb the fingerprint, which hashes `{ content, style }` and no options, and every pass of the generators carries cell options through (verified 2026-10-03 on `SidonBound`: 40 of 40 source-derived cells kept their ranges through `ReadCellTags`, `FoldExampleGroups`, `MathNotebookDocument`, `AssignCellIDs` and the export round trip).
 
 ## The merge stamp
 
-The canonical helper lives in the `provenance` skill and is what every writer calls:
+The canonical helper lives in the `project-provenance` skill and is what every writer calls:
 
 ```wolfram
 stampTaggingRule[ nb_Notebook, key_String -> value_ ] :=

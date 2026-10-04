@@ -5,7 +5,7 @@
 How this plugin authors real Wolfram documentation pages into a paclet, what actually verifies them, and the traps that make a doc page look built when it is not.
 
 Harvested 2026-07-28 from the closed item `PacletDocumentation` (six sessions, 2026-07-27) — see [Progress Harvest](ProgressHarvest.md).
-Backs the `paclet-docs`, `build-paclet`, and `publish-paclet` skills.
+Backs the `paclet-docs`, `paclet-build`, and `paclet-publish` skills.
 
 ## The engine choice, and what it cost
 

@@ -1,0 +1,82 @@
+# {{PROJECT_NAME}}
+
+{{TOPIC_DESCRIPTION}}
+
+## Project goals
+
+{{GOALS}}
+
+## Project type
+
+This is a **math-research** project.
+It is organised around precise statements (theorems and definitions in `Wiki/`) rather than around an open-ended exploration.
+Computation is used to test conjectures, generate examples, and visualise structures — but the wiki is the source of truth for what is true, what is conjectured, and what is open.
+
+## Directory layout
+
+- `{{CODE_DIR}}/Tools.wl` — shared general utilities
+- `{{CODE_DIR}}/{{PROJECT_NAME}}.wl` — core functions
+- `{{CODE_DIR}}/{{PROJECT_NAME}}Visualization.wl` — visualisations
+- `Wiki/Theorems/` — one `.md` per theorem (statement, proof outline, status)
+- `Wiki/Definitions/` — one `.md` per formal definition (see `_template.md`)
+- `Wiki/Domains/categories.md` — math-domain taxonomy (adapt to project scope)
+- `Work/` — multi-session work items: spec, tasks, per-session progress (incl. formalization checklists); status is the folder (`Backlog/Ready/Active/UnderReview/Done/Dropped`), `Work/README.md` indexes active items
+- `Resources/` — reference PDFs, notebooks (gitignored)
+- `Lean/` (if present) — Mathlib-style formalization
+
+## Work
+
+Durable knowledge goes in `Wiki/`; plans, todos, and progress go in `Work/`.
+`Work/README.md` carries the conventions and indexes the active items — `/backlog-add` and `/backlog-run` open it by name.
+Lean formalizations live there too, as `Type: formalization` work items.
+
+## Provenance
+
+Prompt tracking: **off** <!-- When on, generated artifacts (notebooks, functions, wiki articles, work items) record their originating prompt/intent in Wiki/Prompts.md and carry an embedded back-pointer.
+Toggle with /project-provenance; see the `project-provenance` skill. -->
+
+## Scientific journal
+
+Scientific journal: **off** <!-- When on, the LLM keeps a running LaTeX/Typst journal in Journal/ — a concise, structured, append-only stream of dated def/thm/rem/claim entries recording the math/physics content and main claims established, with resources cited into Journal/references.bib.
+Plain "on" = very concise; "on (verbose)" = fuller detail.
+Toggle with /paper-journal; see the `paper-journal` skill. -->
+
+## Working style
+
+- **State before proving.** Add a `Wiki/Theorems/<Name>.md` with the precise statement (and hypotheses, in math + Lean if formalising) *before* attempting a proof.
+  Update its `Status:` field as you go (open / outlined / proved / formalised).
+- **Define before stating.** Anything that appears in a theorem statement must first have a `Wiki/Definitions/<Term>.md` entry.
+  Copy `Wiki/Definitions/_template.md` for the right structure.
+- **Compute to explore.** Use Wolfram code (in `{{CODE_DIR}}/`) for examples, counterexamples, plotting structure, testing conjectures.
+  LLM notebooks are artifacts: `{{CODE_DIR}}/Artifacts/<WhatItSettles>_YYMMDD.md` → `.nb`, side by side; the `.md` is tracked, the generated `.nb` is not. A document you will keep working on lives in `{{CODE_DIR}}/` itself, one numbered version per round, and the LLM never overwrites a file; `Archive/` holds what is superseded.
+  `notebook-create` has a `theorem-proof` template type for Statement/Proof/Corollaries/Examples notebooks.
+- **Reference precisely.** When a fact comes from MathWorld, nLab, DLMF, OEIS, Wikipedia, or a paper, link it from the relevant `Wiki/Definitions/` or `Wiki/Theorems/` article.
+  Use the `wiki-search-math` skill to discover the right links and `wiki-add-resource` / `paper-cite` to record them.
+
+## MCP usage
+
+- **Official Wolfram MCP** — computation, notebook generation, plotting.
+  Prefer the current Wolfram/AgentTools paclet; the older Wolfram/MCPServer is a fallback.
+- **arxiv-latex-mcp** — preferred for reading math papers (LaTeX source gives exact statements and proofs).
+- **lean-lsp** — driven by `paper-lean` for formalization.
+- **crossref / reference-mcp** — citation lookup, used by `paper-cite`.
+
+## Loading code
+
+```wolfram
+dir = DirectoryName @ $InputFileName;  (* in .wl scripts *)
+(* or *)
+dir = NotebookDirectory[];             (* in notebooks *)
+
+Get @ FileNameJoin[{dir, "{{CODE_DIR}}", "Tools.wl"}]
+Get @ FileNameJoin[{dir, "{{CODE_DIR}}", "{{PROJECT_NAME}}.wl"}]
+Get @ FileNameJoin[{dir, "{{CODE_DIR}}", "{{PROJECT_NAME}}Visualization.wl"}]
+```
+
+## Commits
+
+- **Conventional Commits.** Subject line is `type(scope): subject` — e.g. `feat(theorems): add midpoint uniqueness`.
+  Types: `feat fix docs style refactor perf test build ci chore revert`; scope optional; `!` marks a breaking change.
+  Subject ≤ 72 chars, imperative mood, no trailing period.
+- A `.githooks/commit-msg` hook enforces this (`core.hooksPath=.githooks`).
+  If a commit is rejected, rewrite the subject — do not bypass with `--no-verify`.

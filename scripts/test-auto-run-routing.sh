@@ -180,7 +180,7 @@ bash "$DRIVER" Routed --max-tasks 1 >/dev/null 2>&1
 ARGV=$(tr '\n' ' ' < "$ARGV_FILE")
 want "--model passed"     "$ARGV" "--model sonnet"
 want "--effort passed"    "$ARGV" "--effort high"
-want "prompt still first" "$ARGV" "/computational-research:next-session Routed --output-format"
+want "prompt still first" "$ARGV" "/computational-research:backlog-run Routed --output-format"
 DIGEST=$(cat Work/Runs/*Routed.md)
 want "digest names the model used"      "$DIGEST" 'model `claude-sonnet-5` (routed `sonnet`)'
 want "digest says effort *requested*"   "$DIGEST" 'effort `high` requested'

@@ -196,7 +196,7 @@ referenceLink[ fields_Association ] :=
     KeyExistsQ[ fields, "url" ], ", " <> fields[ "url" ],
     True, "" ]
 
-(* ==================== new-research-notebook generator passes ====================
+(* ==================== paper-create-notebook generator passes ====================
    These four ran as prose in the skill and were re-implemented on every build.
    They live here beside the passes they must be ordered against:
      ReadCellTags  -> FoldExampleGroups -> MathNotebookDocument -> AssignCellIDs

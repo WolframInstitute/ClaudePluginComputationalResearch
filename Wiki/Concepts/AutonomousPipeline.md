@@ -1,8 +1,8 @@
-# The autonomous next-session pipeline
+# The autonomous backlog-run pipeline
 
 *[ LLM Generated ]*
 
-The specification for running `Work/` items unattended: what drives the loop, how an item is selected with no human present, when the loop stops, and what happens to the `revise` gate.
+The specification for running `Work/` items unattended: what drives the loop, how an item is selected with no human present, when the loop stops, and what happens to the `document-revise` gate.
 Decided 2026-07-27 for `EvaluateWorkItemsEfficiency` T4, against [T3's item format](ItemFileFormat.md) and [T1's budget](SessionInformationBudget.md).
 Built 2026-07-28 by T7 — see [Implementation](#implementation) for where each part lives.
 First run against a real item on 2026-07-28 under T8's [supervised trial](#the-supervised-trial--what-two-real-runs-cost-and-changed), which exercised only the happy path; the four failure conditions were tripped live later the same day by `HardenAutoRun`'s [failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed), and [what this does not settle](#what-this-does-not-settle) records what is left.
@@ -41,7 +41,7 @@ So the reason every in-session mechanism was rejected above does not apply to it
 | property | measured |
 |---|---|
 | visible | a background subagent appears in the VS Code **Agent map** (the "N agents" button under the input box) with status and tokens |
-| skills | it has the `Skill` tool and sees `computational-research:next-session` |
+| skills | it has the `Skill` tool and sees `computational-research:backlog-run` |
 | model routing | the `Agent` tool's `model` parameter routes it; a `haiku` worker reported Haiku 4.5 from its own system prompt |
 | effort routing | no `effort` parameter on the `Agent` tool; an agent **definition** (`agents/*.md` frontmatter, which a plugin can ship) carries model, effort and tools by the tool's own contract — documented, not measured, since nothing reports the effort applied |
 | steering | a message sent to a running background worker arrived at its next tool round — after the first of eight calls — and the worker obeyed it |
@@ -83,7 +83,7 @@ The second is settled by construction rather than measurement: a worker is part 
 ### The serial trial — a plugin agent definition is not reachable until it is pushed
 
 Run 2026-09-26 for `InSessionAutoRun` T4, against the throwaway `AutolabTrialT4` (three tasks, the second scripted to halt `needs-human`; digest at [Work/Runs/20260926-113600-AutolabTrialT4.md](../../Work/Runs/20260926-113600-AutolabTrialT4.md)).
-`commands/autolab.md` was itself unreachable — `computational-research:autolab` did not appear in this session's skill list — so the trial enacted `skills/autolab/SKILL.md`'s steps by hand rather than through the command.
+`commands/backlog-autolab.md` was itself unreachable — `computational-research:backlog-autolab` did not appear in this session's skill list — so the trial enacted `skills/backlog-autolab/SKILL.md`'s steps by hand rather than through the command.
 
 **The headline finding: `agents/autolab-worker-<effort>.md` is not a usable `Agent` `subagent_type` until the commit that adds it is pushed and the marketplace cache resyncs.**
 A direct probe (`Agent` with `subagent_type: computational-research:autolab-worker-low`) returned `Agent type '...' not found. Available agents: claude, claude-code-guide, Explore, general-purpose, Plan, statusline-setup`.
@@ -97,7 +97,7 @@ That much is now measured live rather than probed:
 
 | property | measured |
 |---|---|
-| a real (non-trivial) `next-session` task | T1 (create + link one wiki file): 22 tool uses, 159284 ms, 66812 `subagent_tokens`. T2 (halt): 9 tool uses, 66636 ms, 47026 `subagent_tokens`. Both well inside the 4,000,000-token `--max-tokens` default — headroom for dozens of tasks per item, not the binding constraint the Spec worried it might be |
+| a real (non-trivial) `backlog-run` task | T1 (create + link one wiki file): 22 tool uses, 159284 ms, 66812 `subagent_tokens`. T2 (halt): 9 tool uses, 66636 ms, 47026 `subagent_tokens`. Both well inside the 4,000,000-token `--max-tokens` default — headroom for dozens of tasks per item, not the binding constraint the Spec worried it might be |
 | `needs-human` end to end | the worker wrote the exact `needs-human:` line into `## Hand-off`, left the protected wiki article untouched, committed only the hand-off, left its task box unchecked — and the halt reached this chat as a `SubagentHandback` message carrying `outcome: needs-human` and the quoted question, immediately, the same turn the worker returned |
 | worktree isolation | the worker correctly translated every repo-relative path against the worktree root and committed on `auto/AutolabTrialT4`; the operator's own checkout stayed on `main`, untouched, throughout |
 | `Agent`-map identity | `ListAgents` lists a running background subagent by `subagent_type` (`general-purpose`), not by the `description` passed at dispatch — the `description` instead surfaces in the launch confirmation and the completion notice's `summary` (`Agent "AutolabTrialT4 T1" finished`). Both identify the same worker; which one a given surface shows differs |
@@ -113,9 +113,9 @@ It returns `is_error`, `stop_reason`, `terminal_reason`, `num_turns`, `permissio
 The driver needs no separate telemetry, and the loop can therefore price itself.
 
 **Plugin slash commands require the `plugin:` prefix headless.**
-`claude -p "/load-project"` returns `Unknown command`, costs `0`, and reports **`is_error: false`**.
+`claude -p "/project-load"` returns `Unknown command`, costs `0`, and reports **`is_error: false`**.
 The unprefixed form is a silent, zero-cost, success-reporting no-op — a driver written the obvious way would spin forever doing nothing and report success every time.
-`/computational-research:load-project` expands correctly.
+`/computational-research:project-load` expands correctly.
 This is why stop condition 5 below checks for work actually done rather than trusting the exit status.
 
 **Cold start costs 31,479 input tokens in this repo** — 14,519 cache-creation plus 16,960 cache-read, measured against a 10-token prompt.
@@ -142,9 +142,9 @@ It is the term that decides whether the pipeline is affordable, and it belongs *
 That audit has since run — [Preamble audit](PreambleAudit.md) — and cut the bookkeeping half of the preamble from 27.9 kB to 16.3 kB, with the inventory moved to a read-on-demand `ARCHITECTURE.md`.
 The 31,479-token figure above predates it and is not re-measured; the caveat below still applies, since most of that number is MCP tool schemas rather than `CLAUDE.md`.
 
-## The `revise` gate is deferred, not deleted
+## The `document-revise` gate is deferred, not deleted
 
-`revise` exempts only wiki prose from human sign-off.
+`document-revise` exempts only wiki prose from human sign-off.
 Restricting the loop to sign-off-free tasks was the obvious escape and is a non-answer: almost no substantive task qualifies, so the pipeline would be worthless.
 The Spec forbade working around this.
 
@@ -183,7 +183,7 @@ The header line is one more `>` line above the first section, so it neither adds
 
 ### Per task
 
-One `claude -p --output-format json "/computational-research:next-session <Item>"`, then the driver **verifies the run instead of trusting it**.
+One `claude -p --output-format json "/computational-research:backlog-run <Item>"`, then the driver **verifies the run instead of trusting it**.
 
 The tier that process runs on comes from the task's own [routing annotation](ItemFileFormat.md#the-per-task-routing-annotation), read off the task line the loop already selected and passed through as `--model` and `--effort`; an unannotated task inherits the machine default, which is [whatever the operator last typed at `/model`](HeadlessModelSurface.md#--model-takes-aliases-and-all-four-tiers-resolve).
 The driver holds no routing policy of its own and has no model flag — the item file is the contract, so the price of a task is decided where the work was divided rather than at launch.
@@ -225,7 +225,7 @@ An unattended `git reset --hard` is the one action that can destroy work no huma
 
 `--permission-mode acceptEdits` plus an explicit `--allowedTools` list.
 Headless, a tool call that is not allowed cannot raise a prompt, so it is denied and recorded in `permission_denials`, which condition 3 turns into a clean halt naming what the run needed.
-`acceptEdits` covers file edits only, so the list has to carry the `git` invocations `next-session` step 8 makes.
+`acceptEdits` covers file edits only, so the list has to carry the `git` invocations `backlog-run` step 8 makes.
 
 **The design intent that the loop "tells you what to allowlist instead of being handed everything up front" does not survive contact with a real settings file**, and this is the one place the specification was wrong rather than merely incomplete.
 `--allowedTools` is **added** to the settings files' `permissions.allow` rather than replacing it, so the driver's list is a floor and not a ceiling: it guarantees a minimum and bounds nothing.
@@ -244,7 +244,7 @@ One gitignored `Work/Runs/<timestamp>-<Item>.md` per run: per-task verdict, the 
 The log range is `HEAD`-at-launch to `HEAD`, not `main..auto/<Item>`, so launching from `main` against a branch that already carries unmerged commits lists all of them rather than this run's.
 
 Gitignored deliberately.
-It is a human review surface read once, so under the one-destination rule it must not sit on any session's read path — the same reasoning that moved rationale out of `next-session/SKILL.md` and into articles like this one.
+It is a human review surface read once, so under the one-destination rule it must not sit on any session's read path — the same reasoning that moved rationale out of `backlog-run/SKILL.md` and into articles like this one.
 Because it accumulates the per-task usage figures, the pipeline re-measures T1's budget on itself on every run, which is the only proposed mechanism that keeps that measurement from going stale.
 
 ## Implementation
@@ -254,13 +254,13 @@ Built by T7, 2026-07-28.
 | the spec's | is |
 |---|---|
 | driver | `scripts/auto-run.sh` — bash, needs `claude` and `jq` |
-| its command | `commands/auto-run.md` — passes arguments through, then reads the digest and reports the stop reason |
-| the deferred gate | `revise` § *Autonomous mode*, which `next-session` already reads every session |
-| eligibility markers | documented in `work` § *The autonomy markers*, seeded as comments in `work_item_template.md` |
-| unconditional commit | one clause in `next-session` step 8 — the liveness check is only sound if an autonomous run always commits |
+| its command | `commands/backlog-run-scheduled.md` — passes arguments through, then reads the digest and reports the stop reason |
+| the deferred gate | `document-revise` § *Autonomous mode*, which `backlog-run` already reads every session |
+| eligibility markers | documented in `backlog-add` § *The autonomy markers*, seeded as comments in `work_item_template.md` |
+| unconditional commit | one clause in `backlog-run` step 8 — the liveness check is only sound if an autonomous run always commits |
 | the autonomy signal | `--append-system-prompt`, naming the driver, the branch, and the item — see the third fact below |
-| the in-session driver | `skills/autolab/SKILL.md` and `commands/autolab.md` (2026-09-26): background subagent workers from `agents/autolab-worker*.md`, one worktree per item under `~/.cache/autolab/`, the autonomy notice at the top of the worker prompt |
-| per-task routing | `parse_routing` in the same script, from the annotation `work` writes and `next-session` checks; `scripts/test-auto-run-routing.sh` is its regression test, run by hand and spending nothing |
+| the in-session driver | `skills/backlog-autolab/SKILL.md` and `commands/backlog-autolab.md` (2026-09-26): background subagent workers from `agents/autolab-worker*.md`, one worktree per item under `~/.cache/autolab/`, the autonomy notice at the top of the worker prompt |
+| per-task routing | `parse_routing` in the same script, from the annotation `backlog-add` writes and `backlog-run` checks; `scripts/test-auto-run-routing.sh` is its regression test, run by hand and spending nothing |
 
 ### Stop reasons
 
@@ -295,9 +295,9 @@ And `.usage.input_tokens` is only the *uncached remainder*: the first real task 
 A digest that prints that field alone understates the pipeline's own price by four orders of magnitude, so the driver reports the total first and the breakdown after.
 
 **A headless session cannot observe that it is headless.**
-The first live run did its task correctly but recorded in `## Hand-off` that it had run as an interactive `/next-session`.
-`revise` had asked the session to infer autonomous mode from the absence of a user, and absence is exactly what is not observable from inside a session — a session with no user looks identical to one whose user has not spoken yet.
-So the driver states it, in `--append-system-prompt` rather than in the prompt, where it cannot be mistaken for an argument to the slash command; `revise` now says the notice is the only admissible evidence.
+The first live run did its task correctly but recorded in `## Hand-off` that it had run as an interactive `/backlog-run`.
+`document-revise` had asked the session to infer autonomous mode from the absence of a user, and absence is exactly what is not observable from inside a session — a session with no user looks identical to one whose user has not spoken yet.
+So the driver states it, in `--append-system-prompt` rather than in the prompt, where it cannot be mistaken for an argument to the slash command; `document-revise` now says the notice is the only admissible evidence.
 This is a general hazard for unattended work, not a bug in one skill: any instruction of the form *behave differently when nobody is watching* has to be told, never inferred.
 
 ### The supervised trial — what two real runs cost and changed
@@ -322,7 +322,7 @@ Two things the trial priced that the specification had guessed at.
 **The default caps are mismatched**: at $1.5–2.6 per task, `--max-cost 5.00` stops a run after two or three tasks, so the cost cap and not `--max-tasks 3` is the binding constraint on a default run.
 
 The trial item closed on 2026-07-28 with its `(human)` task done interactively — the gate's designed exit, and the reason the item's terminal state under the driver is an immediate `task-gated` halt that spends nothing.
-That last task also showed how a trial item can be drafted stale: it asked whether `/auto-run` belonged in `README.md`'s command list, and the task that built the driver had added the row sixteen minutes before the trial item existed.
+That last task also showed how a trial item can be drafted stale: it asked whether `/backlog-run-scheduled` belonged in `README.md`'s command list, and the task that built the driver had added the row sixteen minutes before the trial item existed.
 A throwaway written to exercise the driver will tend to overlap the driver's own documentation, so its tasks are worth re-reading against `HEAD` at the start of the session rather than trusted as drafted.
 
 ### The failure trial — what four live halts cost and changed
@@ -346,7 +346,7 @@ Three findings, in ascending order of consequence.
 
 **`no-commit` and `no-box` cannot be provoked by a well-behaved session.** Both had to be instructed explicitly, which locates what they actually guard: harness faults and malformed item files — a rejected `commit-msg` hook, a box ticked outside `### Done` — rather than misjudgement. That is a narrower remit than "liveness" suggests, and it is the right one.
 
-**`needs-human` is reachable only from a session that closed its box.** The driver checks it *after* the liveness pair, so a session that follows `revise` literally — write the question, commit, stop — fails liveness first and halts as `no-box`. The reason is therefore honest for a task that finished and raised a follow-on question, and misleading for a task that genuinely could not proceed. The conditions were not reordered: `revise`'s instruction is what makes the ordering visible, and the runbook now says to read the `## Hand-off` delta on a `no-box` halt before believing it.
+**`needs-human` is reachable only from a session that closed its box.** The driver checks it *after* the liveness pair, so a session that follows `document-revise` literally — write the question, commit, stop — fails liveness first and halts as `no-box`. The reason is therefore honest for a task that finished and raised a follow-on question, and misleading for a task that genuinely could not proceed. The conditions were not reordered: `document-revise`'s instruction is what makes the ordering visible, and the runbook now says to read the `## Hand-off` delta on a `no-box` halt before believing it.
 
 **The allowlist bounds nothing** — see [Permissions](#permissions--acceptedits-not-bypasspermissions) above. T4's failure to fire is the single most useful result of the whole item: the condition ran clean because `--allowedTools` extends the settings files instead of replacing them, so the supervised trial's "zero denials" had measured the settings' permissiveness and not the task's needs.
 
@@ -386,7 +386,7 @@ The run also cost one **operator** finding, recorded in [the runbook](AutoRunOpe
 ## What this does not settle
 
 - **All four failure conditions have now fired live** — see [the failure trial](#the-failure-trial--what-four-live-halts-cost-and-changed). What remains stub-tested is the *harness*-fault group: `unparseable-output` and the three `condition 3` reasons (`nonzero-exit`, `is-error`, `stop-reason`/`terminal-reason`). Those fire on a CLI-level failure — a rejected flag, an expired login — rather than on anything a session does, so a stub is a closer model of them than it was of the four above, and provoking them live would mean breaking the CLI rather than the work.
-- **Nothing but wiki prose has run unattended.** Both trial items were chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `revise` does not exempt from sign-off. The routing trial does not change this: it priced two tiers on prose, not on the work the routing table's expensive half is written for.
+- **Nothing but wiki prose has run unattended.** Both trial items were chosen to be cheap to be wrong about, so the pipeline is unproven on the tasks it exists to serve: code, notebooks, proofs — anything whose deliverable `document-revise` does not exempt from sign-off. The routing trial does not change this: it priced two tiers on prose, not on the work the routing table's expensive half is written for.
 - **The routing trial is two tasks, one of each tier, on one repo.** It shows that a cheap tier *can* fail the protocol while doing the work, not how often; and it says nothing about `fable`, nor about either tier on a paclet or notebook task, where an MCP-heavy preamble is in play.
 - **The `(human)` marker and `> Autonomous: allowed` both work.** `AutoRunTrial` carries them; selection accepted the item and the gate halted on the marked task, as specified.
 - **Nothing has yet run unattended that needed a tool the environment did not already allow.** The defaults now carry the Wolfram MCP set, but that was written from `CLAUDE.md`'s policy rather than from a run demanding it, because in this environment a run cannot demand it. Whether the set is *sufficient* for a real notebook or paclet task is unmeasured, and no halt will tell you here — only a narrow settings file elsewhere would.
@@ -397,7 +397,7 @@ The run also cost one **operator** finding, recorded in [the runbook](AutoRunOpe
 
 ## See also
 
-- [The `/auto-run` operator runbook](AutoRunOperations.md) — the operating half of this article: what to do when a run halts, how to read a digest, and how a branch reaches `main`
+- [The `/backlog-run-scheduled` operator runbook](AutoRunOperations.md) — the operating half of this article: what to do when a run halts, how to read a digest, and how a branch reaches `main`
 - [The headless model and effort surface](HeadlessModelSurface.md) — `--model` and `--effort` on `claude -p`, measured on 2.1.235: which aliases resolve, which bad values halt, and why `modelUsage` names a model the task did not run on
 - [The work item file format](ItemFileFormat.md) — T3: the five sections, and why `## Hand-off` is where this loop reads an item's state
 - [Session Information Budget](SessionInformationBudget.md) — T1: the fixed preamble term this loop pays per task

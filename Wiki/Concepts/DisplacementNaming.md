@@ -2,7 +2,7 @@
 
 *[ LLM Generated ]*
 
-Domain notes evicted from the `new-research-notebook` skill by `AuditFixes` T7.
+Domain notes evicted from the `paper-create-notebook` skill by `AuditFixes` T7.
 They belong in the graph-displacement work's home project (the Infrageometry line of research), which has no wiki yet — **move this article there when it gains one**.
 The skill keeps only the generic principle (name by closure, record the convention in a Remark); the worked case lives here.
 
@@ -28,8 +28,8 @@ Full enumeration on a small object beats sampling on a large one, and it catches
 
 ## Infrageometry specifics
 
-The research notebooks on this topic copy their example-graph constructions verbatim from Infrageometry's `Kernel/ExampleGraphs.wl` so each notebook is self-contained, and the repo README's `## 📓 Research Notebooks` table (rows `| Notebook | Description | Link |`, link anchored on "Wolfram Cloud") is the publication index the `new-research-notebook` skill's *publish* step mirrors.
+The research notebooks on this topic copy their example-graph constructions verbatim from Infrageometry's `Kernel/ExampleGraphs.wl` so each notebook is self-contained, and the repo README's `## 📓 Research Notebooks` table (rows `| Notebook | Description | Link |`, link anchored on "Wolfram Cloud") is the publication index the `paper-create-notebook` skill's *publish* step mirrors.
 
 ## See also
 
-- [MarkdownToNotebook](../Resources/MarkdownToNotebook.md) — the parser half of the new-research-notebook pipeline
+- [MarkdownToNotebook](../Resources/MarkdownToNotebook.md) — the parser half of the paper-create-notebook pipeline

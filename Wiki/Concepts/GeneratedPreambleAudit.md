@@ -3,9 +3,9 @@
 *[ LLM Generated ]*
 
 What the `CLAUDE.md` this plugin *generates* costs every session of every scaffolded project.
-Measured 2026-07-28 for `EvaluateWorkItemsEfficiency` T9, applying the must-be-resident test of [Preamble audit](PreambleAudit.md) to `skills/new-project/assets/` rather than to this repo's own `CLAUDE.md`.
+Measured 2026-07-28 for `EvaluateWorkItemsEfficiency` T9, applying the must-be-resident test of [Preamble audit](PreambleAudit.md) to `skills/project-create/assets/` rather than to this repo's own `CLAUDE.md`.
 
-T6 audited the plugin's `CLAUDE.md` and left this explicitly open: `new-project` appends `code_style_template.md` to `claude_template.md` (or `math_claude_template.md`), producing 10.5 kB or 12.6 kB auto-loaded into every downstream session, "two thirds of it the code-style block", and it had never been put to the test.
+T6 audited the plugin's `CLAUDE.md` and left this explicitly open: `project-create` appends `code_style_template.md` to `claude_template.md` (or `math_claude_template.md`), producing 10.5 kB or 12.6 kB auto-loaded into every downstream session, "two thirds of it the code-style block", and it had never been put to the test.
 This is that audit.
 
 ## The headline: it does not have T6's defect
@@ -28,15 +28,15 @@ Being the largest block made the code-style template the natural suspect and it 
 
 ## Three real findings, all in the remaining 18 %
 
-**`## Work` was a third copy.** 607 B (standard) / 647 B (math) restating the conventions of `Work/README.md` — which every scaffold *also* writes, from `work_readme_template.md`, 1,153 B, and which `next-session` step 1 opens by name.
-Its two bullets additionally restated the `work` and `next-session` slash commands, whose full `description:` frontmatter the harness injects unconditionally.
+**`## Work` was a third copy.** 607 B (standard) / 647 B (math) restating the conventions of `Work/README.md` — which every scaffold *also* writes, from `work_readme_template.md`, 1,153 B, and which `backlog-run` step 1 opens by name.
+Its two bullets additionally restated the `backlog-add` and `backlog-run` slash commands, whose full `description:` frontmatter the harness injects unconditionally.
 Exactly T6's Skills-table shape: a lossy copy, paid every turn, of something already in context by another route.
 One sentence in it was neither — *durable knowledge goes in `Wiki/`, plans and progress go in `Work/`* — and that sentence is genuine policy, because a session that does not know the split writes its findings into the wrong file without ever asking.
 Cut to that sentence plus a pointer: 206 B / 279 B.
 
 **The math template reproduced the Skills table in miniature.** `## Skills tuned for this project type`, 490 B, listing six skills whose descriptions the harness already injects as 9,613 B across 21 skills.
-Two of the six (`search-math`, `lean`) already name math-research in their own descriptions, so the curation added little that was not derivable.
-Deleted, not moved — the same call T6 made — with the one non-derivable fact (that `new-notebook` has a `theorem-proof` template type) folded into `## Working style`, which is resident policy anyway.
+Two of the six (`wiki-search-math`, `paper-lean`) already name math-research in their own descriptions, so the curation added little that was not derivable.
+Deleted, not moved — the same call T6 made — with the one non-derivable fact (that `notebook-create` has a `theorem-proof` template type) folded into `## Working style`, which is resident policy anyway.
 
 **Two auto-loaded files gave contradictory instructions.** This is the finding worth the task.
 The user's global `~/.claude/CLAUDE.md` says *"Concise code, no comments or docstrings unless explicitly requested."*
@@ -79,7 +79,7 @@ A scaffolded project's fixed preamble, in bytes:
 | global `~/.claude/CLAUDE.md` | 4,922 | 4,922 |
 | `Work/README.md` | 1,153 | 1,153 |
 | skill `description:` frontmatter (harness-injected) | 9,613 | 9,613 |
-| `next-session` + `revise` | 10,936 | 10,936 |
+| `backlog-run` + `document-revise` | 10,936 | 10,936 |
 | **total** | **36,922** | **38,613** |
 
 The generated `CLAUDE.md` is 28 % / 31 % of it, and the harness-injected skill descriptions — which cannot be switched off — are nearly as large as the file being audited.
@@ -118,4 +118,4 @@ The classification is hand-encoded and asserted against the live templates, so e
 - [Preamble audit](PreambleAudit.md) — the same test applied to the plugin's own `CLAUDE.md`, which left this task open
 - [Autonomous Pipeline](AutonomousPipeline.md) — the token floor that bounds what any preamble cut can buy
 - [Session Information Budget](SessionInformationBudget.md) — the measurement that made the preamble the thing to audit
-- `skills/new-project/assets/` — the three templates measured here
+- `skills/project-create/assets/` — the three templates measured here

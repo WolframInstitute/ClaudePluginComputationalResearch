@@ -7,12 +7,12 @@ Decided 2026-08-21 for [`JournalAsPaperSink`](../../Work/Active/JournalAsPaperSi
 
 ## The gap, and how it got there
 
-The [four tiers](../../skills/new-research-notebook/style.md) route hedged assertions, verification ranges, heuristics, alternate proofs, failed attempts and unresolved `[lookup]` items to the journal, and promise that *cutting is a transfer, never a deletion*.
-The journal is **off by default** and `new-project` asks about it with a default of *no*.
+The [four tiers](../../skills/paper-create-notebook/style.md) route hedged assertions, verification ranges, heuristics, alternate proofs, failed attempts and unresolved `[lookup]` items to the journal, and promise that *cutting is a transfer, never a deletion*.
+The journal is **off by default** and `project-create` asks about it with a default of *no*.
 
 So the promise was conditional on a toggle most projects never set, and the tier design (4.13.0, 2026-08-18) did not notice — the gap was filed the same day it was introduced, by the session that introduced it.
-One line handled the off case, `new-research-notebook/SKILL.md` step 8: *"(or the Wiki when the journal is off)"*.
-That routes marginal material to a store `update-wiki` describes as an encyclopedia, *"not a journal"*.
+One line handled the off case, `paper-create-notebook/SKILL.md` step 8: *"(or the Wiki when the journal is off)"*.
+That routes marginal material to a store `wiki-update` describes as an encyclopedia, *"not a journal"*.
 A failed attempt has no honest shape as an encyclopedia article, so the fallback either distorted the Wiki or dropped the material — the one outcome the tier rule names and forbids.
 
 ## The rule: refuse to cut *silently*
@@ -29,7 +29,7 @@ That last clause is why the cost is near zero in practice: see *the data point t
 
 **Unattended, retain and report.**
 An autonomous run has no one to ask, so the choice is fixed to the second option and the list goes in the run digest.
-The operator meets it at the merge, which is where [the autonomous pipeline](AutonomousPipeline.md) already defers every other `revise` gate — so this needed no new mechanism, only a named default.
+The operator meets it at the merge, which is where [the autonomous pipeline](AutonomousPipeline.md) already defers every other `document-revise` gate — so this needed no new mechanism, only a named default.
 None of the three filed candidates addressed unattended mode at all.
 
 ## Why the three filed candidates were rejected
@@ -38,7 +38,7 @@ Each failed on one objection, and in each case the objection was a rule the plug
 
 | Candidate | Objection |
 |---|---|
-| **Auto-scaffold on first cut** — create `Journal/` and set the toggle | `new-project` *asks* whether to keep a journal, default no. Auto-scaffolding overrides an answer the user was explicitly invited to give, and writes their `CLAUDE.md` to do it. Breaking "do not nag" is the lesser fault; flipping a user-owned toggle unprompted is the greater one. |
+| **Auto-scaffold on first cut** — create `Journal/` and set the toggle | `project-create` *asks* whether to keep a journal, default no. Auto-scaffolding overrides an answer the user was explicitly invited to give, and writes their `CLAUDE.md` to do it. Breaking "do not nag" is the lesser fault; flipping a user-owned toggle unprompted is the greater one. |
 | **A terminal overflow section in the paper** | Puts hedges and failed attempts in the user-owned deliverable, the one destination `style.md` names with *never*. Also needs a prescribed section, against the 2026-08-18 decision that sections are not prescribed and the mathematics decides the shape. |
 | **Refuse to cut** (as filed) | The material *stays in the paper*, so it floods exactly as the overflow section does, without even a section to contain it. |
 
@@ -56,13 +56,13 @@ A skill advertising itself would fire on schedule; this fires on a condition, an
 
 ## The surface was four files, not three
 
-The Spec named `style.md`, `journal/SKILL.md` and `new-research-notebook` step 8.
-`new-paper/SKILL.md` carries the same unconditional promise in two places (§ *Tiers*, and *Move, do not drop*) and was missed, because the guide is shared by both paths while each path restates it.
+The Spec named `style.md`, `journal/SKILL.md` and `paper-create-notebook` step 8.
+`paper-create/SKILL.md` carries the same unconditional promise in two places (§ *Tiers*, and *Move, do not drop*) and was missed, because the guide is shared by both paths while each path restates it.
 
 The rule is therefore written **once**, in `style.md` § *When the journal is off*, and the other four sites link to it rather than restating it — the same one-fact-one-destination discipline the [item file format](ItemFileFormat.md) applies to work items.
 Two checklist lines that asserted *"everything cut is in the journal"* were also unconditional and now name the off case.
 
-A fifth site was left alone deliberately: `new-research-notebook`'s frontmatter `description:`, which is auto-loaded into every session and where added length has [a measured cost](PreambleAudit.md).
+A fifth site was left alone deliberately: `paper-create-notebook`'s frontmatter `description:`, which is auto-loaded into every session and where added length has [a measured cost](PreambleAudit.md).
 It says marginal material goes to the journal, which is incomplete rather than wrong.
 
 ## What T2 found by building one
@@ -75,7 +75,7 @@ All three faults are invisible from the design side, which is the argument for b
 
 ### The ruling sat at the wrong step
 
-`new-research-notebook` step 8 handed cut material to the journal *after* steps 4–7 — convert, evaluate, deploy, link from the README.
+`paper-create-notebook` step 8 handed cut material to the journal *after* steps 4–7 — convert, evaluate, deploy, link from the README.
 Option 2 rewrites the source, so a ruling taken at step 8 arrives after the document it changes has been published.
 The prompt now fires at the tier sort, step 2, where the cut is actually made, and step 8 only carries out a ruling already taken.
 
@@ -100,7 +100,7 @@ What has still never run is a headless session *writing* such a list — the rep
 
 ### Two build-path findings, incidental to the rule
 
-- **The drift fingerprint does not see inside cell groups.** Implemented as [fingerprint.md](../../skills/new-research-notebook/fingerprint.md) specified it — level `{1}` — the stamp covered 38 of the document's cells and missed 11: every Example's `Input` and `Output`, folded into groups by `FoldExampleGroups`, and the whole folded *Initialization* section. The drift check reported clean because both sides used the same level, so all of the document's code sat outside drift detection and nothing said so. The spec now requires the walk to enter `CellGroupData`.
+- **The drift fingerprint does not see inside cell groups.** Implemented as [fingerprint.md](../../skills/paper-create-notebook/fingerprint.md) specified it — level `{1}` — the stamp covered 38 of the document's cells and missed 11: every Example's `Input` and `Output`, folded into groups by `FoldExampleGroups`, and the whole folded *Initialization* section. The drift check reported clean because both sides used the same level, so all of the document's code sat outside drift detection and nothing said so. The spec now requires the walk to enter `CellGroupData`.
 - **Initialization is last in the document and first in the build.** The Examples call functions defined in the folded *Initialization* section at the end, so the build has to evaluate that section before any Example output can be embedded. Nothing in the pipeline documentation says so, and a build that follows document order silently embeds four `$Failed`s.
 
 ### The document is kept

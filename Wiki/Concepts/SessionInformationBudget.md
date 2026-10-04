@@ -2,10 +2,10 @@
 
 *[ LLM Generated ]*
 
-What one `next-session` run must read before it can do useful work, and what it writes so the next run can start cold.
+What one `backlog-run` run must read before it can do useful work, and what it writes so the next run can start cold.
 Measured 2026-07-27 from git history over the six items in `Work/Done/`, for `EvaluateWorkItemsEfficiency` T1.
 
-> **The figures below are a 2026-07-27 snapshot; the script no longer reproduces them.** Re-running it on 2026-07-28 reports a fixed overhead of **18,449 B, not 27,671**, over **40 session states, not 22**. Neither is an error in the measurement — the repo moved underneath it. Three causes, in order of size: T6 cut `CLAUDE.md` from 16,650 to 5,254 B (see [Preamble audit](PreambleAudit.md)) while `next-session`, `revise` and `Work/README.md` all grew; six further sessions happened; and T5's harvest commit touched three closed items, adding a non-session state to each — the caveat in *Item files are edited by sessions belonging to other items*, below, now includes this article's own item.
+> **The figures below are a 2026-07-27 snapshot; the script no longer reproduces them.** Re-running it on 2026-07-28 reports a fixed overhead of **18,449 B, not 27,671**, over **40 session states, not 22**. Neither is an error in the measurement — the repo moved underneath it. Three causes, in order of size: T6 cut `CLAUDE.md` from 16,650 to 5,254 B (see [Preamble audit](PreambleAudit.md)) while `backlog-run`, `document-revise` and `Work/README.md` all grew; six further sessions happened; and T5's harvest commit touched three closed items, adding a non-session state to each — the caveat in *Item files are edited by sessions belonging to other items*, below, now includes this article's own item.
 > Every **conclusion** survives: the fixed term still exceeded the item file in 25 of 40 states, and the partial-read rule still avoids 22 %. What changed is that the fixed term is now smaller in absolute bytes because it was deliberately cut — which is the lever this article identified.
 
 ## Scope limit — read this first
@@ -23,8 +23,8 @@ Any claim of the form "a session costs X" does not follow from this article.
 | File | Bytes | Why it is read |
 |---|---|---|
 | `CLAUDE.md` | 16,650 | auto-loaded into context |
-| `skills/next-session/SKILL.md` | 6,096 | the command loads it |
-| `skills/revise/SKILL.md` | 3,216 | step 0 instructs reading it |
+| `skills/backlog-run/SKILL.md` | 6,096 | the command loads it |
+| `skills/document-revise/SKILL.md` | 3,216 | step 0 instructs reading it |
 | `Work/README.md` | 1,709 | step 1 locates the item through it |
 | **total** | **27,671** | |
 
@@ -49,7 +49,7 @@ Discussion of this system has been about item-file bloat; the measurement says t
 
 ## The partial-read rule saves 22 %, and nothing at all early
 
-`next-session` step 2 says: full Spec and Tasks, only the **tail** of Progress.
+`backlog-run` step 2 says: full Spec and Tasks, only the **tail** of Progress.
 Applying that rule to each measured state, against reading the file whole:
 
 | State entering | file | rule + Decisions | avoided |
@@ -111,7 +111,7 @@ It also means an autonomous loop cannot assume an item file only changes when th
 The per-task information budget is real and it is bad, but not where the Spec guessed.
 Ranked by bytes:
 
-1. **`CLAUDE.md` + skill preamble, 27.7 kB, paid unconditionally, never pruned** — the largest single lever, and untouched by anything in `next-session`.
+1. **`CLAUDE.md` + skill preamble, 27.7 kB, paid unconditionally, never pruned** — the largest single lever, and untouched by anything in `backlog-run`.
 2. **Linear Progress growth, ~4.3 kB/session** — the term the partial-read rule targets, worth 22 % of a smaller number.
 3. **Uncosted `Decisions` and amendable `Spec`** — small today, unbounded by construction.
 

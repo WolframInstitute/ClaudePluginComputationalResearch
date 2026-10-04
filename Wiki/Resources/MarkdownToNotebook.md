@@ -33,14 +33,14 @@ Its build script is 55% workaround by line, but those shims repair Documentation
 
 ## Use in this project
 
-Backs `new-notebook`'s **rich mode** — the auto-detected second conversion engine, used when a source has YAML frontmatter or LaTeX math.
-See [new-notebook](../../skills/new-notebook/SKILL.md), section *Conversion engine — built-in vs rich*.
+Backs `notebook-create`'s **rich mode** — the auto-detected second conversion engine, used when a source has YAML frontmatter or LaTeX math.
+See [notebook-create](../../skills/notebook-create/SKILL.md), section *Conversion engine — built-in vs rich*.
 `paclet-docs` does not use it; that skill uses the official MCP doc tools.
 
 Called as the **local file at a pinned SHA**, via `Get`, with `Template: Default` and `"Evaluate" -> False`.
 Not called as the deployed cloud resource: that lives on a personal `obj/nikm/` path that can disappear, and reports `"Version" -> None` with no `"LatestUpdate"`, so drift is undetectable.
 
-Also backs [new-research-notebook](../../skills/new-research-notebook/SKILL.md), but only as the **parser half** of a two-half pipeline: the converter produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, the equation numbering, and the citations.
+Also backs [paper-create-notebook](../../skills/paper-create-notebook/SKILL.md), but only as the **parser half** of a two-half pipeline: the converter produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, the equation numbering, and the citations.
 The join works because a Markdown bold run arrives as `StyleBox[ "Definition.", FontWeight -> "Bold" ]` at the head of the cell's `TextData` — exactly the shape `markerSplit` already matched.
 
 That split is forced by what the converter does **not** have.
@@ -50,7 +50,7 @@ Even under `Chapter` the environments are thin: every label shares the single `T
 There is no bibliography engine; `## References` under `Chapter` yields `ReferenceSection` / `Reference` styling only.
 
 The reverse direction stays unused, now for a second measured reason beyond the frontmatter and table losses above: on a notebook carrying typeset math, `ExportString[ Import[ path ], "Markdown" ]` replaces every formula, citation button and table with a reference to a nonexistent PNG, mojibakes non-ASCII characters, and returns `wolfram` fences as broken literal source containing `$Failed`.
-`new-research-notebook` therefore generates one-way and detects `.nb` edits with a per-cell `CellID` fingerprint instead.
+`paper-create-notebook` therefore generates one-way and detects `.nb` edits with a per-cell `CellID` fingerprint instead.
 
 Two rich-mode TeX losses worth carrying, measured at this SHA: `\to` and `\mapsto` become an **empty string** (`\rightarrow`, `\longrightarrow`, `\hookrightarrow` and pasted Unicode all work), and `\tag{…}` is not understood — it renders literally as `(tag)`.
 Also, the converter's own table styles `2ColumnTableMod` / `TableText` / `ModInfo` are defined in neither `Default.nb` nor MathNotebook's `AMSArticle.nb`, so pipe tables render unstyled under both.
@@ -62,7 +62,7 @@ Each of these fails silently, and two produced a check that could not fail:
 
 - **`##` is already `"Section"`.** The built-in pipeline's heading down-shift must **not** run under rich mode.
 - **`ExportString[Notebook[cells], "NB"]` drops the converter's options** — `CreateCellID`, `StyleDefinitions` — so rebuild with `ReplacePart[nb, 1 -> cells]` rather than re-wrapping.
-- **`CreateCellID -> True` is a front-end instruction, not a stamp.** It does not put `CellID`s on programmatically built cells. The first version of `new-research-notebook`'s fingerprint was therefore vacuous: it recorded an empty association and every check passed. Assign the `CellID`s yourself.
+- **`CreateCellID -> True` is a front-end instruction, not a stamp.** It does not put `CellID`s on programmatically built cells. The first version of `paper-create-notebook`'s fingerprint was therefore vacuous: it recorded an empty association and every check passed. Assign the `CellID`s yourself.
 - **Fingerprint after the round-trip, never in memory.** `Export` normalises cell content, so hashing in-memory cells and comparing against the re-imported file reported 6 of 15 cells edited when one had changed. Export, re-import, fingerprint *that*, write the stamp back.
 
 The converter also stamps `CellLabel -> "In[n]:= "` on cells even under `"Evaluate" -> False`, so rich mode strips it.
@@ -104,8 +104,8 @@ git -C MarkdownToNotebook checkout 204db7c
 
 ## See also
 
-- [Status](../Status.md) — which engine `new-notebook` uses when
-- [MathNotebook](MathNotebook.md) — the post-processing half of the `new-research-notebook` pipeline
+- [Status](../Status.md) — which engine `notebook-create` uses when
+- [MathNotebook](MathNotebook.md) — the post-processing half of the `paper-create-notebook` pipeline
 - [PureMath](PureMath.md) — the existence proof at 1,480 pages, and where the shim-tax figure comes from
 - [Progress Harvest](../Concepts/ProgressHarvest.md) — the harvest that added the traps and the Claude-side sections
 - `Work/Done/2026-07-27-EvaluateMarkdownToNotebook.md` and `Work/Done/2026-07-27-AdoptMarkdownToNotebook.md` — the evaluation and adoption decisions behind this pin

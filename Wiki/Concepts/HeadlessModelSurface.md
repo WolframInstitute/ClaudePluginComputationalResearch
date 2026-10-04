@@ -130,14 +130,14 @@ A per-task ceiling scaled to the routed tier was not available when that cap was
 ## What this does not settle
 
 - **Whether `effortLevel` in the user's settings is inherited headless is unresolved.** The only instrument available is the thinking-token count, and it is too noisy to answer: with no flag the same prompt produced 0, 74, and 172 thinking tokens on three attempts. It matters, because if it *is* inherited then every unannotated autonomous task on this machine has been running at `xhigh`, and the annotation must set effort explicitly rather than relying on a default. Settling it needs an instrument that observes the request rather than the response.
-- **Nothing was measured on a real task.** All figures come from one-turn probes on trivial prompts in an empty directory. What a *routed* task costs, and whether sonnet can actually close a mechanical `next-session` task, is T3's live run and not this article's.
+- **Nothing was measured on a real task.** All figures come from one-turn probes on trivial prompts in an empty directory. What a *routed* task costs, and whether sonnet can actually close a mechanical `backlog-run` task, is T3's live run and not this article's.
 - **The routing table itself is unmeasured.** Which tier suffices for which class of task is the item's central claim and is so far a prior, not a result. The `low`-effort arithmetic failures above are a warning that the cheap side of the table needs evidence before it is trusted.
 - **`--model` was not tested against a paclet or notebook task**, where an MCP-heavy preamble and a 200,000-token window could interact — haiku's window is a fifth of the others', and this repo's cold start alone was measured at ~31 k tokens.
 
 ## See also
 
-- [The autonomous next-session pipeline](AutonomousPipeline.md) — the loop these flags are for, its stop conditions, and the earlier `claude -p` measurements
-- [The `/auto-run` operator runbook](AutoRunOperations.md) — what the operator does when a run halts
+- [The autonomous backlog-run pipeline](AutonomousPipeline.md) — the loop these flags are for, its stop conditions, and the earlier `claude -p` measurements
+- [The `/backlog-run-scheduled` operator runbook](AutoRunOperations.md) — what the operator does when a run halts
 - [The work item file format](ItemFileFormat.md#the-per-task-routing-annotation) — where the per-task annotation lives, and why it has that shape
 - `Work/Done/2026-08-20-ModelRouting.md` — the item this serves
 - [Status](../Status.md)

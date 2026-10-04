@@ -6,8 +6,8 @@ Inventory — layout, scripts, commands, templates, project types, notebook conv
 The skills themselves need no lookup: each one's `description:` frontmatter is already in context.
 This file carries only what a session must know *before* it knows to look something up.
 
-Every session follows the [revise](skills/revise/SKILL.md) protocol for code, functionality, plans, and deliverables: generate, present, **wait** for the user.
-Wiki prose is exempt, and autonomous runs defer the gate to branch + digest (`revise` § *Autonomous mode*).
+Every session follows the [document-revise](skills/document-revise/SKILL.md) protocol for code, functionality, plans, and deliverables: generate, present, **wait** for the user.
+Wiki prose is exempt, and autonomous runs defer the gate to branch + digest (`document-revise` § *Autonomous mode*).
 
 ## Source formatting
 
@@ -27,7 +27,7 @@ Every running kernel consumes one of the license's `$MaxLicenseProcesses` seats:
 Once seats are saturated, a new `wolframscript` call fails with a license error — the common failure mode when the official + unofficial Wolfram MCP servers and a front-end are all running.
 
 **The plugin is MCP-first.** All Wolfram-touching skills prefer the official AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator`, `WriteNotebook`, `ReadNotebook`, `TestReport`, `CodeInspector`, `SymbolDefinition`, `WolframLanguageContext`) — one persistent kernel, no extra seat.
-The `.wls` scripts (paclet build/publish, notebook generation, `search_*`, `cite`) are kept as a **fallback** for when no MCP is attached (headless/cron runs) or for bulk batch use — they are not deleted.
+The `.wls` scripts (paclet build/publish, notebook generation, `search_*`, `paper-cite`) are kept as a **fallback** for when no MCP is attached (headless/cron runs) or for bulk batch use — they are not deleted.
 
 Before spawning `wolframscript`, a skill checks headroom on the MCP (this costs no seat — it runs on the already-running kernel):
 
@@ -36,7 +36,7 @@ With[{free = $MaxLicenseProcesses - $LicenseProcesses}, free]
 ```
 
 If `free <= 0`, the skill does **not** spawn `wolframscript`; it routes the work through the MCP or asks the user to free a seat.
-`/check-env` reports live headroom and flags when two Wolfram MCP servers are configured at once.
+`/project-check-env` reports live headroom and flags when two Wolfram MCP servers are configured at once.
 This policy is **detect + warn** — it never hard-blocks.
 The per-skill "Kernel execution (license-aware)" blocks are the short reminders of this rule; this section is authoritative.
 

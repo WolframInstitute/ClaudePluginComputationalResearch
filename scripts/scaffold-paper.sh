@@ -32,7 +32,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/project-create/assets"
 
 FORMAT="latex"
 FORCE=0
@@ -66,7 +66,7 @@ DATE="${8:-$(date +"%d %B %Y" | sed 's/^0//')}"
 PAPER_DIR="$PROJECT_DIR/Research"
 if [ -d "$PROJECT_DIR/Paper" ]; then
     PAPER_DIR="$PROJECT_DIR/Paper"
-    echo "new-paper: $PROJECT_DIR/Paper exists, so the paper goes there. Research/ is the new place for papers; nothing is moved."
+    echo "paper-create: $PROJECT_DIR/Paper exists, so the paper goes there. Research/ is the new place for papers; nothing is moved."
 fi
 if [ "$SUBFOLDER" -eq 1 ]; then
     PAPER_DIR="$PAPER_DIR/$NAME"
@@ -81,7 +81,7 @@ fi
 
 # Never overwrite a document someone is writing.
 if [ "$FORCE" -ne 1 ] && [ -e "$SOURCE" ]; then
-    echo "new-paper: $SOURCE exists — refusing to overwrite." >&2
+    echo "paper-create: $SOURCE exists — refusing to overwrite." >&2
     echo "  Give a different --name, or pass --force to replace it." >&2
     exit 1
 fi

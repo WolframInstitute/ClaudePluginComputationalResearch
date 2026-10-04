@@ -1,7 +1,0 @@
-Build a research notebook on the given topic using the `new-research-notebook` skill.
-
-A mathematics paper published as a Wolfram notebook, written for a human who wants to check it. An introduction stating the results, then sections in the order the mathematics needs. The body carries only settled statements — proved here in full, or cited to a source that was read; experiments go to a final Ruliology section and everything below the settled tier goes to the journal. Proofs are complete prose with no gaps and no step left to the reader. One example per result, answering with a geometry illustration or one small algebraic value. Statements, equations and sections are numbered by the front end and cited by tag; no number is typed into the source. Statements use MathNotebook environments on the PlainArticle stylesheet and are written to translate directly to Lean. The author is the model plus the date, with the operator and the session's intention in a footnote.
-
-The source of truth is `Research/Artifacts/<Topic>_<YYMMDD>.md` (`Research/<Topic>_<YYMMDD>.md` for a document in progress), and generation is one-way: the user reads the `.nb` and edits the `.md`. A per-cell fingerprint detects an edit made in the `.nb` and stops the build rather than overwrite it. The evaluated notebook is deployed public to the Wolfram Cloud and linked from the repo README's "Research Notebooks" table.
-
-Pass the topic as argument (e.g., `/new-research-notebook displacement algebra on graphs`). Otherwise infer it from the current work item or ask.

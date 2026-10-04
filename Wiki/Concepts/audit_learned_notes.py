@@ -5,7 +5,7 @@ Audits where the knowledge in `Work/` item files actually belongs, for
 EvaluateWorkItemsEfficiency T2. Extracts every claim-line of every
 `- **Learned:**` note across all items, applies the hand classification in
 CLASS below, and prices the misplacement against the read model of
-next-session step 2.
+backlog-run step 2.
 
 Claim-lines, not notes, are the unit: the sources use `Semantic line breaks: on`,
 so one source line is one sentence is (near enough) one claim, and every note
@@ -203,7 +203,7 @@ for item in dict.fromkeys(r[0] for r in rows):
           + f" {t:>6}  {100*by['D']/t:>3.0f}%")
 
 print("\nWHAT A SESSION PAYS FOR THE LEARNED NOTES IT READS")
-print("  next-session step 2: tail of 2 Progress blocks. Everything older is")
+print("  backlog-run step 2: tail of 2 Progress blocks. Everything older is")
 print("  read-as-skim or skipped, so its durable content is paid for and hidden.")
 for path in items():
     bs = blocks(path)

@@ -39,8 +39,8 @@ What you may do:
 
 ## What you need
 
-1. **Paclet name or directory.** Detect per [build-paclet § *Detecting the
-   paclet directory*](../build-paclet/SKILL.md#detecting-the-paclet-directory);
+1. **Paclet name or directory.** Detect per [paclet-build § *Detecting the
+   paclet directory*](../paclet-build/SKILL.md#detecting-the-paclet-directory);
    resolve the absolute `<pacletDir>` once.
 2. **The exported symbols.** Prefer the `"Symbols"` list in the `Kernel`
    extension of `PacletInfo.wl` — it is the author's own statement of the public
@@ -70,7 +70,7 @@ List the symbols you found and the source you found them in, then **stop and get
 agreement** on the list and on which sections each page will carry. Generating
 thirty pages the author did not want is thirty pages of `.nb` to delete.
 
-Follow the [revise](../revise/SKILL.md) protocol: **generate one page first**,
+Follow the [document-revise](../document-revise/SKILL.md) protocol: **generate one page first**,
 show it, and only continue once its shape is approved. Page shape is the kind of
 thing that is wrong in the same way thirty times.
 
@@ -143,7 +143,7 @@ it opens, and the `paclet:` URI resolves to nothing. Add it if absent:
 A malformed or undeclared page fails **silently**. So verify, do not assume:
 build and install with docs bundled — `CreatePacletArchive` then
 `PacletInstall[ archive, ForceVersionInstall -> True ]` — and run the
-[build-paclet § *Docs-resolution check*](../build-paclet/SKILL.md#docs-resolution-check)
+[paclet-build § *Docs-resolution check*](../paclet-build/SKILL.md#docs-resolution-check)
 on every URI.
 
 `mcp__Wolfram__CheckPaclet` is **not** a paclet linter and does not belong here.
@@ -170,7 +170,7 @@ rather than assuming the docs ship.
 
 ## Shipping the pages
 
-[publish-paclet](../publish-paclet/SKILL.md) bundles `Documentation/` by default,
+[paclet-publish](../paclet-publish/SKILL.md) bundles `Documentation/` by default,
 verifies every URI resolves from the install, and then deploys the pages as public
 cloud notebooks with an HTML index
 ([deploy_paclet_docs.wl](../../scripts/deploy_paclet_docs.wl)) so a reader who has
@@ -179,11 +179,11 @@ the README.
 
 ## Integration with other skills
 
-- [build-paclet](../build-paclet/SKILL.md) — directory detection and the
+- [paclet-build](../paclet-build/SKILL.md) — directory detection and the
   *Docs-resolution check* are stated there; this skill uses both.
-- [publish-paclet](../publish-paclet/SKILL.md) — bundles and deploys the pages
+- [paclet-publish](../paclet-publish/SKILL.md) — bundles and deploys the pages
   this skill writes (see *Shipping the pages*).
-- The `new-notebook` pipeline is **not** used here — doc pages go through the
+- The `notebook-create` pipeline is **not** used here — doc pages go through the
   official MCP doc tools.
 
 ## When NOT to use
@@ -191,4 +191,4 @@ the README.
 - Guide pages — a human deliverable, out of scope by design (see the *Guide
   pages* section).
 - Presentation notebooks for humans reading top-to-bottom — that is
-  `new-notebook` / `new-research-notebook`.
+  `notebook-create` / `paper-create-notebook`.

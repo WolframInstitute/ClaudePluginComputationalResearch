@@ -14,7 +14,7 @@ It is not a dependency of this plugin — nothing here calls it. It is read for 
 
 ## Code conventions adopted from it
 
-Adopted 2026-09-26 into `skills/new-project/assets/code_style_template.md`, from PureMath's `GUIDE.md` (1,900 lines, read at `f5b12e13`):
+Adopted 2026-09-26 into `skills/project-create/assets/code_style_template.md`, from PureMath's `GUIDE.md` (1,900 lines, read at `f5b12e13`):
 
 - bad input is a non-match that stays unevaluated; a `Failure` via `Enclose`/`Confirm` only for a computation that started and could not finish; no `$Failed`, `Missing`, `Return`;
 - predicates never guess and are never stricter than the functions they guard;

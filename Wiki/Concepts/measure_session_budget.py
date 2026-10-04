@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Regenerate every number in Wiki/Concepts/SessionInformationBudget.md from git history.
 
-Measures the bookkeeping information budget of the Work/ + next-session system:
+Measures the bookkeeping information budget of the Work/ + backlog-run system:
 fixed per-session overhead, item-file growth, what the partial-read rule of
-next-session step 2 actually saves, and how much of a mature item file is inert.
+backlog-run step 2 actually saves, and how much of a mature item file is inert.
 
 Gotcha: `git log --follow --reverse` collapses to one commit (--follow needs the
 reverse-chronological walk). Use --follow alone and reverse in Python.
@@ -13,7 +13,7 @@ import os, re, subprocess
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-FIXED = ["CLAUDE.md", "skills/next-session/SKILL.md", "skills/revise/SKILL.md", "Work/README.md"]
+FIXED = ["CLAUDE.md", "skills/backlog-run/SKILL.md", "skills/document-revise/SKILL.md", "Work/README.md"]
 SECTIONS = ("Spec", "Tasks", "Progress", "Decisions")
 
 
@@ -63,7 +63,7 @@ def history(path):
 
 
 def rule_bytes(sect, blocks):
-    """next-session step 2: full preamble/Spec/Tasks, Progress tail of 2, plus Decisions."""
+    """backlog-run step 2: full preamble/Spec/Tasks, Progress tail of 2, plus Decisions."""
     tail = sum(b for _, b in blocks[-2:])
     intro = sect.get("Progress", 0) - sum(b for _, b in blocks)
     return (sect["preamble"] + sect.get("Spec", 0) + sect.get("Tasks", 0)

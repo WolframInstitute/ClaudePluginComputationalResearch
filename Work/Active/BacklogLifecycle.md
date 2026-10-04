@@ -92,7 +92,6 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 
 ## Tasks
 
-- [ ] T1 (model: sonnet, effort: medium — mechanical) — rename every skill and command to the table; fix every cross-reference, the templates and the scripts; `claude plugin validate` passes.
 - [ ] T2 (model: opus, effort: high — protocol writing) — `backlog-review` skill and command, lifting `work` § *Review*; `backlog-board` runs its steps for Accept / Send back.
 - [ ] T3 (model: opus, effort: high — protocol writing) — `backlog-info` skill and command.
 - [ ] T4 (human) — trial: one backlog check and one review of a real item.
@@ -100,11 +99,12 @@ The rename is a clean break: no alias stubs, a major version bump, and the old �
 
 ### Done
 
-(completed tasks move here with the session that closed them)
+- [x] T1 (model: sonnet, effort: medium — mechanical) — rename every skill and command to the table; fix every cross-reference, the templates and the scripts; `claude plugin validate` passes. Closed by S1.
+  Test: `ls skills commands` shows only `<area>-<word>` names; `bash scripts/test-auto-run-routing.sh` passes; `claude plugin validate .` passes; `/backlog-run` resolves.
 
 ## Hand-off
 
-Fresh item.
+T1 done: 25 skills and 28 commands renamed (git mv), cross-references rewritten across skills, commands, scripts, README, ARCHITECTURE, Wiki; Work/ history and this table left as written. README/ARCHITECTURE tables, version bump and blog post are T5. `backlog-review` and `backlog-info` do not exist yet (T2, T3).
 The README *Autolab* section was rewritten on 2026-10-03 with the five steps and the table, linking the new names to `skills/work/SKILL.md` until the skills exist.
 
 ## Decisions
@@ -122,3 +122,4 @@ The README *Autolab* section was rewritten on 2026-10-03 with the five steps and
 
 - **S0** 2026-10-03 — item filed from the operator's request; README section written first.
 - **R1** 2026-10-04 — refined with the operator: names `<area>-<word>` for every skill, the backlog family settled, review merges, tasks re-cut; moved to Ready.
+- **S1** 2026-10-05 — T1: renamed every skill and command to `<area>-<word>`, rewrote cross-references; validate and routing test pass; no alias stubs.

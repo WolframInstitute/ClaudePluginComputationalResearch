@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/project-create/assets"
 
 if [ $# -lt 1 ]; then
     echo "Usage: scaffold-paclet.sh <PacletName> [OrgName] [Topic] [Author] [Email] [OutputDir]" >&2
@@ -106,7 +106,7 @@ $PACLET_NAME/              <- repo root
 \`Work/\` holds execution state — what's being built now. Each file is one work
 item: a Spec, Tasks (one ≈ one session), a Hand-off, and a Progress log. An item's status is
 its folder (\`Backlog/Ready/Active/UnderReview/Done/Dropped\`), changed by \`git mv\`; \`Work/README.md\`
-indexes the active ones. Use \`/work <goal>\` to create one and \`/next-session\`
+indexes the active ones. Use \`/backlog-add <goal>\` to create one and \`/backlog-run\`
 to do one task per fresh session.
 
 ## Package system
@@ -133,7 +133,7 @@ wolframscript -f run_tests.wls
 
 Prompt tracking: **off**
 <!-- When on, generated artifacts record their originating prompt/intent in
-     Wiki/Prompts.md and carry an embedded back-pointer. Toggle with /provenance;
+     Wiki/Prompts.md and carry an embedded back-pointer. Toggle with /project-provenance;
      see the \`provenance\` skill. -->
 
 ## Scientific journal
@@ -143,7 +143,7 @@ Scientific journal: **off**
      structured, append-only stream of dated def/thm/rem/claim entries recording the
      math/physics content and main claims established, with resources cited into
      Journal/references.bib. Plain "on" = very concise; "on (verbose)" = fuller
-     detail. Toggle with /journal; see the \`journal\` skill. -->
+     detail. Toggle with /paper-journal; see the \`journal\` skill. -->
 EOF
 printf '\n' >> "$REPO_ROOT/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$REPO_ROOT/CLAUDE.md"

@@ -2,7 +2,7 @@
 
 *[ LLM Generated ]*
 
-What broke when [`style.md`](../../skills/new-research-notebook/style.md) was used for the first time on real documents.
+What broke when [`style.md`](../../skills/paper-create-notebook/style.md) was used for the first time on real documents.
 Measured 2026-08-20 for `ExercisePaperStyle`: T1 built [EquidistanceOddGirth](#the-document-under-test) as a notebook, and T2 re-set the same mathematics as a [scaffolded LaTeX paper](#the-latex-path--the-same-document-re-set).
 The corrections themselves are T3's; this article is the evidence they have to answer to.
 
@@ -55,12 +55,12 @@ Splitting that sentence hides which three geodesics the walk is made of, which i
 The 25-word rule is a prose rule and should say so.
 
 **Tag exactly when cited, but the SKILL invites tagging examples.**
-`new-research-notebook` says an `Example` numbers on the shared counter "so it is citable as Example 2.2", which reads as an instruction to tag it.
+`paper-create-notebook` says an `Example` numbers on the shared counter "so it is citable as Example 2.2", which reads as an instruction to tag it.
 Six tags were attached and never cited — the base definition, all three examples, one corollary and the question — and were deleted to satisfy § *Referencing*.
 An example is almost never cited, because the sentence above it already points at it; the same holds for a closing question.
 
 **The introduction cannot state results as numbered statements without numbering them twice.**
-`new-research-notebook` § *Structure* asks for an introduction whose results are each "a numbered statement whose body says where it is proved".
+`paper-create-notebook` § *Structure* asks for an introduction whose results are each "a numbered statement whose body says where it is proved".
 Statement numbers are per-section, so such a statement numbers 1.1 while the theorem it announces numbers 5.2, and the reader meets one result under two numbers.
 The introduction here states each result in prose citing the real tag ("by [Thm:Radius]"), which is what a paper does.
 
@@ -81,11 +81,11 @@ And semantic line breaks are safe in these sources — measured: a statement spl
 `MarkdownToNotebook` stamps every cell with a 19-digit `CellID`; `Export[…, "NB"]` drops those silently, and `AssignCellIDs` skips a cell that already has one.
 The first build shipped 8 fingerprinted cells out of 71 — the generator's own head and output cells, the only ones with kernel-assigned ids.
 Stripping `CellID` alongside `CellLabel` in the build's normalisation step, and running `AssignCellIDs` on the notebook `MathNotebookDocument` returns, gives 74 of 74.
-[build.md](../../skills/new-research-notebook/build.md) says to strip `CellLabel` only, and its pass order puts `AssignCellIDs` before `MathNotebookDocument`.
+[build.md](../../skills/paper-create-notebook/build.md) says to strip `CellLabel` only, and its pass order puts `AssignCellIDs` before `MathNotebookDocument`.
 
 **Outputs must be evaluated from the source text, never from the cell boxes.**
 A two-line `Input` cell holds both statements in one `RowBox` separated by `"\n"`, and `ToExpression[boxes, StandardForm, Hold]` reads that newline as multiplication: `(g = CycleGraph[4];) * InfraSceneHighlight[…]`.
-[output-embedding.md](../../skills/new-research-notebook/output-embedding.md) already says to parse the code string with `ToExpression[code, InputForm, Hold]`; the reason it is not optional belongs next to it.
+[output-embedding.md](../../skills/paper-create-notebook/output-embedding.md) already says to parse the code string with `ToExpression[code, InputForm, Hold]`; the reason it is not optional belongs next to it.
 
 **A Markdown H1 plus the frontmatter title gives two `Title` cells.**
 `ResearchHeadCells` builds the head from the frontmatter, so an `# Title` line in the source — the natural thing to write in Markdown — adds a second one.
@@ -196,11 +196,11 @@ The guide's own rules were corrected in place, as the item's Spec requires; the 
 | 25-word cap fails for proofs and the abstract | the cap is scoped to connecting prose; a proof deduction is governed by *one deduction per sentence* and an abstract sentence by the sentence count — `style.md` § *Length*, § *Proofs* |
 | 8-sentence proof trigger against the ban on shattering | the trigger counts one **run** of deductions, so a two-part proof is counted part by part, and § *Proofs* wins where the two disagree |
 | 3-paragraph introduction against "never two prose paragraphs in a row" | that rule governs prose *between statements*; the abstract, the introduction and the *Ruliology* entries are exempt, and a code block does not reset a run |
-| *Ruliology* has no home for its supporting code | notebook: the folded *Initialization* section; LaTeX/Typst: an appendix named once from *Ruliology* — `style.md` § *Ruliology*, `new-paper` |
+| *Ruliology* has no home for its supporting code | notebook: the folded *Initialization* section; LaTeX/Typst: an appendix named once from *Ruliology* — `style.md` § *Ruliology*, `paper-create` |
 | example budget counts source lines, not rendered ones | "three to ten lines **as the reader sees them**", wrapped to the text width by hand on a typeset path |
 | an Example answering with a picture, on a typeset path | the call plus a graphic exported from exactly that call, no `figure`/`\caption`, bound to the call in one unbreakable block |
-| the SKILL invited tagging examples | an `Example` is tagged only when something cites it, which is rare — `new-research-notebook` § *Examples and the fold* |
-| the introduction cannot state results as numbered statements | it states them in prose, each citing the tag where the result is proved — `new-research-notebook` § *Structure* |
+| the SKILL invited tagging examples | an `Example` is tagged only when something cites it, which is rare — `paper-create-notebook` § *Examples and the fold* |
+| the introduction cannot state results as numbered statements | it states them in prose, each citing the tag where the result is proved — `paper-create-notebook` § *Structure* |
 | a forward reference is invisible in a notebook | the checklist line now says to read every citation in order and check its target sits above it |
 | macros drift from the symbol they denote | one sentence in § *Notation*: take the shortest free name, never redefine an existing command |
 | `\cref` names everything "Theorem"; `nosort` missing | `macros_template.sty` ships `aliascnt` + `nosort`, copied from the paper's verified copy |

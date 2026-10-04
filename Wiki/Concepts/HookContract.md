@@ -21,4 +21,4 @@ a `.nb` path must exit 2 with the message on stderr, a non-`.nb` path must exit 
 
 ## See also
 
-- [The autonomous next-session pipeline](AutonomousPipeline.md) — the other place the plugin depends on harness behavior that must be verified live rather than assumed
+- [The autonomous backlog-run pipeline](AutonomousPipeline.md) — the other place the plugin depends on harness behavior that must be verified live rather than assumed

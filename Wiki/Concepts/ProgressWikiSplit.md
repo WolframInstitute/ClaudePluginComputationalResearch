@@ -70,10 +70,10 @@ That is the finding T3 has to act on, and it means the answer is not "write bett
 Counting only what was harvested *from* the work, the ratio is **8 : 1** against the Wiki.
 The script's aggregate ratio is lower and falling, but only because this item keeps adding its own articles to the denominator — that is not harvesting.
 
-This is a **backlog, not a verdict on `update-wiki`** — see the next section before reading it as one.
+This is a **backlog, not a verdict on `wiki-update`** — see the next section before reading it as one.
 
 **~30 kB of that durable content is structurally invisible at the moment it matters.**
-`next-session` step 2 reads the tail of Progress. At each item's final session, durable content in blocks below the tail:
+`backlog-run` step 2 reads the tail of Progress. At each item's final session, durable content in blocks below the tail:
 
 | item | `Did` below tail × 67 % | + `Learned` below tail | hidden |
 |---|---|---|---|
@@ -88,21 +88,21 @@ The Spec's worry was that a fact in Session 2's "Learned" is invisible to a tail
 
 **~8.7 kB is a second copy of something the same session wrote elsewhere.**
 14.3 % of the `Did` sample restates what that session had just put into `CLAUDE.md`, a skill file, or a wiki article — `AdoptMarkdownToNotebook` S4 spends four of twelve lines describing the two `SKILL.md` sections, the wiki article, and the `CLAUDE.md` section it had just written.
-The duplicate is not free, and it is the copy that rots: that item's S3 records that `new-research-notebook`'s md↔nb sync "uses `ExportString[Import[path], "Markdown"]`", which its own T5 then replaced with one-way generation plus a fingerprint.
+The duplicate is not free, and it is the copy that rots: that item's S3 records that `paper-create-notebook`'s md↔nb sync "uses `ExportString[Import[path], "Markdown"]`", which its own T5 then replaced with one-way generation plus a fingerprint.
 The sentence is false today and still sits in `Work/Done/`.
 
 ## The destination did not exist for 21 of the 24 committed blocks
 
 `Wiki/` was first committed in `f2c5aaa` — `AdoptMarkdownToNotebook` T4, the third-to-last session in the whole corpus.
 **21 of the 24 committed Progress blocks were written before there was anywhere else to put a durable fact.**
-So the 8 : 1 ratio above measures an unharvested legacy, and says nothing about whether the skill's step-7 `update-wiki` call works.
+So the 8 : 1 ratio above measures an unharvested legacy, and says nothing about whether the skill's step-7 `wiki-update` call works.
 
 On the three blocks that *could* harvest, it did, every time:
 
 | block | wrote to `Wiki/` | also wrote |
 |---|---|---|
-| `AdoptMarkdownToNotebook` S4 | `Index.md`, `Status.md`, `Resources/MarkdownToNotebook.md` (+63) | `CLAUDE.md`, `skills/new-notebook/SKILL.md` |
-| `AdoptMarkdownToNotebook` S5 | `Resources/MarkdownToNotebook.md` (+18), `Status.md` | `CLAUDE.md`, `skills/new-research-notebook/SKILL.md` |
+| `AdoptMarkdownToNotebook` S4 | `Index.md`, `Status.md`, `Resources/MarkdownToNotebook.md` (+63) | `CLAUDE.md`, `skills/notebook-create/SKILL.md` |
+| `AdoptMarkdownToNotebook` S5 | `Resources/MarkdownToNotebook.md` (+18), `Status.md` | `CLAUDE.md`, `skills/paper-create-notebook/SKILL.md` |
 | `EvaluateWorkItemsEfficiency` S1 | `Concepts/SessionInformationBudget.md` (+132), `Index.md`, `Status.md` | — |
 
 Three for three.
@@ -129,9 +129,9 @@ Two things follow for T3, in this order:
 S1 concluded that upstream commit `afd7c1e` postdated the evaluated tip and told T2 to expect a stale measurement.
 S2 established it was two commits *below* the pin, and spent four lines saying so.
 Both the wrong claim and its refutation are in the file, permanently, and a reader must reconstruct the order to know which won.
-The same pattern recurs at S4 → S3 ("dropped `new-research-notebook`" meant dropped as an adoption surface, not deleted) and S5 → S4 (the `::: theorem numbered` spelling S4's own Spec text got wrong).
+The same pattern recurs at S4 → S3 ("dropped `paper-create-notebook`" meant dropped as an adoption surface, not deleted) and S5 → S4 (the `::: theorem numbered` spelling S4's own Spec text got wrong).
 
-Had those facts been in `Wiki/Resources/MarkdownToNotebook.md`, S2 would have **edited the line** and the wrong version would have left the read path entirely — the `revise` protocol explicitly allows this: "if an article becomes wrong because code changed, just fix it."
+Had those facts been in `Wiki/Resources/MarkdownToNotebook.md`, S2 would have **edited the line** and the wrong version would have left the read path entirely — the `document-revise` protocol explicitly allows this: "if an article becomes wrong because code changed, just fix it."
 This is the structural argument, independent of byte counts: **`## Progress` is append-only, so it can only accumulate contradictions, while `Wiki/` is the one surface in the system where a fact can be corrected rather than debated.**
 An unattended pipeline inherits this directly — it would read the file and have no user to arbitrate.
 

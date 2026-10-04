@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/project-create/assets"
 
 FORMAT="latex"
 case "${1:-}" in

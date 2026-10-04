@@ -4,7 +4,7 @@
 
 The target shape of a `Work/` item file — what each section is for, what may be written where, and why.
 Decided 2026-07-27 for `EvaluateWorkItemsEfficiency` T3, from [T1's budget](SessionInformationBudget.md) and [T2's split](ProgressWikiSplit.md).
-The normative rules are in [`work`](../../skills/work/SKILL.md) and [`next-session`](../../skills/next-session/SKILL.md); this article carries the rationale, deliberately, because those two files are read unconditionally and this one is read on demand.
+The normative rules are in [`backlog-add`](../../skills/backlog-add/SKILL.md) and [`backlog-run`](../../skills/backlog-run/SKILL.md); this article carries the rationale, deliberately, because those two files are read unconditionally and this one is read on demand.
 
 ## The format
 
@@ -40,13 +40,13 @@ The ordering is the whole point — a reader who stops at any heading still know
 
 What this costs the session is small and bounded: the three human sections are capped at about fifteen lines together, and Prompt history grows only when the user speaks.
 The read stays flat in session count, which was the property the format existed to protect.
-Items written before the split keep their single `## Spec`; `next-session` reads either shape, and nothing is converted unasked.
+Items written before the split keep their single `## Spec`; `backlog-run` reads either shape, and nothing is converted unasked.
 
 ### Two human gates, and what the reviewer is handed
 
 The same day the lifecycle gained two folders, `Ready/` and `UnderReview/`, one on each side of the work.
 The operator's picture of the process: *"I spend with AI some hours editing the backlog — me the human readable parts … while the AI is going to be thinking and noting the technical details"*, then the item is ready for the autonomous pipeline, and afterwards *"the human should be able to review stuff."*
-`Backlog/` became the place where an item is argued over (the [`refine`](../../skills/refine/SKILL.md) skill), `Ready/` the approval that lets `/auto-run` take it — replacing the hand-written marker as the ordinary way in — and `UnderReview/` the stop before `Done/`, so that finishing the last task no longer counts as acceptance.
+`Backlog/` became the place where an item is argued over (the [`backlog-refine`](../../skills/backlog-refine/SKILL.md) skill), `Ready/` the approval that lets `/backlog-run-scheduled` take it — replacing the hand-written marker as the ordinary way in — and `UnderReview/` the stop before `Done/`, so that finishing the last task no longer counts as acceptance.
 
 What the reviewer needs is not the Progress line, which says what a session did, but where to look and what they should see.
 So each closed task box carries up to four indented `**Test:**` bullets, written for a human: a relative link, an action, an expected result.
@@ -84,7 +84,7 @@ Added 2026-08-20 for [`ModelRouting`](../../Work/Done/2026-08-20-ModelRouting.md
 It is a contract about **price**, written in the file where the work was divided: the human who split the Spec into sessions is the one who knows which of them needs a frontier tier, and that knowledge used to be thrown away.
 An unannotated headless task runs on whatever the operator last typed at `/model` — [measured](HeadlessModelSurface.md#--model-takes-aliases-and-all-four-tiers-resolve) — which is not a property of the task at all.
 
-The normative grammar is in [`work` § *The routing annotation*](../../skills/work/SKILL.md#the-routing-annotation).
+The normative grammar is in [`backlog-add` § *The routing annotation*](../../skills/backlog-add/SKILL.md#the-routing-annotation).
 What follows is why it has that shape.
 
 ### The grammar, and what each part of it defends against
@@ -137,17 +137,17 @@ The two markers stay separate groups, `(human)` first, and in practice a `(human
 ### The routing table, and what ruling on it settled
 
 Which tier suffices for which class of task is the routing decision's central claim, and it began as an assumption written down.
-The table lives in [`work` § step 3](../../skills/work/SKILL.md#3-decompose-into-tasks), because that is where tasks are written, and it is presented with every breakdown so the human rules on it instead of inheriting it.
+The table lives in [`backlog-add` § step 3](../../skills/backlog-add/SKILL.md#3-decompose-into-tasks), because that is where tasks are written, and it is presented with every breakdown so the human rules on it instead of inheriting it.
 Two measurements touched it, and both cut against the cheap end rather than for it.
 At `low` effort, sonnet answered a two-step arithmetic question wrong in two of three runs — cheap tier and cheap effort are separate decisions, and the table pairs the cheap tiers with a high effort for that reason.
 And in [the routing trial](AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke), a `haiku` task at `high` effort produced its deliverable correctly for $0.07 and then failed the session protocol, while the same shape of task on `sonnet` closed cleanly for $0.64 against $1.54–$4.09 on the default tier.
 So the table's middle row had support and its cheapest row had a counterexample: what a cheap tier costs is not the price of the task but the price of the task plus the chance of a halt on the bookkeeping.
 
 The operator ruled on 2026-08-20 (`ModelRouting` T4) and that asymmetry decided it: **`haiku` loses its default row** and joins `fable` as explicit-request-only.
-The reasoning is that the pipeline has no cheap tasks in the relevant sense — every task it routes runs through `/next-session`, which always ends in bookkeeping, so the tier that reliably does the work and unreliably does the paperwork saves $0.57 and risks a halt costing a human round-trip.
+The reasoning is that the pipeline has no cheap tasks in the relevant sense — every task it routes runs through `/backlog-run`, which always ends in bookkeeping, so the tier that reliably does the work and unreliably does the paperwork saves $0.57 and risks a halt costing a human round-trip.
 haiku's context window being a fifth of the others' against a ~31 kB cold start makes that structural rather than unlucky.
 What the ruling did **not** settle is the expensive half: the `opus` row is still a prior, and `fable` remains untested, so the table is now one measured row, one assumed row, and two tiers available only when asked for by name.
-The same ruling made `/next-session`'s [tier comparison](../../skills/next-session/SKILL.md#3-pick-the-task) halt rather than warn — fail-closed, matching the annotation parser and the effort validator.
+The same ruling made `/backlog-run`'s [tier comparison](../../skills/backlog-run/SKILL.md#3-pick-the-task) halt rather than warn — fail-closed, matching the annotation parser and the effort validator.
 
 ### No new section, and nothing machine-only
 
@@ -161,7 +161,7 @@ If each of those has a home, **nothing a session needs is in Progress** — it i
 
 Three consequences, all subtractions:
 
-- **The partial-read rule is deleted.** T1 measured it as a 7 % optimisation of the bookkeeping budget that saves nothing before session 4, and T2 measured what it hides: ~30 kB of durable content below the tail. A format whose read is flat in session count needs no such rule, and `next-session` step 2 loses the three gaps T1 found in it — unmentioned `## Decisions`, unbounded `## Spec`, no tail-read recipe.
+- **The partial-read rule is deleted.** T1 measured it as a 7 % optimisation of the bookkeeping budget that saves nothing before session 4, and T2 measured what it hides: ~30 kB of durable content below the tail. A format whose read is flat in session count needs no such rule, and `backlog-run` step 2 loses the three gaps T1 found in it — unmentioned `## Decisions`, unbounded `## Spec`, no tail-read recipe.
 - **Hand-offs stop being append-only.** A hand-off is live for one session, so it belongs in a section that is overwritten. In the old format it was the `**Next:**` line of the newest Progress block — reachable only by finding the tail, and permanent once written. T2's structural finding was that append-only prose can only accumulate contradictions; the fix is to give every corrigible thing a mutable home, and `## Hand-off` is that home for carry-forward.
 - **An unattended pipeline gets a fixed place to look.** T4's loop needs to know the state of an item without a human to arbitrate between an S2 claim and its S4 reversal. `## Hand-off` is that place.
 
@@ -232,7 +232,7 @@ No — and the question mostly dissolves, because a new item's Progress is one l
 
 For the legacy blocks that T5 will harvest, pruning buys nothing that `git log -p` does not already provide, and rewriting a closed item's audit trail destroys the human-readable record at no saving to any read path: a closed item is read once more, by the harvest itself.
 One exception, for honesty rather than bytes.
-T2 found a sentence in `Work/Done/` that is **false today** — `new-research-notebook`'s sync described as `ExportString[Import[path], "Markdown"]`, replaced by one-way generation plus a fingerprint two sessions later — with no mechanism to correct it.
+T2 found a sentence in `Work/Done/` that is **false today** — `paper-create-notebook`'s sync described as `ExportString[Import[path], "Markdown"]`, replaced by one-way generation plus a fingerprint two sessions later — with no mechanism to correct it.
 When a harvest pass meets a claim it now knows to be false, it appends one line under that block:
 
 ```
@@ -246,9 +246,9 @@ The claim stays, the reader is warned, the diff is one line.
 T1's headline was that the unconditional preamble — `CLAUDE.md` plus the skill files, 27.7 kB — is a bigger term than the item file, which was smaller than it in 21 of 22 measured session starts.
 Two things follow that a format decision can act on.
 
-**Rationale goes where it is read on demand.** That is this article. `next-session/SKILL.md` states the rules and links here; it must not carry the argument for them, because the argument would be re-read every session forever.
+**Rationale goes where it is read on demand.** That is this article. `backlog-run/SKILL.md` states the rules and links here; it must not carry the argument for them, because the argument would be re-read every session forever.
 
-**A skill file must not charge every session for one project type.** `next-session`'s branch/worktree/PR procedure was 2.3 kB — 38 % of the file — and applies only to `paclet-dev` repos changing a paclet submodule. It now lives in `skills/next-session/paclet-worktree.md`, referenced by one line and read only in that case. Same principle as moving durable facts out of Progress: pay for what you read.
+**A skill file must not charge every session for one project type.** `backlog-run`'s branch/worktree/PR procedure was 2.3 kB — 38 % of the file — and applies only to `paclet-dev` repos changing a paclet submodule. It now lives in `skills/backlog-run/paclet-worktree.md`, referenced by one line and read only in that case. Same principle as moving durable facts out of Progress: pay for what you read.
 
 One caveat on the 27.7 kB itself.
 16.6 kB of it is *this* repo's `CLAUDE.md`, which is large because it documents the plugin's own skill/script/command tables.
@@ -267,7 +267,7 @@ The skill files are therefore the part of T1's headline term that plugin changes
 
 Items already in flight keep their existing Progress blocks — no rewrite.
 The next session on such an item adds a `## Hand-off` section and writes its own Progress as one line, so the file carries both shapes for the rest of its life.
-`next-session` step 2 handles that: read the whole file, and if it has multi-paragraph Progress blocks, read only the last one or two of them.
+`backlog-run` step 2 handles that: read the whole file, and if it has multi-paragraph Progress blocks, read only the last one or two of them.
 
 ## Reproduce
 

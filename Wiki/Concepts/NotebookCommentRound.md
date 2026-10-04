@@ -4,8 +4,8 @@
 
 A revision round on a notebook works on a pair, `Name_k.nb` and its source `Name_k.md`: it carries the `.nb` the user annotated and edited over to `Name_k+1.nb`, replacing only the cells holding a note (`<< … >>`), and keeps `Name_k+1.md` in step.
 Each cell knows the lines of the `.md` it came from (`"SourceLines"`, [TaggingRules registry](TaggingRulesRegistry.md)), so a change is written into the `.md` first and only that passage is converted, and a hand-edited cell is written back by reading that one cell.
-It never converts a whole notebook back to Markdown, because that loses typeset content and environment styles ([fingerprint.md](../../skills/new-research-notebook/fingerprint.md) § *Why there is no reverse direction*), and with them the user's edits.
-The procedure is [skills/revise/round.md](../../skills/revise/round.md) § *Notebooks*; this article holds what was measured to make it.
+It never converts a whole notebook back to Markdown, because that loses typeset content and environment styles ([fingerprint.md](../../skills/paper-create-notebook/fingerprint.md) § *Why there is no reverse direction*), and with them the user's edits.
+The procedure is [skills/document-revise/round.md](../../skills/document-revise/round.md) § *Notebooks*; this article holds what was measured to make it.
 
 ## What was measured
 
@@ -35,14 +35,14 @@ Neither converter records where a cell came from, so `SourceLineNotebook` (`scri
 - **A sentinel changes nothing else.** With `MarkdownToNotebook` the cells between the sentinels were identical to the plain conversion — content, style and order — on `SidonBound_260821.md` (41 cells) and on a probe holding a tight list, a nested item, numbered items, a block quote, a pipe table, display math, an HTML comment, a fence and a paragraph glued to a fence.
 - **The built-in importer differs only in options.** Splitting a numbered list there adds `CounterAssignments` to the later items, so the ranges are copied onto the plain conversion by position after checking that the style sequences agree, and the shipped cells are always the plain ones.
 - **One block can make several cells.** A paragraph holding a display equation gives `Text`, `DisplayFormula`, `Text`, and a list item with a nested one gives `Item` and `Subitem`; each carries the block's range.
-- **`WriteNotebook` cannot carry source lines.** The AgentTools `mcp__Wolfram__WriteNotebook` makes one cell per line of a paragraph, glues a sentinel to the next block, and splits an HTML comment over cells. `new-research-note` therefore converts through `new-notebook`'s pipeline instead.
+- **`WriteNotebook` cannot carry source lines.** The AgentTools `mcp__Wolfram__WriteNotebook` makes one cell per line of a paragraph, glues a sentinel to the next block, and splits an HTML comment over cells. `paper-create-note` therefore converts through `notebook-create`'s pipeline instead.
 - **Shifting is exact.** Two passages replaced bottom-up — 3 lines to 2, 1 to 3 — left every range in the new notebook a block of the new `.md`, in order.
 - **`StringMatchQ` treats `"*"` as a wildcard** even inside a `StringExpression`: `StringMatchQ[ "We prove", "*" ~~ " " ~~ ___ ]` is `True`. The block splitter matches list markers with `RegularExpression` for that reason.
 - **Read the file with `Import[ path, "Text" ]`.** Its lines are the file's lines (143 on `SidonBound`), while splitting `ReadString` gives one more, empty, line.
 
 ## Three rounds with a repeated hand edit: trial 2026-10-03
 
-A throwaway `.tex` and a `.nb` (from its `.md` by `MarkdownToNotebook` with `SourceLineNotebook`, `CellID`s and the fingerprint of [fingerprint.md](../../skills/new-research-notebook/fingerprint.md), without the MathNotebook passes) went through rounds r2, r3, r4 in a scratch repo with the `commit-msg` hook.
+A throwaway `.tex` and a `.nb` (from its `.md` by `MarkdownToNotebook` with `SourceLineNotebook`, `CellID`s and the fingerprint of [fingerprint.md](../../skills/paper-create-notebook/fingerprint.md), without the MathNotebook passes) went through rounds r2, r3, r4 in a scratch repo with the `commit-msg` hook.
 The user's part — notes and hand edits — was simulated: sed on the `.tex`, `ReplacePart` on cell strings in the `.nb`.
 
 - **The script.** r2: a hand edit "we show" → "it is shown" in one passage, a note in another. r3: the same hand edit in a second passage, so a rule; a note in a third passage that still says "we show". r4: a note in the passage hand-edited in r2, and a note in a fourth passage that says "we show".

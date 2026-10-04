@@ -1,0 +1,230 @@
+---
+name: backlog-add
+description: >
+  Create and manage work items in the top-level Work/ folder — each a
+  multi-session effort with a Spec (what to build), a Tasks checklist (one task
+  ≈ one session), and a Progress log. This is the project's execution state,
+  separate from the Wiki knowledge base. Use for: "new work item", "start a
+  work item", "spec out X", "plan for X", "break X into tasks", "track this
+  across sessions", "add a task", "update the spec", or the /backlog-add command.
+  Creates Work/Backlog/<Name>.md, bootstrapping the folder if missing. A work
+  item's status is its folder (Backlog/Ready/Active/UnderReview/Done/Dropped),
+  not a field. Specs follow the document-revise protocol; shaping one together with the
+  user over a long sitting is the backlog-refine skill. Do NOT trigger on casual uses of the word "work".
+---
+
+# Work Items
+
+`Work/` is the project's execution state — what we're building right now.
+Each file is one **work item**: a Spec, Tasks (one ≈ one session), a Hand-off for the next session, and a one-line Progress log.
+Durable knowledge goes in `Wiki/`; planning and progress go here.
+
+Work items follow the `document-revise` protocol — the LLM drafts the Spec, presents it, and waits for approval before work begins.
+
+## When to use
+
+- The user says "new work item", "start a work item", "spec out X", "plan for X", "break X into tasks", "track this across sessions", "add a task", "update the spec", or runs `/backlog-add`.
+- Any effort that will span more than one session and needs a Spec and task list.
+
+## Folders are the status
+
+An item's status is **which folder it lives in** — there is no status field.
+State is encoded once, in the filesystem; changing state is a `git mv`.
+
+```
+Work/
+├── README.md     — index: Ready, Active and UnderReview items; the rest are linked, not re-listed
+├── Backlog/      — being shaped with the human     <Name>.md
+├── Ready/        — approved, fully specified       <Name>.md   (/backlog-run-scheduled or /backlog-autolab may take it)
+├── Active/       — in progress                     <Name>.md
+├── UnderReview/  — all tasks done, human to check  <Name>.md
+├── Done/         — reviewed and accepted           YYYY-MM-DD-<Name>.md  (by acceptance date)
+└── Dropped/      — abandoned / superseded          YYYY-MM-DD-<Name>.md  (by drop date)
+```
+
+The flow is `Backlog → Ready → Active → UnderReview → Done`, and each arrow is a human's call except `Active → UnderReview`, which the last session makes.
+**Backlog** is where an item is argued over and rewritten; nothing runs unattended from it.
+**Ready** is the approval: the human has signed off the Spec and the task list, and an unattended `/backlog-run-scheduled` may pick the item up.
+**UnderReview** is the other human gate: the work is finished, and the human checks it against the Acceptance criteria using each task's test instructions.
+
+Names are **clean** (`<Name>.md`, CamelCase) while an item is live — that is what you reference it by.
+On archival the file is `git mv`'d into `Done/` or `Dropped/` and **prefixed with that day's date** (`date +%F`), so the archives read chronologically.
+Resolve an item by name with an exact path in `Active/`, `Ready/`, `UnderReview/`, then `Backlog/`; glob `Done/*-<Name>.md` and `Dropped/*-<Name>.md` for archived ones.
+
+## Bootstrap
+
+If `Work/` does not exist, create it and seed `Work/README.md` from `${CLAUDE_PLUGIN_ROOT}/skills/project-create/assets/work_readme_template.md` (substitute the project name).
+The folder is tracked in git — do not gitignore it.
+Create each bucket lazily the first time an item lands in it.
+
+## Steps
+
+### 1. Draft
+
+Ask for a CamelCase name and a one-line goal.
+Copy `${CLAUDE_PLUGIN_ROOT}/skills/project-create/assets/work_item_template.md` to `Work/Backlog/<Name>.md`, give it a plain-words title, and draft the Spec — the five sections from `## Summary` to `## Technical details`.
+Write the first three for a human who has never seen the project: short sentences, no code, no symbol names in the Summary.
+For a quick item one paragraph of Technical details is enough; for a heavy one fill Requirements / Design / Edge cases.
+
+Put the user's originating request, verbatim and dated, as the first line of `## Prompt history`.
+If the project has prompt tracking on (see the [project-provenance](../project-provenance/SKILL.md) skill), also append a `Wiki/Prompts.md` ledger entry for the new item.
+
+The Spec and other item prose follow the `Semantic line breaks` toggle in `CLAUDE.md` § *Source formatting*.
+
+### 2. Present and wait
+
+Show the Spec and wait (revise loop).
+A spec in `Backlog/` is still a malleable draft; approval is the gate to starting work, not a field to flip.
+When the item needs more than a quick round — the user wants to write the Motivation and Acceptance criteria themselves, or the design needs research — hand over to [`backlog-refine`](../backlog-refine/SKILL.md), which is this step done properly over a long sitting.
+
+### 3. Decompose into tasks
+
+Derive `## Tasks` from the approved Spec — each unchecked box should be one focused session.
+Route each task as you write it with a [routing annotation](#the-routing-annotation), and present the routing together with the breakdown so the user rules on it (revise loop):
+
+| the task is… | model | effort |
+|---|---|---|
+| a mechanical sweep — rename, doc pass, index update, scripted edit | `sonnet` | `high` |
+| design-critical semantics, a cross-cutting refactor, a proof, an API contract | `opus` | `xhigh` |
+| whatever the user names explicitly | as asked | as asked |
+
+`haiku` and `fable` only on explicit request.
+`haiku` held a default row until 2026-08-20, when [the routing trial](../../Wiki/Concepts/AutonomousPipeline.md#the-routing-trial--what-two-tiers-cost-and-what-the-cheap-one-broke) had it produce a correct deliverable for $0.07 and then fail the session protocol, ticking its box in place instead of moving it into `### Done`.
+Every task the pipeline routes runs through `/backlog-run`, which always ends in bookkeeping, so the cheapest tier's saving is set against a halt costing a human round-trip — a bad trade for the $0.57 it saves against `sonnet`.
+Its context window is also a fifth of the others', against a repo whose cold start alone is ~31 k tokens, so treat the failure as structural rather than one unlucky run.
+Never pair a cheap tier with a cheap effort by reflex: at `low` effort sonnet answered a two-step arithmetic question wrong in two of three runs, at full confidence, with nothing in the output to flag it ([measured](../../Wiki/Concepts/HeadlessModelSurface.md#it-bites-and-the-evidence-is-the-answer-and-not-the-token-count)).
+The `sonnet` row is measured and the `opus` row is still a prior, so say which is which when presenting it, and leave a task unannotated when its tier is part of what the task measures.
+
+When the user approves the Spec and the task list, `git mv` the file into `Ready/` — or straight into `Active/` if work starts in this session — and add it to the index.
+Never move an item out of `Backlog/` on your own judgement; that move is the approval.
+
+## The index
+
+`Work/README.md` has three short tables — the items a human has to act on or can expect to move:
+
+- **Ready** — each item and its plain title: the queue.
+- **Active** — each item and its next unchecked task, the one thing the folders can't show.
+- **UnderReview** — each item waiting for the human's check.
+
+It does **not** re-list `Backlog/`, `Done/`, or `Dropped/`; those are just linked, since the folder is already the record.
+Update a line when the item's next task changes; move or drop it when the item changes folder.
+
+## Lifecycle (move the file)
+
+- **Backlog → Ready** — the user approves the Spec and the task list (usually the end of a `backlog-refine` sitting).
+- **Ready → Active** — work starts: `backlog-run` or `/backlog-run-scheduled` moves it. `/backlog-run-scheduled` also stamps `> Autonomous: allowed`, so the item stays eligible once it has left `Ready/`.
+- **Backlog → Active** — the user starts an item interactively without queueing it.
+- **Active → Backlog / Ready** — park it; back to `Backlog/` if the Spec needs rethinking.
+- **Active → UnderReview** — the last task closed; `backlog-run` makes this move.
+- **UnderReview → Done** — the user says it passes review; `git mv` into `Done/`, prefix with today's date.
+- **UnderReview → Active** — review found a problem: add a task for it, then move back.
+- **any → Dropped** — abandoned or superseded; `git mv` into `Dropped/`, prefix with today's date.
+
+After any move, fix `Work/README.md`.
+
+### Review
+
+When the user reviews an item in `UnderReview/`, walk them through it: the Acceptance criteria one by one, each with the test instructions of the tasks that serve it.
+What they find wrong becomes a new unchecked task, and the item goes back to `Active/`; nothing is fixed silently during review.
+When they accept it, move it to `Done/`.
+
+## The item file format
+
+An item reads top-down like a GitHub issue: a human who stops at any heading still knows what the item is.
+The upper half — **the Spec** — is written for people; the lower half is the machinery sessions run on.
+
+| section | for | holds | bound |
+|---|---|---|---|
+| `# Title` | human | what the item is, in plain words (the filename stays CamelCase) | one line |
+| `>` header | both | `Type:`, optionally `Target:`, `Waiting on: you — …`, `Autonomous: allowed` | a few lines |
+| `## Summary` | human | what it delivers, for a newcomer; no code, no symbol names | 2–3 sentences |
+| `## Motivation` | human | why it matters, what goes wrong if left alone | ≤ 5 bullets |
+| `## Acceptance criteria` | human | outcomes a human can check when it is done | ≤ 7 bullets |
+| `## Prompt history` | human | the user's own words that prompted or reshaped it, verbatim, dated, oldest first | one line each |
+| `## Technical details` | sessions | requirements, design / API, edge cases — the contract to build against | ~1 screen |
+| `## Tasks` | sessions | one box ≈ one session, `### Done` below | — |
+| `## Hand-off` | sessions | carry-forward for the next session | one block |
+| `## Decisions` | both | choices between real alternatives | one row each |
+| `## Progress` | audit | one line per session | one line each |
+
+These ten sections are the whole file.
+Do not add another — measured, invented sections are always a destination violation (an item's conclusions belong in `Wiki/`, a blocker in `## Hand-off`, draft content in the artifact).
+Rationale and measurements: [Wiki/Concepts/ItemFileFormat.md](../../Wiki/Concepts/ItemFileFormat.md) in this repo.
+Items written before this format keep their single `## Spec` section; do not convert them unasked.
+
+**One fact, one destination — nothing is written twice.**
+
+| the fact is… | it lives in | and it is |
+|---|---|---|
+| durable — about a tool, an artifact, this project | a `Wiki/` article | corrected in place when it changes |
+| a choice between real alternatives | one `## Decisions` row | edited when reversed |
+| the Spec being wrong | the Spec sentence | replaced |
+| what the next session needs and is not yet true anywhere else | `## Hand-off` | overwritten each session |
+| that a session happened | one `## Progress` line | left alone |
+
+Only `## Progress` grows with session count, at one line, so the read a session pays is flat.
+`## Hand-off` and `## Decisions` are the sections that make that possible: they give every corrigible thing a mutable home, so the append-only log never has to carry a correction.
+
+- **The Spec** (Summary to Technical details) — the contract. Corrected in place; never appended to. Findings are not Spec material. The human sections say *what* and *why*; if a session finds itself explaining mechanism there, it belongs in Technical details. Technical details past ~1 screen is a signal the item should have been split.
+- **`## Prompt history`** — the one Spec section that grows, and only when the user reshapes the item. Quote the user, never paraphrase; trim with `…`. Session prompts go to the provenance ledger, not here.
+- **Test instructions** — when a task closes, its box in `### Done` gets one to four indented `**Test:**` bullets telling a human how to check it: which file to open (a relative link), what to run, what they should see. They are written for the reviewer, not the next session, so they name places and expected results, not what the session did. A task with nothing a human could check says so in one bullet.
+- **`## Hand-off`** — one block, rewritten (or emptied) every session. Half-finished state, a blocker, an open branch. Not a diary.
+- **`## Decisions`** — a row is earned by a choice between real alternatives that a later session could otherwise re-litigate. One sentence for the decision, one for the rationale, a link for the evidence. A reversal **edits** the row it reverses; the table never holds a row and its contradiction.
+- **`## Progress`** — append-only, one line per session, and nothing reads it. It is the audit trail for a human and for git.
+
+Closed items are **not** rewritten or pruned — git already holds every version, and a closed item is read at most once more.
+When a later pass finds a claim in an archived Progress block that is false today, append one line under that block rather than deleting the claim:
+
+```
+> Superseded: <what is true now> — see [Article](../../Wiki/...).
+```
+
+Items written before this format keep their old Progress blocks; the next session on one adds a `## Hand-off` and writes its own line in the new shape.
+
+### The autonomy markers
+
+`/backlog-run-scheduled` and `/backlog-autolab` work an item unattended only if the human has said so, and they fail closed — an item in `Backlog/` is never picked.
+
+- **The `Ready/` folder** — the ordinary way: moving an item there is the approval, and `/backlog-run-scheduled` or `/backlog-autolab` takes it from there.
+- **`> Autonomous: allowed`** — one more `>` header line beside `> Type:`, above `## Summary`. The driver stamps it when it starts a Ready item; writing it by hand makes an item already in `Active/` eligible. Add it only when the user asks for it; it is their decision, not the drafting session's.
+- **`(human)`** — appended to a single task line. The driver halts before running that task, so an author can gate one step of an otherwise autonomous item — a spec that must be presented, a deliverable the user wants to see generated.
+
+None of these adds a section, so the closed section list holds.
+The driver, the stop conditions, and why the `document-revise` gate survives this: [Wiki/Concepts/AutonomousPipeline.md](../../Wiki/Concepts/AutonomousPipeline.md).
+
+### The routing annotation
+
+A task box may also name the model tier and reasoning effort that task wants, immediately after the task id and before the em dash:
+
+```
+- [ ] T3 (model: sonnet, effort: high — ~90% mechanical) — sweep the renames through `Tools.wl`.
+```
+
+- **`model:`** one of `haiku`, `sonnet`, `opus`, `fable` — CLI **aliases**, never dated model ids, which rot with every release.
+- **`effort:`** one of `low`, `medium`, `high`, `xhigh`, `max`.
+- Both fields are optional and `model` comes first when both appear; a dash-clause after them carries the reason, which is part of the annotation rather than a comment on it.
+- **Absent means inherit** — the tier the session is on. Route a task and you should name both fields: no output field reports the effort a run used, so an inherited effort can be checked neither before nor after.
+- **Never fold `human` into these parens.** `(human)` gates a task by that literal substring, so `(model: opus, human)` would silently un-gate it. The two are separate groups, `(human)` first — and a `(human)` task needs no routing, since no unattended run reaches it.
+
+`backlog-run` compares the annotation against the tier it is running on; `/backlog-autolab` and `/backlog-run-scheduled` pass it to that task's worker.
+The grammar and the measurements behind it: [Wiki/Concepts/ItemFileFormat.md § *The per-task routing annotation*](../../Wiki/Concepts/ItemFileFormat.md#the-per-task-routing-annotation).
+
+## Updating the spec later
+
+The Spec is the contract, and it is **edited in place** — a session that finds it wrong replaces the sentence rather than appending an amendment.
+If the user edited it, it is protected content: describe the proposed change, wait for approval, edit, then add one `## Decisions` row.
+If it is LLM-drafted and unapproved, edit directly.
+
+## Integration with other skills
+
+- `backlog-run` executes one task per fresh session against an item created here.
+  In a paclet-dev repo, an item that changes paclet code is developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree and lands as a PR on that paclet's repo (the dev repo stays on `main`) — name the target paclet in the Spec.
+- `wiki-update` records durable knowledge in `Wiki/` — this skill does not touch the Wiki; it manages execution state only.
+- The `document-revise` protocol governs every Spec and task-list interaction.
+- For Lean formalization, `paper-lean` creates a `Type: formalization` item here.
+
+## When NOT to use
+
+- Casual uses of the word "work" — this skill is for creating and managing work items only.
+- Executing a task — that is `backlog-run`, one task per fresh session.
+- Durable knowledge — that goes to `Wiki/` via `wiki-update`, never into an item file.

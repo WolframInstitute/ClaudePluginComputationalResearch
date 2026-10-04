@@ -98,7 +98,7 @@ CONTRADICTION = (
 root = subprocess.run(["git", "rev-parse", "--show-toplevel"],
                       capture_output=True, text=True).stdout.strip()
 os.chdir(root)
-ASSETS = "skills/new-project/assets"
+ASSETS = "skills/project-create/assets"
 before = "--before" in sys.argv
 
 
@@ -190,7 +190,7 @@ resolved = "**overrides** any global" in blobs["code_style_template.md"]
 print(f"  precedence stated in the template: {resolved}")
 
 print("\n=== the fixed term a scaffolded project pays ===")
-FIXED = ["skills/next-session/SKILL.md", "skills/revise/SKILL.md"]
+FIXED = ["skills/backlog-run/SKILL.md", "skills/document-revise/SKILL.md"]
 rest = [(f, os.path.getsize(f)) for f in FIXED]
 for variant, base in (("standard", "claude_template.md"), ("math-research", "math_claude_template.md")):
     gen = len(blobs[base].encode()) + len(blobs["code_style_template.md"].encode()) + 1

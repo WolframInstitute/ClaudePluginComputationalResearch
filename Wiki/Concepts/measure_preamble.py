@@ -16,7 +16,7 @@ import subprocess
 import sys
 
 BEFORE_REV = "4f4ac07"
-FIXED = ["CLAUDE.md", "skills/next-session/SKILL.md", "skills/revise/SKILL.md", "Work/README.md"]
+FIXED = ["CLAUDE.md", "skills/backlog-run/SKILL.md", "skills/document-revise/SKILL.md", "Work/README.md"]
 
 # Classification of the pre-split CLAUDE.md sections. Hand-assigned, asserted against the
 # live blob below, so an edit to the file fails this script instead of silently drifting.
@@ -32,7 +32,7 @@ CLASS = {
     "### Skills (20)": "inventory",
     "### Scripts (27)": "inventory",
     "### Commands (21)": "inventory",
-    "### Templates (in skills/new-project/assets/)": "inventory",
+    "### Templates (in skills/project-create/assets/)": "inventory",
     "## Project Types (scaffolding)": "reference",
     "## Knowledge Base (Wiki)": "policy",
     "### Notebook conversion engines": "reference",
@@ -90,7 +90,7 @@ counts = {
     "Skills": len(skills),
     "Scripts": len(os.listdir("scripts")),
     "Commands": len(os.listdir("commands")),
-    "Templates": len(os.listdir("skills/new-project/assets")),
+    "Templates": len(os.listdir("skills/project-create/assets")),
 }
 for name, n in counts.items():
     m = re.search(rf"^### {name} \((\d+)\)", before, re.M)

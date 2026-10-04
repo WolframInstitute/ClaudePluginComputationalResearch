@@ -3,7 +3,7 @@
 #
 # Usage: scaffold-project.sh <ProjectName> ["Topic"] [output-dir] ["Author Name"] ["email"] ["CodeDir"]
 #
-# Called by Claude during new-project skill execution.
+# Called by Claude during project-create skill execution.
 # Claude handles notebook creation and paper downloading via MCP separately.
 #
 # output-dir:   base directory where <ProjectName>/ will be created.
@@ -16,7 +16,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ASSETS_DIR="$SCRIPT_DIR/../skills/new-project/assets"
+ASSETS_DIR="$SCRIPT_DIR/../skills/project-create/assets"
 
 if [ $# -lt 1 ]; then
   echo "Usage: scaffold-project.sh <ProjectName> [\"Topic description\"] [output-dir] [\"Author\"] [\"email\"] [\"CodeDir\"]" >&2

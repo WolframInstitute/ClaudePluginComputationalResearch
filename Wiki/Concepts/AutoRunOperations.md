@@ -1,17 +1,17 @@
-# The `/auto-run` operator runbook
+# The `/backlog-run-scheduled` operator runbook
 
 *[ LLM Generated ]*
 
 What an operator does when an unattended run halts: how to read the digest, what each stop reason asks of you, how to grow the allowlist, and how `auto/<Item>` reaches `main`.
 
 This is the runbook.
-The design record — why the harness schedulers cannot drive the loop, why the `revise` gate survives as a branch plus a digest, what each stop condition is *for* — is [The autonomous next-session pipeline](AutonomousPipeline.md), and is not restated here.
+The design record — why the harness schedulers cannot drive the loop, why the `document-revise` gate survives as a branch plus a digest, what each stop condition is *for* — is [The autonomous backlog-run pipeline](AutonomousPipeline.md), and is not restated here.
 Written against `scripts/auto-run.sh` as it stands on 2026-07-28.
 Where the script and the specification disagree the script is the fact — see [the end](#where-the-script-and-the-specification-disagree) for how that is handled and why nothing is outstanding.
 
 ## Before a run
 
-`/auto-run <Item> --dry-run` prints the selection, the branch it would use, the next task, its routing, the caps, the digest path, and the full allowlist — and exits without creating a branch, a digest, or a process.
+`/backlog-run-scheduled <Item> --dry-run` prints the selection, the branch it would use, the next task, its routing, the caps, the digest path, and the full allowlist — and exits without creating a branch, a digest, or a process.
 Use it first on any item that has not run before.
 It is checked *after* the preflight rather than before it, so it still refuses a dirty working tree: `--dry-run` is a rehearsal of a real launch, not an inspection you can perform mid-edit.
 
@@ -28,9 +28,9 @@ routing   : model sonnet, effort high
 — and `model inherited, effort inherited` means the task carries no annotation and will run on whatever the machine's default is.
 A dry run also *fails* on a typo'd annotation, exit 2 with the field it could not parse, which is the cheapest place to find one.
 Preflight failures exit **2**, and they are the one class of failure that writes **no digest** and creates no branch: `claude` or `jq` missing from `PATH`, not inside a git repository, no `Work/` directory, a dirty working tree at the start, a named item that is not in `Work/Active/`, an item without `> Autonomous: allowed`, or zero / more than one eligible item when none was named.
-All of these are reported on stderr as `auto-run: <reason>` and are fixed before re-running.
+All of these are reported on stderr as `backlog-run-scheduled: <reason>` and are fixed before re-running.
 
-Once the loop starts, the only progress signal is one stderr line per task — `auto-run: <Item> T3 — 14:22:07Z` — and the run is slow, because each task is a cold `claude -p` process.
+Once the loop starts, the only progress signal is one stderr line per task — `backlog-run-scheduled: <Item> T3 — 14:22:07Z` — and the run is slow, because each task is a cold `claude -p` process.
 The digest is written once, at the halt.
 
 ## Reading the digest
@@ -64,7 +64,7 @@ The driver exits `0` for the first two rows, `130` for an interrupt, and `1` for
 |---|---|---|
 | `item-complete` | 0 | Success. The last box closed and the item file moved to `Work/Done/YYYY-MM-DD-<Item>.md`. Review and merge the branch. |
 | `cap-tasks` / `cap-wallclock` / `cap-cost` | 0 | A backstop, not a fault. Work is intact; merge it, then re-run with a raised cap. |
-| `task-gated` | 1 | The next task line contains `(human)`. Do that task yourself in an interactive `/next-session`, commit, then re-run. Nothing is broken despite the non-zero exit. |
+| `task-gated` | 1 | The next task line contains `(human)`. Do that task yourself in an interactive `/backlog-run`, commit, then re-run. Nothing is broken despite the non-zero exit. |
 | `needs-human` | 1 | A session wrote a `needs-human:` question into `## Hand-off` rather than guessing. Answer it — the answer usually belongs in the Spec or a `## Decisions` row — then **overwrite `## Hand-off` to remove the marker** and commit before re-running. |
 | `dirty-tree` | 1 | Uncommitted changes appeared between tasks (`Work/Runs/` is excluded from the check). `git status`, commit or stash, re-run. |
 | `bad-annotation` | 1 | The next task's routing annotation does not parse — the verdict line names the field. Fix it in the item file and re-run; nothing was spawned and nothing was spent. |
@@ -80,7 +80,7 @@ Three of these have sharp edges.
 **`needs-human` is checked after a task, not before one — and only after the liveness pair has passed.**
 So a marker left in `## Hand-off` does not stop the next run at the door: it spends one whole task first, then halts on the same question, and clearing the marker is part of answering it.
 The ordering has a sharper consequence than that.
-`revise` § *Autonomous mode* tells a session facing a real decision to write the question, commit that, and **stop** — but a session that stops without closing its box fails liveness first and halts as `no-box`, so the reason you actually see is the wrong one.
+`document-revise` § *Autonomous mode* tells a session facing a real decision to write the question, commit that, and **stop** — but a session that stops without closing its box fails liveness first and halts as `no-box`, so the reason you actually see is the wrong one.
 `needs-human` is reachable only from a session that closed its box, committed, *and* left a question.
 In practice that means the reason is honest when a task finished and raised a follow-on question, and misleading when a task genuinely could not proceed; on a `no-box` halt, read the `## Hand-off` delta for a `needs-human:` line before treating it as a liveness failure.
 
@@ -144,10 +144,10 @@ Headless, a tool call that is not allowed cannot raise a prompt, so it is denied
 The fix is one `--allow` per entry, appended to the defaults:
 
 ```bash
-/auto-run MyItem --allow 'Bash(rg:*)' --allow 'mcp__Wolfram__CreateSymbolDoc'
+/backlog-run-scheduled MyItem --allow 'Bash(rg:*)' --allow 'mcp__Wolfram__CreateSymbolDoc'
 ```
 
-The defaults cover `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Skill`, `TodoWrite`, the eight `git` forms `next-session` step 8 makes, `ls`, `cat`, `mkdir`, `date`, `grep`, the seven official Wolfram MCP tools named in `CLAUDE.md` § *Wolfram Kernel Execution Policy*, and `Bash(wolframscript:*)` for the fallback path.
+The defaults cover `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Skill`, `TodoWrite`, the eight `git` forms `backlog-run` step 8 makes, `ls`, `cat`, `mkdir`, `date`, `grep`, the seven official Wolfram MCP tools named in `CLAUDE.md` § *Wolfram Kernel Execution Policy*, and `Bash(wolframscript:*)` for the fallback path.
 There is no way to *remove* a default — the list only grows.
 
 ### `--allowedTools` is a floor, not a ceiling
@@ -183,7 +183,7 @@ Anything committed afterwards lands there rather than on `main`, silently and wi
 **Second, check that git can see the whole repository.**
 This repo lives in OneDrive, whose files-on-demand leaves unread files as `compressed,dataless` placeholders that hydrate only on first read.
 When `.git` is in that state git does not fail loudly — it fails *plausibly*.
-On 2026-08-20 a `/next-session` found 2009 dataless files under `.git`: `git log`, `git show` and `git rev-list` aborted with `fatal: mmap failed: Operation timed out`, while `git branch -a` returned a clean four-line listing that simply **omitted** `auto/ModelRoutingTrial`.
+On 2026-08-20 a `/backlog-run` found 2009 dataless files under `.git`: `git log`, `git show` and `git rev-list` aborted with `fatal: mmap failed: Operation timed out`, while `git branch -a` returned a clean four-line listing that simply **omitted** `auto/ModelRoutingTrial`.
 The branch existed — its ref under `.git/refs/heads/auto/` was a placeholder, so git read past it and reported the rest as if that were all.
 A merge decided from that listing would have been taken against a repository git could only half see.
 
@@ -204,7 +204,7 @@ It took four passes and about twenty minutes for those 2009 files, because a col
 
 Confirmed again 2026-09-26 in `InSessionAutoRun` T4: `git worktree add` failed with `fatal: mmap failed: Operation canceled` (this machine's wording for the same dataless condition), and restarting the OneDrive File Provider alone did not clear it — only the full `.git` hydration sweep above did, on the second attempt.
 
-The merge is the approval step — `revise` § *Autonomous mode* defers the human gate to exactly this point, and nothing autonomous is meant to reach `main` any other way.
+The merge is the approval step — `document-revise` § *Autonomous mode* defers the human gate to exactly this point, and nothing autonomous is meant to reach `main` any other way.
 
 ```bash
 git log --oneline main..auto/MyItem
@@ -241,7 +241,7 @@ When you find one, fix the article rather than recording it here — a standing 
 
 ## See also
 
-- [The autonomous next-session pipeline](AutonomousPipeline.md) — the design record: why the loop is shaped this way, and where each stop condition is implemented
+- [The autonomous backlog-run pipeline](AutonomousPipeline.md) — the design record: why the loop is shaped this way, and where each stop condition is implemented
 - [The work item file format](ItemFileFormat.md) — `## Hand-off` and `### Done`, the two sections the driver reads as state
 - [Session Information Budget](SessionInformationBudget.md) — the per-task preamble cost the digest re-measures on every run
 - [Status](../Status.md)
