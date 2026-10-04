@@ -58,7 +58,7 @@ The other four are read on demand, only what the current step needs:
 
 ## Steps
 
-1. Write or update `Research/Artifacts/<Topic>_<YYMMDD>.md` in paper order (§ *Structure*), following [style.md](style.md) throughout. The artifact convention — where it goes, how it is named, the index row it needs — is [artifacts.md](../new-notebook/artifacts.md).
+1. Write or update `Research/Artifacts/<Topic>_<YYMMDD>.md` in paper order (§ *Structure*), following [style.md](style.md) throughout. The folder convention — which of the three places it goes to, how it is named, the index row it needs — is [artifacts.md](../new-notebook/artifacts.md).
 2. **Sort by tier before writing a line of it** ([style.md](style.md) § *The four tiers*). What is settled goes in the body; experiments to *Ruliology*; everything else to the [journal](../journal/SKILL.md), with one line saying why. **With the journal off, take the ruling here** — stop, list what has no home, and put the three options to the operator ([style.md](style.md) § *When the journal is off*). Nothing below is built until it is answered, because option 2 changes the source.
 3. If a generated `.nb` exists, run the drift check first ([fingerprint.md](fingerprint.md)); stop on any drift.
 4. Convert ([build.md](build.md)), evaluate and embed outputs ([output-embedding.md](output-embedding.md)), stamp the fingerprint.

@@ -54,7 +54,7 @@ Research/Artifacts/
 ```
 
 Five files sharing one stem, flat in `Research/Artifacts/`, plus a row in its index.
-The convention they follow — the rule, the shape, the naming, git and the Cloud — is [artifacts.md](../new-notebook/artifacts.md); this skill only says what goes *inside* each file.
+The convention they follow — the three places, the shape, the naming, git and the Cloud — is [artifacts.md](../new-notebook/artifacts.md); this skill only says what goes *inside* each file.
 
 - `<Topic>` is explicit `CapitalizedWords` saying what the note settles, then the date it was settled, `YYMMDD`, **the same in all five names**.
 - The artifact is self-contained: no `PacletInstall`, no `PacletDirectoryLoad`, no path into the project, no file it does not ship.

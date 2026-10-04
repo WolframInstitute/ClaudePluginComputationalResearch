@@ -71,7 +71,7 @@ A round turns that into the next version:
 
 - **Names.** It writes `Name_k+1` beside the latest version `Name_k` — `Note_260927.tex`, then `Note_260927_2.tex`, `_3`, … — with every file of the stem, and never edits version `k` again.
 - **The edited document is the source.** Everything without a note is carried over verbatim, hand edits included; for a notebook, the `.nb` the user edited is carried over, and its `.md` is kept in step with it, each cell knowing its source lines.
-- **No invention.** It changes only the passages the notes name and adds nothing no note asked for — in `Output/` as much as in `Artifacts/`.
+- **No invention.** It changes only the passages the notes name and adds nothing no note asked for — in a folder itself as much as in `Artifacts/`.
 - **Every note is answered.** One acted on is gone from `k+1`; one not acted on stays, followed by `<< not done: <reason> >>`.
 - **The document remembers.** Its provenance file `<stem>.provenance.md` records every note, hand edit and chat request, and keeps rules drawn from them; each round reads the rules first and checks the new version against them.
 - **Git holds the trail.** Version `k` is committed as the user left it, then `k+1` once written — text files, `.md` sources and the provenance file, never a generated `.nb`.
@@ -117,9 +117,11 @@ Everything else is unchanged: wiki prose still needs no sign-off, and the delive
 
 ## Protected content
 
-**Everything outside an `Artifacts/` folder is the user's.**
-The LLM writes its own output into `Code/Artifacts/` and `Research/Artifacts/` ([artifacts.md](../new-notebook/artifacts.md)), and everywhere else it proposes rather than overwrites.
-That is a path check, not a judgment call, and it is the mechanism behind the rest of this section.
+**Never overwrite; outside `Artifacts/`, write only on request.**
+Every folder that holds documents has three places ([artifacts.md](../new-notebook/artifacts.md)): the documents in progress in the folder itself, what the LLM made once in `Artifacts/`, what is superseded in `Archive/`.
+The LLM writes a new artifact, or the next version of a document beside the last one, and never writes over a file.
+It writes into the folder itself only when the user asked for that document or that round; everywhere else outside `Artifacts/` it proposes rather than writes.
+Those are path checks, not judgment calls, and they are the mechanism behind the rest of this section.
 
 Within that, the LLM must not silently overwrite anything the user has **explicitly edited or written**, wherever it sits:
 
@@ -148,7 +150,7 @@ Do not maintain a `Wiki/Log.md`.
 
 - Every deliverable-producing skill follows this loop; `new-paper`, `lean`, `publish-paclet`, `new-notebook`, `new-research-notebook`, and `update-wiki` link here for their specific gates.
 - `work` presents Specs through it; `next-session` reads it before every session; `scripts/auto-run.sh` and the `autolab` workers run under *Autonomous mode*.
-- A revision round works on what the generating skills write — `new-notebook`, `new-research-note`, `new-research-notebook`, `new-paper` — and on anything in `Output/`.
+- A revision round works on what the generating skills write — `new-notebook`, `new-research-note`, `new-research-notebook`, `new-paper` — and on any document in progress, wherever it sits.
 
 ## When NOT to use
 

@@ -62,19 +62,25 @@ The convention lives in [artifacts.md](../../skills/new-notebook/artifacts.md), 
 
 ## Tasks
 
-- [ ] T1 (model: opus, effort: high — convention writing) — rewrite artifacts.md as the three-places convention (root, `Artifacts/`, `Archive/`, the `Research/` rule for papers); `revise`, `clean`, the generating skills and `new-paper` link it; the protected-content paragraph in `revise`.
 - [ ] T2 (model: sonnet, effort: high — mechanical sweep) — `Paper/` to `Research/` across skills, scripts and templates, with the fallback for an existing `Paper/`; destinations in the four generating skills; the scaffolds and their project READMEs; scaffold a throwaway project and a paper in it to confirm.
 - [ ] T3 (model: sonnet, effort: high — doc pass) — README check against the acceptance criteria, ARCHITECTURE, the blog post (the idea: one rule for every folder, papers beside the research), version bump.
 
 ### Done
 
-(completed tasks move here with the session that closed them)
+- [x] T1 (S1) — rewrite artifacts.md as the three-places convention (root, `Artifacts/`, `Archive/`, the `Research/` rule for papers); `revise`, `clean`, the generating skills and `new-paper` link it; the protected-content paragraph in `revise`.
+  - **Test:** read [artifacts.md](../../skills/new-notebook/artifacts.md) — the three places, *Never overwrite*, *Which place* (with *Papers* and *Moving up*) and *Archive* say what the README *Autoorganization* section promises.
+  - **Test:** read [revise § Protected content](../../skills/revise/SKILL.md#protected-content) — it opens with "Never overwrite; outside `Artifacts/`, write only on request" and links artifacts.md.
+  - **Test:** `grep -rn 'Output/' skills commands` — no hits; `grep -rn 'One artifact, one date' skills commands` — no hits (the anchor is now *Archive*).
 
 ## Hand-off
 
-Fresh item; the design questions are settled in `## Decisions`.
-The README *Autoorganization* section states the rule and the tree without `Output/`, so it is ahead of the skills until T2 lands.
-`OutputFolder` was merged into this item and dropped.
+T1 done: [artifacts.md](../../skills/new-notebook/artifacts.md) is the three-places convention; T2 makes the skills, scripts and templates follow it.
+The README *Autoorganization* section is still ahead of the paths: `Paper/` is unchanged until T2.
+For review:
+- The Acceptance criteria say the plugin "asks which when it is not clear"; the 2026-10-03 Decision says an ambiguous request goes to `Artifacts/` without asking. The convention follows the Decision; T3 aligns the criterion's wording, unless the reviewer says otherwise.
+- *Never overwrite* names two exceptions so the rule is not absurd: a generated file (`.nb`, `.pdf`) is rebuilt in place, and code under development is edited in place with git as its history.
+- The file keeps its name and place, `skills/new-notebook/artifacts.md`, so no link broke; a rename to something like `skills/revise/folders.md` is a T3 option.
+- Old-rule sentences ("everything outside `Artifacts/` is yours", "never written") left for T2: `skills/init-wiki/SKILL.md` ~146, `skills/new-project/assets/claude_template.md` 21, `math_claude_template.md` 51, `scripts/scaffold-project.sh` 50, `scripts/scaffold-paclet-dev.sh` 45 and 193, `commands/new-notebook.md` 7; `ARCHITECTURE.md` 10-14 for T3.
 
 ## Decisions
 
@@ -90,3 +96,4 @@ The README *Autoorganization* section states the rule and the tree without `Outp
 
 - **S0** 2026-10-03 — item filed from the operator's request; README section written first.
 - **S0'** 2026-10-03 — the operator settled the four questions and dropped `Output/`; `OutputFolder` merged in; moved to Ready.
+- **S1** 2026-10-04 T1 — artifacts.md rewritten as the three-places convention; revise, round.md, /clean, the generating skills and new-paper point at it; `Output/` gone from revise. → [artifacts.md](../../skills/new-notebook/artifacts.md)

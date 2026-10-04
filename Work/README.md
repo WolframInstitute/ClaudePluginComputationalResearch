@@ -30,6 +30,7 @@ The one thing the folders can't show — each in-progress item and its next task
 |---|---|
 | [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
 | [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
+| [FolderRule](Active/FolderRule.md) | T2 — `Paper/` to `Research/` sweep, destinations in the generating skills, scaffolds |
 
 ## UnderReview
 
@@ -37,9 +38,7 @@ None.
 
 ## Ready
 
-| Item | Next task |
-|---|---|
-| [FolderRule](Ready/FolderRule.md) | T1 — artifacts.md becomes the three-places convention |
+None.
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and two filed on 2026-10-03: `BacklogLifecycle` and `ParallelSessions`; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 

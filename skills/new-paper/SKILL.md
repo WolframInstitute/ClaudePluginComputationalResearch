@@ -117,7 +117,7 @@ Paper/
 └── figures/           — for plots and images
 ```
 
-The paper is **not** an artifact and does not go in `Artifacts/`: it is the user's document from the moment it is scaffolded, and this skill edits it on request ([artifacts.md](../new-notebook/artifacts.md) draws the line).
+The paper is **not** an artifact and does not go in `Artifacts/`: it is a document in progress, the user's from the moment it is scaffolded, and lives in the folder itself; this skill edits it on request ([artifacts.md](../new-notebook/artifacts.md) § *Papers*).
 
 ### 2. Seed references from existing resources
 
@@ -190,7 +190,7 @@ cd Paper && typst compile <Name>.typ     # Typst (typst watch for live preview)
 
 This skill **scaffolds and edits**; it does not write the paper.
 
-- **The paper source is the user's writing space** — `Paper/` sits outside every `Artifacts/` folder, which is exactly what makes it protected content in the [revise](../revise/SKILL.md) § *Protected content* sense: never author or overwrite it unprompted.
+- **The paper source is the user's writing space** — it sits in the folder itself, outside every `Artifacts/` folder, which is exactly what makes it protected content in the [revise](../revise/SKILL.md) § *Protected content* sense: never author or overwrite it unprompted.
 - Act as an **editor on request**:
   - Import material at a specified location ("put the lemma after Section 2").
   - Correct or rewrite a paragraph the user points to.
