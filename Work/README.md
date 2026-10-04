@@ -33,9 +33,7 @@ The one thing the folders can't show — each in-progress item and its next task
 
 ## UnderReview
 
-| Item | Tasks |
-|---|---|
-| [FolderRule](UnderReview/FolderRule.md) | T1-T3 done; blog entry and marketplace mirror left in its Hand-off |
+None.
 
 ## Ready
 
@@ -44,6 +42,8 @@ The one thing the folders can't show — each in-progress item and its next task
 | [BacklogLifecycle](Ready/BacklogLifecycle.md) | T1 — rename every skill to `<area>-<word>`; the backlog family under `backlog-` |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
+
+`FolderRule` completed on 2026-10-04 after three tasks, all run by `/autolab` that day: every folder has the same three places, the documents in progress in the folder itself, one-offs in `Artifacts/` and superseded versions in `Archive/`, and papers live in `Research/` beside the research notebooks, an existing `Paper/` still found and used.
 
 `DocumentMemory` completed on 2026-10-04 after five tasks, all run by `/autolab` on 2026-10-03: notes written as `<< … >>`, a provenance file beside each revised document that keeps every note with its lines, every hand edit and every chat request, and the rules drawn from them, read before each round. Generated notebooks stay out of git; each version's `.md` is committed. Its trial found that rules were drawn too late in the round to bind it; the round now draws them first.
 
