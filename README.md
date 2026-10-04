@@ -100,9 +100,11 @@ Research/
 
 **The plugin never overwrites a file.**
 It writes a new artifact, or the next version of a document beside the last one, and only when you ask.
-Everything outside `Artifacts/` is yours.
+Outside `Artifacts/` it writes only when you ask.
+A request that does not say where it goes lands in `Artifacts/`, so nothing of yours is touched.
 To keep working on an artifact, move it up into the folder; from then on it is a document in progress.
-The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md); the rule for every folder is in design, see [FolderRule](Work/Ready/FolderRule.md).
+A project that already has a `Paper/` folder keeps using it; nothing is moved.
+The convention is spelled out in [artifacts.md](skills/new-notebook/artifacts.md).
 
 | Skill | What it does |
 |---|---|
@@ -121,7 +123,7 @@ This is how you and the plugin write one document together, round after round.
 To revise a document with the AI:
 
 1. **Ask for it.** The plugin writes version 1, `Note_260928.tex` or `Note_260928.nb`, and beside it `Note_260928.provenance.md`, which starts with your request.
-   Say where it goes: a document you will keep working on belongs in the folder itself, `Research/` for a paper or a note, and a one-off in `Artifacts/`.
+   Say where it goes: a document you will keep working on belongs in the folder itself, `Research/` for a paper or a note, and a one-off in `Artifacts/`, which is also where a request that does not say goes.
 2. **Write notes into it** wherever something should change: `<< make this example smaller >>`.
    A note can sit inside a sentence or run over several lines; in code it goes inside a comment, as in `(* << use a smaller graph >> *)`.
    Edit the text yourself wherever that is quicker.

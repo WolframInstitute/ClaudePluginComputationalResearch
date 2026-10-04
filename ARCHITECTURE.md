@@ -5,13 +5,16 @@ Reference inventory for the plugin: layout, scripts, commands, templates, projec
 Read this when you need it — it is **not** auto-loaded.
 `CLAUDE.md` carries only the policy a session must know before it can know it needs to look something up.
 
-## The artifact convention
+## The three places
 
-Everything the model generates goes into an `Artifacts/` folder, and everything outside one is the user's — the whole of `revise` § *Protected content* reduced to a path check.
-`new-research-note` and `new-research-notebook` write to `Research/Artifacts/`, `new-notebook` to `Code/Artifacts/`, `new-paper` to `Paper/`, which is the user's document and not an artifact.
+Every folder that holds documents (`Code/`, `Research/`, and `Artifacts/` itself) has the same three places: the folder itself for documents in progress, `Artifacts/` for what the plugin made once, `Archive/` for what is superseded.
+The plugin never overwrites a file; outside `Artifacts/` it writes only on request — `revise` § *Protected content*.
+`new-research-note` and `new-research-notebook` write to `Research/`, `new-notebook` to `Code/`, `new-paper` always to `Research/`: a document in progress goes in the folder, a one-off or an unsaid request in its `Artifacts/`.
+There is no `Paper/` folder; a project that already has one keeps using it, and nothing is moved.
+`Archive/` is created lazily by `/clean`, one per folder, `Artifacts/Archive/` included.
 An artifact is one dated stem (`<WhatItSettles>_YYMMDD`) shared by whatever files it needs, flat until it grows its own code, data, bibliography or build; then the folder takes the stem and the files inside go bare.
 Every file of an artifact is tracked except a generated `.nb`, whose `.md` source is tracked instead, and nothing is uploaded to the Cloud unless the user asks.
-The canonical statement is [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md); the three producers reference it rather than restating it.
+The canonical statement is [skills/new-notebook/artifacts.md](skills/new-notebook/artifacts.md); the producers, `revise` and `clean` reference it rather than restating it.
 
 ## Layout
 
@@ -20,7 +23,7 @@ The canonical statement is [skills/new-notebook/artifacts.md](skills/new-noteboo
 skills/*/SKILL.md              — skill definitions (auto-discovered)
 skills/*/<topic>.md            — read-on-demand sibling docs, kept out of the unconditional read
                                  (e.g. next-session/paclet-worktree.md, paclet-dev only)
-skills/new-notebook/artifacts.md — the artifact convention, shared by the three producers
+skills/new-notebook/artifacts.md — the three-places convention, shared by the producers, revise and clean
 scripts/                       — bash and wolframscript utilities
 commands/                      — slash command definitions
 agents/                        — subagent definitions (the autolab workers, one per effort level)
@@ -109,6 +112,8 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `work_item_template.md` | Work item skeleton: a human-first Spec (Summary / Motivation / Acceptance criteria / Prompt history / Technical details), then Tasks / Hand-off / Decisions / Progress (used by work, next-session); the ten sections are the whole file, status is the folder (Backlog/Ready/Active/UnderReview/Done/Dropped) |
 | `work_readme_template.md` | Work/README.md active-item index, seeded by the scaffolds |
 | `code_style_template.md` | Code-style rules (input, layout, naming, mathematical objects, exported functions, graphics, snippets, comments, testing, commits) + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
+| `artifacts_index_template.md` | Index of an `Artifacts/` folder, one text for `Code/` and `Research/` (used by all three project scaffolds) |
+| `project_readme_template.md` | The project's own README: states the three places and that papers live in `Research/` (used by the scaffolds) |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |
 | `main_template.typ` | Typst article (imports macros.typ, native bibliography) |
@@ -132,13 +137,13 @@ Available placeholders: `{{PROJECT_NAME}}`, `{{TOPIC_DESCRIPTION}}`, `{{GOALS}}`
 
 The `new-project` skill asks users which type of project to create:
 
-- **research** (default) — Code/Artifacts/, Research/Artifacts/, Wiki/, Work/, Resources/, optional Paper/.
+- **research** (default) — Code/Artifacts/, Research/Artifacts/, Wiki/, Work/, Resources/; papers go in Research/.
   Open-ended exploration of a topic.
 - **math-research** — Wiki/{Theorems,Definitions,Domains}/ and Work/ pre-created, math-domain taxonomy seeded, optional Lean/ subdirectory.
   Organised around precise theorems and definitions rather than open-ended exploration.
   Pairs with `search-math`, `cite`, `lean`, and the `theorem-proof` notebook template.
 - **paclet-dev** — WolframInstitute-style dev repo with paclet submodules (triple nesting: PacletName/PacletName/Kernel/), Code/ for experimental work, Wiki/, .gitmodules.
-  Optional Paper/ (gitignored).
+  Research/ is tracked; papers go there.
   Work items that change paclet code land as PRs on the paclet submodules — developed on a `work/<item>` branch in a gitignored `<Paclet>--<item>/` worktree — while the dev repo's Wiki and Work stay linear on `main` (see the `next-session` skill).
 - **paclet** — standalone Wolfram paclet (double nesting), clean repo structure.
   Optional Wiki/.
