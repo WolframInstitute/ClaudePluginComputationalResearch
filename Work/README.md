@@ -26,10 +26,7 @@ Use `/work` to create a new item.
 The one thing the folders can't show — each in-progress item and its next task.
 `Backlog/`, `Done/`, and `Dropped/` are not mirrored here; browse the folders.
 
-| Item | Next task |
-|---|---|
-| [InSessionAutoRun](Active/InSessionAutoRun.md) | T5 — parallel trial of `/autolab` on two throwaway items |
-| [AutolabTrialT4](Active/AutolabTrialT4.md) | trial spent (T1 done, T2 halted `needs-human` as designed, on unmerged `auto/AutolabTrialT4`) — pending drop, see its Hand-off |
+None.
 
 ## UnderReview
 
@@ -42,6 +39,8 @@ None.
 | [BacklogLifecycle](Ready/BacklogLifecycle.md) | T1 — rename every skill to `<area>-<word>`; the backlog family under `backlog-` |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03; `/refine <Name>` shapes one, and `/next-session <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
+
+`InSessionAutoRun` completed on 2026-10-05 after six of its seven tasks: `/autolab` runs the backlog from an ordinary chat, one background worker per task, visible in the Agent map. Two real items, `DocumentMemory` and `FolderRule`, ran to completion under it; the parallel trial moved to `ParallelSessions`. Its throwaway `AutolabTrialT4` was dropped the same day, its branch discarded.
 
 `FolderRule` completed on 2026-10-04 after three tasks, all run by `/autolab` that day: every folder has the same three places, the documents in progress in the folder itself, one-offs in `Artifacts/` and superseded versions in `Archive/`, and papers live in `Research/` beside the research notebooks, an existing `Paper/` still found and used.
 

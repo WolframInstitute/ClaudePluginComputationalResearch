@@ -46,3 +46,4 @@ This item's value is spent. The `alpha`/`beta` question T2 raised is not a real 
 ## Progress
 
 Append-only, one line per session; nothing reads it.
+- 2026-10-05 — dropped: trial spent; `auto/AutolabTrialT4` discarded unmerged, T3 not run.

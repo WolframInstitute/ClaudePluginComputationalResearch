@@ -85,7 +85,8 @@ The claim is the branch plus the worktree, for every session:
 - [ ] T1 (human) — decide open question 1.
 - [ ] T2 (model: opus, effort: high — protocol writing) — the claim in `next-session`: worktree per item for interactive sessions, the stop on a busy branch, the shared branch name with `autolab` and `auto-run.sh`.
 - [ ] T3 (human) — a week of Agent View on a real project, items started by dispatching `next-session`; record whether it is enough, and whether the board's Start button is wanted after all.
-- [ ] T4 (model: sonnet, effort: high — doc pass) — README, AutonomousPipeline article, version bump.
+- [ ] T4 (model: sonnet, effort: high) — parallel `/autolab` trial, moved from `InSessionAutoRun` T5: two throwaway items with `--parallel 2`, each in its own worktree; neither tree touched by the other; the operator's checkout never switched.
+- [ ] T5 (model: sonnet, effort: high — doc pass) — README, AutonomousPipeline article, version bump.
 
 ### Done
 
@@ -108,3 +109,4 @@ The README paragraph *Several sessions at once* was written on 2026-10-03.
 
 - **S0** 2026-10-03 — item filed from the operator's request; Kanban Code read from its README and source.
 - 2026-10-04 — Agent View chosen over outside kanban tools and an own controller; board–session link deferred (operator decision).
+- 2026-10-05 — parallel `/autolab` trial taken over from `InSessionAutoRun` (its T5) as T4.
