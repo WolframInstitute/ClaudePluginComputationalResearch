@@ -83,6 +83,7 @@ Untested as yet: nothing has ever produced a document that cuts anything, which 
 
 ## Recent changes
 
+- 2026-10-05 — `DocumentationSite` T1 answered its four design questions on InfraGeometry, which turned out to run PureMath's whole docs path already: Markdown guides and tutorials, `PacletBuild`, a public paclet resource. Measured on the way: the plugin's own path ships and deploys the *authoring* notebooks, its one deployment (MathNotebook's) no longer exists, `PacletBuild` runs in the MCP kernel with no extra license process, and this repo's MarkdownToNotebook clone has drifted seven commits past its pin. See [Paclet guide pages and tutorials](Concepts/PacletGuidesAndTutorials.md).
 - 2026-10-05 — `BacklogLifecycle` T5 released version 6.0.0: every skill and command is `<area>-<word>`, the backlog family names each step of an item's life, and the old to new table is in [Skill and command names](Concepts/SkillNames.md).
 - 2026-08-21 — `JournalAsPaperSink` T2 closed the item by building the document the rule had never been tested on: `NotebooksLLM/SidonBound.md`, a short paper on Sidon sets in cyclic groups that strands three items below the settled tier. The rule held and three things around it did not — the ruling was taken at the closing step instead of at the tier sort, "keep it marked" named no marker (and so collided with the bans on hedges and on `[lookup]`), and "report in the run digest" was unimplementable because a session has no write path into the digest. The retained block now has a fixed form, the unattended list goes to the item's `## Hand-off`, and the drift fingerprint has to walk into `CellGroupData` — at level `{1}` it missed all eleven grouped cells and reported clean. See [Cutting with no journal](Concepts/CutWithNoJournal.md#what-t2-found-by-building-one).
 - 2026-08-21 — `JournalAsPaperSink` T1 ruled on the journal-off gap and made the five sites agree: with the journal off the generator refuses to cut *silently* and puts the list to the operator, with retain-and-report fixed as the unattended default. Each of the three filed candidates broke a rule the plugin already had, the surface was five sites rather than three, and the toggle stays off by default. The same session deleted the two `ExercisePaperStyle` exercise documents — `NotebooksLLM/EquidistanceOddGirth.{md,nb}` and `ResearchNotebooks/EquidistanceOddGirth/Paper/` in SyntheticInfrageometry, both gitignored — their findings already harvested, so [the exercise article](Concepts/PaperStyleExercise.md) is now the only record. See [Cutting with no journal](Concepts/CutWithNoJournal.md).
@@ -165,6 +166,10 @@ The LaTeX templates gave up seven defects, and two of them make a paper wrong ra
 
 ## Open questions
 
+- Does a front end take a license seat?
+  `CLAUDE.md` § *Wolfram Kernel Execution Policy* counts each open front end as one.
+  On 2026-10-05 a front end launched by `UsingFrontEnd` from the MCP kernel left `$LicenseProcesses` at 1, and this machine's licence reports `$MaxLicenseProcesses = Infinity`, so the headroom check cannot fail here ([Paclet guide pages and tutorials](Concepts/PacletGuidesAndTutorials.md#what-was-measured)).
+  A stand-alone front end on a capped licence is unmeasured.
 - Upstream `MarkdownToNotebook` has no `LICENSE` file and no tags.
   A standing, non-blocking ask for an in-tree licence is open with Nikolay Murzin.
   Adoption is not gated on it — the user confirmed the licence is fine, and pinning by SHA works today.

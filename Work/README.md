@@ -29,6 +29,7 @@ The one thing the folders can't show — each in-progress item and its next task
 | Item | Next task |
 |---|---|
 | [BacklogLifecycle](Active/BacklogLifecycle.md) | T4 (human) — trial: one backlog check and one review of a real item (T5 done first, operator's choice) |
+| [DocumentationSite](Active/DocumentationSite.md) | T2 (human) — rule on the design: deploy path, source location, guides per paclet, reference-page engine |
 
 ## UnderReview
 
@@ -38,7 +39,6 @@ None.
 
 | Item | Next task |
 |---|---|
-| [DocumentationSite](Ready/DocumentationSite.md) | T1 — design: the four questions on InfraGeometry |
 | [ParallelSessions](Ready/ParallelSessions.md) | T2 — the claim in `backlog-run`, `work/<Item>` everywhere |
 
 `Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `ConversationStyle`; `ParallelSessions`, filed on 2026-10-03, and `DocumentationSite`, filed on 2026-10-05, were refined to Ready on 2026-10-05; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.

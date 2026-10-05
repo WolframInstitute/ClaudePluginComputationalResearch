@@ -84,6 +84,12 @@ Two findings shaped that script:
 
 Verification: `URLRead[url, "StatusCode"]` over **every** deployed page, not a sample. It costs seconds and catches a permissions miss that sampling would not.
 
+**What it ships is the authoring notebook.** The build is `CreatePacletArchive`, which runs no `DocumentationBuild`: an archived page keeps its `MetadataSection` and `CategorizationSection` on the authoring stylesheet, and the deployment shows the same notebook (measured 2026-10-05).
+The published look — anchor bar, footer, `Reference.nb` — comes from `DocumentationBuild`, which `PacletTools`PacletBuild` runs.
+MathNotebook's deployment, the only one this path made, no longer exists on 2026-10-05.
+The official doc tools are not attached in the default MCP profile either; InfraGeometry dropped them for MarkdownToNotebook on 2026-08-12.
+Guide pages, tutorials and the built path are in [Paclet guides and tutorials](PacletGuidesAndTutorials.md).
+
 ## What still needs a human
 
 Two things are not verifiable headlessly, and the skills say so rather than letting a headless check stand in for them:

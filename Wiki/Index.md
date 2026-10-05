@@ -27,6 +27,7 @@ See [Work/README.md](../Work/README.md).
 - [Preamble audit](Concepts/PreambleAudit.md) — what belongs in an auto-loaded `CLAUDE.md`: 47 % of this repo's was inventory already in context by two other routes
 - [Generated preamble audit](Concepts/GeneratedPreambleAudit.md) — the same test on the `CLAUDE.md` the plugin *generates*: already 82 % policy, the suspect code-style block exonerated, and two auto-loaded files found contradicting each other
 - [Generating Wolfram paclet documentation](Concepts/PacletDocumentation.md) — five ways a generated doc page ships broken, what actually verifies one, and why there is no unevaluated code block
+- [Paclet guide pages and tutorials](Concepts/PacletGuidesAndTutorials.md) — InfraGeometry already runs PureMath's docs path; where the sources live, the paclet-resource deploy against cloud notebooks, what the pinned converter still needs, and one guide per kernel folder
 - [The Progress harvest](Concepts/ProgressHarvest.md) — what moved out of the closed items' Progress blocks into `Wiki/`, what did not, and why bytes are the wrong measure of it
 - [The Claude Code hook contract](Concepts/HookContract.md) — hooks read JSON from stdin and block via exit 2 + stderr; a positional-args hook is silently inert
 - [The notebook TaggingRules registry](Concepts/TaggingRulesRegistry.md) — `"Provenance"` and `"ResearchNotebook"` share the one metadata slot; every writer merges by key via `stampTaggingRule`, never replaces the option; each cell's `"SourceLines"` lives in the cell's own `TaggingRules`

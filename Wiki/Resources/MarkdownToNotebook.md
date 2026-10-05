@@ -29,7 +29,8 @@ That is silent content loss, not formatting drift, so `NotebookToMarkdown` is no
 And `ensureParser[]` installs the `Wolfram/Parser` paclet on first call, degrading **silently** to `ImportString[…, "TeX"]` with worse math fidelity if the install fails.
 
 `WolframInstitute/PureMath` is the existence proof at scale: it authors 1,480 Markdown doc pages and converts them with this function before running `DocumentationBuild`.
-Its build script is 55% workaround by line, but those shims repair DocumentationTools template slots and protect a 1,480-page parallel cloud batch — neither applies to the `Default` template at N=1.
+Its build script was 55% workaround by line, but those shims repair DocumentationTools template slots and protect a 1,480-page parallel cloud batch — neither applies to the `Default` template at N=1.
+The slot repairs are gone: PureMath removed them on 2026-07-28 as fixed upstream, by commits below this pin, and InfraGeometry builds its guides and tutorials at the pin with none ([Paclet guides and tutorials](../Concepts/PacletGuidesAndTutorials.md#3-what-the-pinned-converter-still-needs)).
 
 ## Use in this project
 
@@ -38,6 +39,9 @@ See [notebook-create](../../skills/notebook-create/SKILL.md), section *Conversio
 `paclet-docs` does not use it; that skill uses the official MCP doc tools.
 
 Called as the **local file at a pinned SHA**, via `Get`, with `Template: Default` and `"Evaluate" -> False`.
+Nothing checks the SHA, and the clone has drifted: its reflog shows a `pull --ff-only` on 2026-07-30 to `01f0e30`, seven commits past the pin, so rich mode has run `01f0e30` since (found 2026-10-05).
+Those seven include deterministic `CellID`s and `ExpressionUUID`s (`3462fc5`), a `"UseCache"` option (`00b4b2b`) and nested bullets as `Subitem` (`efa96cd`); none was re-measured here.
+InfraGeometry's docs build pins `204db7c` and warns when its clone differs.
 Not called as the deployed cloud resource: that lives on a personal `obj/nikm/` path that can disappear, and reports `"Version" -> None` with no `"LatestUpdate"`, so drift is undetectable.
 
 Also backs [paper-create-notebook](../../skills/paper-create-notebook/SKILL.md), but only as the **parser half** of a two-half pipeline: the converter produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, the equation numbering, and the citations.

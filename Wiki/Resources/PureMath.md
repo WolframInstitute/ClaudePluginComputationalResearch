@@ -68,6 +68,11 @@ The honest statement of the cost is therefore not "55 %" but **"55 % of a doc-bu
 
 This is worth keeping as a method note: a dependency's shim tax measured in someone else's integration prices *their* code paths, not yours. Check which paths your own usage can even reach before reading the percentage as a cost.
 
+The template shims no longer exist in PureMath either.
+PR #134 (2026-07-28) removed the guide `RelatedTutorials`, legacy tutorial categorization, description, empty-examples and external-links workarounds as fixed upstream; `build_notebooks.wls` is 258 lines at `6e9d9c55`.
+What remains is the batch machinery, an incremental cache, and one normalisation of the `Paclet`-template resource definition.
+PureMath also built its own site shell, `build_docs_site.wls`, because the stock paclet shingle embeds each page with a one-second render wait and heavy pages came back empty — see [Paclet guides and tutorials](../Concepts/PacletGuidesAndTutorials.md#2-which-deploy-path).
+
 ## Recover
 
 Clone: git@github.com:WolframInstitute/PureMath.git
