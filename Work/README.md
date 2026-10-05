@@ -36,9 +36,12 @@ None.
 
 ## Ready
 
-None.
+| Item | Next task |
+|---|---|
+| [DocumentationSite](Ready/DocumentationSite.md) | T1 — design: the four questions on InfraGeometry |
+| [ParallelSessions](Ready/ParallelSessions.md) | T2 — the claim in `backlog-run`, `work/<Item>` everywhere |
 
-`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup`, `ConversationStyle`, and `ParallelSessions`, filed on 2026-10-03, and `DocumentationSite`, filed on 2026-10-05; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
+`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `ConversationStyle`; `ParallelSessions`, filed on 2026-10-03, and `DocumentationSite`, filed on 2026-10-05, were refined to Ready on 2026-10-05; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` after a `git mv` into `Active/` starts one. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 
 `InSessionAutoRun` completed on 2026-10-05 after six of its seven tasks: `/backlog-autolab` runs the backlog from an ordinary chat, one background worker per task, visible in the Agent map. Two real items, `DocumentMemory` and `FolderRule`, ran to completion under it; the parallel trial moved to `ParallelSessions`. Its throwaway `AutolabTrialT4` was dropped the same day, its branch discarded.
 

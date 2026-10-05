@@ -3,7 +3,6 @@
 *[ LLM Generated ]*
 
 > Type: investigation
-> Waiting on: you — the move to Ready.
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -109,4 +108,4 @@ For T4: a `/backlog-autolab --parallel 2` run that works this item beside anothe
 - **S0** 2026-10-03 — item filed from the operator's request; Kanban Code read from its README and source.
 - 2026-10-04 — Agent View chosen over outside kanban tools and an own controller; board–session link deferred (operator decision).
 - 2026-10-05 — parallel `/autolab` trial taken over from `InSessionAutoRun` (its T5) as T4.
-- **R1** 2026-10-05 — refined with the operator: branch name `work/<Item>` decided (T1), T2 and T4 re-cut.
+- **R1** 2026-10-05 — refined with the operator: branch name `work/<Item>` decided (T1), T2 and T4 re-cut; moved to Ready.

@@ -4,7 +4,6 @@
 
 > Type: feature
 > Target: `skills/paclet-docs`, `skills/paclet-publish`, `scripts/deploy_paclet_docs.wl`
-> Waiting on: you — read the Summary, Motivation and Acceptance criteria; the LLM drafted them from your words.
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -88,7 +87,7 @@ T1 answers each with evidence; T2 is your ruling.
 
 Fresh item; nothing in flight.
 InfraGeometry, the trial paclet, is at `~/Library/CloudStorage/Dropbox-WolframInstitute/Pavel Hajek/Infrageometry/FromPavel/SubProjects/SubProjectsMain/InfraGeometry`; read it, never write it before T5.
-PureMath is the in-project clone `PureMath/`, read-only.
+PureMath is the gitignored clone `/Users/pavel/Library/CloudStorage/OneDrive-Personal/Programming/ClaudePlugins/ComputationalResearch/PureMath`, absent from a worktree; read it there, never write it.
 
 ## Decisions
 
@@ -99,4 +98,4 @@ PureMath is the in-project clone `PureMath/`, read-only.
 
 ## Progress
 
-- **S0** 2026-10-05 — item filed from the operator's request; refined in the same sitting.
+- **S0** 2026-10-05 — item filed from the operator's request; refined in the same sitting and moved to Ready.
