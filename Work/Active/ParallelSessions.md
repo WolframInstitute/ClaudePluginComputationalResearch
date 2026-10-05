@@ -3,6 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: investigation
+> Autonomous: allowed
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
