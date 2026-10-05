@@ -3,7 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: investigation
-> Waiting on: you — open question 1, and the Agent View trial.
+> Waiting on: you — the move to Ready.
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
 ## Summary
@@ -33,14 +33,15 @@ The README's *Several sessions at once* paragraph is true:
 - 2026-10-04 — "We need to turn board into something like vibe-kanban where we will also see the work items being done by multiple sessions, where i could start multiple sessions and view their output and communicate with them... like a control interface.. Is it the best to build our own board or would it be the best to make our backlog into github backlog and kanban board and use some standard orchestrator"
 - 2026-10-04 — "lets not use the vibe kanban etc and lets use the default the agentic view. If it brings what i want.... but then it should be somehow connected with our board that i can click there for agent to process"
 - 2026-10-04 — "well okey it is not such a problem not to connect the board then, forget it if it is too bad"
+- 2026-10-05 — chose "work/<Item> everywhere" for the branch name.
 
 ## Technical details
 
 ### What exists
 
-- `autolab` isolates each item in `~/.cache/autolab/<Repo>/<Item>` on `auto/<Item>`, outside the cloud-synced repo, and halts `worktree-busy` when git refuses the branch; that refusal is the only exclusivity the plugin has today.
-- Paclet-dev items use `work/<item>` worktrees for the paclet submodule only.
-- An interactive `next-session` moves the item `Ready/` → `Active/` in the checkout and commits; a second session started before that commit lands takes the same item.
+- `backlog-autolab` isolates each item in `~/.cache/autolab/<Repo>/<Item>` on `auto/<Item>`, outside the cloud-synced repo, and halts `worktree-busy` when git refuses the branch; that refusal is the only exclusivity the plugin has today.
+- Paclet-dev items use `work/<item>` worktrees for the paclet submodule only (`skills/backlog-run/paclet-worktree.md`); the new name matches them.
+- An interactive `backlog-run` moves the item `Ready/` → `Active/` in the checkout and commits; a second session started before that commit lands takes the same item.
 
 ### Kanban Code (langwatch/kanban-code, read 2026-10-03)
 
@@ -57,7 +58,7 @@ vibe-kanban has the same shape: tasks in its own store, one worktree per task, l
 
 - `claude agents` lists every session on the machine, interactive and background, and dispatches, attaches to and replies to them; Remote Control reaches the same sessions from the phone.
 - `claude --bg -n <name> "<prompt>"` starts a background session that appears there at once; `claude agents --json` prints each session's `cwd`, `name` and `status` for scripts.
-- An item is started by dispatching `/computational-research:next-session <Item>` from Agent View, or by `/autolab` for several.
+- An item is started by dispatching `/computational-research:backlog-run <Item>` from Agent View, or by `/backlog-autolab` for several.
 - `-w` puts the worktree at `<repo>/.claude/worktrees/`, inside the synced folder; the item's worktree is made outside it instead.
 - Not built, kept for later: a "Start agent" button on the board that queues a start in `pending.json`, which the next sync dispatches as `claude --bg -n <Item>` in the item's worktree, and card statuses read from `claude agents --json` at sync.
 
@@ -65,42 +66,40 @@ vibe-kanban has the same shape: tasks in its own store, one worktree per task, l
 
 The claim is the branch plus the worktree, for every session:
 
-- One branch name per item, `work/<Item>`, replacing `auto/<Item>`; the worktree outside the repo as `autolab` does it.
-- `next-session` starts an item by creating or reusing that worktree; if git refuses because the branch is checked out elsewhere, it stops and names the worktree that has it.
+- One branch name per item, `work/<Item>`, replacing `auto/<Item>` in `backlog-autolab`, `backlog-run-scheduled` (`scripts/auto-run.sh`), `backlog-review`, `backlog-info`, `backlog-board` and `document-revise`; the worktree outside the repo, as `backlog-autolab` makes it.
+- `backlog-run` starts an item by creating or reusing that worktree; if git refuses because the branch is checked out elsewhere, it stops and names the worktree that has it.
 - Merging the branch is the review (see [BacklogLifecycle](BacklogLifecycle.md)), for interactive and autonomous work alike.
 
 ### Edge cases & out of scope
 
-- An abandoned worktree holds the claim forever; `backlog` reports worktrees whose item has no commit in a week.
+- An abandoned worktree holds the claim forever; `backlog-info` reports worktrees whose item has no commit in a week.
+- Branches made before the rename (`auto/BacklogLifecycle`, and those of any run before T2 lands) are still found: `backlog-review` and `backlog-info` read `auto/*` beside `work/*` until none is left.
+- A paclet-dev item has `work/<Item>` in the dev repo and in the paclet submodule: two repos, one name.
 - Out of scope: any shared server; two machines on one repo (the branch is then the claim through the remote).
-
-### Open questions
-
-1. One branch name for both paths, `work/<Item>`, with the paclet-dev worktrees keeping their own rule?
-2. ~~Trial Kanban Code?~~ Answered 2026-10-04: no; Agent View instead.
-3. ~~Mirror Ready items to GitHub issues?~~ Answered 2026-10-04: no; the backlog stays in `Work/`.
 
 ## Tasks
 
-- [ ] T1 (human) — decide open question 1.
-- [ ] T2 (model: opus, effort: high — protocol writing) — the claim in `next-session`: worktree per item for interactive sessions, the stop on a busy branch, the shared branch name with `autolab` and `auto-run.sh`.
-- [ ] T3 (human) — a week of Agent View on a real project, items started by dispatching `next-session`; record whether it is enough, and whether the board's Start button is wanted after all.
-- [ ] T4 (model: sonnet, effort: high) — parallel `/autolab` trial, moved from `InSessionAutoRun` T5: two throwaway items with `--parallel 2`, each in its own worktree; neither tree touched by the other; the operator's checkout never switched.
+- [ ] T2 (model: opus, effort: high — protocol writing) — the claim in `backlog-run`: a worktree per item for interactive sessions, the stop on a busy branch naming its worktree; `work/<Item>` in every skill and script that names `auto/<Item>`, legacy `auto/*` still read; `bash scripts/test-auto-run-routing.sh` passes.
+- [ ] T3 (human) — a week of Agent View on a real project, items started by dispatching `/backlog-run <Item>`; record whether it is enough, and whether the board's Start button is wanted after all.
+- [ ] T4 (human) — parallel `/backlog-autolab` trial, moved from `InSessionAutoRun` T5: two items with `--parallel 2`, each in its own worktree; neither tree touched by the other; the operator's checkout never switched. An orchestrator runs it, so it is yours to start; a worker cannot dispatch workers.
 - [ ] T5 (model: sonnet, effort: high — doc pass) — README, AutonomousPipeline article, version bump.
 
 ### Done
 
-(completed tasks move here with the session that closed them)
+- [x] T1 (human) — decided in the 2026-10-05 refinement: `work/<Item>` everywhere, see Decisions.
+  - **Test:** the Decisions table has the 2026-10-05 branch-name row.
 
 ## Hand-off
 
-Fresh item.
+T1 decided in refinement; T2 is next.
 The README paragraph *Several sessions at once* was written on 2026-10-03.
+For T4: a `/backlog-autolab --parallel 2` run that works this item beside another counts, if its digests in `Work/Runs/` show the three checks.
 
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-10-05 | One branch name per item, `work/<Item>`, for interactive and autonomous sessions; it replaces `auto/<Item>` | one rule a colleague can follow without the plugin, and it already names the paclet-dev worktrees; your call |
 | 2026-10-04 | No link from the board to sessions for now | The board is a claude.ai page and cannot start a local process; a click could only act at the next sync. The operator does not need it yet; the design is kept in Technical details |
 | 2026-10-04 | Sessions are run and watched in Claude Code's Agent View; no vibe-kanban, Kanban Code, GitHub Projects or own controller | Agent View already dispatches, shows and steers sessions, with Remote Control for the phone; the outside tools keep a second task store, and the GitHub orchestrators run in the cloud without the Wolfram kernel |
 | 2026-10-03 | `Work/` stays the one store; Kanban Code, if used, is a view | its backlog is a per-machine JSON of sessions, not items; a second store forks the list. Proposed by the LLM, open to change |
@@ -110,3 +109,4 @@ The README paragraph *Several sessions at once* was written on 2026-10-03.
 - **S0** 2026-10-03 — item filed from the operator's request; Kanban Code read from its README and source.
 - 2026-10-04 — Agent View chosen over outside kanban tools and an own controller; board–session link deferred (operator decision).
 - 2026-10-05 — parallel `/autolab` trial taken over from `InSessionAutoRun` (its T5) as T4.
+- **R1** 2026-10-05 — refined with the operator: branch name `work/<Item>` decided (T1), T2 and T4 re-cut.

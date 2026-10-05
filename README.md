@@ -185,6 +185,11 @@ Every project gets one house style for Wolfram code — spaced brackets, chained
 | [paclet-docs](skills/paclet-docs/SKILL.md) | Write a reference page for every exported function |
 | [paclet-publish](skills/paclet-publish/SKILL.md) | Build with documentation and publish to the Wolfram Cloud |
 
+**Documentation for people.**
+A paclet is documented as PureMath is: a guide page for the overview, tutorials that walk through the ideas in pictures, and a reference page for every function, deployed together as one public site that needs no install.
+The plugin drafts the guide pages and the tutorials, and you revise them like any other document.
+In design, see [DocumentationSite](Work/Backlog/DocumentationSite.md).
+
 ### 📝 Papers and mathematics
 
 A result is settled only when its proof is complete.
