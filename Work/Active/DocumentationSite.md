@@ -3,6 +3,7 @@
 *[ LLM Generated ]*
 
 > Type: feature
+> Autonomous: allowed
 > Target: `skills/paclet-docs`, `skills/paclet-publish`, `scripts/deploy_paclet_docs.wl`
 <!-- Status is the folder: Backlog/ Ready/ Active/ UnderReview/ Done/ Dropped/. Move the file to change it. -->
 
