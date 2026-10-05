@@ -4,7 +4,7 @@ description: >
   Work the Work/ backlog autonomously from an ordinary chat, where the operator
   can watch it: this chat becomes the orchestrator and dispatches one background
   subagent per task, each a cold backlog-run run in the item's own git worktree
-  on auto/<Item>, visible live in the Agent map and steerable by message. Settles
+  on work/<Item>, visible live in the Agent map and steerable by message. Settles
   permissions in one preflight before the operator leaves, queues several
   eligible items, verifies every task the way backlog-run-scheduled does, halts only the item
   that fails, and ends with a digest per item. Use when the user says "autolab",
@@ -55,7 +55,8 @@ And it never cleans up after a failure — no `git reset`, no `git worktree remo
   Any that is not stops the run before anything starts, naming it — the operator is still at the keyboard, and nothing has cost anything yet.
 - **No items named**: every `Work/Active/*.md` carrying the marker, then every `Work/Ready/*.md`, each group in `Work/README.md` order, then any not listed there, alphabetically.
   None → stop and say so.
-- Read each item's state from `auto/<Item>` when that branch exists (`git -C <repo> show auto/<Item>:Work/Active/<Item>.md` — a Ready item an earlier run started is in `Active/` there), since an earlier run's unmerged work lives there; else from the checkout.
+- Each item's branch is `work/<Item>`, the one name every session uses ([backlog-run § *Claim it*](../backlog-run/SKILL.md#claim-it)); when only an unmerged `auto/<Item>` exists, made before the rename, that is the item's branch until it is merged, and `<branch>` below is whichever applies.
+- Read each item's state from `<branch>` when it exists (`git -C <repo> show <branch>:Work/Active/<Item>.md` — a Ready item an earlier session started is in `Active/` there), since earlier unmerged work lives there; else from the checkout.
 - An item is **not runnable**, and is reported and left out, when its first unchecked task carries `(human)`, when its `## Hand-off` already holds a `needs-human` line, or when that task's routing annotation does not parse.
   The annotation grammar is in [backlog-add § *The routing annotation*](../backlog-add/SKILL.md#the-routing-annotation); `model` must be one of `haiku`, `sonnet`, `opus`, `fable`, since those are the values the `Agent` tool takes.
 
@@ -91,10 +92,12 @@ With `--dry-run`, stop here and show the queue: per item the branch, the worktre
 The worktree is `~/.cache/autolab/<Repo>/<Item>`, `<Repo>` being the repo folder's name.
 It lives outside the repo because git surgery inside a cloud-synced folder races the sync daemon, and the `Agent` tool's own `isolation: "worktree"` is not used for the same reason.
 
-- It exists, as a worktree of this repo on `auto/<Item>` → reuse it; it must be clean, ignoring `Work/Runs/`, else halt the item `dirty-tree`.
-- `auto/<Item>` exists → `git -C <repo> worktree add <path> auto/<Item>`.
-  If git refuses because the branch is checked out elsewhere, halt the item `worktree-busy`.
-- Otherwise → `git -C <repo> worktree add -b auto/<Item> <path> HEAD`.
+This is the claim of [backlog-run § *Claim it*](../backlog-run/SKILL.md#claim-it), held by the orchestrator for the whole run.
+
+- `<branch>` exists → `git -C <repo> worktree add <path> <branch>`.
+- Otherwise → `git -C <repo> worktree add -b work/<Item> <path> HEAD`.
+- If git refuses because the branch is already used by a worktree, another session holds the item: halt it `worktree-busy`, naming that worktree, and never work in it.
+  That includes a worktree left at `<path>` by an earlier run; the operator releases it with `git worktree remove <path>`.
 
 The operator's checkout is never switched.
 
@@ -155,23 +158,23 @@ When no item is in flight and the queue is empty:
 2. **The worktrees** — a clean one is removed with `git -C <repo> worktree remove <path>`, no `--force`; its branch stays.
    A dirty one stays, and the summary names its path.
 3. **A short summary in the chat**, per item: the branch, its commits, the stop reason.
-   Then what waits for the operator: review each finished item with `/backlog-review <Item>`, which merges `auto/<Item>` (the merge is the `document-revise` approval), answer each hand-off question, remove this run's rules with `/permissions`, and add the rules to approve next time.
+   Then what waits for the operator: review each finished item with `/backlog-review <Item>`, which merges `<branch>` (the merge is the `document-revise` approval), answer each hand-off question, remove this run's rules with `/permissions`, and add the rules to approve next time.
 
 ## The worker prompt
 
 The autonomy notice that `auto-run.sh` puts into the system prompt goes at the top of the worker's prompt instead: a session cannot tell it is unattended unless it is told ([document-revise § *Autonomous mode*](../document-revise/SKILL.md#autonomous-mode--the-gate-is-deferred-not-dropped)).
-Fill in `<Item>`, `<Tk>`, `<Worktree>` (absolute) and `<Home>` (this session's directory, where a worker's Bash starts):
+Fill in `<Item>`, `<Tk>`, `<branch>`, `<Worktree>` (absolute) and `<Home>` (this session's directory, where a worker's Bash starts):
 
 ```
 You are an autonomous worker dispatched by /backlog-autolab. No user reads this transcript; the orchestrator reads only your final report.
 
-Item: <Item>. Task: <Tk>. Branch: auto/<Item>. Worktree: <Worktree>.
+Item: <Item>. Task: <Tk>. Branch: <branch>. Worktree: <Worktree>.
 The worktree is the repository you work in. Never touch any other checkout.
 - Your Bash working directory resets to <Home> on every call. Start every Bash command with `cd <Worktree> &&`.
 - Give file tools absolute paths under <Worktree>. Every repo-relative path a skill names — Work/Active/<Item>.md, Wiki/..., Code/... — means <Worktree>/<that path>.
 
 Invoke the Skill tool with skill `computational-research:backlog-run` and args `<Item>`, and do exactly that one task.
-Follow the document-revise skill's section "Autonomous mode — the gate is deferred, not dropped": do not stop to present; commit unconditionally on auto/<Item> in the worktree; if the task turns on a decision you would otherwise ask about, write the question into ## Hand-off on a line containing `needs-human:`, commit, and stop.
+Follow the document-revise skill's section "Autonomous mode — the gate is deferred, not dropped": do not stop to present; commit unconditionally on <branch> in the worktree; if the task turns on a decision you would otherwise ask about, write the question into ## Hand-off on a line containing `needs-human:`, commit, and stop.
 If a tool call is denied, do not work around it: write `needs-human: permission — <Tool(pattern)>` into ## Hand-off, commit, and stop.
 
 End with exactly these four lines and nothing else:

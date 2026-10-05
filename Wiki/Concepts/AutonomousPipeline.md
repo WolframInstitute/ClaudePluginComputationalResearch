@@ -102,7 +102,7 @@ That much is now measured live rather than probed:
 | worktree isolation | the worker correctly translated every repo-relative path against the worktree root and committed on `auto/AutolabTrialT4`; the operator's own checkout stayed on `main`, untouched, throughout |
 | `Agent`-map identity | `ListAgents` lists a running background subagent by `subagent_type` (`general-purpose`), not by the `description` passed at dispatch — the `description` instead surfaces in the launch confirmation and the completion notice's `summary` (`Agent "AutolabTrialT4 T1" finished`). Both identify the same worker; which one a given surface shows differs |
 
-`git worktree add` hit the same OneDrive dataless-file failure mode as [AutoRunOperations § *Landing `auto/<Item>` on `main`*](AutoRunOperations.md#landing-autoitem-on-main) — `fatal: mmap failed: Operation canceled` this time, against `Operation timed out` there — and a provider restart alone did not clear it; only a full `find .git -type f | xargs cat > /dev/null` sweep did. One more confirmation that the sweep, not the restart, is the reliable fix.
+`git worktree add` hit the same OneDrive dataless-file failure mode as [AutoRunOperations § *Landing `auto/<Item>` on `main`*](AutoRunOperations.md#landing-workitem-on-main) — `fatal: mmap failed: Operation canceled` this time, against `Operation timed out` there — and a provider restart alone did not clear it; only a full `find .git -type f | xargs cat > /dev/null` sweep did. One more confirmation that the sweep, not the restart, is the reliable fix.
 
 ## Measured properties of `claude -p` (this machine, `claude` 2.1.220)
 
@@ -384,7 +384,7 @@ Haiku's 200 k context window was **not** the constraint: 8 turns against 216 k o
 Nor was effort — the task ran at `high`, the same level as T2.
 What is left is a hypothesis the trial did not test: haiku spent 8 turns where sonnet spent 23, and the protocol it skipped is in files a session has to choose to read.
 
-The run also cost one **operator** finding, recorded in [the runbook](AutoRunOperations.md#landing-autoitem-on-main): the driver checks out `auto/<Item>` and never returns, so the repository is left on that branch and the next thing the operator commits lands there rather than on `main`.
+The run also cost one **operator** finding, recorded in [the runbook](AutoRunOperations.md#landing-workitem-on-main): the driver checks out `auto/<Item>` and never returns, so the repository is left on that branch and the next thing the operator commits lands there rather than on `main`.
 
 ## What this does not settle
 

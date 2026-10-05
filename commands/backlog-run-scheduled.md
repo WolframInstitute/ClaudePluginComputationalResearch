@@ -16,7 +16,7 @@ Use `--dry-run` first if the user has not run this before — it prints the sele
 
 The item must be in `Work/Ready/` — the human's approval — or already in `Work/Active/` carrying `> Autonomous: allowed` beside its `> Type:` line; anything else fails closed.
 A Ready item is moved to `Active/` and stamped with the marker on the review branch, so the base branch still shows it in `Ready/` until the merge.
-The driver refuses to start on a dirty tree, commits to `auto/<Item>` rather than the current branch, and halts on the first failure without cleaning up.
+The driver refuses to start on a dirty tree, commits to `work/<Item>` rather than the current branch, refuses an item whose branch another worktree has checked out, and halts on the first failure without cleaning up.
 
 There is no model or effort flag: each task is spawned on the model and effort its own [routing annotation](../skills/backlog-add/SKILL.md#the-routing-annotation) names — `- [ ] T3 (model: sonnet, effort: high — why) — …` — and an unannotated task inherits the machine default.
 A typo'd annotation halts the run as `bad-annotation` before anything is spawned, so `--dry-run` is also how you check that a task's routing parses.
@@ -24,7 +24,7 @@ A typo'd annotation halts the run as `bad-annotation` before anything is spawned
 Afterwards, Read the digest it names (`Work/Runs/<timestamp>-<Item>.md`, gitignored) and report:
 
 1. the stop reason, and whether it is the success exit (`item-complete`, or a `cap-*` backstop) or a fault;
-2. per-task verdicts, the commits on `main..auto/<Item>`, and the accumulated tokens and cost;
+2. per-task verdicts, the commits on `main..work/<Item>`, and the accumulated tokens and cost;
 3. the `## Hand-off` delta — for `needs-human` this is the question the run would not guess at, so quote it, and check it on a `no-box` halt too, since a session that stops mid-task fails liveness before the marker is read;
 4. for `permission-denied`, the tools it wanted, and that re-running with `--allow '<Tool>(<pattern>)'` is the fix — the halt names only tools absent from *every* settings file, because `--allowedTools` adds to `permissions.allow` rather than replacing it;
 5. for `no-commit`, that the digest's commit and diff sections are empty **by construction** while the work may be sitting uncommitted — read `git status` before concluding the session did nothing;
@@ -33,7 +33,7 @@ Afterwards, Read the digest it names (`Work/Runs/<timestamp>-<Item>.md`, gitigno
 
 Each per-task verdict names the model the run actually used and the effort it **requested** — no output field reports the effort applied, so do not report one as observed.
 
-Then say what the human owes: review the item with `/backlog-review <Item>`, which merges `auto/<Item>` (the merge is the `document-revise` approval), or answer the hand-off question.
+Then say what the human owes: review the item with `/backlog-review <Item>`, which merges `work/<Item>` (the merge is the `document-revise` approval), or answer the hand-off question.
 On `item-complete` the item sits in `Work/UnderReview/` on the branch; point at its test instructions — accepting it into `Done/` is the user's step, not the driver's.
 Leave the branch and the working tree exactly as the driver left them — recovery after a mid-task failure is the user's call, never an automatic `git reset`.
 

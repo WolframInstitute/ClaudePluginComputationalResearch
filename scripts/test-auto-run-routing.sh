@@ -287,12 +287,12 @@ STUB_CLOSES_TASK=1 ITEM_PATH="$PWD/Work/Active/Queued.md" bash "$DRIVER" Queued 
 [ "$RC" = 0 ] && ok "exit 0 — the item completed" || bad "exit $RC, want 0"
 [ -f Work/Active/Queued.md ] && ok "moved to Active/ on the branch" || bad "not in Active/"
 grep -q '^> Autonomous: allowed' Work/Active/Queued.md && ok "marker stamped beside Type" || bad "no marker"
-want "move committed on the branch" "$(git log --format=%s auto/Queued)" "chore(work): start Queued from Ready"
+want "move committed on the branch" "$(git log --format=%s work/Queued)" "chore(work): start Queued from Ready"
 git checkout -q main 2>/dev/null || git checkout -q master
 [ -f Work/Ready/Queued.md ] && ok "the base branch still shows it in Ready/" || bad "base branch changed"
 
 echo "a finished item in UnderReview/ is still found"
-git checkout -q auto/Queued
+git checkout -q work/Queued
 python3 - <<'PY'
 import pathlib
 p = pathlib.Path("Work/Active/Queued.md"); s = p.read_text()
@@ -308,7 +308,23 @@ STUB_CLOSES_TASK=1 STUB_AFTER=review-mover ITEM_PATH="$PWD/Work/Active/Queued.md
 [ "$RC" = 0 ] && ok "exit 0 — completion seen through UnderReview/" || bad "exit $RC, want 0"
 want "stop reason" "$(cat Work/Runs/*Queued.md | tail -40)" 'Stop reason | **item-complete**'
 
+echo "the claim — one branch per item, held by one worktree"
+git checkout -qf main 2>/dev/null || git checkout -qf master
+item Claimed '- [ ] T1 (model: sonnet) — claimed elsewhere.'
+CLAIMTREE="$READYDIR-claim"
+git worktree add -q -b work/Claimed "$CLAIMTREE" HEAD
+OUT=$(bash "$DRIVER" Claimed --dry-run 2>&1); RC=$?
+[ "$RC" = 2 ] && ok "a branch checked out in another worktree is refused" || bad "exit $RC, want 2: $OUT"
+want "the refusal names the worktree" "$OUT" "$(basename "$CLAIMTREE")"
+git worktree remove "$CLAIMTREE"
+OUT=$(bash "$DRIVER" Claimed --dry-run 2>&1)
+want "a released branch is taken again" "$OUT" "branch    : work/Claimed"
+item Legacy '- [ ] T1 (model: sonnet) — begun before the rename.'
+git branch auto/Legacy
+OUT=$(bash "$DRIVER" Legacy --dry-run 2>&1)
+want "an unmerged auto/ branch is continued" "$OUT" "branch    : auto/Legacy"
+
 echo
 echo "$PASS passed, $FAIL failed"
-rm -rf "$WORK" "$STUBDIR" "$READYDIR"
+rm -rf "$WORK" "$STUBDIR" "$READYDIR" "$CLAIMTREE"
 [ "$FAIL" = 0 ]

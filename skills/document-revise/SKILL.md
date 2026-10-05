@@ -100,7 +100,7 @@ The protocol's purpose is that **nothing lands unreviewed** — not that a human
 Those come apart, so in autonomous mode the loop above becomes:
 
 ```
-LLM generates → commits to auto/<Item> → the run digest presents → the human's merge approves
+LLM generates → commits to work/<Item> → the run digest presents → the human's merge approves
 ```
 
 The blocking wait is removed; the gate is not.

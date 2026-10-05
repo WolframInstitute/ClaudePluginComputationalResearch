@@ -68,7 +68,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `source_lines.wl` | wolframscript | notebook-create, paper-create-note, paper-create-notebook and the document-revise round (Get through the MCP; `SourceLineNotebook` stamps each generated cell with its `.md` lines, `ShiftSourceLines` / `StampSourceLines` keep them in step during a round) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
 | `check-env.sh` | bash | project-check-env command |
-| `auto-run.sh` | bash | backlog-run-scheduled command; drives `backlog-run` unattended, one cold `claude -p` per task, onto `auto/<Item>`, each task on the model and effort its own routing annotation names |
+| `auto-run.sh` | bash | backlog-run-scheduled command; drives `backlog-run` unattended, one cold `claude -p` per task, onto `work/<Item>`, each task on the model and effort its own routing annotation names |
 | `work-board-build.py` | python | backlog-board skill; collects every `Work/` item under a root into the board's `data/board.json` |
 | `work-board-sync.py` | python | backlog-board skill; applies the page's queued `data/pending.json` — section edits, notes, moves, new items — to the `Work/` files, commits nothing |
 | `test-auto-run-routing.sh` | bash | nothing — run by hand after a change to `auto-run.sh`'s annotation parse; 36 assertions against fixture items and a stub `claude`, spends nothing |

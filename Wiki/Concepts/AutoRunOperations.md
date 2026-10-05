@@ -2,7 +2,7 @@
 
 *[ LLM Generated ]*
 
-What an operator does when an unattended run halts: how to read the digest, what each stop reason asks of you, how to grow the allowlist, and how `auto/<Item>` reaches `main`.
+What an operator does when an unattended run halts: how to read the digest, what each stop reason asks of you, how to grow the allowlist, and how `work/<Item>` reaches `main`.
 
 This is the runbook.
 The design record — why the harness schedulers cannot drive the loop, why the `document-revise` gate survives as a branch plus a digest, what each stop condition is *for* — is [The autonomous backlog-run pipeline](AutonomousPipeline.md), and is not restated here.
@@ -46,8 +46,8 @@ Read it in this order:
 4. **Commits** and **Files touched** — `git log`/`git diff --stat` over `BASE_SHA..HEAD`.
 
 That last range is worth understanding before you trust it.
-`BASE_SHA` is `HEAD` *at launch*, captured before the checkout — so launching from `main` against an `auto/<Item>` branch that already carries unmerged commits gives a digest listing **every** commit on that branch, not just this run's.
-Launching from the `auto/<Item>` branch itself scopes the range to the current run.
+`BASE_SHA` is `HEAD` *at launch*, captured before the checkout — so launching from `main` against a `work/<Item>` branch that already carries unmerged commits gives a digest listing **every** commit on that branch, not just this run's.
+Launching from the `work/<Item>` branch itself scopes the range to the current run.
 
 The token and cost figures are summed from each run's `.usage` and are the pipeline's own measurement of its per-task price — the only mechanism that keeps [the session budget](SessionInformationBudget.md) from going stale.
 
@@ -173,10 +173,10 @@ One thing still holds unchanged: **the digest names the tool, not its input.**
 A denied `Bash` call appears as bare `Bash`, so the command has to be inferred from the task and the skill it invokes.
 When that is not obvious, run the task once interactively and watch what it reaches for.
 
-## Landing `auto/<Item>` on `main`
+## Landing `work/<Item>` on `main`
 
 **First, check what branch you are on.**
-The driver checks out `auto/<Item>` and never returns to the ref it was launched from, so a run leaves the repository *on that branch* — including a run that halted in its first minute.
+The driver checks out `work/<Item>` and never returns to the ref it was launched from, so a run leaves the repository *on that branch* — including a run that halted in its first minute.
 Anything committed afterwards lands there rather than on `main`, silently and with no conflict to notice, which is how `ModelRouting` T3 stranded a commit on 2026-08-20.
 `git branch --show-current` before committing after a run.
 
@@ -207,15 +207,15 @@ Confirmed again 2026-09-26 in `InSessionAutoRun` T4: `git worktree add` failed w
 The merge is the approval step — `document-revise` § *Autonomous mode* defers the human gate to exactly this point, and nothing autonomous is meant to reach `main` any other way.
 
 ```bash
-git log --oneline main..auto/MyItem
-git diff main...auto/MyItem
-git checkout main && git merge --no-ff auto/MyItem
-git branch -d auto/MyItem
+git log --oneline main..work/MyItem
+git diff main...work/MyItem
+git checkout main && git merge --no-ff work/MyItem
+git branch -d work/MyItem
 ```
 
 A repo with a `commit-msg` hook adds a wrinkle, though not at the merge.
 This one — `.githooks/commit-msg`, activated by `core.hooksPath` rather than sitting in `.git/hooks/`, so look for it there — enforces Conventional Commits with a 72-character subject, but it whitelists subjects beginning `Merge `, `Revert `, `fixup!`, `squash!`, and `amend!`.
-So `git merge --no-ff`'s default `Merge branch 'auto/MyItem'` **passes**, verified live on 2026-07-28; an earlier draft of this runbook claimed it was rejected and prescribed a manual `git commit` to finish a half-done merge, which was wrong.
+So `git merge --no-ff`'s default `Merge branch 'work/MyItem'` **passes**, verified live on 2026-07-28; an earlier draft of this runbook claimed it was rejected and prescribed a manual `git commit` to finish a half-done merge, which was wrong.
 The hook remains a live hazard *inside* a run: a session whose commit it rejects has written its files but committed nothing, which the driver sees as `no-commit`.
 So `no-commit` in a hooked repo means "read the hook's output", not "the session did nothing" — and the files are still in the working tree.
 
@@ -225,8 +225,14 @@ Nothing from `Work/Runs/` comes along — it is gitignored.
 If a task's output is wrong, do not repair it on `main`.
 Either drop the commit on the branch, or reopen the box in the item file and let a later session redo the task, so the branch stays the single record of what autonomy produced.
 
-One scheduling rule follows from the driver reusing an existing `auto/<Item>` rather than branching fresh: **review before the next run, not after several.**
+One scheduling rule follows from the driver reusing an existing `work/<Item>` rather than branching fresh: **review before the next run, not after several.**
 An unmerged branch means the next run stacks new tasks on top of work nobody has approved, which is precisely the silent drift the one-failure-halts policy exists to prevent.
+
+**The branch is also the item's claim.**
+Every session — interactive `/backlog-run`, an `/backlog-autolab` worker, this driver — works an item on `work/<Item>`, and git lets a branch be checked out in one worktree only.
+So the driver refuses, at preflight with exit `2` and no digest, an item whose branch another worktree has checked out, naming it: `<Item> is claimed: work/<Item> is checked out in the worktree <path>`.
+Someone is working the item there, or did and left the worktree behind; `git worktree remove <path>` releases it once its work is committed.
+Branches made before 2026-10-05 are named `auto/<Item>`: when no `work/<Item>` exists, the driver continues the old branch rather than starting a second one beside it.
 
 ## Where the script and the specification disagree
 

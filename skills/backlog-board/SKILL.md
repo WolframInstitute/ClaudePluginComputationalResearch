@@ -45,13 +45,13 @@ Only when the user asks — from the laptop, or from the phone through Remote Co
    - new items — a Backlog file from the user's title, summary and motivation.
 
    It prints a JSON report and commits nothing.
-3. Do what the report leaves to judgement, as `backlog-refine` would: fold each note and kept answer into Technical details, the open questions or a Decisions row; update each touched repo's `Work/README.md` for the moves. An **Accept** or a **Send back** is the user's verdict on a review: finish it with [`backlog-review` § *The verdict*](../backlog-review/SKILL.md#4-the-verdict), whose `git mv` the script has already made — the Progress line, the index, and deleting a merged `auto/<Item>` branch. A Send back needs a new task: write one from the user's note, and if there is no note, ask.
+3. Do what the report leaves to judgement, as `backlog-refine` would: fold each note and kept answer into Technical details, the open questions or a Decisions row; update each touched repo's `Work/README.md` for the moves. An **Accept** or a **Send back** is the user's verdict on a review: finish it with [`backlog-review` § *The verdict*](../backlog-review/SKILL.md#4-the-verdict), whose `git mv` the script has already made — the Progress line, the index, and deleting the merged branch. A Send back needs a new task: write one from the user's note, and if there is no note, ask.
 4. Answer or resolve the comments that asked for something, in their threads.
 5. Commit each touched repo (`docs(work): sync from the board`), never push.
 6. Rebuild `board.json` from the files, reset `pending.json` to empty, and republish the same page to the board's `url` with both data files. If the publish is refused because the page changed since step 1, the user saved something meanwhile: read `pending.json` again and repeat from step 2 for the new changes only.
 7. Tell the user in two or three lines what changed and in which repos.
 
-The board shows the checkout only: an item whose finished run is still on an unmerged `auto/<Item>` branch appears at its checkout folder, and is reviewed with `/backlog-review`, which merges it.
+The board shows the checkout only: an item whose work is still on its unmerged `work/<Item>` branch appears at its checkout folder, and is reviewed with `/backlog-review`, which merges it.
 
 ## Refresh the board
 

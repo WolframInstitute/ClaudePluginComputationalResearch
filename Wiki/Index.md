@@ -22,7 +22,7 @@ See [Work/README.md](../Work/README.md).
 - [Progress vs Wiki](Concepts/ProgressWikiSplit.md) — where the durable knowledge actually is: ~53 kB in `## Progress`, 6.6 kB harvested, and what the misplacement costs to read
 - [The work item file format](Concepts/ItemFileFormat.md) — the five sections, the one-fact-one-destination rule, the per-task routing annotation, and why `## Progress` is one line per session and read by nobody
 - [The autonomous backlog-run pipeline](Concepts/AutonomousPipeline.md) — why the harness schedulers cannot drive it, how the `document-revise` gate is deferred to a branch and a digest, the stop conditions, and where `scripts/auto-run.sh` implements each
-- [The `/backlog-run-scheduled` operator runbook](Concepts/AutoRunOperations.md) — what to do for each stop reason, how to read a digest, how to grow the allowlist, and how `auto/<Item>` reaches `main`
+- [The `/backlog-run-scheduled` operator runbook](Concepts/AutoRunOperations.md) — what to do for each stop reason, how to read a digest, how to grow the allowlist, and how `work/<Item>` reaches `main`
 - [The headless model and effort surface](Concepts/HeadlessModelSurface.md) — `--model` aliases and `--effort` on `claude -p`: a bad model fails closed for free, a bad effort fails open silently, and `modelUsage` names two models per run
 - [Preamble audit](Concepts/PreambleAudit.md) — what belongs in an auto-loaded `CLAUDE.md`: 47 % of this repo's was inventory already in context by two other routes
 - [Generated preamble audit](Concepts/GeneratedPreambleAudit.md) — the same test on the `CLAUDE.md` the plugin *generates*: already 82 % policy, the suspect code-style block exonerated, and two auto-loaded files found contradicting each other

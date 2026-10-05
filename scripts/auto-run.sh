@@ -214,7 +214,19 @@ fi
 
 ITEM_FILE="Work/Active/$ITEM.md"
 [ -f "$ITEM_FILE" ] || ITEM_FILE="Work/Ready/$ITEM.md"
-BRANCH="auto/$ITEM"
+# The item's branch is its claim, one name for interactive and autonomous
+# sessions alike; an unmerged branch from before the rename is continued.
+BRANCH="work/$ITEM"
+if ! git show-ref --verify --quiet "refs/heads/$BRANCH" \
+  && git show-ref --verify --quiet "refs/heads/auto/$ITEM"; then
+  BRANCH="auto/$ITEM"
+fi
+# git lets a branch be checked out in one worktree only: if another has it, a
+# session is working the item there, and its uncommitted work is not ours to see.
+HOLDER=$(git worktree list --porcelain \
+  | awk -v b="branch refs/heads/$BRANCH" '/^worktree /{w=substr($0,10)} $0==b{print w; exit}')
+[ -z "$HOLDER" ] || [ "$HOLDER" = "$REPO_ROOT" ] \
+  || die "$ITEM is claimed: $BRANCH is checked out in the worktree $HOLDER"
 STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 STAMP=$(date -u +%Y%m%d-%H%M%S)
 DIGEST="Work/Runs/$STAMP-$ITEM.md"
@@ -239,9 +251,11 @@ fi
 
 # Autonomous work never lands on the caller's branch: the human's merge is the
 # `document-revise` approval step.
-git show-ref --verify --quiet "refs/heads/$BRANCH" \
-  && git checkout -q "$BRANCH" \
-  || git checkout -q -b "$BRANCH"
+if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+  git checkout -q "$BRANCH" || die "could not check out $BRANCH"
+else
+  git checkout -q -b "$BRANCH" || die "could not create $BRANCH"
+fi
 
 # Starting a Ready item moves it to Active/ on the review branch and stamps the
 # marker, so later runs still find it eligible after it has left Ready/.

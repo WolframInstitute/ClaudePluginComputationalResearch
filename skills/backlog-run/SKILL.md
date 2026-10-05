@@ -25,11 +25,36 @@ Read `document-revise` first; it governs the deliverable.
 
 ### 1. Locate the item
 
-- If a name was given (`/backlog-run GraphCurvature`), use `Work/Active/<Name>.md`.
-  If it is in `Work/Ready/` instead, `git mv` it into `Active/` first (it is being started).
+- If a name was given (`/backlog-run GraphCurvature`), use `Work/Active/<Name>.md`, or `Work/Ready/<Name>.md`, which is started below.
   If it is in `Work/Backlog/`, it has not been approved: say so and ask before starting it — shaping it is [`backlog-refine`](../backlog-refine/SKILL.md).
   An item in `Work/UnderReview/`, `Work/Done/` or `Work/Dropped/` has no next task — surface that instead.
 - Else read `Work/README.md` (it lists active items); if exactly one is active, use it; if several, ask which.
+
+#### Claim it
+
+An item is claimed by its branch, `work/<Item>`, checked out in its worktree, `~/.cache/autolab/<Repo>/<Item>`, `<Repo>` being the repo folder's name.
+git lets a branch be checked out in one worktree only, so a second session that reaches for the item is refused, and git's refusal names the worktree that holds it.
+The rule is the same for interactive and autonomous sessions, and a colleague follows it with plain git.
+The worktree lies outside the repo because git surgery inside a cloud-synced folder races the sync daemon.
+
+- **Started on it** — this session's repository already has the item's branch checked out, because a driver put it there (`/backlog-autolab` in the item's worktree, `/backlog-run-scheduled` in the checkout) → the claim is the driver's; go on.
+- **Otherwise**, from the checkout, with `git -C <repo>` and absolute paths:
+  - `work/<Item>` exists → `git -C <repo> worktree add <path> work/<Item>`.
+  - Else `auto/<Item>` exists, an unmerged branch from before the rename → the same with `auto/<Item>`; it stays the item's branch until it is merged.
+  - Else → `git -C <repo> worktree add -b work/<Item> <path> HEAD`.
+- **git refuses** because the branch is already used by a worktree → **stop**.
+  Say that the item is claimed and name the worktree from git's message.
+  Do not work in that worktree: whoever holds it may be mid-task, and their uncommitted work is not this session's to see.
+  An abandoned claim is released by removing its worktree (`git worktree remove <path>`), which is the operator's call; [`backlog-info`](../backlog-info/SKILL.md) lists the worktrees whose item has had no commit in a week.
+  Any other refusal — the path exists, say — stops the session too, quoting git.
+- A repo with submodules (`.gitmodules`, a paclet-dev repo) is not claimed this way yet, since submodules in a worktree are untried: work in the checkout as before.
+
+From here on the worktree is the repository this session works in.
+Every Bash command starts with `cd <path> &&` or uses `git -C <path>`, file tools take absolute paths under `<path>`, and every repo-relative path a skill names — `Work/Active/<Item>.md`, `Wiki/...` — means `<path>/<that path>`.
+Read the item there: its branch carries every earlier session's work.
+
+**Start a Ready item** in the worktree, unless its branch already has it in `Active/`: `git mv Work/Ready/<Item>.md Work/Active/<Item>.md` and commit `chore(work): start <Item> from Ready`.
+In the checkout the item stays in `Ready/` until its branch is merged.
 
 ### 2. Load context
 
@@ -101,11 +126,17 @@ When off, skip.
 
 ### 8. Commit
 
+The commit goes on the item's branch, in its worktree — never on the checkout's branch, which the work reaches only when [`backlog-review`](../backlog-review/SKILL.md) merges it; that merge is the review, for interactive and autonomous work alike.
 If the user commits, use the `commit` skill. git history is now the project's audit trail, so write a message that names the item and task.
-In an autonomous run (see `document-revise` § *Autonomous mode*) there is no user to ask: commit unconditionally, on the `auto/<Item>` branch you were started on. The driver reads the new commit and the newly checked box as proof the task ran.
+In an autonomous run (see `document-revise` § *Autonomous mode*) there is no user to ask: commit unconditionally, on the `work/<Item>` branch you were started on. The driver reads the new commit and the newly checked box as proof the task ran.
 In a paclet-dev repo, paclet code is committed in its worktree on `work/<item>` and the dev-repo tracking (`Work/`, `Wiki/`, `Code/`) on `main` — see [paclet-worktree.md](paclet-worktree.md).
 
 ### 9. Stop
+
+Release the claim, if this session made the worktree: `git -C <repo> worktree remove <path>`, no `--force`.
+The branch stays and carries the work to the next session, which makes the worktree again.
+git refuses a dirty tree: then leave it, and say that the item stays claimed until the work is committed or the worktree is removed.
+A worktree a driver made is the driver's to remove.
 
 Say: "Session N complete (Tk).
 Start a fresh session and run /backlog-run for the next task."
