@@ -29,7 +29,8 @@ The one thing the folders can't show — each in-progress item and its next task
 | Item | Next task |
 |---|---|
 | [BacklogLifecycle](Active/BacklogLifecycle.md) | T4 (human) — trial: one backlog check and one review of a real item (T5 done first, operator's choice) |
-| [ParallelSessions](Active/ParallelSessions.md) | T3 (human) — a week of Agent View on a real project |
+| [DocumentationSite](Active/DocumentationSite.md) | T2 (human) — rule on the design: deploy path, source location, guides per paclet, reference-page engine |
+| [ParallelSessions](Active/ParallelSessions.md) | T3 (human) — a week of Agent View on a real project; first the Hand-off question on paclet-dev repos |
 
 ## UnderReview
 
@@ -37,11 +38,9 @@ None.
 
 ## Ready
 
-| Item | Next task |
-|---|---|
-| [DocumentationSite](Ready/DocumentationSite.md) | T1 — design: the four questions on InfraGeometry |
+None.
 
-`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `ConversationStyle`; `ParallelSessions`, filed on 2026-10-03, and `DocumentationSite`, filed on 2026-10-05, were refined to Ready on 2026-10-05; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` starts one on its own branch, in its own worktree. `OutputFolder` was dropped the same day, merged into `FolderRule`.
+`Backlog/` holds `WorkDashboard`, `PaperVerification`, `AutoSetup` and `ConversationStyle`; `ParallelSessions`, filed on 2026-10-03, and `DocumentationSite`, filed on 2026-10-05, were refined on 2026-10-05 and started by `/backlog-autolab --parallel 2` the same day; `/backlog-refine <Name>` shapes one, and `/backlog-run <Name>` starts one on its own branch, in its own worktree. `OutputFolder` was dropped the same day, merged into `FolderRule`.
 
 `InSessionAutoRun` completed on 2026-10-05 after six of its seven tasks: `/backlog-autolab` runs the backlog from an ordinary chat, one background worker per task, visible in the Agent map. Two real items, `DocumentMemory` and `FolderRule`, ran to completion under it; the parallel trial moved to `ParallelSessions`. Its throwaway `AutolabTrialT4` was dropped the same day, its branch discarded.
 

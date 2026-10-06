@@ -167,8 +167,10 @@ UpdateMathNotebook[ ]
 Publishing uses the repo's own `Scripts/PublishPaclet.wls`.
 Historically its fixed staging list would have dropped `Documentation/`; that was fixed (guarded by `DirectoryQ`) during `PacletDocumentation` T5, along with the deeper defect in this plugin — see [Paclet Documentation](../Concepts/PacletDocumentation.md#the-fixed-staging-list-was-the-real-defect).
 
-Documentation is deployed publicly at
+Its reference pages were deployed publicly on 2026-07-27 at
 `https://www.wolframcloud.com/obj/hajek_pavel/MathNotebook/Documentation/index.html`.
+That deployment no longer exists: on 2026-10-05 the URL redirected to the Wolfram sign-in page and the signed-in kernel found no object under `MathNotebook/Documentation`, while `MathNotebook.paclet` was still public.
+MathNotebook's README now links a cloud `Tutorial.nb` instead ([Paclet guides and tutorials](../Concepts/PacletGuidesAndTutorials.md)).
 
 ## Use in this project
 

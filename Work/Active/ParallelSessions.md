@@ -96,9 +96,9 @@ The claim is the branch plus the worktree, for every session:
 ## Hand-off
 
 T2 done; T3 and T4 are the operator's, T5 the next agent task.
-The README paragraph *Several sessions at once* was written on 2026-10-03; it still links `Work/Ready/ParallelSessions.md`.
+The README paragraph *Several sessions at once* was written on 2026-10-03.
 For T5: `Wiki/Concepts/AutonomousPipeline.md` still describes the branch as `auto/<Item>` (its design sections, about ten places); the runbook, `Status.md` and the skills already say `work/<Item>`.
-For T4: a `/backlog-autolab --parallel 2` run that works this item beside another counts, if its digests in `Work/Runs/` show the three checks.
+For T4: the 2026-10-05 `/backlog-autolab --parallel 2` run worked this item beside `DocumentationSite`; its digests (`Work/Runs/20261005-205033-*.md`, gitignored) show the three checks held. It also found that both branches edit `Wiki/Status.md` and `Work/README.md`, so the second merge conflicts there; resolved by hand on 2026-10-06.
 `/backlog-run-scheduled` refuses a claimed item but still works in the checkout, not in a worktree; it needs a clean tree, so it sees no one's uncommitted work.
 The worktree path keeps the name `~/.cache/autolab/` for interactive sessions too.
 

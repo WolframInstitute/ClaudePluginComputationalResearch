@@ -188,7 +188,7 @@ Every project gets one house style for Wolfram code — spaced brackets, chained
 **Documentation for people.**
 A paclet is documented as PureMath is: a guide page for the overview, tutorials that walk through the ideas in pictures, and a reference page for every function, deployed together as one public site that needs no install.
 The plugin drafts the guide pages and the tutorials, and you revise them like any other document.
-In design, see [DocumentationSite](Work/Ready/DocumentationSite.md).
+In design, see [DocumentationSite](Work/Active/DocumentationSite.md).
 
 ### 📝 Papers and mathematics
 
@@ -248,7 +248,7 @@ Your own sessions, the agents, and a colleague's may work the same backlog.
 An item is claimed by its branch: whoever works it does so on the item's own branch in its own worktree, and git lets a branch be checked out only once.
 So two sessions never take the same item, and a checkout never sees another's half-done work.
 The `Work/` folders stay the one list; the board and any outside kanban tool are views of it.
-In design, see [ParallelSessions](Work/Ready/ParallelSessions.md).
+In design, see [ParallelSessions](Work/Active/ParallelSessions.md).
 The file format is in [ItemFileFormat](Wiki/Concepts/ItemFileFormat.md); how the unattended runs work, and what they cost, is in [AutonomousPipeline](Wiki/Concepts/AutonomousPipeline.md).
 
 ## 📄 License
