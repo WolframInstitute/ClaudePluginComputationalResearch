@@ -34,6 +34,7 @@ The README's *Several sessions at once* paragraph is true:
 - 2026-10-04 — "lets not use the vibe kanban etc and lets use the default the agentic view. If it brings what i want.... but then it should be somehow connected with our board that i can click there for agent to process"
 - 2026-10-04 — "well okey it is not such a problem not to connect the board then, forget it if it is too bad"
 - 2026-10-05 — chose "work/<Item> everywhere" for the branch name.
+- 2026-10-06 — "can you autolab the rest"; chose "Paclet-dev task + tick T4".
 
 ## Technical details
 
@@ -79,12 +80,14 @@ The claim is the branch plus the worktree, for every session:
 
 ## Tasks
 
+- [ ] T6 (model: opus, effort: high — protocol writing) — the claim in a paclet-dev repo: an item gets `work/<Item>` in the dev repo too, its worktree outside the repo with the paclet submodule checked out in it, `Work/` and `Wiki/` committed on that branch and merged at review; `skills/backlog-run/paclet-worktree.md` rewritten; tried in a throwaway dev repo from `scripts/scaffold-paclet-dev.sh` under `/tmp`, and a check added to `scripts/test-auto-run-routing.sh`.
+- [ ] T5 (model: sonnet, effort: high — doc pass) — README, AutonomousPipeline article (its `auto/<Item>` design sections), version bump.
 - [ ] T3 (human) — a week of Agent View on a real project, items started by dispatching `/backlog-run <Item>`; record whether it is enough, and whether the board's Start button is wanted after all.
-- [ ] T4 (human) — parallel `/backlog-autolab` trial, moved from `InSessionAutoRun` T5: two items with `--parallel 2`, each in its own worktree; neither tree touched by the other; the operator's checkout never switched. An orchestrator runs it, so it is yours to start; a worker cannot dispatch workers.
-- [ ] T5 (model: sonnet, effort: high — doc pass) — README, AutonomousPipeline article, version bump.
 
 ### Done
 
+- [x] T4 (human) — ticked on 2026-10-06 on the operator's word: the 2026-10-05 `/backlog-autolab --parallel 2` run worked this item beside `DocumentationSite`, each in its own worktree, neither touching the other, the operator's checkout on `main` throughout. It also found that both branches edit `Wiki/Status.md` and `Work/README.md`, so the second merge conflicts there.
+  - **Test:** read `Work/Runs/20261005-205033-ParallelSessions.md` (gitignored) — § *Parallel trial* lists the three checks and the conflict.
 - [x] T2 (S1) (model: opus, effort: high — protocol writing) — the claim in `backlog-run`: a worktree per item for interactive sessions, the stop on a busy branch naming its worktree; `work/<Item>` in every skill and script that names `auto/<Item>`, legacy `auto/*` still read; `bash scripts/test-auto-run-routing.sh` passes.
   - **Test:** run `bash scripts/test-auto-run-routing.sh` — `59 passed, 0 failed`, with four checks under "the claim": a branch held by another worktree is refused and the refusal names it, a released branch is taken again, an unmerged `auto/` branch is continued.
   - **Test:** open [backlog-run § *Claim it*](../../skills/backlog-run/SKILL.md#claim-it) and step 9 — the branch `work/<Item>`, the worktree `~/.cache/autolab/<Repo>/<Item>`, the stop on git's refusal naming the worktree, the worktree removed when the session ends.
@@ -95,19 +98,17 @@ The claim is the branch plus the worktree, for every session:
 
 ## Hand-off
 
-T2 done; T3 and T4 are the operator's, T5 the next agent task.
-The README paragraph *Several sessions at once* was written on 2026-10-03.
+T2 done, T4 ticked; T6 (the paclet-dev claim) is next, then T5, then the operator's T3.
 For T5: `Wiki/Concepts/AutonomousPipeline.md` still describes the branch as `auto/<Item>` (its design sections, about ten places); the runbook, `Status.md` and the skills already say `work/<Item>`.
-For T4: the 2026-10-05 `/backlog-autolab --parallel 2` run worked this item beside `DocumentationSite`; its digests (`Work/Runs/20261005-205033-*.md`, gitignored) show the three checks held. It also found that both branches edit `Wiki/Status.md` and `Work/README.md`, so the second merge conflicts there; resolved by hand on 2026-10-06.
 `/backlog-run-scheduled` refuses a claimed item but still works in the checkout, not in a worktree; it needs a clean tree, so it sees no one's uncommitted work.
 The worktree path keeps the name `~/.cache/autolab/` for interactive sessions too.
-
-- needs-human: a paclet-dev repo (one with `.gitmodules`) is not claimed yet — `backlog-run` works there in the checkout as before, since a dev-repo worktree has no submodules checked out and [paclet-worktree.md](../../skills/backlog-run/paclet-worktree.md) commits the dev-repo tracking to `main`. Should such an item also get `work/<Item>` in the dev repo, with `Work/` and `Wiki/` committed there and merged at review (Technical details: "two repos, one name")? If yes, a new task rewrites `paclet-worktree.md` and tries a dev-repo worktree with its submodule.
+Open, not yet a task: parallel branches conflict in `Wiki/Status.md` and `Work/README.md` (T4); the operator has not ruled whether a session on an item branch should stop editing them.
 
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-10-06 | A paclet-dev item is claimed like any other: `work/<Item>` in the dev repo, beside the same name in the paclet submodule | otherwise two sessions can start the same paclet item in the checkout; your call |
 | 2026-10-05 | The worktree is the claim: an interactive session makes it at start and removes it at the end, and a driver holds it for its run; `/backlog-autolab` no longer reuses a leftover worktree but halts `worktree-busy` on it | git's refusal is then the whole check, with no lock file; a worktree that outlives its session marks an abandoned or unfinished one, which `backlog-info` reports. Proposed by the LLM in T2, open to change |
 | 2026-10-05 | One branch name per item, `work/<Item>`, for interactive and autonomous sessions; it replaces `auto/<Item>` | one rule a colleague can follow without the plugin, and it already names the paclet-dev worktrees; your call |
 | 2026-10-04 | No link from the board to sessions for now | The board is a claude.ai page and cannot start a local process; a click could only act at the next sync. The operator does not need it yet; the design is kept in Technical details |
@@ -121,3 +122,4 @@ The worktree path keeps the name `~/.cache/autolab/` for interactive sessions to
 - 2026-10-05 — parallel `/autolab` trial taken over from `InSessionAutoRun` (its T5) as T4.
 - **R1** 2026-10-05 — refined with the operator: branch name `work/<Item>` decided (T1), T2 and T4 re-cut; moved to Ready.
 - **S1** 2026-10-05 T2 — the claim: `work/<Item>` in its worktree for every session, the stop on a busy branch, legacy `auto/` read. → [backlog-run § Claim it](../../skills/backlog-run/SKILL.md#claim-it), [runbook](../../Wiki/Concepts/AutoRunOperations.md#landing-workitem-on-main), [Status](../../Wiki/Status.md)
+- **R2** 2026-10-06 — operator: T4 ticked from the run digests; T6 added for paclet-dev repos and run before T5 and the operator's T3.

@@ -29,7 +29,7 @@ The README's paragraph on paclet documentation in *Notebooks and paclets* is tru
 - Guide pages and tutorials are documents in progress: `<< … >>` notes and `/document-revise` rounds work on them, and the build takes the latest version.
 - Guide pages, tutorials and reference pages link to each other, and resolve in the product after an install.
 - Publishing deploys all of them as one public site that needs no install.
-- InfraGeometry has a deployed guide page and one deployed tutorial.
+- InfraGeometry has guide pages and one tutorial built and deployed by the plugin's own path.
 
 ## Prompt history
 
@@ -37,6 +37,7 @@ The README's paragraph on paclet documentation in *Notebooks and paclets* is tru
 - 2026-10-05 — "For human-accessible documentation and overview, PureMath-style deployed documentation, with guide pages and tutorials written as research notebooks."
 - 2026-10-05 — "what work items do ia hve to do/refine to eimplement? Can you refine? and run autolab after"
 - 2026-10-05 — chose "LLM drafts, you revise" for guide pages, and "Walkthrough in pictures" for tutorials.
+- 2026-10-06 — "can you autolab the rest"; chose "Accept all", "MarkdownToNotebook" for reference pages, and "Move to 3462fc5" for the converter pin.
 
 ## Technical details
 
@@ -51,22 +52,15 @@ The README's paragraph on paclet documentation in *Notebooks and paclets* is tru
 
 ### Requirements
 
-- Reference pages stay on the official MCP tools; guide pages and tutorials are built from Markdown by the pinned MarkdownToNotebook, the one engine that has templates for them. (T1's evidence questions the first half; T2 rules on it.)
+- Every page — reference, guide, tutorial — is a Markdown source in `<pacletDir>/docs/{Symbols,Guides,Tutorials}/`, built by MarkdownToNotebook pinned at `3462fc5`, as InfraGeometry does; the official MCP doc tools are retired from `paclet-docs`. `docs` joins `build` in the staging exclusions of `scripts/paclet_common.wl`.
+- The build and its checks are lifted from InfraGeometry's `Scripts/build_docs.wls` and `Scripts/check_docs_package.wls` (the table of [§ 3](../../Wiki/Concepts/PacletGuidesAndTutorials.md#3-what-the-pinned-converter-still-needs)); the deploy from its `Scripts/publish_docs.wls`: `PacletBuild`, then a public paclet resource. `scripts/deploy_paclet_docs.wl` is retired.
+- One guide per subfolder of `Kernel/`, else one guide; every export on exactly one guide, a catch-all for the rest, one main guide linking the others.
+- Moving the pin is plugin-wide: `notebook-create` and `paper-create-notebook` use the same converter, so their drift fingerprints are checked at the new pin.
 - The guide rules are lifted from PureMath into a sibling file of `paclet-docs`, adapted to one paclet; a guide carries every exported function of the paclet.
 - A tutorial follows the notebook content rules of `notebook-create`: a discovery walkthrough, one picture per concept, examples as self-contained snippets, `[[ LLM Generated ]]` under the title.
 - The sources are documents in progress under the folder rule: numbered versions beside each other, earlier ones in `Archive/`; the page name comes from the frontmatter, never from the file name, so `_2` does not reach a URL. The converter already takes `URI` and `Entity Type` from the frontmatter; the build must write `<kind>/<Name>.nb` from the frontmatter `Name`, convert only the highest round of a stem, and skip `*.provenance.md` and `Archive/`.
 - Building and deploying follow the kernel policy. `DocumentationBuild` drives a front end, which is not a license process: `PacletBuild` ran inside the MCP kernel with no extra one.
 - A public cloud deploy is outward-facing: only a `(human)` task makes one; design sessions deploy privately or not at all.
-
-### Design questions for T1
-
-T1 answers each with evidence; T2 is your ruling.
-The answers: [PacletGuidesAndTutorials](../../Wiki/Concepts/PacletGuidesAndTutorials.md).
-
-1. Where the sources live in a paclet project (`Code/Docs/`, beside the paclet, or in it), and how the build picks the latest version.
-2. Which deploy path: extend `deploy_paclet_docs.wl` (cloud notebooks, no front end), or PureMath's (HTML through `DocumentationBuild`, a Paclet resource and a site shell), compared on what a reader sees, on cost and on seats.
-3. Which of PureMath's build workarounds the pinned converter still needs.
-4. One guide per paclet, or a guide per area for a large one.
 
 ### Edge cases & out of scope
 
@@ -75,14 +69,16 @@ The answers: [PacletGuidesAndTutorials](../../Wiki/Concepts/PacletGuidesAndTutor
 
 ## Tasks
 
-- [ ] T2 (human) — rule on the design.
-- [ ] T3 (model: opus, effort: high — protocol writing) — `paclet-docs` drafts the guide page and tutorials from Markdown, the guide rules in a sibling file, revision rounds on the sources; lift the *out of scope* section.
-- [ ] T4 (model: opus, effort: high — cross-cutting) — `paclet-publish` and its scripts build and deploy guide pages, tutorials and reference pages as one site, links between them rewritten.
-- [ ] T5 (human) — trial on InfraGeometry: draft the guide page and one tutorial, one revision round each, publish, read the site in a browser.
-- [ ] T6 (model: sonnet, effort: high — doc pass) — README, ARCHITECTURE, the `PacletDocumentation` article, the blog post, a version bump.
+- [ ] T3 (model: opus, effort: high — cross-cutting) — the build: a plugin script that turns `<pacletDir>/docs/` into `Documentation/English/` with the latest-version rules of § 1 and the checks of § 3, lifted from InfraGeometry; the pin moved to `3462fc5`; `docs` out of staging; tried on a scratch copy of InfraGeometry's paclet.
+- [ ] T4 (model: opus, effort: high — protocol writing) — `paclet-docs` drafts every page as a Markdown source: reference pages, guide pages by the guide rule (lifted from PureMath's `wolfram-guide-page`, adapted to one paclet, in a sibling file), tutorials as walkthroughs; revision rounds on the sources; the MCP doc tools and the *out of scope* section retired.
+- [ ] T5 (model: opus, effort: high — cross-cutting) — `paclet-publish`: `PacletBuild`, then a public paclet resource, lifted from InfraGeometry's `publish_docs.wls` with its retry wrapper; `deploy_paclet_docs.wl` retired; no public deploy in this task, a private one at most.
+- [ ] T6 (human) — trial on InfraGeometry with the plugin's path: draft a guide page and one tutorial, one revision round each, publish, read the site in a browser; InfraGeometry then drops its own scripts.
+- [ ] T7 (model: sonnet, effort: high — doc pass) — README, ARCHITECTURE, the `PacletDocumentation` article, the blog post, a version bump.
 
 ### Done
 
+- [x] T2 (human) — ruled on 2026-10-06: every proposal of [§ *What T2 rules on*](../../Wiki/Concepts/PacletGuidesAndTutorials.md#what-t2-rules-on) accepted, reference pages on MarkdownToNotebook, the pin to `3462fc5`; see Decisions. Tasks re-cut T3–T7.
+  - **Test:** the Decisions table has the four 2026-10-06 rows; Technical details has no design questions left.
 - [x] T1 (S1, model: opus, effort: xhigh — design-critical) — answer the four design questions on InfraGeometry with evidence, in `Wiki/Concepts/PacletGuidesAndTutorials.md`; correct Technical details where they guessed; no public deploy.
   - **Test:** read [PacletGuidesAndTutorials](../../Wiki/Concepts/PacletGuidesAndTutorials.md): one section per design question, each with the options, the evidence and a proposal, and § *What T2 rules on* with six rulings.
   - **Test:** open <https://www.wolframcloud.com/obj/hajek_pavel/DeployedResources/Paclet/WolframInstitute/InfraGeometry/Documentation/tutorial/MetricTensorTutorial.html> logged out. You should see the rail of guides, tutorials and symbols and the tutorial's text and pictures in the page; an empty page is the PureMath embed problem of § 2, which T1 could not check without a browser.
@@ -91,21 +87,20 @@ The answers: [PacletGuidesAndTutorials](../../Wiki/Concepts/PacletGuidesAndTutor
 
 ## Hand-off
 
-T2 (human) is next: rule on the six questions in [§ *What T2 rules on*](../../Wiki/Concepts/PacletGuidesAndTutorials.md#what-t2-rules-on).
-The proposals: the stock paclet resource (InfraGeometry's `publish_docs.wls`), sources in `<pacletDir>/docs/`, one guide per kernel subfolder.
-Two findings touch your text, not only the design, and are left as written:
-
-- "InfraGeometry has a deployed guide page and one deployed tutorial" is already true through InfraGeometry's own scripts; T5 shows the plugin's work only if it runs the plugin's path.
-- The first requirement keeps reference pages on the official MCP tools, which InfraGeometry dropped and the default MCP profile does not attach.
-
-InfraGeometry, the trial paclet, is at `~/Library/CloudStorage/Dropbox-WolframInstitute/Pavel Hajek/Infrageometry/FromPavel/SubProjects/SubProjectsMain/InfraGeometry`; read it, never write it before T5.
-Its paclet is the submodule `InfraGeometry/InfraGeometry/`; its docs scripts are in the dev repo's `Scripts/`, and its pinned converter clone is `SubProjectsMain/DiscreteGeometry/MarkdownToNotebook/` at `204db7c`.
+T2 ruled; T3 is next.
+InfraGeometry, the trial paclet, is at `~/Library/CloudStorage/Dropbox-WolframInstitute/Pavel Hajek/Infrageometry/FromPavel/SubProjects/SubProjectsMain/InfraGeometry`; read it, never write it before T6.
+Its paclet is the submodule `InfraGeometry/InfraGeometry/`; its docs scripts are in the dev repo's `Scripts/`, and its converter clone is `SubProjectsMain/DiscreteGeometry/MarkdownToNotebook/` at `204db7c`.
 PureMath is the gitignored clone `/Users/pavel/Library/CloudStorage/OneDrive-Personal/Programming/ClaudePlugins/ComputationalResearch/PureMath`, absent from a worktree; read it there, never write it.
+This repo's own MarkdownToNotebook clone is gitignored too, at `/Users/pavel/Library/CloudStorage/OneDrive-Personal/Programming/ClaudePlugins/ComputationalResearch/MarkdownToNotebook`; T3 moves it to `3462fc5` there.
 
 ## Decisions
 
 | Date | Decision | Rationale |
 |---|---|---|
+| 2026-10-06 | Deploy as a public paclet resource (`PacletBuild`, InfraGeometry's `publish_docs.wls`); no site shell for now | the built page with the rail of guides, tutorials and symbols; live for InfraGeometry since 2026-09-28; your call |
+| 2026-10-06 | Sources in `<pacletDir>/docs/`; one guide per `Kernel/` subfolder, else one | sources move with the API in one paclet commit; the guide rule is structural; your call |
+| 2026-10-06 | Every page on MarkdownToNotebook, reference pages included; the MCP doc tools retired | one engine, a Markdown source for every page so rounds work; the tools attach only under one MCP profile; your call |
+| 2026-10-06 | MarkdownToNotebook pinned at `3462fc5` | deterministic `CellID` and `ExpressionUUID`, so a rebuild does not rewrite every notebook; your call |
 | 2026-10-05 | The plugin drafts guide pages; you revise them (reverses `PacletDocumentation`'s 2026-07-27 row) | Revision rounds keep the editorial judgement with you, and a human reader needs the overview; your call |
 | 2026-10-05 | Tutorials are walkthroughs in pictures under the notebook content rules, not papers | your call |
 
@@ -113,3 +108,4 @@ PureMath is the gitignored clone `/Users/pavel/Library/CloudStorage/OneDrive-Per
 
 - **S0** 2026-10-05 — item filed from the operator's request; refined in the same sitting and moved to Ready.
 - **S1** 2026-10-05 T1 — the four questions answered on InfraGeometry, which already runs PureMath's path; Technical details corrected. Opus tier, `/backlog-autolab` worker. → [PacletGuidesAndTutorials](../../Wiki/Concepts/PacletGuidesAndTutorials.md), [PacletDocumentation](../../Wiki/Concepts/PacletDocumentation.md), [MarkdownToNotebook](../../Wiki/Resources/MarkdownToNotebook.md), [MathNotebook](../../Wiki/Resources/MathNotebook.md), [PureMath](../../Wiki/Resources/PureMath.md)
+- **R2** 2026-10-06 — T2 ruled by the operator: all proposals accepted, MarkdownToNotebook for every page, pin `3462fc5`; tasks re-cut T3–T7.
