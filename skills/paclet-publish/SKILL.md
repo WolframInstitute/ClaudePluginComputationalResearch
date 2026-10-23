@@ -74,6 +74,7 @@ The returned string is the **public cloud URL** — stable across versions, sinc
 > **Fallback (MCP unavailable, and a seat is free per the headroom check):** run
 > `wolframscript -f "${CLAUDE_PLUGIN_ROOT}/scripts/publish_paclet.wls" "<PacletName>"`
 > (or `Scripts/publish_paclet.wls`; add `--no-docs` to exclude `Documentation/`).
+> The fallback uses the same installed-page resolution check and stops before any upload if it fails.
 > The script prints `=== PACLET_URL: <url> ===` and, when docs were bundled, `=== DOCS_URL: <url> ===` — extract the URLs from those lines.
 
 ### 3. Deploy the documentation pages

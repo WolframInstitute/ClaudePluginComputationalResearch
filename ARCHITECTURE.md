@@ -8,12 +8,14 @@ Read this when you need it — it is **not** auto-loaded.
 ## The three places
 
 Every folder that holds documents (`Code/`, `Research/`, and `Artifacts/` itself) has the same three places: the folder itself for documents in progress, `Artifacts/` for what the plugin made once, `Archive/` for what is superseded.
-The plugin never overwrites a file; outside `Artifacts/` it writes only on request — `document-revise` § *Protected content*.
+The plugin never silently overwrites human work; explicit edits follow their requested scope and preserve human corrections.
+Human-owned manuscript/design iterations and concise companions follow the ownership policies below rather than generic automatic revision rounds.
 `paper-create-note` and `paper-create-notebook` write to `Research/`, `notebook-create` to `Code/`, `paper-create` always to `Research/`: a document in progress goes in the folder, a one-off or an unsaid request in its `Artifacts/`.
 There is no `Paper/` folder; a project that already has one keeps using it, and nothing is moved.
 `Archive/` is created lazily by `/project-clean`, one per folder, `Artifacts/Archive/` included.
 An artifact is one dated stem (`<WhatItSettles>_YYMMDD`) shared by whatever files it needs, flat until it grows its own code, data, bibliography or build; then the folder takes the stem and the files inside go bare.
-Every file of an artifact is tracked except a generated `.nb`, whose `.md` source is tracked instead, and nothing is uploaded to the Cloud unless the user asks.
+Generated notebook artifacts normally track their supporting `.md` source; an editable human-owned `.nb` is not disposable generated output and its direct edits must be preserved.
+Nothing is uploaded to the Cloud unless the user asks.
 The canonical statement is [skills/notebook-create/artifacts.md](skills/notebook-create/artifacts.md); the producers, `document-revise` and `project-clean` reference it rather than restating it.
 
 ## Layout
@@ -34,12 +36,12 @@ Work/                          — execution state (spec/tasks/hand-off/decision
 ARCHITECTURE.md                — this file
 ```
 
-## Skills (27)
+## Skills (30)
 
 The skills are listed by area in [README.md](README.md) § *Functionality*, the only human-facing copy.
 Each skill's own `description:` frontmatter is injected into every session by the harness, so a third summary here would be a copy of a copy.
 
-## Scripts (32)
+## Scripts (34)
 
 | Script | Language | Called by |
 |--------|----------|----------|
@@ -47,11 +49,11 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `scaffold-math-project.sh` | bash | project-create (math-research type) |
 | `scaffold-paclet-dev.sh` | bash | project-create (paclet-dev type) |
 | `scaffold-paclet.sh` | bash | project-create (paclet type) |
-| `scaffold-paper.sh` | bash | paper-create skill (`--name` names the paper, `--subfolder` gives it its own directory, `--typst` for Typst; refuses to overwrite an existing source without `--force`, and reuses a `macros`/`references.bib` already in the folder) |
+| `scaffold-paper.sh` | bash | Human skeleton plus `_notes` companion; default first name `paper1`; paper-create skill (`--name` names the paper, `--subfolder` gives it its own directory, `--typst` for Typst; refuses to overwrite an existing source without `--force`, and reuses a `macros`/`references.bib` already in the folder) |
 | `scaffold-journal.sh` | bash | paper-journal skill (`--typst` for Typst) |
 | `build_paclet.wls` | wolframscript | paclet-build skill |
 | `publish_paclet.wls` | wolframscript | paclet-publish skill |
-| `paclet_common.wl` | wolframscript | shared helper (build_paclet.wls, publish_paclet.wls); stages every top-level paclet item |
+| `paclet_common.wl` | wolframscript | Shared build/install helper; stages top-level paclet items and verifies installed symbol-page links before publication |
 | `deploy_paclet_docs.wl` | wolframscript | paclet-publish skill (Get through the MCP); deploys Documentation/ pages as public cloud notebooks + HTML index, rewriting `paclet:` links |
 | `search_wolfram_docs.wls` | wolframscript | wiki-search-wolfram skill |
 | `search_function_repo.wls` | wolframscript | wiki-search-wolfram skill |
@@ -63,7 +65,9 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `search_oeis.wls` | wolframscript | wiki-search-math skill |
 | `search_dlmf.wls` | wolframscript | wiki-search-math skill |
 | `search_wikipedia_math.wls` | wolframscript | wiki-search-math skill |
-| `cite_from_id.wls` | wolframscript | paper-cite skill |
+| `cite_from_id.wls` | wolframscript | paper-cite CLI fallback; shares citation logic with the persistent MCP path |
+| `citation_common.wl` | Wolfram Language | Identifier-to-BibTeX helper used by paper-cite through the MCP and CLI; returns a string or Failure without exiting |
+| `test-scaffold-preservation.py` | Python | Regression checks for existing-project refusal and preservation of human journal edits; no kernels or publication |
 | `mathnotebook_post.wl` | wolframscript | paper-create-notebook skill (Get through the MCP; marker → MathNotebook environment cells, embedded stylesheet, plus the generator passes `ReadCellTags` / `FoldExampleGroups` / `AssignCellIDs` / `ResearchHeadCells`) |
 | `source_lines.wl` | wolframscript | notebook-create, paper-create-note, paper-create-notebook and the document-revise round (Get through the MCP; `SourceLineNotebook` stamps each generated cell with its `.md` lines, `ShiftSourceLines` / `StampSourceLines` keep them in step during a round) |
 | `commit-msg` | sh | git hook copied into projects (`.githooks/`); enforces Conventional Commits |
@@ -76,7 +80,7 @@ Each skill's own `description:` frontmatter is injected into every session by th
 | `generate_notebooks.wls` | wolframscript | copied into projects |
 | `publish_notebooks.wls` | wolframscript | copied into projects |
 
-## Commands (31)
+## Commands (34)
 
 Every skill has a slash command of the same name, `/computational-research:<skill>`; `document-revise` is also the protocol every other skill follows, and its command runs one revision round ([round.md](skills/document-revise/round.md)), reading and writing the document's `<stem>.provenance.md` (format: `skills/project-provenance/SKILL.md` § *Document provenance*, always on for a revised document, unlike the prompt ledger).
 Four commands have no skill behind them:
@@ -103,6 +107,7 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 
 | Template | Purpose |
 |----------|---------|
+| `paclet_design_rules.md` | Human-owned design notebook/companion rules appended to paclet and paclet-dev repo guidance |
 | `claude_template.md` | CLAUDE.md for research projects |
 | `math_claude_template.md` | CLAUDE.md for math-research projects |
 | `math_categories_template.md` | Math-domain taxonomy seed (adapted from PureMath) |
@@ -114,6 +119,10 @@ Scaffolding templates use `{{PLACEHOLDER}}` syntax processed by `sed`.
 | `code_style_template.md` | Code-style rules (input, layout, naming, mathematical objects, exported functions, graphics, snippets, comments, testing, commits) + the `Semantic line breaks` (one-sentence-per-source-line) toggle, appended to every generated CLAUDE.md (research, math-research, paclet-dev, paclet) |
 | `artifacts_index_template.md` | Index of an `Artifacts/` folder, one text for `Code/` and `Research/` (used by all three project scaffolds) |
 | `project_readme_template.md` | The project's own README: states the three places and that papers live in `Research/` (used by the scaffolds) |
+| `human_paper_template.tex` | Human-owned LaTeX skeleton; authorship left to the human |
+| `paper_notes_template.tex` | Concise LaTeX research companion tied to the human baseline |
+| `human_paper_template.typ` | Human-owned Typst skeleton |
+| `paper_notes_template.typ` | Concise Typst research companion |
 | `main_template.tex` | LaTeX article (amsart, uses macros.sty) |
 | `macros_template.sty` | Shared LaTeX preamble: fonts, math, biblatex, theorems, macros |
 | `main_template.typ` | Typst article (imports macros.typ, native bibliography) |
@@ -165,12 +174,16 @@ See `Wiki/Resources/MarkdownToNotebook.md` for the pin, the recovery command, an
 
 `paper-create-notebook` uses the rich engine as the **parser half of a two-half pipeline**: MarkdownToNotebook produces the cells, then `scripts/mathnotebook_post.wl` applies the MathNotebook environments, equation numbering, and citations.
 The split is forced, not stylistic — the converter's `::: theorem` / `::: proof` divs exist only under `Template: Chapter` (which swaps in the WolframBookTools stylesheet, absent from a stock install), are **silently dropped** under `Default`, and even under `Chapter` give one `Theorem` style for every label, colliding section-derived numbers, no anchors, no cross-references, and no citations.
-That skill generates **one-way**: the `.md` is the source of truth and the user edits it while reading the `.nb`, with a per-cell `CellID` fingerprint stored in `TaggingRules` to detect `.nb` edits and stop a regeneration rather than overwrite them.
+New generated articles can use Markdown as their supporting source.
+Direct human edits in the saved notebook remain authoritative; targeted native editing preserves them.
+The complete fingerprint contract covers semantic options, metadata, grouping and order, but no complete schema-2 verifier ships here: without an inspected, verified implementation, existing notebooks are not automatically regenerated.
 
 Its writing rules live in `skills/paper-create-notebook/style.md`, which `paper-create` reads too — one guide for a paper whether it ships as `.nb`, LaTeX or Typst.
-The mechanics (pipeline, conversion call, stylesheet, references) are in the `build.md` sibling, so `SKILL.md` carries authoring conventions and nothing else.
+The mechanics (pipeline, conversion call, stylesheet, references) are in the `build.md` sibling.
+Existing notebook edits and export-only requests use `skills/notebook-create/editing.md`; regeneration requires the semantic drift check in `skills/paper-create-notebook/fingerprint.md`.
 
-`paper-create-note` uses neither parser: its notebook goes through `notebook-create`'s conversion, ships **unevaluated** (Input cells only, no paclet load), carries `"SourceLines"` in each cell like every generated notebook, and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
+`paper-create-note` defaults to the concise requested deliverable.
+For an explicitly requested complete bundle, its notebook goes through `notebook-create`'s conversion, ships **unevaluated** (Input cells only, no paclet load), carries `"SourceLines"` in each cell like every generated notebook, and is one of five files sharing a dated stem in `Research/Artifacts/` — a plain `article`-class LaTeX document with its `.pdf`, the notebook source and the notebook, and a loadable `.wl`.
 Its first request goes to the document's provenance file, and version 1 of the text files is committed as written, the baseline for hand edits.
 Nothing it writes is deployed to the Cloud.
 
@@ -184,3 +197,20 @@ Nothing it writes is deployed to the Cloud.
 4. If the skill needs a script, add it to `scripts/` and reference it via `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`
 5. If the skill should have a slash command, create `commands/<name>.md`
 6. Add the skill to its area table under README.md § *Functionality*, and update this file's tables
+
+## Paper collaboration policy
+
+`skills/paper-create/workflow.md` defines manuscript ownership, concise companions, topical artifacts, human iteration control, references and annotated reading copies.
+It takes precedence over fully generated article defaults when an existing human manuscript is involved.
+
+## Paclet design notebooks
+
+`skills/project-create/paclet-design.md` defines the editable `<PacletName>N.nb` human design and matching concise `_notes.nb` companion in the repository root beside the paclet folder.
+Paclet setup and build skills consult this policy; both paclet scaffold scripts include the root-level notebook rules in generated CLAUDE/AGENTS guidance.
+
+## Human research workflow skills
+
+`document-setup` identifies the current human document and its notes file, creating a minimal missing pair during requested setup.
+`document-propose` investigates requested questions and puts concise proposed additions in the notes; `document-compare` finds differences between the human document, proposals and proofs or code.
+Each has a same-name command and uses the paper/paclet policies above rather than duplicating them.
+These skills add no runtime scripts, synchronization hooks or mandatory build gates.

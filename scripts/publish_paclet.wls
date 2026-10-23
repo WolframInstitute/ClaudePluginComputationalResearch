@@ -29,6 +29,12 @@ result = buildAndInstallPaclet[ First @ positional, withDocs ];
 pacletName = result[ "PacletName" ];
 pacletFile = result[ "PacletFile" ];
 
+documentationCheck = If[ withDocs, verifyInstalledDocumentation[ result ], True ];
+If[ FailureQ[ documentationCheck ],
+    Print[ "Documentation verification failed; nothing was uploaded: ", documentationCheck ];
+    Exit[ 1 ]
+];
+
 (* ── Publish to Wolfram Cloud ─────────────────────────────────────────── *)
 
 Print[ "Uploading to Wolfram Cloud..." ];

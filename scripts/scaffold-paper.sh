@@ -8,7 +8,7 @@
 # notebooks and notes, never in Artifacts/. A project that already has a Paper/
 # folder keeps using it, and the script says Research/ is the new place; nothing
 # is moved. --name gives this paper its own source file; without it the file is
-# main.tex, which is what a first paper usually wants.
+# paper1.tex for the first human-controlled iteration.
 #
 #   default      Research/<Name>.tex, sharing Research/macros.sty and Research/references.bib
 #   --subfolder  Research/<Name>/<Name>.tex, with its own macros and bibliography
@@ -16,7 +16,9 @@
 # The skill asks the user which of the two when Research/ already holds a paper;
 # it does not guess.
 #
-# The author of the document is the MODEL. The operator is the person who ran the
+# Legacy generated articles name the MODEL; the default human skeleton does not.
+# Model provenance belongs in the concise companion, not human author metadata.
+# The author of an explicitly requested fully model-generated article is the MODEL. The operator is the person who ran the
 # session and is named in the footnote, not as an author, together with the
 # freedom the model had -- Directed, Guided or Open exploration, set in bold --
 # and a one-sentence summary of the instructions it worked under.
@@ -37,7 +39,7 @@ ASSETS_DIR="$SCRIPT_DIR/../skills/project-create/assets"
 FORMAT="latex"
 FORCE=0
 SUBFOLDER=0
-NAME="main"
+NAME="paper1"
 while [ $# -gt 0 ]; do
     case "$1" in
         --typst) FORMAT="typst"; shift ;;
@@ -86,7 +88,7 @@ if [ "$FORCE" -ne 1 ] && [ -e "$SOURCE" ]; then
     exit 1
 fi
 
-mkdir -p "$PAPER_DIR/figures"
+mkdir -p "$PAPER_DIR/figures" "$PAPER_DIR/Artifacts" "$PAPER_DIR/Archive"
 
 # ── Shared by every paper in this directory; written once, never replaced. ──
 if [ ! -e "$PAPER_DIR/references.bib" ]; then
@@ -99,6 +101,7 @@ fi
 if [ "$FORMAT" = "typst" ]; then
     [ -e "$PAPER_DIR/macros.typ" ] || cp "$ASSETS_DIR/macros_template.typ" "$PAPER_DIR/macros.typ"
     sed \
+      -e "s|{{BASENAME}}|$NAME|g" \
       -e "s|{{TITLE}}|$TITLE|g" \
       -e "s|{{ABSTRACT}}|$ABSTRACT|g" \
       -e "s|{{MODEL}}|$MODEL|g" \
@@ -107,7 +110,7 @@ if [ "$FORMAT" = "typst" ]; then
       -e "s|{{PROMPT}}|$PROMPT|g" \
       -e "s|{{EMAIL}}|$OPERATOR_EMAIL|g" \
       -e "s|{{DATE}}|$DATE|g" \
-      "$ASSETS_DIR/main_template.typ" > "$SOURCE"
+      "$ASSETS_DIR/human_paper_template.typ" > "$SOURCE"
 
     echo "Created: $SOURCE (Typst)"
     echo "  macros.typ        — shared preamble and macros ($SHARED)"
@@ -118,6 +121,7 @@ if [ "$FORMAT" = "typst" ]; then
 else
     [ -e "$PAPER_DIR/macros.sty" ] || cp "$ASSETS_DIR/macros_template.sty" "$PAPER_DIR/macros.sty"
     sed \
+      -e "s|{{BASENAME}}|$NAME|g" \
       -e "s|{{TITLE}}|$TITLE|g" \
       -e "s|{{ABSTRACT}}|$ABSTRACT|g" \
       -e "s|{{MODEL}}|$MODEL|g" \
@@ -126,7 +130,7 @@ else
       -e "s|{{PROMPT}}|$PROMPT|g" \
       -e "s|{{EMAIL}}|$OPERATOR_EMAIL|g" \
       -e "s|{{DATE}}|$DATE|g" \
-      "$ASSETS_DIR/main_template.tex" > "$SOURCE"
+      "$ASSETS_DIR/human_paper_template.tex" > "$SOURCE"
     [ -e "$PAPER_DIR/.latexmkrc" ] || cp "$ASSETS_DIR/latexmkrc_template" "$PAPER_DIR/.latexmkrc"
 
     echo "Created: $SOURCE (LaTeX)"
@@ -136,4 +140,24 @@ else
     echo "  .latexmkrc        — latexmk configuration"
     echo ""
     echo "Compile: cd $PAPER_DIR && latexmk -pdf $NAME.tex"
+fi
+
+# The companion is separate from the human manuscript and never clobbered.
+if [ "$FORMAT" = "typst" ]; then
+    NOTES_SOURCE="$PAPER_DIR/${NAME}_notes.typ"
+    NOTES_TEMPLATE="$ASSETS_DIR/paper_notes_template.typ"
+else
+    NOTES_SOURCE="$PAPER_DIR/${NAME}_notes.tex"
+    NOTES_TEMPLATE="$ASSETS_DIR/paper_notes_template.tex"
+fi
+if [ ! -e "$NOTES_SOURCE" ]; then
+    sed \
+      -e "s|{{BASENAME}}|$NAME|g" \
+      -e "s|{{TITLE}}|$TITLE|g" \
+      -e "s|{{MODEL}}|$MODEL|g" \
+      -e "s|{{DATE}}|$DATE|g" \
+      "$NOTES_TEMPLATE" > "$NOTES_SOURCE"
+    echo "Created: $NOTES_SOURCE (concise research companion)"
+else
+    echo "Preserved: $NOTES_SOURCE (existing research companion)"
 fi

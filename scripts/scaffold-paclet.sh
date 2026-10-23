@@ -28,6 +28,12 @@ cd "$OUTPUT_DIR"
 REPO_ROOT="$PACLET_NAME"
 PACLET_DIR="$REPO_ROOT/$PACLET_NAME"
 
+if [ -e "$REPO_ROOT" ] || [ -L "$REPO_ROOT" ]; then
+    echo "Error: destination already exists: $REPO_ROOT. Refusing to overwrite existing work." >&2
+    exit 1
+fi
+mkdir -- "$REPO_ROOT"
+
 mkdir -p "$PACLET_DIR/Kernel"
 mkdir -p "$PACLET_DIR/Tests"
 mkdir -p "$REPO_ROOT/Work"
@@ -147,6 +153,12 @@ Scientific journal: **off**
 EOF
 printf '\n' >> "$REPO_ROOT/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$REPO_ROOT/CLAUDE.md"
+printf '\n' >> "$REPO_ROOT/CLAUDE.md"
+cat "$ASSETS_DIR/paclet_design_rules.md" >> "$REPO_ROOT/CLAUDE.md"
+if [ ! -e "$REPO_ROOT/AGENTS.md" ]; then
+    printf '# Repository guidance\n\nRead CLAUDE.md for repository conventions.\n\n' > "$REPO_ROOT/AGENTS.md"
+    cat "$ASSETS_DIR/paclet_design_rules.md" >> "$REPO_ROOT/AGENTS.md"
+fi
 echo "Created: $REPO_ROOT/CLAUDE.md"
 
 # ── 4b. Commit-message hook (Conventional Commits) ─────────────────────────

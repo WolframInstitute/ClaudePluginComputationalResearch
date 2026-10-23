@@ -1,7 +1,7 @@
-Create or modify a Wolfram notebook using the `notebook-create` skill.
+Create, edit or convert a Wolfram notebook using the `notebook-create` skill.
 
-If arguments are provided (e.g., `/notebook-create graph curvature examples`), create a notebook on that topic.
-Otherwise ask what the notebook should cover.
-
-Uses the Markdown→notebook pipeline via the official Wolfram MCP.
-Creates the Markdown source and generates the .nb alongside it, sharing one dated stem: in Code/ for a document the user will keep working on, in Code/Artifacts/ for a one-off (the default when the request does not say). No file is ever overwritten.
+Interpret `$ARGUMENTS` as the source or notebook path, operation and requested scope.
+For a new notebook, follow the creation pipeline and artifact placement rules.
+For an existing notebook, make only the requested edits through the notebook-aware workflow, preserving human changes.
+For a notebook-to-Markdown request, export only; do not regenerate the notebook or begin a revision round.
+Ask for the target or operation only when the request and current context do not identify it.

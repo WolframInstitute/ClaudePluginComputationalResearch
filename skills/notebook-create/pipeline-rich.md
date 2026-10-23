@@ -1,7 +1,8 @@
 # notebook-create: rich engine pipeline
 
 The [`WolframInstitute/MarkdownToNotebook`](https://github.com/WolframInstitute/MarkdownToNotebook) path, used at a pinned SHA from a local clone — see [Wiki/Resources/MarkdownToNotebook.md](../../Wiki/Resources/MarkdownToNotebook.md).
-Read when actually generating a notebook on the rich path; engine selection is in [SKILL.md](SKILL.md).
+Read when generating new notebook content on the rich path; engine selection and ownership rules are in [SKILL.md](SKILL.md).
+Use [editing.md](editing.md) for saved notebooks; do not regenerate their existing cells through this pipeline.
 
 ## What rich mode changes
 
@@ -19,7 +20,7 @@ Two consequences are easy to get wrong:
 
 - **Keep the notebook options.** `ExportString[Notebook[cells], "NB"]` silently drops them; rich mode must rebuild the original expression instead — `ReplacePart[nb, 1 -> cells]`.
 - **Drop the boxify step, keep the rest.** The parser already emits the structural box tree, so `boxifyInputCells` is dead weight, and its visualization guard is unnecessary: the guard existed only because `ToBoxes[ToExpression[…, Defer]]` strands graphics cells, and rich mode never calls it.
-  `markInitCells` and the `[[ LLM Generated ]]` marker normalization still apply unchanged.
+  `markInitCells` still applies to new initialization content; marker normalization and `addLLMSubtitle` run only when `llmStandalone` is `True`.
 
 ## Surface the parser degradation
 
@@ -37,31 +38,32 @@ If it returns `False`, say the first conversion will install a paclet, and that 
 
 Same shape as the built-in call, minus the heading shift and the boxify step, plus `CellLabel` stripping and option preservation.
 Build `md` with the same `tick` / `fence` rules.
+Choose `llmStandalone` by document role, as in [pipeline-builtin.md](pipeline-builtin.md); it remains `False` for human-owned or shared documents and cell fragments.
 Define `markInitCells` and `addLLMSubtitle` exactly as in [pipeline-builtin.md](pipeline-builtin.md) — **one change**: `markInitCells` matches heading styles `"Section"|"Subsection"|"Subsubsection"` (and resets on `"Title"|"Section"|"Subsection"|"Subsubsection"`), because rich mode never produces `"Chapter"`.
 
 ```wolfram
-Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle},
+Module[{wl, md, nb, cells, markInitCells, addLLMSubtitle, llmStandalone = False},
 
   wl = "MarkdownToNotebook/MarkdownToNotebook.wl";   (* pinned clone, project root *)
 
   (* markInitCells and addLLMSubtitle: definitions from pipeline-builtin.md,
      with the Section-first heading match described above *)
 
-  md = StringJoin["# My Notebook Title\n\n", "**[[ LLM Generated ]]**\n\n", "..."];
+  md = StringJoin["# My Notebook Title\n\n", "..."];
 
   Get[wl];
   Get["${CLAUDE_PLUGIN_ROOT}/scripts/source_lines.wl"];
   nb = SourceLineNotebook[MarkdownToNotebook[#, "Evaluate" -> False] &, md];
   cells = First[nb];
-  cells = cells /. {
-    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]}], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"],
-    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"],
-    Cell["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle"]
-  };
+  cells = If[llmStandalone, cells /. {
+    Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]}], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o],
+    Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o],
+    Cell["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o]
+  }, cells];
   cells = cells /. Cell[c_, s_String, o___] :>
     Cell[c, s, Sequence @@ DeleteCases[{o}, CellLabel -> _]];
   cells = markInitCells[cells];
-  cells = addLLMSubtitle[cells];
+  cells = addLLMSubtitle[cells, llmStandalone];
   ExportString[ReplacePart[nb, 1 -> cells], "NB"]
 ]
 ```

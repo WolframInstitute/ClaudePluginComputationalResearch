@@ -1,20 +1,24 @@
 ---
 name: document-revise
 description: >
-  Human revision workflow for code, functionality, plans, and deliverables.
-  This skill defines how the LLM interacts with the user when producing
-  anything that needs review — a protocol that all other skills follow; read
-  it at the start of every session to internalize the revision rules. Invoked
-  directly (`/document-revise <file>`), it runs one revision round: it reads the
-  `<< … >>` notes and hand edits the user left in a document — a notebook, a LaTeX
-  or Typst paper, a Markdown file, code — and writes the next numbered
-  version beside it (`_2`, `_3`, …), changing only what the notes ask and
-  remembering past rounds in the document's provenance file.
-  Use for: "revise this", "revision round", "I left notes in the notebook",
-  "next version of the paper", or the /document-revise command.
+  Apply human feedback and direct edits to a document within the requested
+  scope, preserving unrequested content. Use for "revise this", notes left
+  in a notebook, and /document-revise. Keep human manuscripts and _notes
+  companions in place unless a new iteration is explicitly requested.
+  A requested versioned revision round preserves the prior document and
+  records notes, hand edits and outcomes in its provenance file.
 ---
 
 # Human Revision Workflow
+
+## Human-owned documents take precedence
+
+Read [the paper collaboration policy](../paper-create/workflow.md) for human manuscripts and [the paclet design policy](../project-create/paclet-design.md) for design notebooks.
+The human owns the numbered sequence and chooses the current source, integration and any next iteration; substantive proposals normally go in its concise `<stem>_notes` companion.
+Follow the current human source, keep details in linked topical artifacts, and do not promote or rewrite the manuscript without an explicit request.
+A request for a short proposal does not trigger a full paper, proof development, notebook/code bundle, journal, or another competing briefing.
+Apply ordinary scoped edits and companion updates in place, preserving human corrections.
+Use the versioned-round procedure below only for an explicitly requested new version; for human papers/designs, use the human-selected starting text and name.
 
 This is the core interaction protocol.
 Every skill that produces code, functionality, plans, or deliverables follows these rules.
@@ -23,7 +27,7 @@ Every skill that produces code, functionality, plans, or deliverables follows th
 
 - Read at the start of every session; apply whenever producing code, functionality, plans, or deliverables.
 - The other skills follow it as a protocol.
-- Invoked directly — `/document-revise <file>`, "revise this", "I left notes in it" — it runs one [revision round](#revision-round).
+- Invoked directly — `/document-revise <file>`, "revise this", "I left notes in it" — apply the requested feedback; use a [revision round](#revision-round) only when versioning was requested.
 
 ## Steps
 
@@ -42,14 +46,14 @@ This applies to:
 
 ### What "waiting" means
 
-After presenting a deliverable, the LLM must **stop and let the user respond**.
-Do not continue to the next step.
-Do not assume approval.
+Complete the authorized scope and present the result, then let the user respond before taking a further action that requires their decision.
+Do not infer permission to integrate proposals, advance a human iteration or publish from the presentation itself.
+An explicit scoped edit request already authorizes that edit; do not stop for another approval of routine implementation steps.
 The user's response determines what happens:
 
-- "ok", "looks good", "next", "yes", or accepting without objection → **approved**
+- explicit approval such as "ok", "looks good", "next" or "yes" → approved for the action actually presented
 - "change X", "no, do Y instead", specific feedback → **revise and re-present**
-- silence / topic change → treat as implicit approval for the last item
+- silence / topic change → no new authorization to edit protected content, integrate proposals, advance an iteration or publish
 
 ### What to present
 
@@ -67,14 +71,17 @@ Present meaningful chunks — a complete function, a full plan, a finished secti
 
 The user reviews a document where they read it, not in the chat.
 They write notes into it as `<< … >>`, inside a line or over several — in code inside a comment, as in `% << shorter >>` or `(* << smaller graph >> *)` — and may edit it directly.
-A round turns that into the next version:
+An ordinary requested edit uses the saved document in place.
+A specifically requested versioned round preserves it and writes the next version:
 
-- **Names.** It writes `Name_k+1` beside the latest version `Name_k` — `Note_260927.tex`, then `Note_260927_2.tex`, `_3`, … — with every file of the stem, and never edits version `k` again.
-- **The edited document is the source.** Everything without a note is carried over verbatim, hand edits included; for a notebook, the `.nb` the user edited is carried over, and its `.md` is kept in step with it, each cell knowing its source lines.
+- **Names for a specifically requested versioned revision round.** It writes `Name_k+1` beside the latest version `Name_k` — `Note_260927.tex`, then `Note_260927_2.tex`, `_3`, … — with every file of the stem, and never edits version `k` again.
+- **The edited document is the source.** Carry unrequested content and direct edits over intact.
+  For a notebook, patch the saved `.nb` natively; reconcile any supporting `.md` only where faithful per-cell export is available, and report notebook-only content rather than fabricating source.
 - **No invention.** It changes only the passages the notes name and adds nothing no note asked for — in a folder itself as much as in `Artifacts/`.
 - **Every note is answered.** One acted on is gone from `k+1`; one not acted on stays, followed by `<< not done: <reason> >>`.
 - **The document remembers.** Its provenance file `<stem>.provenance.md` records every note, hand edit and chat request, and keeps rules drawn from them; each round reads the rules first and checks the new version against them.
-- **Git holds the trail.** Version `k` is committed as the user left it, then `k+1` once written — text files, `.md` sources and the provenance file, never a generated `.nb`.
+- **Preserve the trail.** Follow the project's commit/tracking policy and any no-commit instruction.
+  Keep direct notebook work recoverable as the actual `.nb` when Markdown/provenance cannot reproduce it; only faithfully reproducible generated outputs may be excluded.
 
 It then lists each note with what was done, and each new rule, and waits.
 The full procedure — grammar, naming, the text-file and notebook paths — is in [round.md](round.md), and the provenance file's format in [provenance § *Document provenance*](../project-provenance/SKILL.md#document-provenance); both are read only when running a round.
@@ -110,34 +117,25 @@ What changes:
 
 - **Do not stop to present.** Finish the task, commit, and let the digest be the presentation.
 - **Do not guess at a real decision.** When the task turns on a choice you would otherwise have asked about, write the question into `## Hand-off` on a line containing `needs-human:`, commit that, and stop. The driver halts the item on it. A wrong autonomous call is invisible until the digest and acquires later tasks on top of it, so halting is cheap and guessing is not.
-- **Protected content stays protected.** User-written Specs, code, and prose are not editable without approval — describe the change in `## Hand-off` as a `needs-human:` question instead.
+- **Protected content stays protected.** Edit user-written Specs, code, prose or notebooks only within an explicitly authorized scope.
+  If the required change exceeds that scope, describe it in `## Hand-off` as a `needs-human:` question instead.
 - **A `(human)` task is not yours.** A task line marked `(human)` halts the driver before the run; if you find yourself in one anyway, stop and say so.
 
 Everything else is unchanged: wiki prose still needs no sign-off, and the deliverable is held to the same standard — the review is later, not lighter.
 
 ## Protected content
 
-**Never overwrite; outside `Artifacts/`, write only on request.**
-Every folder that holds documents has three places ([artifacts.md](../notebook-create/artifacts.md)): the documents in progress in the folder itself, what the LLM made once in `Artifacts/`, what is superseded in `Archive/`.
-The LLM writes a new artifact, or the next version of a document beside the last one, and never writes over a file.
-It writes into the folder itself only when the user asked for that document or that round; everywhere else outside `Artifacts/` it proposes rather than writes.
-Those are path checks, not judgment calls, and they are the mechanism behind the rest of this section.
+**Preserve human edits everywhere, including `Artifacts/`, companions and notebooks.**
+Read the actual saved document before editing and reconcile concurrent changes before saving.
+An explicit request authorizes its stated edits in place; it does not authorize unrelated rewriting, publication or a new human iteration.
+Research/proposal requests around a human paper normally authorize its concise companion and necessary topical artifacts, not changes to the human manuscript.
 
-Within that, the LLM must not silently overwrite anything the user has **explicitly edited or written**, wherever it sits:
+The folder/`Artifacts/`/`Archive/` convention in [artifacts.md](../notebook-create/artifacts.md) organizes new outputs; it does not override an established human document's path or make edits inside `Artifacts/` disposable.
+For notebooks, use [native targeted edits](../notebook-create/editing.md), preserving cells, semantic options, grouping and author metadata.
+Automatic wiki/journal maintenance exemptions do not authorize undoing human corrections.
 
-- User-edited Specs and tasks in `Work/`
-- User-written code or configuration
-- User-crafted prose (articles the user specifically wrote by hand)
-- Any content the user explicitly created or revised — including inside an `Artifacts/` folder, once the user has edited it
-
-When the LLM needs to change protected content:
-
-1. Describe what you'd change and why
-2. Wait for approval
-3. Only then make the change
-
-How to detect protected content: if the user typed it, pasted it, or explicitly edited it in the current or a recent session, treat it as protected.
-When in doubt, ask.
+If a needed change falls outside the user's authorized scope, describe it and obtain that decision before making the dependent change.
+Ask only when the scope or baseline is genuinely unresolved; do not repeat approval requests for edits already authorized.
 
 ## Recording what happened
 

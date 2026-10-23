@@ -68,3 +68,45 @@ findPacletDir[ name_String ] :=
         };
         SelectFirst[ candidates, FileExistsQ ] /. _Missing :> None
     ];
+
+(* Check metadata URIs against the installed paclet before publication. *)
+validateDocumentationFiles[ pages_List, installedRoot_String, reader_, resolver_ ] :=
+    Module[ { rootParts = FileNameSplit @ ExpandFileName[ installedRoot ], failures },
+        failures = DeleteCases[
+            Map[ Function[ page,
+                Module[ { nb, tags, metadata, uri, resolved, parts },
+                    nb = Quiet @ Check[ reader[ page, "NB" ], $Failed ];
+                    If[ ! MatchQ[ nb, _Notebook ], Return[ Failure[ "UnreadableDocPage", <| "Page" -> page |> ] ] ];
+                    tags = Quiet @ Check[ Association[ TaggingRules /. Options[ nb, TaggingRules ] ], <||> ];
+                    metadata = Quiet @ Check[ Association[ Lookup[ tags, "Metadata", <||> ] ], <||> ];
+                    uri = Lookup[ metadata, "uri", Lookup[ metadata, "URI", Missing[ "NoURI" ] ] ];
+                    If[ ! StringQ[ uri ] || StringLength[ uri ] == 0,
+                        Return[ Failure[ "MissingDocumentationURI", <| "Page" -> page |> ] ] ];
+                    If[ ! StringStartsQ[ uri, "paclet:" ], uri = "paclet:" <> uri ];
+                    resolved = Quiet @ Check[ resolver[ uri ], $Failed ];
+                    If[ ! StringQ[ resolved ] || ! FileExistsQ[ resolved ] || DirectoryQ[ resolved ],
+                        Return[ Failure[ "UnresolvedDocumentationURI", <| "Page" -> page, "URI" -> uri |> ] ] ];
+                    parts = FileNameSplit @ ExpandFileName[ resolved ];
+                    If[ Length[ parts ] <= Length[ rootParts ] || Take[ parts, Length[ rootParts ] ] =!= rootParts,
+                        Return[ Failure[ "DocumentationOutsideInstalledPaclet", <| "Page" -> page, "Resolved" -> resolved |> ] ] ];
+                    True
+                ]
+            ], pages ], True
+        ];
+        If[ failures === { }, True, Failure[ "DocumentationResolutionFailed", <| "Failures" -> failures |> ] ]
+    ];
+
+verifyInstalledDocumentation[ result_Association ] :=
+    Module[ { docs, pages, installedRoot, refreshed },
+        docs = FileNameJoin[ { result[ "PacletDir" ], "Documentation" } ];
+        If[ ! DirectoryQ[ docs ], Return[ True ] ];
+        pages = Select[ FileNames[ "*.nb", docs, Infinity ],
+            MemberQ[ Partition[ FileNameSplit[ # ], 2, 1 ], { "ReferencePages", "Symbols" } ] & ];
+        If[ pages === { }, Return[ True ] ];
+        installedRoot = Quiet @ Check[ result[ "Paclet" ][ "Location" ], $Failed ];
+        If[ ! StringQ[ installedRoot ] || ! DirectoryQ[ installedRoot ],
+            Return[ Failure[ "InstalledPacletLocationUnavailable", <||> ] ] ];
+        refreshed = Quiet @ Check[ PacletDataRebuild[ ], $Failed ];
+        If[ refreshed === $Failed, Return[ Failure[ "DocumentationIndexRebuildFailed", <||> ] ] ];
+        validateDocumentationFiles[ pages, installedRoot, Import, Documentation`ResolveLink ]
+    ];

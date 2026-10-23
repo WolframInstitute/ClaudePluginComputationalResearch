@@ -2,7 +2,7 @@
 
 Every folder that holds documents has the same three places.
 Shared by [document-revise](../document-revise/SKILL.md), [`/project-clean`](../../commands/project-clean.md), the generating skills — [notebook-create](SKILL.md), [paper-create-note](../paper-create-note/SKILL.md), [paper-create-notebook](../paper-create-notebook/SKILL.md) — and [paper-create](../paper-create/SKILL.md).
-One rule, applied to every folder.
+This convention organizes new generated outputs; preserve established human document paths and the ownership policies below.
 
 ## The rule
 
@@ -14,7 +14,8 @@ Research/
   Archive/                      earlier versions, moved aside
 ```
 
-- **The folder itself** holds the documents in progress: the ones the user writes, and the ones the user and the plugin write together, one numbered version per [revision round](../document-revise/round.md).
+- **The folder itself** holds documents in progress, including human-owned documents and concise companions.
+  Number another version only when requested; ordinary scoped edits and companion updates are made in place.
 - **`Artifacts/`** holds what the plugin made once, on request: a notebook, a note on a conversation, an exploration.
   One dated stem per artifact, and an index.
 - **`Archive/`** holds what is superseded: earlier versions and older artifacts.
@@ -29,8 +30,15 @@ The rule is recursive.
 
 ## Never overwrite
 
-**The plugin never overwrites a file.**
-It writes a new artifact, or version `k+1` of a document beside version `k`, and version `k` is never edited again.
+For human papers and paclet designs, [paper ownership](../paper-create/workflow.md) and [paclet design ownership](../project-create/paclet-design.md) take precedence over generic artifact and revision defaults.
+The human alone advances the document's iterations; a concise `_notes` companion may be maintained in place within the requested scope, preserving human corrections.
+Paclet design pairs belong in the repository root beside the paclet folder, not in `Code/Artifacts/` or a new notes directory.
+Artifacts are organized by topic, not split into human/LLM directories.
+An annotated reading PDF is human work, not a disposable generated output.
+
+**The plugin never silently overwrites human work.**
+A requested edit or companion update can be made in place under the policies above; numbered human iterations remain human controlled.
+A new artifact or explicitly requested versioned round preserves the previous work; do not create extra versions merely because a notebook received a correction.
 
 **Outside `Artifacts/`, it writes only on request.**
 A document starts in the folder itself only when the user asks for it there; a round writes `k+1` there only when the user asks for the round.
@@ -38,15 +46,18 @@ Everywhere else outside `Artifacts/`, the plugin proposes rather than writes —
 
 Two things are not overwriting:
 
-- **A generated file** is rebuilt in place from its source: a `.nb` from its `.md`, a `.pdf` from its `.tex`.
-  Its source is the document; the generated file is not.
+- **A faithfully reproducible generated file** may be rebuilt from its reconciled source within the requested scope.
+  A notebook with direct human edits is not disposable: use [native targeted editing](editing.md), and check the current [fingerprint contract](../paper-create-notebook/fingerprint.md) before any full regeneration.
+  Missing or legacy hashes do not establish that overwriting is safe; incomplete source write-back forbids regeneration from that source.
+  An annotated reading PDF is preserved even when a newer source build exists.
 - **Code under development** — a `.wl` package, a script — is edited in place, with approval, and git holds its history.
   Versions and `Archive/` are for documents someone reads, not for code someone runs.
 
 ## Which place
 
 A generating skill takes a destination: **the folder itself** for a document in progress, **`Artifacts/`** for a one-off.
-A request that does not say which goes to `Artifacts/`, without asking: nothing is overwritten either way, so the cheap default is safe, and the user can move it up later.
+For a new generated one-off without a specified destination, use `Artifacts/` without asking.
+Preserve existing paths, explicit destinations and human-owned paper/design pairs instead of applying this default to them.
 
 | Producer | Folder | Document in progress | One-off |
 |---|---|---|---|
@@ -66,14 +77,14 @@ Paclets stay in their own clones ([paclet-dev](../project-create/paclet-dev.md))
 
 ### Papers
 
-A paper is always a document in progress: it is the user's from the moment it is scaffolded, and it is never an artifact.
-It lives in `Research/`, flat, or in `Research/<PaperName>/` once it has its own bibliography and figures.
+A human paper is a document in progress from the moment it is scaffolded.
+Preserve its established location and name; `Research/` is the default for a newly scaffolded paper, flat or in a requested `Research/<PaperName>/` subfolder.
 A project that already has a `Paper/` folder keeps it: the paper is found and used there, the user is told that `Research/` is the new place, and nothing is moved.
 
 ### Moving up
 
 To keep working on an artifact, the user moves it up into the folder: a plain `git mv`, no command.
-From then on it is a document in progress, and its next round is written beside it there.
+From then on it is a document in progress; ordinary edits use that path and a requested versioned round is written beside it.
 The next update of the `Artifacts/` index notes where it went.
 
 ## The shape
@@ -86,7 +97,7 @@ Artifacts/
   GeodesicPools_260919.tex        the document
   GeodesicPools_260919.pdf        compiled from it
   GeodesicPools_260919.md         the notebook source
-  GeodesicPools_260919.nb         converted from it, unevaluated, not committed
+  GeodesicPools_260919.nb         generated notebook (preserve later direct edits)
   GeodesicPools_260919.wl         the definitions, loadable with Get
 ```
 
@@ -111,14 +122,17 @@ Bare inner names are not cosmetic: they are what lets a `build.wls`, an `\input`
 Explicit over short: `InfraCircleTheoryAndInterface_260914`, not `InfraCircle`.
 A reader scanning the folder should know what each stem answers without opening it.
 
-A revision round appends its number to the stem — `_2`, `_3` — by the rule in [round.md](../document-revise/round.md) § *Names*.
-A paper, and any file the user named, keeps its name; rounds number it the same way.
+An explicitly requested versioned artifact round appends `_2`, `_3` by [round.md](../document-revise/round.md#names).
+Human-owned numbered documents and any user-named file keep their established names and author-selected next-iteration scheme.
+Do not append a date or generic `_2` to a human design pair merely to fit this artifact convention.
 
 Shared machinery — `macros.tex`, `references.bib`, a template — carries no date, because it is not a document.
 
 ## Archive
 
-Two things supersede a stem, and both end in the `Archive/` of the folder the stem is in:
+For generated artifacts, two things can supersede a stem, and both end in the `Archive/` of the folder the stem is in.
+Do not infer the current human manuscript/design by the highest number or archive its recorded current version without the user's scoped instruction:
+
 
 - **A round** renumbers one date: `Note_260927_2.tex` supersedes `Note_260927.tex`.
   [`/project-clean`](../../commands/project-clean.md) moves every round but the latest into `Archive/`.
@@ -136,10 +150,11 @@ An artifact moved up into its folder, or into `Archive/`, keeps its row with a l
 
 ## Git and the Cloud
 
-**Every file of a stem is tracked, except a generated `.nb`.**
-A generated notebook is not committed; its `.md` source is, and the `.nb` is rebuilt from it.
-Stage a stem's files by name, so a `.nb` is never added by accident.
-A document under revision also keeps its provenance file, `<stem>.provenance.md`, tracked beside it; the generating skill writes its first Request and commits version 1 as written ([provenance § *Document provenance*](../project-provenance/SKILL.md#document-provenance)).
+Follow the project's existing tracking policy and any explicit no-commit instruction.
+A generated `.nb` may be excluded only while it is faithfully reproducible from its source and recorded build settings without losing human edits.
+Keep human-owned notebooks and notebook-only corrections recoverable as actual notebooks through Git or the established archive/snapshot mechanism; a partial Markdown export or prose summary is not a replacement.
+Stage files by name to avoid unrelated changes and disposable build products.
+A document under revision keeps its existing provenance file, `<stem>.provenance.md`, beside it ([project-provenance](../project-provenance/SKILL.md#document-provenance)); respect no-commit scope rather than creating a surprise baseline commit.
 
 Build litter is never committed: `.aux`, `.log`, `.fls`, `.fdb_latexmk`, `.out`, `.synctex.gz`, `.bbl`, `.blg`, editor backups.
 Run `latexmk -c` after a build.

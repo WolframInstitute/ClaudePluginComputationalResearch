@@ -9,6 +9,25 @@ This file carries only what a session must know *before* it knows to look someth
 Every session follows the [document-revise](skills/document-revise/SKILL.md) protocol for code, functionality, plans, and deliverables: generate, present, **wait** for the user.
 Wiki prose is exempt, and autonomous runs defer the gate to branch + digest (`document-revise` § *Autonomous mode*).
 
+## Human-owned paper collaboration
+
+[The paper collaboration policy](skills/paper-create/workflow.md) is authoritative for paper work and takes precedence over generic article, journal, authorship and automatic revision-round defaults.
+The human owns the current manuscript and decides both integration and the next numbered iteration.
+Read that manuscript first; preserve its structure, notation and terminology.
+The default assistant deliverable is a concise `<stem>_notes` companion with itemized proposals, scoped claims, open questions, citations and links to topical `Artifacts/`.
+Go deep only when requested; do not produce a polished replacement paper by default.
+`notes.tex` is optional scratch space, not a second briefing.
+Do not impose human/LLM directory trees, require author-run reference scripts, change human authorship, or replace annotated reading copies.
+Explicitly requested local edits already authorize their scope; do not add a confirmation gate for each routine step.
+A local plugin update is not an instruction to publish, push or deploy it.
+
+## Human-owned paclet design
+
+[The paclet design policy](skills/project-create/paclet-design.md) extends manuscript ownership to repo/paclet development.
+Support an editable `<PacletName>1.nb` and concise `<PacletName>1_notes.nb` in the repository root beside the paclet folder; the user alone advances the numbered design and chooses accepted changes.
+Use the real paclet name, preserve human notebook edits, consult the current design for API work, and put deep detail in linked topical artifacts.
+The paclet and paclet-dev scaffolds provide guidance for root-level design notebooks; notebook creation is part of an authorized design/setup task, not a blocking requirement for every archive build.
+
 ## Source formatting
 
 Semantic line breaks: **on**
@@ -89,12 +108,14 @@ Anything read out of the in-project copy is stale until it has been pulled.
 Note that git surgery inside the Dropbox folder races the sync daemon — a rebase there aborted mid-flight on files the daemon had touched.
 Where a merge or rebase is needed, do it in the reference clone, push, and fast-forward the Dropbox copy.
 
-### The README is the contract
+### The README is the authoritative blueprint
 
-`README.md` is the plugin's acceptance criteria and its philosophy: every sentence in it is a promise a user can hold the plugin to.
-Change the README first, and iterate on it with the author.
-A gap between a README sentence and the implementation is a work item, and its Spec names the sentence it makes true.
-Until that item closes the README may be ahead of the code; the item is the record of the gap.
+`README.md` is the user-owned, authoritative blueprint for this plugin's goals, workflows and intended behavior.
+Read its current text before changing skills or implementation, and preserve the user's wording, structure and direct edits.
+Skills, commands and code must follow that blueprint; do not rewrite the README to make an implementation mismatch disappear.
+Edit it only within an explicit request, including a requested wording correction.
+When a promised behavior is missing, identify the gap and fix it within the authorized scope or record it for later work.
+This plugin blueprint does not displace the human manuscript or accepted design notebook in projects the plugin supports.
 
 ### Keeping the docs current
 

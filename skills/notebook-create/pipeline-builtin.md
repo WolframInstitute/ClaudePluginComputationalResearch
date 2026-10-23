@@ -1,14 +1,15 @@
 # notebook-create: built-in engine pipeline
 
 The post-processing and the complete MCP call for the built-in engine (`ImportString[md, {"Markdown", "Notebook"}]`).
-Read when actually generating a notebook on the built-in path; engine selection and all conventions are in [SKILL.md](SKILL.md).
+Read when generating new notebook content on the built-in path; engine selection and ownership rules are in [SKILL.md](SKILL.md).
+For an existing notebook, use [editing.md](editing.md) and apply generation passes only to requested new content, not the saved notebook.
 
 ## Post-processing
 
 After `ImportString`, apply these transformations before `ExportString` — the function definitions appear **once**, inside the complete call below:
 
 1. **Heading shift.** The WL-15 importer maps `##`→`Chapter`; the corpus uses `Title`/`Section`/`Subsection`, so every heading shifts down one level (`Chapter`→`Section`, `Section`→`Subsection`, `Subsection`→`Subsubsection`) immediately after `cells = First[nb]`.
-2. **Marker normalization.** Any `**[[ LLM Generated ]]**` bold-Text marker from the source (the legacy `[LLM Generated]` and `[ LLM Generated ]` spellings included) becomes a single `"Subtitle"` cell.
+2. **Marker normalization, only for a fully assistant-written standalone notebook.** Any `**[[ LLM Generated ]]**` bold-Text marker from the source (the legacy `[LLM Generated]` and `[ LLM Generated ]` spellings included) becomes a single `"Subtitle"` cell.
 3. **Rename `"Program"` → `"CodeText"`** — untagged fences are display-only code.
 4. **`boxifyInputCells` — Critical.** The importer produces `Cell[BoxData["raw string"], "Input"]`; without a structural `RowBox` tree, hover help, F1 lookup, autocomplete, and the suggestion bar are all dead.
    Boxify via `ToBoxes[ToExpression[code, StandardForm, Defer]]` (`Defer` keeps the code unevaluated) — **except** visualization cells.
@@ -16,15 +17,18 @@ After `ImportString`, apply these transformations before `ExportString` — the 
    Do not skip this step — without it, every Input cell ships broken.
 5. **`markInitCells`.** Input cells under `Setup`/`Initialization`/`Preamble`/`Dependencies` headings get `InitializationCell -> True`.
    Wildcard `StringMatchQ` avoids false positives ("Indefinite Integrals" must NOT trigger).
-6. **`addLLMSubtitle` — Critical.** Every generated notebook carries a `"Subtitle"` cell reading `[[ LLM Generated ]]` (double-bracket form) directly under the `"Title"`; the function dedupes so exactly one marker ships, whether the source carried one or not.
-   Never ship an LLM-generated `.nb` without this marker (paclet code is exempt; notebooks are not).
+6. **`addLLMSubtitle`.** Set `llmStandalone = True` only for a fully assistant-written standalone notebook; its marker is a `"Subtitle"` directly under the `"Title"`.
+   Keep it `False` for human-owned documents, shared notes and cell fragments.
+   Do not add, remove or normalize human author metadata merely because the assistant generated a skeleton or edited a cell.
 
 ## The complete Wolfram MCP call
 
 This is the canonical copy of `vizCellQ`, `boxifyInputCells`, `markInitCells`, and `addLLMSubtitle` — [pipeline-rich.md](pipeline-rich.md) reuses the last two from here rather than restating them.
 
 ```wolfram
-Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ, vizHeads, tick, fence},
+Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ, vizHeads, tick, fence, llmStandalone = False},
+
+  (* Set True only for a fully assistant-written standalone notebook. *)
 
   tick = FromCharacterCode[96];
   fence = StringJoin[tick, tick, tick];
@@ -68,12 +72,13 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
     result
   ];
 
-  addLLMSubtitle[cellList_List] := Module[
-    {cells = DeleteCases[cellList, Cell["[[ LLM Generated ]]", "Subtitle", ___]], pos},
-    pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
-    If[MissingQ[pos],
-      Prepend[cells, Cell["[[ LLM Generated ]]", "Subtitle"]],
-      Insert[cells, Cell["[[ LLM Generated ]]", "Subtitle"], pos[[1]] + 1]]
+  addLLMSubtitle[cellList_List, enabled : (True | False)] := If[! enabled, cellList,
+    Module[{cells = DeleteCases[cellList, Cell["[[ LLM Generated ]]", "Subtitle", ___]], pos},
+      pos = FirstPosition[cells, Cell[_, "Title", ___], Missing[], {1}];
+      If[MissingQ[pos],
+        Prepend[cells, Cell["[[ LLM Generated ]]", "Subtitle"]],
+        Insert[cells, Cell["[[ LLM Generated ]]", "Subtitle"], pos[[1]] + 1]]
+    ]
   ];
 
   md = StringJoin[
@@ -94,16 +99,16 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
     Cell[c_, "Section", o___] :> Cell[c, "Subsection", o],
     Cell[c_, "Subsection", o___] :> Cell[c, "Subsubsection", o]
   };
-  cells = cells /. {
+  cells = If[llmStandalone, cells /. {
     Cell[TextData[{StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]}], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o],
     Cell[TextData[StyleBox["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", ___]], _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o],
     Cell["[LLM Generated]" | "[ LLM Generated ]" | "[[ LLM Generated ]]", _String, o___] :> Cell["[[ LLM Generated ]]", "Subtitle", o]
-  };
+  }, cells];
   cells = cells /. Cell[content_, "Program", opts___] :> Cell[content, "CodeText", opts];
   cells = boxifyInputCells[cells];
   cells = markInitCells[cells];
-  cells = addLLMSubtitle[cells];
-  ExportString[Notebook[cells], "NB"]
+  cells = addLLMSubtitle[cells, llmStandalone];
+  ExportString[ReplacePart[nb, 1 -> cells], "NB"]
 ]
 ```
 
@@ -111,4 +116,4 @@ Module[{md, nb, cells, markInitCells, boxifyInputCells, addLLMSubtitle, vizCellQ
 So `md` is the source file's text as it is on disk — `Import["Code/Artifacts/Name_YYMMDD.md", "Text"]` — and the string built above stands in for it only in this example.
 It ships the plain conversion and returns it unstamped if the two conversions it compares disagree; check `! FreeQ[nb, "SourceLines"]`.
 
-With provenance on, wrap the final expression per SKILL.md § *Provenance*: `ExportString[ stampTaggingRule[ Notebook[cells], "Provenance" -> prov ], "NB" ]`.
+With provenance on, wrap the final expression per SKILL.md § *Provenance*: `ExportString[ stampTaggingRule[ ReplacePart[nb, 1 -> cells], "Provenance" -> prov ], "NB" ]`.

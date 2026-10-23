@@ -33,6 +33,12 @@ CODE_DIR="${6:-Code}"
 mkdir -p "$OUTPUT_DIR"
 cd "$OUTPUT_DIR"
 
+if [ -e "$PROJECT_NAME" ] || [ -L "$PROJECT_NAME" ]; then
+    echo "Error: destination already exists: $PROJECT_NAME. Refusing to overwrite existing work." >&2
+    exit 1
+fi
+mkdir -- "$PROJECT_NAME"
+
 # ── 1. Directories ─────────────────────────────────────────────────────────
 
 mkdir -p "$PROJECT_NAME/$CODE_DIR/Artifacts"

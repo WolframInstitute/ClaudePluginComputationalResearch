@@ -7,6 +7,14 @@ Read this before writing a line of either.
 **The paper is read by a human who wants to check it.**
 Everything below follows from that: short sentences, complete arguments, and a hard separation between what is settled and what is not.
 
+## Scope: human manuscripts and concise companions
+
+For a human-owned manuscript, [the collaboration policy](../paper-create/workflow.md) takes precedence over the generated-article defaults below.
+Do not reformat a human paper into this house style, alter its authorship, or expand a short research companion into a full article without an explicit request.
+A companion may contain precisely labeled proposals, conjectures and proof pointers; it does not require every artifact's full proof inline.
+Existing companions and topical artifacts are valid homes for unfinished work even when the optional journal is off.
+The sole-model authorship and complete-paper presentation rules below govern explicitly requested fully model-written standalone outputs, not human manuscripts or shared notes.
+
 ## The four tiers — Critical
 
 A statement's tier decides which document it goes in.
@@ -51,7 +59,8 @@ And it is not a decision the generator may take on the operator's behalf, in eit
 
 **The ruling is taken at the tier sort, before anything is built.**
 It is not a closing step.
-Option 2 changes the document, and by the end of a build the document has been converted, evaluated, deployed and linked from the README — a ruling taken there arrives after the thing it rules on was published.
+Option 2 changes the document, so that decision belongs before conversion and evaluation.
+Publication and a public README link are separate steps performed only when the user explicitly authorizes publication; a local build does not imply either.
 So the prompt fires where the cut is made: [paper-create-notebook](SKILL.md) step 2, and the moment material is set aside on the typeset path.
 The hand-off step at the end only carries out a ruling already taken.
 

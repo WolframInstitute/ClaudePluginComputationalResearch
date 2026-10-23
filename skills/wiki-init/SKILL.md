@@ -52,6 +52,8 @@ If the user doesn't care, pick sensible defaults based on the repo.
 
 Create all directories and seed files.
 Use empty `.gitkeep` files in folders that start empty (except `Concepts/` and `Resources/` which get populated via other skills).
+Ensure `Scripts/recover_resources.sh` exists before advertising it: if absent, create `Scripts/` and copy `${CLAUDE_PLUGIN_ROOT}/scripts/recover_resources.sh` there, preserving its executable mode.
+Keep any existing helper untouched, including a customized copy; do not run recovery during initialization.
 
 ### 3. Seed Index.md
 

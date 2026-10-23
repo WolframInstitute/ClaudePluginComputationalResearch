@@ -27,17 +27,26 @@ JOURNAL_DIR="$PROJECT_DIR/Journal"
 
 mkdir -p "$JOURNAL_DIR/entries" "$JOURNAL_DIR/figures"
 
+# Create only missing files; even a concurrent creator must not be overwritten.
+create_if_missing() {
+    local destination="$1"
+    shift
+    if [ -e "$destination" ] || [ -L "$destination" ]; then
+        echo "Kept: $destination"
+        return 0
+    fi
+    ( set -o noclobber; "$@" > "$destination" )
+}
+
 if [ "$FORMAT" = "typst" ]; then
-    cp "$ASSETS_DIR/macros_template.typ" "$JOURNAL_DIR/macros.typ"
-    sed \
+    create_if_missing "$JOURNAL_DIR/macros.typ" cat "$ASSETS_DIR/macros_template.typ"
+    create_if_missing "$JOURNAL_DIR/journal.typ" sed \
       -e "s|{{TITLE}}|$TITLE|g" \
       -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
-      "$ASSETS_DIR/journal_template.typ" > "$JOURNAL_DIR/journal.typ"
-    cat > "$JOURNAL_DIR/references.bib" << 'EOF'
-% Journal bibliography — entries added via the paper-cite skill
-EOF
+      "$ASSETS_DIR/journal_template.typ"
+    create_if_missing "$JOURNAL_DIR/references.bib" printf '%s\n' '% Journal bibliography — entries added via the paper-cite skill'
 
-    echo "Created: $JOURNAL_DIR/ (Typst)"
+    echo "Journal ready: $JOURNAL_DIR/ (Typst)"
     echo "  journal.typ       — master file (#import macros.typ, #bibliography)"
     echo "  macros.typ        — shared preamble and macros"
     echo "  references.bib    — bibliography (read natively by Typst)"
@@ -46,17 +55,15 @@ EOF
     echo ""
     echo "Compile: cd $JOURNAL_DIR && typst compile journal.typ"
 else
-    cp "$ASSETS_DIR/macros_template.sty" "$JOURNAL_DIR/macros.sty"
-    sed \
+    create_if_missing "$JOURNAL_DIR/macros.sty" cat "$ASSETS_DIR/macros_template.sty"
+    create_if_missing "$JOURNAL_DIR/journal.tex" sed \
       -e "s|{{TITLE}}|$TITLE|g" \
       -e "s|{{AUTHOR}}|$AUTHOR_NAME|g" \
-      "$ASSETS_DIR/journal_template.tex" > "$JOURNAL_DIR/journal.tex"
-    cp "$ASSETS_DIR/latexmkrc_template" "$JOURNAL_DIR/.latexmkrc"
-    cat > "$JOURNAL_DIR/references.bib" << 'EOF'
-% Journal bibliography — entries added via the paper-cite skill
-EOF
+      "$ASSETS_DIR/journal_template.tex"
+    create_if_missing "$JOURNAL_DIR/.latexmkrc" cat "$ASSETS_DIR/latexmkrc_template"
+    create_if_missing "$JOURNAL_DIR/references.bib" printf '%s\n' '% Journal bibliography — entries added via the paper-cite skill'
 
-    echo "Created: $JOURNAL_DIR/ (LaTeX)"
+    echo "Journal ready: $JOURNAL_DIR/ (LaTeX)"
     echo "  journal.tex       — master file (article + macros, \\printbibliography)"
     echo "  macros.sty        — shared preamble and macros"
     echo "  references.bib    — bibliography (biblatex format)"

@@ -1,7 +1,9 @@
 ---
 name: paclet-build
 description: >
-  Build a Wolfram paclet archive and install it locally. Use when the user says
+  Build a Wolfram paclet archive and install it locally, consulting the current
+  human-owned design notebook and concise _notes companion when present.
+  Support the design-document workflow during paclet development. Use when the user says
   "build paclet", "build the paclet", "install paclet locally", "make paclet",
   "create paclet archive", or "test the paclet install".
 ---
@@ -32,6 +34,14 @@ Prefer the AgentTools MCP (`mcp__Wolfram__WolframLanguageEvaluator` and the othe
 - **Direct path**: if given a path containing `PacletInfo.wl`, use it directly
 
 Resolve the absolute `<pacletDir>` (the directory containing `PacletInfo.wl`) once, then use it in the build below.
+
+## Design context
+
+Read [the human-owned paclet design policy](../project-create/paclet-design.md).
+For development, support `<PacletName>1.nb` and its concise `<PacletName>1_notes.nb` companion in the repository root beside the paclet folder, using the actual paclet name and current human-selected iteration.
+Consult that design before substantive API work and use its accepted examples and invariants for relevant build checks.
+A routine build does not authorize editing the human notebook, promoting companion proposals, or inventing another iteration; a missing notebook is not a build-blocking gate.
+Keep repository design notes outside the actual package payload where possible.
 
 ## Steps
 

@@ -2,6 +2,15 @@
 
 Read after the shared questionnaire and environment check in [SKILL.md](SKILL.md).
 
+## Design notebook and companion
+
+Follow [the paclet design policy](paclet-design.md).
+Help the user establish `<PacletName>1.nb` as the human-owned design and `<PacletName>1_notes.nb` as its concise companion during an authorized setup/design task.
+Use actual editable notebooks, preserve any existing human notebook, and record the selected current pair in repository guidance.
+In a multi-paclet repo, use a separate named pair per paclet.
+Use the human design to guide implementation; do not silently advance its iteration or treat all notes as accepted API decisions.
+The scaffold writes the root-level design notebook rules into repository guidance; it does not fabricate a completed design notebook.
+
 ## 1. Scaffold the paclet
 
 ```bash

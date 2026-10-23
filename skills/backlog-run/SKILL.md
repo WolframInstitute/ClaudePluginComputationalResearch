@@ -28,7 +28,15 @@ Read `document-revise` first; it governs the deliverable.
 - If a name was given (`/backlog-run GraphCurvature`), use `Work/Active/<Name>.md`, or `Work/Ready/<Name>.md`, which is started below.
   If it is in `Work/Backlog/`, it has not been approved: say so and ask before starting it — shaping it is [`backlog-refine`](../backlog-refine/SKILL.md).
   An item in `Work/UnderReview/`, `Work/Done/` or `Work/Dropped/` has no next task — surface that instead.
-- Else read `Work/README.md` (it lists active items); if exactly one is active, use it; if several, ask which.
+- If no name was given and the user explicitly asks for the **next Ready task**, take Ready candidates in the `Work/README.md` Ready-table order, then any unlisted `Work/Ready/*.md` alphabetically.
+  Resolve each candidate's branch state below; skip and report items already finished there, then take the first candidate still in `Ready/` or `Active/`.
+  If none remains, say there is no runnable Ready item and stop; do not take an unapproved `Backlog/` item or switch to an unrelated Active item.
+- Otherwise read `Work/README.md` (it lists active items); if exactly one is active, use it; if several, ask which.
+
+Before claiming an item, resolve its state on an existing `work/<Item>` branch (or an unmerged legacy `auto/<Item>` branch), since the checkout can still show it in `Ready/` after earlier work.
+Use `git ls-tree -r --name-only <branch> -- Work` to find the exact `Ready/<Item>.md`, `Active/<Item>.md`, `UnderReview/<Item>.md` or dated `Done/*-<Item>.md` / `Dropped/*-<Item>.md` path, then `git show <branch>:<path>`; without a branch, use the checkout.
+An `UnderReview/`, `Done/` or `Dropped/` item has no next task: report it and do not create a worktree or dispatch work.
+If no unique item path exists, stop and report the inconsistent state rather than falling back to the stale checkout.
 
 #### Claim it
 

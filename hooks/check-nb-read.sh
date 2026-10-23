@@ -6,9 +6,9 @@ file_path=$(python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_in
 if [[ "$file_path" == *.nb ]]; then
   {
     echo "BLOCKED: Do not read .nb files directly — raw notebook format is not useful in context."
-    echo "Use the notebook-create skill instead:"
-    echo "  ExportString[Import[\"$file_path\"], \"Markdown\"] via the Wolfram MCP"
-    echo "This returns editable Markdown. Then make changes and re-import."
+    echo "Use notebook-create with native ReadNotebook or focused cell/option inspection in the Wolfram kernel."
+    echo "For edits, patch the saved notebook and preserve unrelated cells, options and human authorship."
+    echo "A requested Markdown export is a separate, potentially lossy output; do not re-import it over the .nb."
   } >&2
   exit 2
 fi

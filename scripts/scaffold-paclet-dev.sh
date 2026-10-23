@@ -31,6 +31,12 @@ IFS=',' read -ra PACLETS <<< "$PACLET_NAMES_RAW"
 mkdir -p "$OUTPUT_DIR"
 cd "$OUTPUT_DIR"
 
+if [ -e "$DEV_REPO_NAME" ] || [ -L "$DEV_REPO_NAME" ]; then
+    echo "Error: destination already exists: $DEV_REPO_NAME. Refusing to overwrite existing work." >&2
+    exit 1
+fi
+mkdir -- "$DEV_REPO_NAME"
+
 # ── 1. Dev repo root ──────────────────────────────────────────────────────
 
 mkdir -p "$DEV_REPO_NAME/Code/Artifacts"
@@ -232,6 +238,12 @@ echo "Created: $DEV_REPO_NAME/.gitignore"
 } > "$DEV_REPO_NAME/CLAUDE.md"
 printf '\n' >> "$DEV_REPO_NAME/CLAUDE.md"
 cat "$ASSETS_DIR/code_style_template.md" >> "$DEV_REPO_NAME/CLAUDE.md"
+printf '\n' >> "$DEV_REPO_NAME/CLAUDE.md"
+cat "$ASSETS_DIR/paclet_design_rules.md" >> "$DEV_REPO_NAME/CLAUDE.md"
+if [ ! -e "$DEV_REPO_NAME/AGENTS.md" ]; then
+    printf '# Repository guidance\n\nRead CLAUDE.md for repository conventions.\n\n' > "$DEV_REPO_NAME/AGENTS.md"
+    cat "$ASSETS_DIR/paclet_design_rules.md" >> "$DEV_REPO_NAME/AGENTS.md"
+fi
 echo "Created: $DEV_REPO_NAME/CLAUDE.md"
 
 # ── 6. Scripts ───────────────────────────────────────────────────────────

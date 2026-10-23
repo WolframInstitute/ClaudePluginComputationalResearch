@@ -1,9 +1,6 @@
 Scaffold a new project using the `project-create` skill.
 
-Ask the user for:
-1. Project type: **research** (default), **paclet-dev**, or **paclet**
-2. Project name (CamelCase)
-3. Topic description
-4. Type-specific options (paclet names, org, research depth, etc.)
-
-Then run the full scaffolding pipeline for the chosen type.
+Interpret `$ARGUMENTS` as the requested project type, name, topic and options.
+The supported types are `research`, `math-research`, `paclet-dev` and `paclet`.
+Follow the skill's setup procedure, asking only for information not already supplied.
+For paclet types, follow the linked paclet design policy and preserve the current human-owned design and companion.

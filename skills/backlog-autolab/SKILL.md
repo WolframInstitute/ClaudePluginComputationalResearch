@@ -56,9 +56,14 @@ And it never cleans up after a failure — no `git reset`, no `git worktree remo
 - **No items named**: every `Work/Active/*.md` carrying the marker, then every `Work/Ready/*.md`, each group in `Work/README.md` order, then any not listed there, alphabetically.
   None → stop and say so.
 - Each item's branch is `work/<Item>`, the one name every session uses ([backlog-run § *Claim it*](../backlog-run/SKILL.md#claim-it)); when only an unmerged `auto/<Item>` exists, made before the rename, that is the item's branch until it is merged, and `<branch>` below is whichever applies.
-- Read each item's state from `<branch>` when it exists (`git -C <repo> show <branch>:Work/Active/<Item>.md` — a Ready item an earlier session started is in `Active/` there), since earlier unmerged work lives there; else from the checkout.
-- An item is **not runnable**, and is reported and left out, when its first unchecked task carries `(human)`, when its `## Hand-off` already holds a `needs-human` line, or when that task's routing annotation does not parse.
+- Resolve each item's state from `<branch>` when it exists, since earlier unmerged work lives there and the checkout can still show the item in `Ready/`.
+  Use `git -C <repo> ls-tree -r --name-only <branch> -- Work` to find the exact `Ready/<Item>.md`, `Active/<Item>.md`, `UnderReview/<Item>.md` or dated `Done/*-<Item>.md` / `Dropped/*-<Item>.md` path, then read it with `git -C <repo> show <branch>:<path>`; without a branch, read the checkout.
+  Report and leave out `UnderReview/`, `Done/` and `Dropped/` items before preflight or worktree creation, even when the checkout still lists them as Ready.
+  A missing or ambiguous item path is an inconsistent state: report and leave it out rather than falling back to the stale checkout.
+  Only a resolved `Ready/` item, or an `Active/` item still carrying `> Autonomous: allowed`, is eligible.
+- An item is **not runnable**, and is reported and left out, when no unchecked task remains, when its first unchecked task carries `(human)`, when its `## Hand-off` already holds a `needs-human` line, or when that task's routing annotation does not parse.
   The annotation grammar is in [backlog-add § *The routing annotation*](../backlog-add/SKILL.md#the-routing-annotation); `model` must be one of `haiku`, `sonnet`, `opus`, `fable`, since those are the values the `Agent` tool takes.
+  If filtering leaves no runnable items, stop before preflight or worktree creation and report why.
 
 ### 2. Preflight — settle permissions before the operator leaves
 
@@ -66,7 +71,7 @@ After this step nothing waits for the operator.
 Every worker is part of this session, so its permissions come from this session's settings — `~/.claude/settings.json` and the `.claude/settings.json` and `.claude/settings.local.json` of the directory this chat was opened in — never from the target repo's.
 
 1. **List what the run needs.**
-   Read each queued item's `## Spec` and its unchecked tasks up to the task cap, and name the Bash command families, MCP tools, web access and writes they imply.
+   Read each queued item's Spec (`## Summary` through `## Technical details`, or `## Spec` in an older item) and its unchecked tasks up to the task cap, and name the Bash command families, MCP tools, web access and writes they imply.
    Every run needs, beyond that:
    - `Skill`, and `git` `status`, `add`, `commit`, `mv`, `log`, `diff`, `show`, `rev-parse`;
    - `Read`, `Edit` and `Write` on `~/.cache/autolab/**`, which lies outside this session's directory;
@@ -101,7 +106,9 @@ This is the claim of [backlog-run § *Claim it*](../backlog-run/SKILL.md#claim-i
 
 The operator's checkout is never switched.
 
-**Start a Ready item** the way `auto-run.sh` does, in the worktree and on its branch: `git mv Work/Ready/<Item>.md Work/Active/<Item>.md`, add `> Autonomous: allowed` on the line after `> Type:` unless it is there, and commit `chore(work): start <Item> from Ready`.
+Recheck the resolved item path in the worktree before dispatch; a terminal or inconsistent state is reported and left out.
+**Start an item only if it is still in `Ready/` in that worktree**: `git mv Work/Ready/<Item>.md Work/Active/<Item>.md`, add `> Autonomous: allowed` on the line after `> Type:` unless it is there, and commit `chore(work): start <Item> from Ready`.
+An already `Active/` item resumes without another move.
 The marker keeps the item eligible for later runs once it has left `Ready/`; an item with no `> Type:` line halts `bad-annotation`.
 In the operator's checkout the item stays in `Ready/` until the branch is merged.
 

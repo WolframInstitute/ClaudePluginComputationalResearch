@@ -12,7 +12,7 @@ description: >
   was learned and when. It is also where everything a paper cannot carry goes —
   hedged claims, verification ranges, heuristics, alternate proofs, failed attempts
   and unresolved [lookup] citations — so nothing is silently dropped. Other skills
-  (paper-create-notebook, paper-create, wiki-update, backlog-run, cite) feed it when on.
+  (paper-create-notebook, paper-create, wiki-update, backlog-run, paper-cite) feed it when on.
 ---
 
 # Scientific Journal

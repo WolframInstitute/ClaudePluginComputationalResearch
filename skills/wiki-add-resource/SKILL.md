@@ -198,6 +198,9 @@ When adding multiple resources at once (e.g., during initial exploration):
 ## Resource recovery
 
 `Resources/` is gitignored.
+Before giving the local recovery command, ensure `Scripts/recover_resources.sh` exists.
+If absent, create `Scripts/` and copy `${CLAUDE_PLUGIN_ROOT}/scripts/recover_resources.sh` there, preserving its executable mode; never replace an existing or customized helper.
+This installs the helper only; adding a resource does not run bulk recovery.
 To rebuild from scratch:
 
 ```bash

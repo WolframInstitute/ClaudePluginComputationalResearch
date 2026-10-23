@@ -1,23 +1,23 @@
 ---
 name: paper-create
 description: >
-  Add a paper to Research/ — a LaTeX (amsart, biblatex) or Typst source from the
-  template, sharing the folder's preamble — then act as an editor on the
-  user-owned document. Research/ holds the papers beside the research notebooks
-  and notes; when a paper is already there, ask whether the new one joins it or
-  gets its own subfolder. A project that already has a Paper/ folder keeps using
-  it. Prose written into the paper follows the shared writing guide in
-  paper-create-notebook/style.md: settled statements only, experiments in a
-  Ruliology section, complete proofs, short sentences, each result stated at the
-  generality its proof reaches, and the model as sole author with a footnote
-  naming the operator and disclosing in bold how much freedom the model had. Use when the user
-  says "scaffold paper", "add paper", "create paper folder", "set up latex",
-  "set up typst", or during project-create when the user wants a paper. Trigger on:
-  "paper setup", "latex template", "typst template", "I want to write a
-  paper".
+  Scaffold a human-owned LaTeX or Typst paper and its concise _notes research
+  companion, preserving an existing project's folder and naming conventions.
+  Read the current human manuscript before proposing work; edit it only on
+  an explicit request. Default to itemized proposals, scoped claims, questions,
+  citations and artifact links, not a full model-authored replacement paper.
+  Use for paper setup, LaTeX/Typst scaffolding, and collaboration on a human paper.
 ---
 
 # New Paper
+
+## Human-owned paper workflow takes precedence
+
+Read [the paper collaboration policy](workflow.md) before working on a human manuscript.
+The human owns the numbered manuscript sequence; substantive proposals normally go in its concise `<stem>_notes` companion.
+Follow the current human source, keep details in linked topical artifacts, and do not promote or rewrite the manuscript without an explicit request.
+A request for a short proposal does not trigger a full paper, proof development, notebook/code bundle, journal, or another competing briefing.
+The longer article/bundle instructions below apply only when that output is explicitly requested.
 
 Add a typeset article to `Research/`, then help the user *edit* it.
 `Research/` accumulates papers, research notebooks and notes over a project's life; this skill adds a paper and never disturbs another document.
@@ -40,7 +40,7 @@ The four things it decides that this skill cannot:
 - **Tiers.** The paper carries only settled statements — proved in full, or cited to a source that was read. Experiments (enumeration ranges, sweeps, distributions, timings) are gathered near the end, usually a `Ruliology` section — if there are none, there is no such section. Hedged claims, heuristics, alternate proofs and failed attempts go to the [paper-journal](../paper-journal/SKILL.md), never the paper. Nothing is silently dropped — and with the journal off, nothing is silently cut either: the list goes to the operator when the material is set aside, not at the end ([style.md](../paper-create-notebook/style.md) § *When the journal is off*).
 - **Length.** Abstract ≤ 4 sentences. Introduction 3 paragraphs of ≤ 6 sentences. No prose paragraph over 6 sentences and never two in a row — the abstract, the introduction and the *Ruliology* entries are prose by construction and exempt. Connecting sentences ≤ 25 words; a proof deduction and an abstract sentence are not word-capped.
 - **Proofs.** Complete prose, one deduction per sentence, each naming what it uses through `\cref`. No *clearly*, *one easily sees*, *we omit the details*, no proof sketches. A long proof is fine when it reads clearly — never abbreviate to fit, and never break an argument into a chain of one-line lemmas. The 8-sentence trigger counts one run of deductions, so a two-part proof is counted part by part.
-- **Authorship.** `\author` is the **model**; `\date` is the date the document was generated, written out and never `\today`; the `\thanks` footnote (Typst: a small block under the model line) names the operator, sets the freedom level in `\textbf` — Directed, Guided or Open exploration — and summarises the instructions in one sentence. `[[ LLM Generated ]]` is the first line of the title, since amsart has no slot for it. The template ships all of this already.
+- **Authorship for explicitly requested fully model-written standalone articles only.** `\author` is the **model**; `\date` is the date the document was generated, written out and never `\today`; the `\thanks` footnote (Typst: a small block under the model line) names the operator, sets the freedom level in `\textbf` — Directed, Guided or Open exploration — and summarises the instructions in one sentence. `[[ LLM Generated ]]` is the first line of the title, since amsart has no slot for it. Legacy generated-article templates retain this disclosure; the human scaffold instead leaves authorship for the human and puts LLM provenance in the companion.
 - **Results.** State each result at the generality the proof actually reaches — a general theorem is the goal, and the only rule is that generality is never bought with a gap. Every statement names its own hypotheses and survives being lifted out of the document. Nothing is used before it is proved. Every conjecture says what would settle it. A short paper is fine.
 - **Formalisation** is never undertaken unasked; `\cref`-able precise statements are always worth writing, a Lean development only on an explicit request.
 
@@ -63,13 +63,13 @@ Three things a typeset paper has to do that a notebook does not, all of them mea
 1. **Project directory** — whose `Research/` holds the paper, or gets it.
    Usually the project root.
 2. **Name** — `CapitalizedWords` for the paper, which becomes its filename.
-   Only the first paper in a `Research/` without one may go unnamed, as `main`.
+   For an unnamed first human iteration, use `paper1`; preserve any name the user supplied.
 3. **Format** — LaTeX (default) or Typst.
    Pass `--typst` if the user wants Typst, or they say "typst".
 4. **Title** (optional) — working title.
    Default: the name.
 5. **Operator** (optional) — the person running the session; defaults from git config.
-   Not the author: the author is the model (§ *Style*).
+   Operator metadata belongs in the companion; the human chooses manuscript authorship separately.
 6. **Model, freedom level and prompt summary** — your own name and identifier, one of Directed / Guided / Open exploration, and one sentence on the instructions you worked under.
 
 If invoked from project-create, these are already known.
@@ -91,7 +91,7 @@ A `Research/` without a paper needs no question: scaffold it and name the paper.
 "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-paper.sh" [--typst] [--name <Name>] [--subfolder] [--force] "<ProjectDir>" "<Title>" "<Operator>" "<email>" "<Model>" "<Freedom>" "<Prompt>" "<Date>"
 ```
 
-`<Name>` is `CapitalizedWords` naming the paper, and it becomes the filename; leave it off for the first paper and the source is `main.tex`.
+`<Name>` is `CapitalizedWords` naming the paper, and it becomes the filename; leave it off for the first paper and the source is `paper1.tex`.
 `<Operator>` is the person running the session and `<Model>` is you, by name and exact identifier.
 `<Freedom>` is one of `Directed`, `Guided`, `Open exploration` — it prints **bold** in the footnote, and between two labels you take the more open one.
 `<Prompt>` is one sentence summarising the instructions you actually worked under, including what was left unspecified.
@@ -122,6 +122,10 @@ Research/
 ├── references.bib     — bibliography (read natively by Typst)
 └── figures/           — for plots and images
 ```
+
+The scaffold also creates `<Name>_notes` in the same format if it does not already exist.
+The human source is a blank skeleton with human-controlled author metadata; model/operator disclosures belong in the companion.
+`Artifacts/` and `Archive/` hold topic detail and superseded work, not a promoted paper.
 
 The paper is **not** an artifact and does not go in `Artifacts/`: it is a document in progress, the user's from the moment it is scaffolded, and lives in `Research/` itself; this skill edits it on request ([artifacts.md](../notebook-create/artifacts.md) § *Papers*).
 

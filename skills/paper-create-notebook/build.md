@@ -5,13 +5,24 @@ The writing rules are in [style.md](style.md); the authoring conventions in [SKI
 
 ## Pipeline
 
-The source of truth is `Research/Artifacts/<Topic>_<YYMMDD>.md` ([artifacts.md](../notebook-create/artifacts.md)).
-Conversion is a **two-half pipeline**, both halves load-bearing: `WolframInstitute/MarkdownToNotebook` parses the Markdown, then `scripts/mathnotebook_post.wl` applies the environments, the numbering and the citations.
-The generated `.nb` sits beside the source, sharing its stem; the source is tracked and the `.nb` is not, since it is rebuilt from it.
+This generation pipeline is for a requested, fully assistant-written standalone article or new generated fragments.
+Human manuscripts, paclet designs and shared companions retain their own source, names, locations and author metadata under the [ownership policies](../paper-create/workflow.md).
+For existing `.nb` files, use [native targeted editing](../notebook-create/editing.md); do not run the whole-document head, stylesheet or conversion passes over human edits.
+
+A new generated research artifact normally uses `Research/Artifacts/<Topic>_<YYMMDD>.md` with its `.nb` beside it ([artifacts.md](../notebook-create/artifacts.md)).
+Preserve supplied names and author-numbered documents; do not add a date to `<PacletName>N.nb` or its `_notes.nb` companion.
+Conversion has two parts: `WolframInstitute/MarkdownToNotebook` parses the Markdown, then `scripts/mathnotebook_post.wl` applies environments, numbering and citations.
+Follow the project's tracking policy; a generated notebook is disposable only while rebuilding it preserves all human work and metadata.
+
+Before changing an existing generated source or rebuilding its `.nb`, require an implemented and verified current [fingerprint check](fingerprint.md) against the saved notebook.
+This document does not provide that verifier: without one, preserve the existing `.nb` and use native targeted edits, unless its replacement was explicitly authorized with the original kept recoverable.
+A content/style-only legacy stamp, a missing stamp or `"SourceSync" -> "Incomplete"` does not establish that regeneration is safe.
+Reconcile direct notebook edits first and preserve unsupported cells/settings through targeted editing; do not manufacture a fresh clean baseline from an unchecked file.
 
 The parser half is the **rich engine** documented in [notebook-create](../notebook-create/SKILL.md) *Conversion engine — built-in vs rich*: the pinned local clone, `Template: Default`, `"Evaluate" -> False`.
 A research source always carries frontmatter and LaTeX math, so rich mode is always selected; the built-in importer is the fallback when the clone is absent, and it changes what you may write (§ *TeX in the sources*).
-The backtick-escaping and init-cell-marking rules from `notebook-create` apply; `boxifyInputCells` and the heading shift do **not** — rich mode drops both.
+The backtick-escaping and init-cell-marking rules from `notebook-create` apply to new generated content; `boxifyInputCells` and the heading shift do **not** — rich mode drops both.
+Generation passes never normalize existing human cells or stamp an entire shared notebook as model-authored.
 
 **Never write `::: theorem` or `::: proof` divs.**
 The converter's fenced-div environments exist only under `Template: Chapter`; under `Default` they are **silently dropped entirely** — no cells, no message.
@@ -100,7 +111,8 @@ prompt: asked whether the interior form sees anything about the boundary on tree
 Rich mode consumes the frontmatter as metadata, so there is nothing to strip; the built-in importer does not, and leaves it as a literal Text cell above the Title.
 Either way the keys are metadata — the `Default` template emits no `Author` cell, so `ResearchHeadCells` builds the whole head from them.
 
-**The author is the model and nothing else**; the operator, the freedom level and the prompt summary ride in a `Date` cell under the date (style.md § *Authorship and the session footnote*).
+For an explicitly requested fully model-written standalone article, the author is the model; the operator, freedom level and prompt summary ride in a `Date` cell under the date (style.md § *Authorship and the session footnote*).
+Do not use this head builder to replace human author metadata or the head of a shared companion; preserve those cells and identify assistant contributions locally or in provenance.
 `freedom` is one of `Directed`, `Guided`, `Open exploration` and prints **bold** — it is the first thing a reader of a machine-written paper needs.
 `prompt` is one sentence summarising the instructions actually given, including what was left unspecified.
 A missing `prompt` degrades to the label alone; a missing `freedom` degrades to the operator alone.
@@ -114,6 +126,7 @@ Sections start at `##`.
 
 ## The conversion call
 
+The call below creates a new standalone generated article; for a targeted edit convert only the new fragment and preserve the saved notebook's head, options and cell identities.
 Call the **pinned local clone**, never the deployed resource function: the deployed copy is unversioned (`ResourceObject[ url ][ "Version" ]` is `None`), so drift is undetectable.
 Do not vendor the repo (~13 MB) and **never clone it silently**; if it is absent, take the built-in fallback and say so.
 The pin and the recovery command are in `Wiki/Resources/MarkdownToNotebook.md`.
@@ -151,7 +164,8 @@ The order is a real constraint:
 - **`ReadCellTags` before `FoldExampleGroups`.** It walks the flat list, so a cell already inside a group is invisible to it. It strips every `{#Tag}` and attaches it as `CellTags`: a trailing tag to its own cell, a cell that is *only* a tag to the cell above (that is how a display equation is tagged).
 - **Which fences get an Output at all is the Example rule.** An `Input` directly under an `Example` is evaluated and its Output embedded; the *Ruliology* calls and the Initialization cells are shown, not run — the enumerations take minutes and their numbers are already in the prose. Match the **marker text**, not the style: `ConvertEnvironmentCells` runs later, inside `MathNotebookDocument`, so at embedding time an Example is still a `Text` cell whose content begins `Example.` (measured 2026-08-21 — a style test silently embeds nothing and the build reports zero outputs).
 - **`FoldExampleGroups` after the outputs are embedded** ([output-embedding.md](output-embedding.md)). It accepts either a bare `Input` followed by an `Output` or an already-grouped pair, and sets the group state to `{2}`. A **second** `Output` lands outside the group — the visible symptom of a violated one-Output-per-Input rule.
-- **`AssignCellIDs` after the ids are stripped**, and it recurses into groups. `CreateCellID -> True` instructs the front end and does not stamp cells built in the kernel, while the drift fingerprint keys on `CellID`. Whether it runs on the cell list or on the notebook `MathNotebookDocument` returns is immaterial — measured 2026-08-20, the two orders give an identical notebook — and both are callable. `AppendProofQED` does not disturb this: it rewrites a proof cell's content and adds no cell.
+- **For a new generated notebook, `AssignCellIDs` after the ids are stripped**, and it recurses into groups.
+  Preserve IDs on existing cells during native edits; give only newly inserted cells fresh unique IDs. `CreateCellID -> True` instructs the front end and does not stamp cells built in the kernel, while the drift fingerprint keys on `CellID`. Whether it runs on the cell list or on the notebook `MathNotebookDocument` returns is immaterial — measured 2026-08-20, the two orders give an identical notebook — and both are callable. `AppendProofQED` does not disturb this: it rewrites a proof cell's content and adds no cell.
 - **`MathNotebookDocument` outermost.** It runs environments → proof QED → equation numbering → citations, in the one order that works (`AppendProofQED` matches the `"Proof"` style, so it has to follow `ConvertEnvironmentCells`, which is what applies it; and a citation to an equation must see the cell as `DisplayFormulaNumbered`), and owns `StyleDefinitions`. Pass notebook options through it rather than rebuilding the `Notebook`; with prompt tracking on, that includes `TaggingRules -> { "Provenance" -> prov }`, and the fingerprint stamp later merges its `"ResearchNotebook"` key alongside. `ReplacePart` is not needed here — unlike `notebook-create` — precisely because it rebuilds the notebook with the options given.
 
 `CellTags` on a marker cell survive `ConvertEnvironmentCells`, which carries `opts___` through, so tagging before `MathNotebookDocument` is correct and tagging after would be too late for `ConvertCitations`.
@@ -167,7 +181,12 @@ Check the round trip once per source: if any `{#Tag}` survives into the `.nb` as
 `ensureParser[ ]` installs `Wolfram/Parser` on first call, so a fresh machine does network I/O and, on failure, degrades silently to `ImportString[ …, "TeX" ]` with worse math fidelity.
 Probe `PacletFind[ "Wolfram/Parser" ]` and surface the degradation.
 
-Then write the notebook, re-import it, and stamp the fingerprint — see [fingerprint.md](fingerprint.md) for why the fingerprint must come from the round-tripped cells.
+For a new generated notebook, write it and re-import it; maintain a schema-2 stamp only if a complete implementation of [the contract](fingerprint.md) is available and checked.
+If it is unavailable, report that no preservation baseline was established and require native editing for later updates rather than stamping legacy fields as schema 2.
+It covers cell content and semantic options, notebook metadata, grouping and order, and records whether supporting source is complete.
+Re-import once more to check the stamp; never silently upgrade legacy hashes or clear a known source mismatch.
+Before any later regeneration, recheck the saved notebook for concurrent changes.
+These instructions specify the required preservation checks; they are not evidence that a particular build or fingerprint implementation has been run.
 
 ## The stylesheet
 

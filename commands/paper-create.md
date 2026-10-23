@@ -9,3 +9,9 @@ Pass `--typst` (or if the user says "typst") to scaffold a Typst paper instead.
 If Wiki/Resources/ exists, seed references.bib from existing papers.
 
 After scaffolding, act as an editor on the user-owned document — import material at a requested location, fix a paragraph, add figures/code/tables — but do not author paper content unprompted.
+
+Read `skills/paper-create/workflow.md` first.
+The normal scaffold is a human-owned skeleton plus `<Name>_notes` in the same format.
+Keep a numbered human iteration only when the user chose it; never silently promote notes to the next paper.
+The companion is brief and itemized, with citations and topical artifact links.
+Preserve human authorship; full model-authored articles are a separate explicit request.

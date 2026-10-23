@@ -1,47 +1,75 @@
-# paper-create-notebook: the drift-detection fingerprint
+# Notebook drift detection
 
-How the build stamps a per-cell fingerprint and how regeneration checks it.
-This mechanism guards the one-way `.md` → `.nb` pipeline — the working arrangement and the stop-on-drift rule are in [SKILL.md](SKILL.md).
+A regeneration check must detect changes that the Markdown source would overwrite, including direct human edits to options, metadata and structure.
+It is separate from targeted notebook editing: a missing or changed stamp never prevents safe native edits to the saved notebook.
 
-## Stamping and checking
+This file specifies the stronger contract; it does not ship a complete schema-2 verifier.
+Until an available implementation has been inspected and checked against that contract on the saved notebook, fail closed to native targeted editing rather than regenerate an existing `.nb`.
+A new notebook can still be generated; replacing an existing notebook requires either that verified preservation check or explicit authorization to replace its contents while retaining the original snapshot.
+Do not infer enforcement from these instructions or the presence of a `"SchemaVersion" -> 2` label alone.
 
-1. **At build**, after writing the `.nb`, re-import it, fingerprint the round-tripped cells, and store the result in a notebook option:
+## Current fingerprint contract: schema 2
 
-   ```wolfram
-   TaggingRules -> { "ResearchNotebook" -> { "Cells" -> fingerprint } }
-   ```
+Store the record under the notebook's `TaggingRules` key `"ResearchNotebook"`, merged with existing keys through `stampTaggingRule` ([project-provenance](../project-provenance/SKILL.md#embedded-back-pointers-so-provenance-travels-with-the-file)).
+Use an explicit `"SchemaVersion" -> 2`; the record contains:
 
-   The fingerprint is `<| CellID -> Hash[ { content, style } ] |>`, and it has to **walk into `CellGroupData`**.
-   A cell's own options stay outside the hash, its `"SourceLines"` among them, so a [revision round](../document-revise/round.md#notebooks) that moves a cell's source lines does not mark it edited.
-   Level `{1}` alone is not enough: `FoldExampleGroups` puts every Example's `Input` and `Output` inside a group and the folded *Initialization* section is another, so on a document with four Examples that is eleven cells — all of the code and all of the outputs — outside drift detection, with the check reporting clean because both sides use the same level (measured on `SidonBound`, 2026-08-21).
-   Two details are load-bearing: **assign the `CellID`s yourself** — `CreateCellID -> True` is an instruction to the front end and does **not** stamp programmatically built cells — and **fingerprint after the round-trip**, never the in-memory expression, because `Export` normalises cell content and an in-memory fingerprint reports every cell as edited.
-   **Stamp the round-tripped notebook, never the in-memory one.**
-   Writing a stamp taken from the round trip back onto the in-memory expression describes cells the file does not hold: `Export` normalises a `GraphicsBox`, so every graphics output comes out reported as edited on the next check.
-   That is the mechanism behind the three stale entries the T4 read of `EquidistanceOddGirth` found (2026-08-20) and behind their recurrence on the next build (2026-08-21) — measured both times as exactly the three graphics `Output` cells, with `Export`/`Import` itself a fixed point.
-   Build the final notebook as `Notebook[ First[ imported ], <options>, TaggingRules -> … ]` and export *that*, then re-import and confirm the drift report is empty before declaring the build good.
+- **`"Cells"`**: a map from each unique leaf `CellID` to a digest of the cell's content, style and semantic options after the narrow normalization below.
+  Include Input and Output cells inside every `CellGroupData`; detect absent, new and duplicate IDs rather than silently dropping them from an association.
+- **`"Structure"`**: a digest of the ordered, nested tree of cell IDs, group wrappers, grouping options and open/closed group states.
+  A flat set of hashes cannot detect a reordered cell or a changed group.
+- **`"NotebookOptions"`**: a digest of notebook options and metadata after the same narrow normalization.
+  Include `StyleDefinitions` (including embedded styles), author/provenance metadata, notebook behavior options and all non-generated `TaggingRules` keys.
+- **`"SourceSync"`**: `"Complete"` only when the supporting source has been reconciled with all notebook content and semantic settings that the generation path must preserve.
+  Use `"Incomplete"` with `"PendingCells"` or a linked provenance entry when faithful source write-back is unavailable; an unchanged notebook hash does not clear that status.
 
-   The stamp must **merge** into any `TaggingRules` already on the notebook — with prompt tracking on, the build has put a `"Provenance"` key there — so write it through the `stampTaggingRule` helper in the [project-provenance](../project-provenance/SKILL.md) skill, never as a literal `TaggingRules -> {...}` that replaces the option.
-   Stamping only touches options, so the just-computed cell fingerprint stays valid.
-2. **Before regenerating**, re-import and compare.
-   A cell with no `CellID` is **user-added**; a recorded `CellID` that is gone is **user-deleted**; a recorded `CellID` whose hash moved is **user-edited**.
-3. **If anything drifted, stop.**
-   Present the drift and let the user decide — transcribe it into the `.md`, or discard it.
-   Do not regenerate over it and do not guess.
-   If nothing drifted, regenerate freely.
+Hash the actual held notebook data without evaluating Input cells or interpreting their boxes.
+Preserve option values exactly; canonicalize equivalent association/option ordering only with a documented implementation that respects duplicate-option precedence.
+Do not flatten group structure or normalize code/math into a supposedly equivalent expression for the preservation hash.
 
-Verified: an untouched notebook reports zero drift (no false positives), and a notebook with one cell rewritten, one added and one deleted reports exactly those three.
+### Narrow normalization
 
-## Why there is no reverse direction
+Exclude only these generated fields at their own option/key locations:
 
-Both candidates lose content, measured at the pinned SHA.
+- cell `CellChangeTimes`;
+- automatically generated evaluation `CellLabel` values of the form `In[n]:=` or `Out[n]=` (retain custom labels);
+- the cell `TaggingRules` key `"SourceLines"` only, retaining all other keys;
+- notebook `FrontEndVersion`;
+- the notebook `TaggingRules` key `"ResearchNotebook"` containing the fingerprint itself.
 
-`ExportString[ Import[ path ], "Markdown" ]` on a generated research notebook turned a 639-character source into 955 characters of unusable output:
+Everything else remains covered, including `CellTags`, `CellID`, `InitializationCell`, `Evaluatable`, `CellDingbat`, counter settings, formatting, `ExpressionUUID`, window settings and unrelated `TaggingRules`.
+Do not delete matching rule names recursively from content or from embedded styles: a literal rule in Wolfram code is notebook content, not an option to ignore.
+If serialization changes another field, investigate and record it; do not broaden the ignore list just to make the check pass.
 
-- Every typeset construct became a reference to a PNG that does not exist — `![…](img/….png)` — including each subscripted inline formula, each `DisplayFormula`, every `Citation` button, and the whole table.
-- The environment markers were gone: a `Definition` cell exports as bare prose, so a round-trip would silently demote it to `Text`.
-- A `wolfram` fence came back as broken literal source containing `$Failed` and `MarkdownTools\`Private\`` symbols.
-- Non-ASCII characters mojibaked (`κ` → `Îº`), headings shifted down a level, and the frontmatter was dropped.
+## Stamping, checking and legacy notebooks
 
-`NotebookToMarkdown.wl` is not a way out either — it loses frontmatter and empties table headers (see `Wiki/Resources/MarkdownToNotebook.md`).
+1. **Stamp only a known baseline.** For a newly generated notebook, assign unique small `CellID`s, write it, re-import it, then compute the schema-2 record from the round-tripped notebook.
+   Stamp that imported expression while merging existing `TaggingRules`, write it, and re-import once more to check all three digests and the source-sync state.
+   Never stamp an older edited file merely to make a subsequent check appear clean.
+2. **Check before regeneration.** Re-read the saved `.nb`, compare cell digests, the ordered group tree and notebook options, and require `"SourceSync" -> "Complete"`.
+   Resolve any cell-ID ambiguity conservatively as unverified content.
+   Recheck immediately before writing so a concurrent edit is not overwritten.
+3. **On drift, preserve the notebook.** Report the changed cells/options/structure and reconcile through [native targeted editing and per-cell write-back](../notebook-create/editing.md).
+   An authorized targeted edit can continue without asking the human to transcribe or discard all unrelated changes.
+   Discarding human changes or replacing the whole notebook requires explicit authorization for that action.
+4. **Missing, legacy or partial records are unverified.** The former `<| CellID -> Hash[{content, style}] |>` scheme did not cover options, metadata or grouping/order.
+   Matching legacy hashes cannot prove that human edits were preserved, and may not be silently upgraded into permission to rebuild.
+   Use the actual `.nb` as the base; establish a new complete baseline only after reconciliation or an explicitly authorized replacement.
+5. **After native edits or a revision round**, stamp the actual saved notebook if a baseline is being maintained, but retain `"SourceSync" -> "Incomplete"` whenever any notebook-only changes remain.
+   Record the unresolved cells/settings in the existing provenance file so subsequent work cannot mistake a fresh stamp for a faithful Markdown source.
 
-The fingerprint replaces both: it detects *that* and *where* the user edited without needing to read the notebook back as Markdown.
+A clean schema-2 check permits a requested rebuild only for content designated as generated and fully reconciled; it does not override human ownership, scope or publication rules.
+The schema above is a workflow requirement, not a claim that these instructions or an implementation were validated in a Wolfram kernel.
+Historical tests of the older content/style hashes establish only their narrower behavior.
+
+## Why Markdown export cannot substitute for this check
+
+The former conversion audit at the pinned parser SHA recorded these losses from `ExportString[Import[path], "Markdown"]` on a research notebook:
+
+- typeset constructs became references to PNGs that did not exist, including inline formulas, equations, citation buttons and a table;
+- environment markers disappeared, so a Definition would return as ordinary Text;
+- a Wolfram fence contained `$Failed` and converter-private symbols;
+- Unicode, heading levels and frontmatter changed.
+
+`NotebookToMarkdown.wl` also lost frontmatter and table headers in that audit (`Wiki/Resources/MarkdownToNotebook.md`).
+These historical observations justify avoiding a Markdown editing round-trip; they do not claim that every exporter or future version behaves identically.
+A requested Markdown export remains supported as a separate, checked output with explicit limitations ([editing.md](../notebook-create/editing.md#markdown-export)).

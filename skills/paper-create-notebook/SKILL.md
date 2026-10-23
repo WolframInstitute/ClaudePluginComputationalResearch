@@ -1,32 +1,25 @@
 ---
 name: paper-create-notebook
 description: >
-  Write a mathematics paper as a Wolfram notebook, optimised for a human who
-  wants to check it. Sections run in the order the mathematics needs, and the
-  body carries only settled statements — proved here in full, or cited to a
-  source that was read. Experiments (enumeration ranges, sweeps, distributions,
-  timings) are gathered near the end rather than in the development; hedged
-  claims, heuristics and failed attempts go to the journal, never the paper. Each
-  result is stated at the generality its proof actually reaches. Proofs are
-  complete prose with no gaps and no step left to the reader, never abbreviated
-  to fit and never shattered into a chain of tiny lemmas. One example per statement — every
-  definition and every result — answering with a geometry illustration that
-  shows the phenomenon, or one small algebraic value. Statements, equations and
-  sections are numbered by the front end and cited by tag, never by a number
-  typed into the source. The author is the model plus the date, with the
-  operator, a one-sentence summary of the instructions, and — set in bold — how
-  much freedom the model had (Directed, Guided, or Open exploration) in a
-  footnote. Converts a Markdown source
-  with the MarkdownToNotebook parser, then applies the MathNotebook environments
-  on the PlainArticle stylesheet, so statements translate directly to Lean and
-  the page looks like a stock notebook. Generated one-way from the Markdown the
-  user edits; a per-cell fingerprint stops the build rather than overwrite an
-  edit made in the .nb. Use when the user says "research notebook", "notebook
-  with conjectures", "research document on X", "write up the research on X", or
-  the /paper-create-notebook command.
+  Write an explicitly requested mathematics paper or article as a Wolfram
+  notebook, with complete proofs, cited sources, numbered statements and
+  executable examples. Use for an explicit request for a paper as a notebook or
+  /paper-create-notebook; ordinary exploration, conjecture notebooks and
+  demonstrations use notebook-create. Generate from Markdown with MathNotebook
+  environments and preserve detected notebook edits. Human-owned papers follow
+  their ownership policy. Publish to Wolfram Cloud and add public README links
+  only when the user explicitly authorizes publication of this notebook.
 ---
 
 # Research Notebook
+
+## Human-owned paper workflow takes precedence
+
+Read [the paper collaboration policy](../paper-create/workflow.md) before working on a human manuscript.
+The human owns the numbered manuscript sequence; substantive proposals normally go in its concise `<stem>_notes` companion.
+Follow the current human source, keep details in linked topical artifacts, and do not promote or rewrite the manuscript without an explicit request.
+A request for a short proposal does not trigger a full paper, proof development, notebook/code bundle, journal, or another competing briefing.
+The longer article/bundle instructions below apply only when that output is explicitly requested.
 
 A research notebook is **a mathematics paper that computes**.
 
@@ -45,6 +38,12 @@ The reference for tone, structure and proof style is the author's own paper at
 `~/Library/CloudStorage/OneDrive-Personal/Math/articles/FINISHED/hodgepaper/hodgepaper.tex`.
 Read a section of it when the voice is unclear.
 
+## When to use
+
+- The user explicitly asks for a mathematics paper or article as a Wolfram notebook, or invokes `/paper-create-notebook`.
+- For a human-owned paper, follow the ownership policy above and the user's requested scope.
+- Use `notebook-create` for exploration, conjecture notebooks, demonstrations and notebook conversion.
+
 ## Read these
 
 [style.md](style.md) is **not optional** — it carries the tier rules, the length budgets and the proof rules, and it is shared with [paper-create](../paper-create/SKILL.md) so a paper reads the same whether it ships as `.nb`, LaTeX or Typst.
@@ -58,13 +57,21 @@ The other four are read on demand, only what the current step needs:
 
 ## Steps
 
+Before changing a supporting source for an existing `.nb`, apply the preservation check in [build.md](build.md#pipeline).
+A missing, legacy or unverified detector does not establish safe regeneration: preserve the saved notebook and use native targeted editing, unless replacement was explicitly authorized with the original retained.
+
 1. Write or update `Research/Artifacts/<Topic>_<YYMMDD>.md` in paper order (§ *Structure*), following [style.md](style.md) throughout. A document in progress goes to `Research/<Topic>_<YYMMDD>.md` instead, when the user asks for one; a request that does not say goes to `Artifacts/`, without asking. The folder convention — which of the three places it goes to, how it is named, the index row it needs — is [artifacts.md](../notebook-create/artifacts.md).
 2. **Sort by tier before writing a line of it** ([style.md](style.md) § *The four tiers*). What is settled goes in the body; experiments to *Ruliology*; everything else to the [paper-journal](../paper-journal/SKILL.md), with one line saying why. **With the journal off, take the ruling here** — stop, list what has no home, and put the three options to the operator ([style.md](style.md) § *When the journal is off*). Nothing below is built until it is answered, because option 2 changes the source.
 3. If a generated `.nb` exists, run the drift check first ([fingerprint.md](fingerprint.md)); stop on any drift.
-4. Convert ([build.md](build.md)), evaluate and embed outputs ([output-embedding.md](output-embedding.md)), stamp the fingerprint.
+4. Convert ([build.md](build.md)), evaluate and embed outputs ([output-embedding.md](output-embedding.md)), and maintain a fingerprint only when its complete implementation has been verified.
+   A new notebook may be delivered without that baseline if the limitation is stated; later updates then use native editing rather than unchecked regeneration.
 5. **Smoke test**: every Input cell evaluates through the Wolfram MCP (license-aware — see [notebook-create](../notebook-create/SKILL.md) *Kernel execution*) with **zero messages**.
-6. **Deploy** to the Wolfram Cloud, public, stable object name `<Project>/<Topic>.nb` (matching `scripts/publish_notebooks.wls`).
-7. **Link from the repo README** in a `## 📓 Research Notebooks` section — a table `| Notebook | Description | Link |`, one row per notebook, the link anchored on "Wolfram Cloud". Create the section if missing; update the row in place if the notebook already has one.
+6. **Publish only when explicitly authorized.**
+   If the user has authorized public Wolfram Cloud publication of this notebook, deploy it at the stable object name `<Project>/<Topic>.nb` (matching `scripts/publish_notebooks.wls`).
+   A request to create or revise the local notebook does not authorize publication.
+7. **Link an authorized publication from the repo README.**
+   Only after the explicitly authorized publication in step 6, add or update its row in a `## 📓 Research Notebooks` table `| Notebook | Description | Link |`, with the link anchored on "Wolfram Cloud".
+   Create the section if missing; update an existing row in place.
 8. Hand the open questions and everything cut in step 2 to the journal. With the journal off the ruling was already taken in step 2 and this step only carries it out — the retained block went into the source before the build, or the material was dropped on an explicit instruction ([style.md](style.md) § *When the journal is off*). Unattended, keep it and write the list into the item's `## Hand-off`, which is the channel the run digest quotes.
 9. Write `<stem>.provenance.md` with the first Request and commit the `.md` and that file as written, never the `.nb` ([provenance § *Version 1*](../project-provenance/SKILL.md#version-1)).
 10. If prompt tracking is on (`Prompt tracking: **on**` in `CLAUDE.md` — see [project-provenance](../project-provenance/SKILL.md)), the provenance comment belongs in the `.md` **before** the build; append the ledger entry to `Wiki/Prompts.md` here.
@@ -228,10 +235,10 @@ Then these, which are this skill's own:
 - [ ] Code folded, graphic not: `CellGroupData[{Input, Output}, {2}]` — never `Closed`, never `Open`. One Output per Input. `Input` cells carry real code.
 - [ ] Initialization last and folded: paclet loads, seed, reproducibility line, example objects, stylesheet-swap note.
 - [ ] Build: rich engine at the pinned clone, `CellLabel` stripped, no `::: theorem` divs, no `\to` or `\tag{…}` in rich mode, `PlainArticle.nb` embedded.
-- [ ] Drift checked before every regeneration; any user edit in the `.nb` stops the build and goes to the user.
-- [ ] Fingerprint computed **after** the export/re-import round trip and **merged** into `TaggingRules`.
+- [ ] Preservation checked before changing an existing source or regenerating a notebook; missing/legacy checks use native editing, and unrelated human content remains intact.
+- [ ] When a verified fingerprint implementation is available, the complete baseline is computed after the export/re-import round trip and merged into `TaggingRules`; otherwise no automatic preservation claim is made.
 - [ ] Zero-message evaluation; outputs embedded live, not rasterized; `ExportString` result checked with `StringQ` and the file re-imported.
-- [ ] Deployed public; README `Research Notebooks` table updated.
+- [ ] Local notebook verified; public deployment and a README cloud link added only if the user explicitly authorized publication of this notebook.
 
 ## Integration with other skills
 

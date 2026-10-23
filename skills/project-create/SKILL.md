@@ -1,17 +1,19 @@
 ---
 name: project-create
 description: >
-  Scaffold a new project with the wiki-based knowledge management system and
-  perform initial setup. Use whenever the user asks to start a new project,
-  create a new research project, set up a project folder, scaffold a project,
-  begin investigating a new topic, explore something computationally, or create
-  a new paclet. Trigger on: "new project on X", "let's start a project about Y",
-  "set up folders for Z", "init project", "explore X computationally",
-  "investigate Y", "let's look into Z", "create a paclet for X",
-  "new paclet dev repo".
+  Scaffold a new research, math-research, paclet-dev, or paclet project and
+  initialize its research infrastructure. Use when the user explicitly asks to
+  create a project, set up a project folder, scaffold a new paclet or dev repo,
+  or invokes /project-create. A request to investigate a topic or run a one-off
+  computation does not by itself request project setup. For an existing project,
+  use the skill for the requested missing piece rather than scaffolding again.
 ---
 
 # Research Project Scaffolder
+
+For paclet and paclet-dev projects, read [the paclet design policy](paclet-design.md).
+Support a human-owned `<PacletName>1.nb` and matching concise `<PacletName>1_notes.nb` in the repository root beside the paclet folder, with current paths recorded in repository guidance.
+Do not replace an existing notebook or choose the next human iteration automatically.
 
 Set up a new project with the wiki knowledge base and optional Wolfram Language computation, paclet development, or a structured LaTeX/Typst journal.
 The project takes a research topic from **any scientific domain** and explores it through Wolfram models and computation.
@@ -19,7 +21,7 @@ The project takes a research topic from **any scientific domain** and explores i
 ## When to use
 
 - The user says "new project on X", "let's start a project about Y", "set up folders for Z", "init project", "create a paclet for X", "new paclet dev repo".
-- The user wants to investigate or explore a topic computationally and no project exists yet.
+- The user explicitly asks to create a project for a computational investigation.
 
 ## What to ask the user
 
@@ -152,8 +154,8 @@ Tell the user:
     with `Lean/`)
   - `notebook-create` — create/edit notebooks (supports a `theorem-proof`
     template for math-research projects)
-  - `paper-create-notebook` — cloud-published research document
-    (definitions → theorems → symbols/functions → code calls)
+  - `paper-create-notebook` — write a requested mathematics paper as a notebook;
+    publish it only when publication is explicitly requested
   - `paper-create` — add a LaTeX/Typst paper to `Research/` later
   - `wiki-check` — wiki health check (stale articles, broken links)
   - `paclet-build` / `paclet-publish` / `paclet-docs` — build, publish,

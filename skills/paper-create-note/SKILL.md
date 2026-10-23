@@ -1,47 +1,60 @@
 ---
 name: paper-create-note
 description: >
-  Turn the conversation that just happened into a dated, self-contained
-  research artifact: five files sharing one stem in `Research/Artifacts/` — a plain
-  mathematics document (`.tex` + compiled `.pdf`), a paclet-independent
-  Wolfram notebook (`.md` source + converted `.nb`, shipped unevaluated),
-  a `.wl` carrying the same definitions for `Get`, and a README saying what
-  was settled. The document has no abstract and no prose paragraphs — a
-  Setting, numbered Steps, Claims with complete proofs, Definitions,
-  Assumptions naming every unproved input, Observations marked "measured,
-  not proved", and a catalogue of the degenerate cases and the smallest
-  counterexamples. Every number in it was computed in a kernel during the
-  session, or cited to a named source. Nothing is uploaded to the cloud.
-  Use when the user says "research note", "write this up as a research
-  note", "make an artifact of this", "research artifact", "code extract",
-  or runs `/paper-create-note`.
+  Turn a conversation into a concise mathematical note or requested code
+  extract, preserving an existing paper's format and ownership. Use for
+  "research note", "write this up as a note", "make an artifact of this",
+  "code extract", or /paper-create-note. Distinguish proofs, assumptions,
+  computations and open questions. Produce only the requested deliverable;
+  the complete LaTeX/notebook/code bundle is available when explicitly
+  requested. Keep the note local; nothing is uploaded to Wolfram Cloud.
 ---
 
 # Research Note
 
+## Human-owned paper workflow takes precedence
+
+Read [the paper collaboration policy](../paper-create/workflow.md) before working on a human manuscript.
+The human owns the numbered manuscript sequence; substantive proposals normally go in its concise `<stem>_notes` companion.
+Follow the current human source, keep details in linked topical artifacts, and do not promote or rewrite the manuscript without an explicit request.
+A request for a short proposal does not trigger a full paper, proof development, notebook/code bundle, journal, or another competing briefing.
+The longer article/bundle instructions below apply only when that output is explicitly requested.
+
 A research note is **the conversation, made checkable**.
 
-A discussion reached something — a construction, a count, a failure case.
-The note freezes it in four files that stand on their own: a document a mathematician can check line by line, a notebook a Wolfram user can open and evaluate on a bare kernel, a code file to `Get`, and a README that says what was settled.
-None of it needs the conversation, the project, or a paclet.
+A discussion reached a construction, a count, a failure case or a precise question.
+Preserve it in the requested form, with enough setting and evidence to be checked without reconstructing the conversation.
 
-**The two readers are served separately, and nothing is written for the space between them.**
-The `.pdf` reader wants statements and proofs, so it carries no prose.
-The `.nb` reader wants to run things, so it carries no proofs.
+An explicitly requested full bundle serves two readers separately: its document carries the statements and proofs, and its notebook carries runnable computations.
 
 | Skill | Produces |
 |-------|----------|
-| `paper-create-note` | a dated artifact folder: plain LaTeX, an unevaluated notebook, a loadable `.wl`, nothing uploaded |
-| `paper-create-notebook` | a paper *as* a notebook: MathNotebook environments, tags cited by the front end, outputs embedded, deployed to the Cloud |
+| `paper-create-note` | a concise requested note or code extract; a full LaTeX/notebook/code bundle only on explicit request |
+| `paper-create-notebook` | a requested paper *as* a notebook: MathNotebook environments, cited tags and embedded outputs; publication only when explicitly authorized |
 | `notebook-create` | the generic Markdown → `.nb` pipeline both build on |
 
 ## When to use
 
 - The user says "research note", "write this up as a research note", "make an artifact of this", "research artifact", "code extract", or runs `/paper-create-note`.
-- A conversation produced mathematics worth keeping and the project has nowhere to put it: it is not a wiki concept, not a work item, not a paclet feature.
-- The user wants the session's code lifted out of the paclet so it runs on a bare kernel — that is the "code extract" case, and it produces the same folder.
+- The user asks to preserve mathematics from a conversation as a separate note.
+- The user wants the session's code lifted out of the paclet so it runs on a bare kernel — produce the requested code extract; add the full bundle only if requested.
 
-## What it produces
+### Requested scope
+
+1. Read the current human manuscript and existing companion when the request concerns a paper; follow their structure, notation and requested destination.
+   A companion update belongs in that companion through `document-propose`.
+2. Produce one concise note or code extract in the requested format, using the project's established format when none is specified.
+   A note includes the setting, the requested statements or questions, their proof or verification status, and citations actually read.
+3. Check the sources and computations needed for that deliverable; do not represent an unperformed check or a finite computation as a proof.
+   A code extract requires checking the extracted code, without adding an unsolicited document or notebook.
+4. Save only the requested deliverable, preserving human edits.
+   For a new generated artifact, follow the artifact placement and version-1 provenance/commit rules in [artifacts.md](../notebook-create/artifacts.md) and [project-provenance](../project-provenance/SKILL.md#version-1).
+5. Report the result, evidence and open issues briefly.
+   Do not upload it.
+
+The remaining production steps and checklist apply only to an explicitly requested complete research-note/notebook/code bundle.
+
+## What the full bundle produces
 
 ```
 Research/Artifacts/
@@ -54,8 +67,8 @@ Research/Artifacts/
 ```
 
 Five files sharing one stem, flat in `Research/Artifacts/`, plus a row in its index.
-That is the default place: a note is a one-off.
-When the user asks for a note they will keep working on, the same five files go in `Research/` itself, with no index row, and later rounds are written beside them ([artifacts.md](../notebook-create/artifacts.md) § *Which place*).
+That is the default place for a one-off bundle.
+When the user asks for a bundle they will keep working on, the same five files go in `Research/` itself, with no index row; an explicitly requested versioned revision follows [artifacts.md](../notebook-create/artifacts.md) § *Which place* and the human-owned paper policy.
 A request that does not say goes to `Research/Artifacts/`, without asking.
 The paths below show `Research/Artifacts/`.
 The convention they follow — the three places, the shape, the naming, git and the Cloud — is [artifacts.md](../notebook-create/artifacts.md); this skill only says what goes *inside* each file.
@@ -243,6 +256,8 @@ latexmk -pdf <Topic>_<YYMMDD>.tex && latexmk -c
 
 ## Steps
 
+These steps produce the explicitly requested full bundle.
+
 ### 1. Fix the topic, the date, the freedom level
 
 `<Topic>` in explicit `CapitalizedWords`, today's date as `YYMMDD`, and which of Directed / Guided / Open exploration the session was — the operator's degree of control is a fact about the conversation, not a flattering guess.
@@ -329,8 +344,9 @@ Write `<stem>.provenance.md` and commit version 1 as written, files staged by na
 
 ## Integration with other skills
 
-- `notebook-create` owns the Markdown → `.nb` conventions this skill uses; the artifact notebook differs from its house output in two ways only — it ships **unevaluated** and it loads no paclet.
-- `paper-create-notebook` is the other direction: numbered MathNotebook environments, cited tags, embedded outputs, Cloud deployment. A research note is a *pair* of documents instead, and stays local.
+- `notebook-create` owns the notebook conventions used by the full bundle; its artifact notebook ships **unevaluated** and loads no paclet.
+- `paper-create-notebook` writes an explicitly requested paper as a notebook with numbered MathNotebook environments, cited tags and embedded outputs; publication requires explicit authorization.
+  This skill's note or bundle stays local.
 - `wiki-update` is where the durable concept goes if one came out of the note; the artifact is the record, the wiki article is the knowledge. Link the artifact folder from the article.
 - `paper-journal`, when it is on, takes the hedged material the document refuses — the claims that did not verify and the ranges that are not proofs.
 - `backlog-add`, when the note turns out to be the start of something: the artifact stays as it is and a work item carries the follow-up.
@@ -341,4 +357,5 @@ Write `<stem>.provenance.md` and commit version 1 as written, files staged by na
 - The result belongs in the paclet, the wiki or a work item — write it there; an artifact is for what has no other home.
 - A notebook that demonstrates paclet functions — that is `notebook-create`.
 - A paper with numbered cross-referenced statements, or one to be deployed to the Cloud — that is `paper-create-notebook`.
-- Nothing was actually settled. A conversation of guesses makes a bad artifact: say what is missing and compute it first.
+- A complete proof/computation bundle is requested but no result is settled — report what is missing before offering that bundle.
+  A concise note may record precise open questions or conjectures when their status is explicit.

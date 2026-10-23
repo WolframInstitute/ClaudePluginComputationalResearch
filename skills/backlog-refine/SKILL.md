@@ -9,7 +9,7 @@ description: >
   readiness check and, on the user's word, the move to Work/Ready/ where
   /backlog-run-scheduled may pick it up. Use for: "refine X", "let's work on the backlog",
   "shape this item", "backlog refinement", "get X ready", or the /backlog-refine command.
-  Not for executing tasks (backlog-run) or filing a quick new item (work).
+  Not for executing tasks (backlog-run) or filing a quick new item (backlog-add).
 ---
 
 # Refine a backlog item

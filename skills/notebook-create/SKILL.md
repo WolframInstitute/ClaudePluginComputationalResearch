@@ -1,47 +1,57 @@
 ---
 name: notebook-create
 description: >
-  Create or modify Wolfram Notebooks (.nb) from structured Markdown content
-  using the Wolfram MCP. This is the unified notebook skill — use it for
-  creating new notebooks, editing existing ones, or converting a Markdown
-  source in Code/ or Code/Artifacts/ into an .nb. Triggers on: "create notebook", "make a
-  notebook", "notebook about X", "edit notebook", "update notebook",
-  "put this in a notebook", "generate .nb". Also used by other skills
-  (project-create, project-tour) when they produce notebooks.
+  Create Wolfram notebooks from Markdown, edit saved .nb files through
+  notebook-aware tools, or export requested Markdown without changing the
+  notebook. Use for "create notebook", "edit notebook", "update notebook",
+  "put this in a notebook", and notebook/Markdown conversion. Preserve direct
+  human edits, metadata and established paper or paclet design paths.
+  Other skills use the creation pipeline when generating new notebook cells.
 ---
 
 # Wolfram Notebook Pipeline
 
-**All skills that create or modify `.nb` files must use this skill's pipeline and conventions** — including math formatting, backtick escaping, and post-processing.
+Choose the operation before converting anything:
 
-The core technique:
+- **Create from Markdown:** use the generation pipeline below for a new notebook or new cells.
+- **Edit an existing `.nb`:** inspect and patch the saved notebook with native tools; read [editing.md](editing.md).
+- **Export Markdown:** read [editing.md § Markdown export](editing.md#markdown-export); this writes only the requested export and never rebuilds the `.nb`.
+
+For human papers and paclet designs, [paper ownership](../paper-create/workflow.md) and [paclet design ownership](../project-create/paclet-design.md) take precedence over generated-artifact conventions.
+Read the actual human notebook and companion, preserve their names and locations, and edit only within the authorized scope.
+The human controls integration and the next numbered iteration; a `_notes.nb` companion is maintained in place while preserving human corrections.
+
+The creation technique, when a Markdown source is appropriate:
 
 ```
 ExportString[ImportString[markdownString, {"Markdown", "Notebook"}], "NB"]
 ```
 
-No temporary files are created.
-The markdown lives as a string in the Wolfram kernel, gets imported as a Notebook expression, post-processed, then serialized back to a string via `ExportString`.
-You then write that string to the target `.nb` file using the local `Write` tool.
+Markdown is imported as a Notebook expression, post-processed, then serialized with `ExportString` for writing to the selected local path.
+This is a creation pipeline, not a reversible editor for existing notebook content.
 
-The details live in four read-on-demand siblings — read only what the current job needs:
+Read only the references the operation needs:
 
 - [pipeline-builtin.md](pipeline-builtin.md) — post-processing + the complete built-in-engine MCP call (the canonical copy of `boxifyInputCells`, `markInitCells`, `addLLMSubtitle`)
 - [pipeline-rich.md](pipeline-rich.md) — what rich mode changes, the parser-degradation probe, the rich-mode MCP call
 - [templates.md](templates.md) — the named templates (`research`, `paper-analysis`, `computation`, `theorem-proof`)
 - [markdown-mapping.md](markdown-mapping.md) — markdown-to-cell mapping, long-notebook pattern, content best practices
+- [editing.md](editing.md) — native editing, faithful per-cell source write-back, and export-only Markdown
 
 ## When to use
 
 - The user says "create notebook", "make a notebook", "notebook about X", "edit notebook", "update notebook", "put this in a notebook", "generate .nb".
-- Another skill produces a notebook (`project-create`, `project-tour`) — every `.nb`-touching skill routes through this pipeline.
+- Another skill produces notebook cells (`project-create`, `project-tour`); its ownership and document-role rules still apply.
 
 ## Hard Rules
 
-- **NEVER** read a `.nb` file with the `Read` tool or load its raw content into the context window.
-  To work with an existing notebook, export to Markdown first via `ExportString[Import[path], "Markdown"]` in the Wolfram MCP.
-- **NEVER** use `Export[path, ...]` in MCP code — always `ExportString[...]` and write the result with the `Write` tool.
-  The MCP kernel runs in a separate process with its own filesystem, so `Export` writes where the user cannot see.
+- Do not load a raw `.nb` into the context with the `Read` tool.
+  Use native notebook reading or inspect selected cells and options from `Import[path, "NB"]` in the Wolfram kernel; do not evaluate cell contents while inspecting them.
+- Preserve the saved notebook's cells, grouping, options, tags, styles and author metadata outside the requested change.
+  Never replace it with a Markdown round-trip or regenerate over unreconciled human edits.
+- Confirm where the MCP can read and write.
+  When its filesystem is separate from the user's workspace, use `ExportString[..., "NB"]` and a local write rather than assuming a kernel-side `Export` updated the user's file.
+  If the saved notebook cannot be inspected and preserved with available tooling, report that limit and leave it intact.
 
 ## Kernel execution (license-aware)
 
@@ -50,45 +60,42 @@ The batch `Scripts/generate_notebooks.wls` / `Scripts/publish_notebooks.wls` hel
 
 ## Where notebooks live — Critical
 
-A notebook about the project's code goes to one of two places, and the request names which:
+Preserve an existing document's path and any explicit destination.
+Human manuscripts and design notebooks are not relocated into `Code/Artifacts/`.
+For a paclet, use the current `<PacletName>N.nb` and `<PacletName>N_notes.nb` in the repository root beside the paclet folder.
 
-- **`Code/`** — a document in progress, one the user will keep working on, with a revision round per version.
-- **`Code/Artifacts/`** — a one-off.
-  A request that does not say goes here, without asking.
+For a new notebook about the project's code, `Code/` holds a requested document in progress and `Code/Artifacts/` holds a one-off (the default when the request does not specify).
+Read [artifacts.md](artifacts.md) for the topic index and archive convention, subject to the ownership rules above.
+An authorized in-place edit does not require a new dated artifact or a new human iteration.
 
-The paths below show `Code/Artifacts/`; for a document in progress read `Code/`, which has no index row to write.
-No file is ever overwritten, and outside `Artifacts/` nothing is written unasked — that is the whole of [document-revise](../document-revise/SKILL.md) § *Protected content* as it applies here.
-The full convention — the three places, which one a notebook goes to, the shape, the naming, the index, git and the Cloud — is [artifacts.md](artifacts.md); read it before creating one.
+## Markdown-backed generation
 
-## Two-layer architecture (co-located)
-
-Source and output share one stem, side by side:
+For a new generated artifact, source and output share one dated stem:
 
 ```
 Code/Artifacts/README.md               the index
-Code/Artifacts/Name_YYMMDD.md          the source of truth
-Code/Artifacts/Name_YYMMDD.nb          generated from it
+Code/Artifacts/Name_YYMMDD.md           generation source
+Code/Artifacts/Name_YYMMDD.nb           generated notebook
 ```
 
-The `.md` source is the durable, hand-editable half; the `.nb` is regenerated from it.
-Both are tracked — an artifact is a deliverable, not a build product.
-These are **not** wiki articles: they do not go in `Wiki/`.
+This arrangement applies when the chosen source can express the requested content.
+A human-edited `.nb` is not disposable: preserve its direct edits and reconcile any supporting source before considering regeneration.
+Follow the project's tracking policy; exclude a generated notebook from Git only while it is reproducible without losing human content or metadata.
+These are not wiki articles.
 
-The stem carries the date the notebook was settled, `YYMMDD`, and it is stamped once and **preserved on every later regeneration** — a rebuild overwrites the same two files rather than adding a second date.
-The date lives only in the filename; **do not** put it inside the notebook (the `[[ LLM Generated ]]` subtitle stays undated).
-A later pass that supersedes the notebook rather than correcting it is a new artifact with a new date, per [artifacts.md](artifacts.md) § *Archive*.
+Keep the same stem for a correction rather than adding a second date.
+A full rebuild of an existing generated notebook requires an implemented and verified complete [drift check](../paper-create-notebook/fingerprint.md), reconciled source, and the requested scope; a missing or legacy stamp does not establish that overwriting is safe.
+The fingerprint reference specifies a contract rather than shipping a complete verifier; absent a verified implementation, preserve the saved notebook and use native edits, unless its replacement was explicitly authorized with its original retained.
+Otherwise use targeted notebook edits.
+A substantive revisit may be a new dated artifact, with the earlier work preserved in `Archive/`.
 
-When to use the source layer:
+Use Markdown for a new artifact meant to be regenerated, or create a native notebook directly when no source layer is needed.
+Do not invent a Markdown source for an existing notebook merely to make it fit the pipeline.
+A new source follows [markdown-mapping.md](markdown-mapping.md); source and output use the same stem even when that stem is an author-selected numbered name.
+Add an index row only for a newly created artifact, not for a root-level design pair or an existing human document.
 
-- A notebook meant to persist across sessions → write `Code/Artifacts/Name_YYMMDD.md` as the source, then generate the `.nb`
-- Quick one-off exploration → generate `Code/Artifacts/Name_YYMMDD.nb` directly, skip the `.md` source
-
-The source is a structured Markdown file following [markdown-mapping.md](markdown-mapping.md): one `# Title`, a `## Setup` section for package loads (becomes InitializationCells), `wolfram`-tagged fences for evaluatable Input cells, plain text for Text cells.
-
-To generate: read `Code/Artifacts/Name_YYMMDD.md`, pass its content through the MCP pipeline, write the result to `Code/Artifacts/Name_YYMMDD.nb`.
-Reuse the stem of an existing source rather than minting a new date for a correction.
-Add the artifact's row to `Code/Artifacts/README.md` in the same step.
-Only as the license-gated fallback, run the batch scripts (`wolframscript -file Scripts/generate_notebooks.wls`, plus `publish_notebooks.wls` for cloud publishing).
+Batch scripts are generation-only fallbacks, subject to the same preservation checks.
+Do not run a folder-wide generator against existing notebooks with unchecked human edits, or a publisher without scoped publication authorization.
 
 ## Provenance (optional)
 
@@ -100,7 +107,7 @@ If the project has prompt tracking on (a `Prompt tracking: **on**` line in `CLAU
    strip the comment from the markdown string before conversion (the built-in importer drops HTML comments, but the rich parser is not guaranteed to), replacing its lines by empty lines so the cells' source lines stay the file's,
    and stamp the notebook expression just before `ExportString` with the `stampTaggingRule` merge helper from the [project-provenance](../project-provenance/SKILL.md) skill.
    `TaggingRules` is a shared slot — `paper-create-notebook`'s fingerprint key lives there too — so merge by key; never write a literal `TaggingRules -> {...}` that replaces the option.
-   In the built-in call this wraps the final expression: `ExportString[ stampTaggingRule[ Notebook[cells], "Provenance" -> prov ], "NB" ]`;
+   In the built-in call this wraps the final expression: `ExportString[ stampTaggingRule[ ReplacePart[nb, 1 -> cells], "Provenance" -> prov ], "NB" ]`;
    in the rich-mode call apply it to `ReplacePart[nb, 1 -> cells]`, which it leaves option-complete (the helper preserves `CreateCellID` and `StyleDefinitions`).
 3. On the batch fallback path only, skip step 2: `generate_notebooks.wls` strips the comment and injects the `TaggingRules` itself.
 4. Append an entry to the `Wiki/Prompts.md` ledger.
@@ -109,10 +116,12 @@ When tracking is off (default), skip this — generate the notebook as usual.
 
 ## Which MCP tool to use
 
-- **Official MCP with the `WolframPacletDevelopment` profile** (preferred): use `mcp__Wolfram__WriteNotebook` / `mcp__Wolfram__ReadNotebook` — they handle `.nb` files natively without the Markdown→ImportString workaround.
-- **Markdown pipeline** (fallback, older profile): `ExportString[ImportString[md, {"Markdown", "Notebook"}], "NB"]` via `mcp__Wolfram__WolframLanguageEvaluator`.
+- **Official MCP with notebook tools** (preferred): use the supported `ReadNotebook` / `WriteNotebook` operations for focused reading and edits only when they preserve the required content and options; inspect their actual schemas rather than assuming a cell-patching interface.
+- **Evaluator:** inspect and patch a saved Notebook expression, preserving untouched expressions and options, or generate new cells from Markdown.
+  The Markdown pipeline is `ExportString[ImportString[md, {"Markdown", "Notebook"}], "NB"]`; it is not the existing-notebook editing path.
 - **Unofficial MCP** (`mcp__wolfram__`): use its LSP tools (hover_info, find_definition, find_references, get_diagnostics, document_symbols) for code navigation only; do not use its notebook-manipulation tools when the official MCP is available.
-- **Last resort** (no MCP): create a minimal `.nb` manually with the `Write` tool and raw NB format, and warn the user.
+- **No notebook tooling:** a minimal new native `.nb` skeleton may be written when its structure is understood; do not claim that complex formulas or an existing notebook were preserved without verification.
+  Leave an existing file intact if it cannot be read and safely edited.
 
 To check availability: evaluate `1+1` with the official MCP.
 
@@ -136,8 +145,8 @@ A source with neither frontmatter nor math gains little from rich mode, so plain
 
 Fixed conversion settings, either engine:
 
-- **`"Evaluate" -> False`** always.
-  Cells ship unevaluated; the front end evaluates them.
+- **`"Evaluate" -> False`** for Markdown conversion.
+  New cells ship unevaluated unless the requested output explicitly includes checked outputs; editing does not automatically authorize running the notebook.
 - **`Template: Default`** — the default when frontmatter omits it, and the only template this skill uses.
   The documentation templates (`Symbol`, `Guide`, `TechNote`, `Paclet`) belong to [paclet-docs](../paclet-docs/SKILL.md), which uses the official MCP doc tools instead.
 - **Pin by SHA, call the local file.** Load the clone with `Get`, never the deployed cloud resource: that resource lives on a personal `obj/nikm/` path and reports no `"Version"`, so drift is undetectable.
@@ -175,25 +184,18 @@ Always build markdown with `StringJoin` using `fence` and `tick` variables; the 
 
 Creating a new notebook:
 
-1. **Compose** well-structured Markdown per [markdown-mapping.md](markdown-mapping.md) (structure from [templates.md](templates.md) when applicable)
-2. **Evaluate** via the Wolfram MCP: build string → convert → post-process → `ExportString` ([pipeline-builtin.md](pipeline-builtin.md) or [pipeline-rich.md](pipeline-rich.md))
-3. **Write** the returned string to the target `.nb` file using the `Write` tool
-4. **Verify** by checking file size or evaluating `Length[First[Import["/path/to/file.nb"]]]` via the official MCP
+1. Select the document role, authorized path and name before composing content.
+2. Compose Markdown per [markdown-mapping.md](markdown-mapping.md) when it suits the output, or use native cells.
+3. Convert only the new content and apply the role-appropriate generation passes ([pipeline-builtin.md](pipeline-builtin.md) or [pipeline-rich.md](pipeline-rich.md)).
+4. Write to the selected path without clobbering an existing file, then re-read it with notebook-aware tooling.
+   Check the actual cells, math, options and metadata relevant to the result; file size and cell count alone do not establish fidelity.
 
-Modifying an existing notebook:
+For an existing notebook, read [editing.md](editing.md) and patch the requested cells or options in the saved notebook.
+Keep its editor open when available, preserve unrelated cells and metadata, and reconcile supporting sources only where faithful conversion is available.
+A specifically requested versioned revision uses [round.md](../document-revise/round.md#notebooks); ordinary edits and companion updates do not automatically create another version.
 
-1. **Export** → `ExportString[Import["/path/to/file.nb"], "Markdown"]` via the official Wolfram MCP
-2. **Edit** the Markdown string (find/replace, append, restructure)
-3. **Re-import** through the full pipeline: convert → post-process → `ExportString`
-4. **Write** back to the original path (or a new file if the user wants to keep the original)
-5. **Verify** cell count
-
-**Short notebooks** (< ~30 cells): rebuild entirely from Markdown.
-**Long notebooks**: export → patch the relevant section → re-import.
-**Appending**: export → append new Markdown sections at the end → re-import the full combined string.
-
-Do **not** manipulate raw `.nb` cell lists by hand — always go through the Markdown round-trip.
-The one exception is a [revision round](../document-revise/round.md#notebooks) on a notebook the user has edited: it rewrites only the commented cells of the imported `.nb` into the next version, because the round trip would lose the user's edits.
+For a Markdown-export request, use the separate export procedure in [editing.md](editing.md#markdown-export).
+Do not feed that export back into the original `.nb`.
 
 ## Claude Desktop / VM mode
 
@@ -201,13 +203,17 @@ When running inside a VM (Claude Desktop Projects or sandboxed environment):
 
 - Confirm that a shared folder exists and is accessible
 - The `ExportString` + `Write` pipeline works on mounted filesystems
-- Cell count verification via `Import` may fail — check file size instead
+- If native re-reading is unavailable, file size is only a basic transport check; disclose that notebook fidelity could not be verified
 
 ## Style rules — Critical
 
-These govern the *content* of every LLM-generated notebook. Apply them as you compose the markdown.
+These are defaults for a requested, fully assistant-written expository notebook.
+They do not reformat human manuscripts, design notebooks, shared notes or existing content.
+Follow the human document's structure, terminology and metadata; design companions may use API signatures and itemized proposals.
 
-- **`[[ LLM Generated ]]` as a `Subtitle` cell right after the `Title`** — in the Markdown source, `**[[ LLM Generated ]]**` on its own line under the title; the pipeline normalizes it (§ *pipeline-builtin.md*).
+- **`[[ LLM Generated ]]` as a `Subtitle` cell right after the `Title`** for a fully assistant-written standalone notebook.
+  Use the explicit `llmStandalone` generation flag in [pipeline-builtin.md](pipeline-builtin.md); leave it `False` for human-owned or shared documents and for generated cell fragments.
+  Identify assistant contributions locally or in companion provenance without changing human authorship.
 - **A discovery walkthrough**, building up to the main results. Few sections, no sprawl.
 - **Visuals over numbers** — code illustrates each concept graphically. Prefer a picture to a numerical result, a `True`/`False`, or a list.
 - **One concept on several substrates** — `GraphicsRow` (3 pictures per row) or `GraphicsGrid` (3 × 3).
@@ -229,11 +235,11 @@ When writing cells directly through `mcp__Wolfram__WriteNotebook` rather than th
 
 ## Naming conventions
 
-The `.md` source name is undated; the generated `.nb` appends the first-creation date (`_YYYY-MM-DD`, preserved across regenerations — see *Two-layer architecture*).
-
-- Single-topic notebooks: `TopicName.md` / `TopicName_YYYY-MM-DD.nb`
-- Paper analysis: `Author_Year.md`
-- Chains/multi-topic: descriptive name (`UniversalityGraph.md`)
+Preserve any supplied or established name and location.
+New one-off artifacts use one shared `TopicName_YYMMDD` stem for `.md` (when present) and `.nb`; do not append a second date to the notebook.
+Human-owned numbered documents keep their author-selected names, for example `Infrageometry1.nb` and `Infrageometry1_notes.nb` at the repository root.
+The human chooses the next numbered iteration; maintaining the companion in place does not advance it.
+A specifically requested versioned artifact revision uses the naming rule in [round.md](../document-revise/round.md#names).
 
 ## Integration with other skills
 
@@ -244,6 +250,6 @@ The `.md` source name is undated; the generated `.nb` appends the first-creation
 
 ## When NOT to use
 
-- Research documents with definitions/theorems/conjectures — that is `paper-create-notebook`.
+- An explicitly requested mathematics paper or article as a notebook — that is `paper-create-notebook`; ordinary exploration and conjecture notebooks remain here.
 - Paclet documentation pages — that is `paclet-docs`.
-- Overwriting any file, or writing a document in progress unasked — see [artifacts.md](artifacts.md) § *Never overwrite*.
+- Regenerating over unreconciled human edits or writing a human document outside the requested scope — see [editing.md](editing.md) and the ownership policies above.
