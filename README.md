@@ -217,4 +217,4 @@ Pavel Hájek's work on this repository was supported by the John Templeton Found
 ## 📄 License
 
 - Code: [MIT](LICENSE)
-- Mathematical content (notebooks, papers, notes, figures): [CC BY 4.0](LICENSE-CC-BY-4.0)
+- Mathematical content: [CC BY 4.0](LICENSE-CC-BY-4.0)
